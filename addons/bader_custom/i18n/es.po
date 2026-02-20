@@ -1,0 +1,355 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* irudi_custom
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-09 20:48+0000\n"
+"PO-Revision-Date: 2025-06-09 22:49+0200\n"
+"Last-Translator: cubells <vicent@vcubells.net>\n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.6\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#. module: bader_custom
+#: model_terms:ir.ui.view,arch_db:bader_custom.external_layout_standard
+msgid "<span class=\"phone_header\">Phone: </span>"
+msgstr "<span class=\"phone_header\">Tlfno: </span>"
+
+#. module: bader_custom
+#: model_terms:ir.ui.view,arch_db:bader_custom.report_repairorder
+msgid "<span>Work Part #:</span>"
+msgstr "<span>Parte de trabajo nº: </span>"
+
+#. module: bader_custom
+#: model_terms:ir.ui.view,arch_db:bader_custom.report_repairorder
+msgid "<strong>Schedule Date:</strong>"
+msgstr "<strong>Fecha programada:</strong>"
+
+#. module: bader_custom
+#: model_terms:ir.ui.view,arch_db:bader_custom.external_layout_standard
+msgid ""
+"BANKINTER: IBAN ES39 0128 0182 2901 0001 4537 · CAIXABANK, S.A.: IBAN ES16 "
+"2100 6254 9902 0007 4553\n"
+"    BBVA: IBAN ES34 0182 1583 0502 0154 4667 · ABANCA: IBAN ES94 2080 5052 "
+"1230 4003 9471\n"
+"    ABANCA PT: IBAN PT50 0170 3453 0304 0002 1416 5 · SANTANDER: IBAN ES85 "
+"0049 6755 6025 1629 2603"
+msgstr ""
+"BANKINTER: IBAN ES39 0128 0182 2901 0001 4537 · CAIXABANK, S.A.: IBAN ES16 "
+"2100 6254 9902 0007 4553\n"
+"    BBVA: IBAN ES34 0182 1583 0502 0154 4667 · ABANCA: IBAN ES94 2080 5052 "
+"1230 4003 9471\n"
+"    ABANCA PT: IBAN PT50 0170 3453 0304 0002 1416 5 · SANTANDER: IBAN ES85 "
+"0049 6755 6025 1629 2603"
+
+#. module: bader_custom
+#: model:ir.model.fields,help:bader_custom.field_product_pricelist_item__base
+msgid ""
+"Base price for computation.\n"
+"Sales Price: The base price will be the Sales Price.\n"
+"Cost Price : The base price will be the cost price.\n"
+"Other Pricelist : Computation of the base price based on another Pricelist."
+msgstr ""
+"Precio base para el cálculo.\n"
+"Precio de venta: El precio base será el precio de venta.\n"
+"Precio de coste El precio base será el precio de coste.\n"
+"Otra lista de precios: Cálculo del precio base en base a otra lista de "
+"precios."
+
+#. module: bader_custom
+#: model:ir.model.fields,field_description:bader_custom.field_product_pricelist_item__base
+msgid "Based on"
+msgstr "Basado en"
+
+#. module: bader_custom
+#: model_terms:ir.ui.view,arch_db:bader_custom.pricelist_import_view
+#: model_terms:ir.ui.view,arch_db:bader_custom.product_lot_export_wizard
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: bader_custom
+#: model:ir.model.fields,field_description:bader_custom.field_product_lot_export__create_uid
+#: model:ir.model.fields,field_description:bader_custom.field_product_pricelist_import__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: bader_custom
+#: model:ir.model.fields,field_description:bader_custom.field_product_lot_export__create_date
+#: model:ir.model.fields,field_description:bader_custom.field_product_pricelist_import__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: bader_custom
+#. odoo-python
+#: code:addons/bader_custom/reports/product_lot_export_report.py:0
+#, python-format
+msgid "Default Code"
+msgstr "Referencia interna"
+
+#. module: bader_custom
+#: model:ir.model.fields,field_description:bader_custom.field_product_lot_export__display_name
+#: model:ir.model.fields,field_description:bader_custom.field_product_pricelist_import__display_name
+msgid "Display Name"
+msgstr "Nombre a mostrar"
+
+#. module: bader_custom
+#: model:ir.actions.act_window,name:bader_custom.product_lot_export_action
+#: model_terms:ir.ui.view,arch_db:bader_custom.product_lot_export_wizard
+msgid "Export Lots"
+msgstr "Exportar lotes"
+
+#. module: bader_custom
+#: model:ir.actions.report,name:bader_custom.lots_xlsx
+msgid "Export lots to XLSX"
+msgstr "Exportar lotes a XLSX"
+
+#. module: bader_custom
+#: model_terms:ir.ui.view,arch_db:bader_custom.pricelist_import_view
+msgid ""
+"Formato cabecera del fichero:\n"
+"                        <br/><br/>\n"
+"                        <strong>SKU | OFERTA | FECHA INICIO | FECHA FIN | "
+"DESCUENTO</strong>\n"
+"                        <br/><br/>"
+msgstr ""
+"Formato cabecera del fichero:\n"
+"                        <br/><br/>\n"
+"                        <strong>SKU | OFERTA | FECHA INICIO | FECHA FIN | "
+"DESCUENTO</strong>\n"
+"                        <br/><br/>"
+
+#. module: bader_custom
+#: model:ir.model.fields,field_description:bader_custom.field_product_lot_export__id
+#: model:ir.model.fields,field_description:bader_custom.field_product_pricelist_import__id
+msgid "ID"
+msgstr "Identificador"
+
+#. module: bader_custom
+#: model_terms:ir.ui.view,arch_db:bader_custom.pricelist_import_view
+msgid "Import"
+msgstr "Importar"
+
+#. module: bader_custom
+#: model:ir.model.fields,field_description:bader_custom.field_product_pricelist_import__data_file
+msgid "Import File (*.xlsx)"
+msgstr "Importar fichero (*.xlsx)"
+
+#. module: bader_custom
+#: model:ir.actions.act_window,name:bader_custom.pricelist_import_action
+#: model:ir.ui.menu,name:bader_custom.menu_pricelist_import
+msgid "Import Offers"
+msgstr "Importar ofertas"
+
+#. module: bader_custom
+#: model_terms:ir.ui.view,arch_db:bader_custom.pricelist_import_view
+msgid "Import pricelist"
+msgstr "Importar tarifa"
+
+#. module: bader_custom
+#: model_terms:ir.ui.view,arch_db:bader_custom.external_layout_standard
+msgid ""
+"Inscripción en el Registro de Productores de Producto (RPP) ENV/"
+"2024/000039998"
+msgstr ""
+"Inscripción en el Registro de Productores de Producto (RPP) ENV/"
+"2024/000039998"
+
+#. module: bader_custom
+#: model:ir.model.fields,field_description:bader_custom.field_product_lot_export__internal_locations
+msgid "Internal Locations Only"
+msgstr "Ubicaciones internas sólo"
+
+#. module: bader_custom
+#: model:ir.model.fields,field_description:bader_custom.field_product_lot_export____last_update
+#: model:ir.model.fields,field_description:bader_custom.field_product_pricelist_import____last_update
+msgid "Last Modified on"
+msgstr "Última modificación el"
+
+#. module: bader_custom
+#: model:ir.model.fields,field_description:bader_custom.field_product_lot_export__write_uid
+#: model:ir.model.fields,field_description:bader_custom.field_product_pricelist_import__write_uid
+msgid "Last Updated by"
+msgstr "Última modificación por"
+
+#. module: bader_custom
+#: model:ir.model.fields,field_description:bader_custom.field_product_lot_export__write_date
+#: model:ir.model.fields,field_description:bader_custom.field_product_pricelist_import__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: bader_custom
+#. odoo-python
+#: code:addons/bader_custom/reports/product_lot_export_report.py:0
+#, python-format
+msgid "Location"
+msgstr "Ubicación"
+
+#. module: bader_custom
+#. odoo-python
+#: code:addons/bader_custom/reports/product_lot_export_report.py:0
+#, python-format
+msgid "Lot/Serial"
+msgstr "Lote/Nº de serie"
+
+#. module: bader_custom
+#: model:ir.model,name:bader_custom.model_mis_report_instance
+msgid "MIS Report Instance"
+msgstr "MIS Report Instance"
+
+#. module: bader_custom
+#. odoo-python
+#: code:addons/bader_custom/reports/product_lot_export_report.py:0
+#, python-format
+msgid "Name"
+msgstr "Nombre"
+
+#. module: bader_custom
+#: model_terms:ir.ui.view,arch_db:bader_custom.product_pricelist_item_form_view
+msgid "Offer"
+msgstr "Oferta"
+
+#. module: bader_custom
+#: model:ir.model.fields,field_description:bader_custom.field_product_pricelist_item__offer_price
+msgid "Offer Price"
+msgstr "Precio de oferta"
+
+#. module: bader_custom
+#: model_terms:ir.ui.view,arch_db:bader_custom.external_layout_standard
+msgid "Page: <span class=\"page\"/> / <span class=\"topage\"/>"
+msgstr "Página: <span class=\"page\"/> / <span class=\"topage\"/>"
+
+#. module: bader_custom
+#: model:ir.model.fields,field_description:bader_custom.field_product_pricelist_import__pricelist_id
+msgid "Pricelist"
+msgstr "Tarifa"
+
+#. module: bader_custom
+#: model:ir.model,name:bader_custom.model_product_pricelist_item
+msgid "Pricelist Rule"
+msgstr "Regla de tarifa"
+
+#. module: bader_custom
+#: model:ir.actions.report,name:bader_custom.product_export_csv
+msgid "Product Export CSV"
+msgstr "Exportar etiquetas a CSV"
+
+#. module: bader_custom
+#: model:ir.model,name:bader_custom.model_product_lot_export
+msgid "Product Lot Export"
+msgstr "Exportar lotes de productos"
+
+#. module: bader_custom
+#: model:ir.model,name:bader_custom.model_report_product_export_lots_xlsx
+msgid "Product Lot XLSX Report"
+msgstr "Informe para exportar lotes a XLSX"
+
+#. module: bader_custom
+#: model:ir.model.fields.selection,name:bader_custom.selection__product_pricelist_item__base__offer
+msgid "Product Offer"
+msgstr "Oferta de producto"
+
+#. module: bader_custom
+#: model:ir.model,name:bader_custom.model_product_product
+msgid "Product Variant"
+msgstr "Variante de producto"
+
+#. module: bader_custom
+#. odoo-python
+#: code:addons/bader_custom/wizards/product_pricelist_import.py:0
+#, python-format
+msgid "Products with Price Updated"
+msgstr "Productos actualizados"
+
+#. module: bader_custom
+#. odoo-python
+#: code:addons/bader_custom/reports/product_lot_export_report.py:0
+#, python-format
+msgid "Real Stock"
+msgstr "Stock real"
+
+#. module: bader_custom
+#: model:ir.model.fields,field_description:bader_custom.field_product_pricelist_import__remove_old
+msgid "Remove Old"
+msgstr "Eliminar antiguos"
+
+#. module: bader_custom
+#: model:ir.model.fields,field_description:bader_custom.field_product_pricelist_import__remove_outdated
+msgid "Remove Outdated"
+msgstr "Eliminar obsoletos"
+
+#. module: bader_custom
+#: model_terms:ir.ui.view,arch_db:bader_custom.pricelist_import_view
+msgid "Remove product in pricelist if exist"
+msgstr "Eliminar el producto en la lista si existe"
+
+#. module: bader_custom
+#: model_terms:ir.ui.view,arch_db:bader_custom.pricelist_import_view
+msgid "Remove products with date end outdated"
+msgstr "Eliminar los productos con período de oferta desactualizado"
+
+#. module: bader_custom
+#: model:ir.model,name:bader_custom.model_repair_order
+msgid "Repair Order"
+msgstr "Orden de reparación"
+
+#. module: bader_custom
+#: model:ir.model,name:bader_custom.model_report_report_csv_product
+msgid "Report CSV Product"
+msgstr "Report CSV Product"
+
+#. module: bader_custom
+#: model:ir.model.fields,field_description:bader_custom.field_repair_order__technician_id
+#: model_terms:ir.ui.view,arch_db:bader_custom.view_repair_order_form_filter
+msgid "Technician"
+msgstr "Técnico"
+
+#. module: bader_custom
+#. odoo-python
+#: code:addons/bader_custom/wizards/product_pricelist_import.py:0
+#, python-format
+msgid "The file does not contain the correct header fields"
+msgstr "El fichero no tiene la cabecera correta"
+
+#. module: bader_custom
+#. odoo-python
+#: code:addons/bader_custom/wizards/product_pricelist_import.py:0
+#, python-format
+msgid "The product with code %s does not exist"
+msgstr "El producto con referencia %s no existe"
+
+#. module: bader_custom
+#: model:res.groups,name:bader_custom.group_import_pricelist
+msgid "User Can Import Prices"
+msgstr "El usuario puede importar precios"
+
+#. module: bader_custom
+#: model:ir.model,name:bader_custom.model_product_pricelist_import
+msgid "Wizard to import pricelists"
+msgstr "Asistente para importar listas de precio"
+
+#. module: bader_custom
+#: model:ir.model.fields,field_description:bader_custom.field_repair_order__partner_location_id
+msgid "Work Location"
+msgstr "Ubicación de trabajo"
+
+#. module: bader_custom
+#: model_terms:ir.ui.view,arch_db:bader_custom.pricelist_import_view
+msgid "or"
+msgstr "o"
+
+#~ msgid ""
+#~ "Inscrita en el Registro Mercantil de Álava, tomo 1063, libro 0, sección "
+#~ "8, folio 167, hoja nº VI-9027, inscripción 1ª.  NIF ESB01339621"
+#~ msgstr ""
+#~ "Inscrita en el Registro Mercantil de Álava, tomo 1063, libro 0, sección "
+#~ "8, folio 167, hoja nº VI-9027, inscripción 1ª.  NIF ESB01339621"
+
+#~ msgid "Picking"
+#~ msgstr "Albarán"

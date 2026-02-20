@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="quant_print_label_form" model="ir.ui.view">
+        <field name="model">quant.print.label</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group name="group_sup">
+                        <field name="label_id" string="Select Label"/>
+                        <field name="quant_ids" invisible="True"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button
+                        name="button_print"
+                        type="object"
+                        string="Print"
+                        class="oe_highlight"
+                    />
+                    <button special="cancel" string="Cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="quant_print_label_action" model="ir.actions.act_window">
+        <field name="name">Print Label</field>
+        <field name="res_model">quant.print.label</field>
+        <field name="binding_model_id" ref="stock.model_stock_quant" />
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="groups_id" eval="[(4, ref('stock.group_stock_user'))]" />
+    </record>
+</odoo>

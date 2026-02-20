@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="label_70x40_rotaries_report_document">
+        <t t-call="web.basic_layout">
+            <div class="page">
+                <t t-foreach="quants" t-as="quant">
+                    <div id="label70x40r">
+                        <div class="l70x40r-first-logos">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <div class="l70x40r-logo-bader">
+                                            <img src="/stock_quant_labels/static/src/img/bader.png" alt="Logo Bader"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="l70x40r-degree">
+                                            <img src="/stock_quant_labels/static/src/img/degree.png" alt="Logo Degree"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="l70x40r-md">
+                                            <img src="/stock_quant_labels/static/src/img/md.png" alt="Logo MD"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="l70x40r-ce">
+                                            <img src="/stock_quant_labels/static/src/img/ce.png" alt="Logo CE"/>
+                                            <span t-field="quant.product_id.on_label"/><br/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="l70x40r-label_manufacturer">
+                            <span t-field="quant.product_id.label_manufacturer"/><br/>
+                        </div>
+                        <div class="l70x40r-second-logos">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <div class="l70x40r-commercial">
+                                            <img src="/stock_quant_labels/static/src/img/commercial.png" alt="Logo Commercial"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="l70x40r-made_by">
+                                            <span t-field="quant.product_id.label_made_by"/><br/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="l70x40r-third-logos">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <div class="l70x40r-sn">
+                                            <img src="/stock_quant_labels/static/src/img/sn.png" alt="Logo SN"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="l70x40r-lot">
+                                            <span class="strong" t-field="quant.lot_id.name"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="l70x40r-udi">
+                                            <img src="/stock_quant_labels/static/src/img/udi.png" alt="Logo UDI"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="l70x40r-barcode">
+                                            <img t-att-src="'/report/barcode/Code128/'+quant.product_id.barcode" height="30" width="100" alt="Barcode"/><br/>
+                                            <span t-field="quant.product_id.barcode"/><br/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="l70x40r-qr">
+                                            <t t-set="barcode" t-value="'%s-%s' % (quant.product_id.barcode, quant.lot_id.name)"/>
+                                            <div name="datamatrix_barcode" t-out="barcode" t-options="{'widget': 'barcode', 'symbology': 'ECC200DataMatrix', 'width': 50, 'height': 50}"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="l70x40r-product">
+                            <span>REF: </span><span t-field="quant.product_id.default_code"/><br/>
+                            <span t-field="quant.product_id.name"/>
+                        </div>
+                        <div style="page-break-after:always"/>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+    <template id="label_70x40_rotaries_report_label">
+        <t t-call="web.html_container">
+            <t t-set="quants" t-value="docs.env['stock.quant'].browse(quant_ids)"/>
+            <t t-call="stock_quant_labels.label_70x40_rotaries_report_document"/>
+        </t>
+    </template>
+</odoo>

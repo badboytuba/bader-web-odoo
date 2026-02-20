@@ -1,0 +1,11 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# * crm_claim
+#
+
+
+#. module: crm_claim
+#: model:ir.model.fields,field_description:crm_claim.field_crm_claim__priority
+#: model:ir.model.fields,field_description:crm_claim.field_crm_claim_report__priority
+msgid "Priority"
+msgstr "Gravedad"

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="product_pricelist_item_form_view" model="ir.ui.view">
+        <field name="model">product.pricelist.item</field>
+        <field name="inherit_id" ref="product.product_pricelist_item_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//label[@for='price_discount']" position="before">
+                <label for="offer_price" string="Offer" attrs="{'invisible':[('base', '!=', 'offer')]}"/>
+                <div class="o_row" attrs="{'invisible':[('base', '!=', 'offer')]}">
+                    <field name="offer_price"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,284 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* stock_picking_lots
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-12-13 21:53+0000\n"
+"PO-Revision-Date: 2023-12-13 21:53+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: stock_picking_lots
+#: model_terms:ir.ui.view,arch_db:stock_picking_lots.import_lots_view_form
+msgid "Cancel"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model_terms:ir.ui.view,arch_db:stock_picking_lots.view_picking_form
+msgid "Clean Lots"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model_terms:ir.ui.view,arch_db:stock_picking_lots.import_lots_view_form
+msgid "Confirm"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model.fields,field_description:stock_picking_lots.field_import_lots__create_uid
+#: model:ir.model.fields,field_description:stock_picking_lots.field_picking_lot_import__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model.fields,field_description:stock_picking_lots.field_import_lots__create_date
+#: model:ir.model.fields,field_description:stock_picking_lots.field_picking_lot_import__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model.fields,field_description:stock_picking_lots.field_import_lots__display_name
+#: model:ir.model.fields,field_description:stock_picking_lots.field_picking_lot_import__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model.fields,field_description:stock_picking_lots.field_picking_lot_import__error
+msgid "Error"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model.fields,field_description:stock_picking_lots.field_import_lots__data
+msgid "File"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model.fields,field_description:stock_picking_lots.field_import_lots__name
+msgid "Filename"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model.fields,field_description:stock_picking_lots.field_import_lots__id
+#: model:ir.model.fields,field_description:stock_picking_lots.field_picking_lot_import__id
+msgid "ID"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model.fields,field_description:stock_picking_lots.field_stock_picking__import_line_ids
+msgid "Import Line"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.actions.act_window,name:stock_picking_lots.action_import_lots
+msgid "Import Lots"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model.fields,field_description:stock_picking_lots.field_picking_lot_import__import_now
+msgid "Import Now"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model_terms:ir.ui.view,arch_db:stock_picking_lots.view_picking_form
+msgid "Import Result"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model,name:stock_picking_lots.model_import_lots
+msgid "Import lots"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model_terms:ir.ui.view,arch_db:stock_picking_lots.view_picking_form
+msgid "Importar Lotes"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model.fields,field_description:stock_picking_lots.field_import_lots____last_update
+#: model:ir.model.fields,field_description:stock_picking_lots.field_picking_lot_import____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model.fields,field_description:stock_picking_lots.field_import_lots__write_uid
+#: model:ir.model.fields,field_description:stock_picking_lots.field_picking_lot_import__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model.fields,field_description:stock_picking_lots.field_import_lots__write_date
+#: model:ir.model.fields,field_description:stock_picking_lots.field_picking_lot_import__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: stock_picking_lots
+#: code:addons/stock_picking_lots/wizard/import_lots.py:0
+#, python-format
+msgid ""
+"Line {}:\n"
+"Lot Name is not included."
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model.fields,field_description:stock_picking_lots.field_picking_lot_import__location_id
+msgid "Location"
+msgstr ""
+
+#. module: stock_picking_lots
+#: code:addons/stock_picking_lots/wizard/import_lots.py:0
+#, python-format
+msgid "Location does not exists: {}."
+msgstr ""
+
+#. module: stock_picking_lots
+#: code:addons/stock_picking_lots/wizard/import_lots.py:0
+#, python-format
+msgid "Location not found: {}//{}."
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model.fields,field_description:stock_picking_lots.field_picking_lot_import__lot_id
+msgid "Lot"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model.fields,field_description:stock_picking_lots.field_stock_move_line__lot_ref
+msgid "Lot Internal Reference"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model.fields,field_description:stock_picking_lots.field_picking_lot_import__lot_name
+msgid "Lot Name"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model.fields,field_description:stock_picking_lots.field_picking_lot_import__lot_ref
+msgid "Lot Ref"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model_terms:ir.ui.view,arch_db:stock_picking_lots.import_lots_view_form
+msgid "Lot import"
+msgstr ""
+
+#. module: stock_picking_lots
+#: code:addons/stock_picking_lots/wizard/import_lots.py:0
+#, python-format
+msgid "Lot {} already exists."
+msgstr ""
+
+#. module: stock_picking_lots
+#: code:addons/stock_picking_lots/wizard/import_lots.py:0
+#, python-format
+msgid "Lot {} already selected."
+msgstr ""
+
+#. module: stock_picking_lots
+#: code:addons/stock_picking_lots/wizard/import_lots.py:0
+#, python-format
+msgid "Lot {} is not available because is reserved."
+msgstr ""
+
+#. module: stock_picking_lots
+#: code:addons/stock_picking_lots/models/picking_lot_import.py:0
+#: code:addons/stock_picking_lots/wizard/import_lots.py:0
+#, python-format
+msgid "Lot {} is not available."
+msgstr ""
+
+#. module: stock_picking_lots
+#: code:addons/stock_picking_lots/wizard/import_lots.py:0
+#, python-format
+msgid "Lot {} not found."
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model,name:stock_picking_lots.model_stock_production_lot
+msgid "Lot/Serial"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model.fields,field_description:stock_picking_lots.field_picking_lot_import__picking_id
+msgid "Picking"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model,name:stock_picking_lots.model_picking_lot_import
+msgid "Picking Lot Import"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model.fields,field_description:stock_picking_lots.field_picking_lot_import__product_id
+msgid "Product"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model,name:stock_picking_lots.model_stock_move_line
+msgid "Product Moves (Stock Move Line)"
+msgstr ""
+
+#. module: stock_picking_lots
+#: code:addons/stock_picking_lots/wizard/import_lots.py:0
+#, python-format
+msgid "Product not found."
+msgstr ""
+
+#. module: stock_picking_lots
+#: model_terms:ir.ui.view,arch_db:stock_picking_lots.view_picking_form
+msgid "Recheck Lot"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model,name:stock_picking_lots.model_stock_move
+msgid "Stock Move"
+msgstr ""
+
+#. module: stock_picking_lots
+#: code:addons/stock_picking_lots/wizard/import_lots.py:0
+#, python-format
+msgid "The file has not a valid format: REFERENCE, SERIAL NUMBER, VARIANT"
+msgstr ""
+
+#. module: stock_picking_lots
+#: code:addons/stock_picking_lots/wizard/import_lots.py:0
+#, python-format
+msgid "The product with code [{}] is not in the picking."
+msgstr ""
+
+#. module: stock_picking_lots
+#: code:addons/stock_picking_lots/wizard/import_lots.py:0
+#, python-format
+msgid "There is more than one product with code [{}]."
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:ir.model,name:stock_picking_lots.model_stock_picking
+msgid "Transfer"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model_terms:ir.ui.view,arch_db:stock_picking_lots.view_picking_form
+msgid "Update Picking Lots"
+msgstr ""
+
+#. module: stock_picking_lots
+#: model:res.groups,name:stock_picking_lots.group_process_outgoing_picking
+msgid "User Can Process Lots in Outgoing Pickings"
+msgstr ""
+
+#. module: stock_picking_lots
+#: code:addons/stock_picking_lots/models/stock_picking.py:0
+#, python-format
+msgid "You do not have permission to import lots."
+msgstr ""
+
+#. module: stock_picking_lots
+#: model_terms:ir.ui.view,arch_db:stock_picking_lots.import_lots_view_form
+msgid "or"
+msgstr ""

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_invoice_list_tag_data_tree" model="ir.ui.view">
+        <field name="name">invoice.list.tag.data.tree</field>
+        <field name="model">invoice.list.tag.data</field>
+        <field name="arch" type="xml">
+            <tree string="Invoices">
+                <field name="partner_id"/>
+                <field name="invoice_count"/>
+                <button class="oe_stat_button" name="open_invoices" type="object" icon="fa-sign-in" title="Open Invoices"/>
+                <field name="total_import"/>
+            </tree>
+        </field>
+    </record>
+    <record id="action_invoice_list_tag_data" model="ir.actions.act_window">
+        <field name="name">Invoices</field>
+        <field name="res_model">invoice.list.tag.data</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to create an invoice list.
+            </p>
+        </field>
+    </record>
+</odoo>

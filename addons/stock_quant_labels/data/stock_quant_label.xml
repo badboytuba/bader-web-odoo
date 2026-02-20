@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="label_10x10" model="stock.quant.label">
+        <field name="name">Label 10x10</field>
+        <field name="reference">stock_quant_labels.action_label_10x10_report</field>
+    </record>
+    <record id="label_10x10_warning" model="stock.quant.label">
+        <field name="name">Label 10x10 With Warning</field>
+        <field name="reference">stock_quant_labels.action_label_10x10_warning_report</field>
+    </record>
+    <record id="label_32x52" model="stock.quant.label">
+        <field name="name">Label 32x52 Milling</field>
+        <field name="reference">stock_quant_labels.action_label_32x52_report</field>
+    </record>
+    <record id="label_70x40_warning" model="stock.quant.label">
+        <field name="name">Label 70x40 With Warning</field>
+        <field name="reference">stock_quant_labels.action_label_70x40_warning_report</field>
+    </record>
+    <record id="label_70x40" model="stock.quant.label">
+        <field name="name">Label 70x40</field>
+        <field name="reference">stock_quant_labels.action_label_70x40_report</field>
+    </record>
+    <record id="label_70x40_rotaries" model="stock.quant.label">
+        <field name="name">Label 70x40 Rotaries</field>
+        <field name="reference">stock_quant_labels.action_label_70x40_rotaries_report</field>
+    </record>
+    <record id="label_54x34" model="stock.quant.label">
+        <field name="name">Label 54x34</field>
+        <field name="reference">stock_quant_labels.action_label_54x34_report</field>
+    </record>
+    <record id="label_100x100_rotaries" model="stock.quant.label">
+        <field name="name">Label 100x100 Rotaries</field>
+        <field name="reference">stock_quant_labels.action_label_100x100_rotaries_report</field>
+    </record>
+</odoo>

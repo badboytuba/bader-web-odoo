@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record model="ir.ui.view" id="invoice_list_tag_wizard_form">
+        <field name="name">invoice.list.tag.wizard.form</field>
+        <field name="model">invoice.list.tag.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create List">
+                <group>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="tag_ids" widget="many2many_tags"/>
+                    <field name="user_ids" widget="many2many_tags"/>
+                </group>
+                <footer>
+                    <button name="get_invoice_list" type="object" string="Open" class="oe_highlight"/>
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!--  add picking to wave action -->
+    <record model="ir.actions.act_window" id="invoice_list_tag_wizard_action">
+        <field name="name">Create List</field>
+        <field name="res_model">invoice.list.tag.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem action="invoice_list_tag_wizard_action" id="menu_invoice_list_tag" parent="account.menu_finance_entries" sequence="90" groups="account.group_account_invoice" />
+
+</odoo>

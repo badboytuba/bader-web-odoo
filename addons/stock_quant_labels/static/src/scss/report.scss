@@ -1,0 +1,765 @@
+* {
+    color: #000;
+}
+#label10x10 {
+    position:relative;
+    padding: 1mm;
+    margin: 1mm 0;
+    width: 100%!important;
+    height: 112mm!important;
+    overflow: hidden;
+}
+.l10x10-company_data {
+    position:relative;
+    float:left;
+    top:3mm;
+    width:70mm;
+    height:33mm;
+    overflow: hidden;
+    span {
+        font-size:10pt!important;
+        font-weight: bold!important;
+        line-height: 0.9!important;
+    }
+}
+.l10x10-barcode {
+    position:relative;
+    float:left;
+    top:2mm;
+    left:0;
+    width:60mm;
+    text-align: center;
+    span {
+        font-size: 12pt!important;
+    }
+}
+.l10x10-serial {
+    position:relative;
+    float:left;
+    top:5mm;
+    left:0;
+    width:70mm;
+    height:20mm;
+    span {
+        font-size:12pt!important;
+    }
+}
+.l10x10-ce {
+    position:relative;
+    float:right;
+    top:-40mm;
+    left:-18mm;
+    width:20mm;
+    img {
+        width: 20mm;
+        height: 14mm;
+    }
+}
+.l10x10-qr {
+    position:relative;
+    float:right;
+    top:-35mm;
+    left:-20mm;
+    width: 22mm;
+    img {
+        width: 30mm;
+        height: 30mm;
+    }
+}
+.l10x10-product {
+    position:relative;
+    float:left;
+    top:5mm;
+    width: 78mm;
+    height:30mm;
+    overflow: hidden;
+    left:30mm;
+    span {
+        font-size: 15pt!important;
+        font-weight: bolder;
+        line-height: 1.3!important;
+    }
+}
+
+
+#label10x10w {
+    position:relative;
+    padding: 1mm;
+    margin: 1mm 0;
+    width: 100%!important;
+    height: 112mm!important;
+    overflow: hidden;
+}
+.l10x10w-product {
+    position:relative;
+    float:left;
+    top:0;
+    left:0;
+    width: 58mm;
+    height:30mm;
+    overflow: hidden;
+    span {
+        font-size: 13pt!important;
+        font-weight: bolder;
+        line-height: 1.3!important;
+    }
+}
+.l10x10w-barcode {
+    position:relative;
+    float:left;
+    top:2mm;
+    left:-5mm;
+    width:60mm;
+    text-align: center;
+    span {
+        font-size: 12pt!important;
+    }
+}
+.l10x10w-serial {
+    position:relative;
+    float:left;
+    top:30mm;
+    left:-60mm;
+    width:40mm;
+    height:20mm;
+    span {
+        font-size:14pt!important;
+    }
+}
+.l10x10w-ce {
+    position:relative;
+    float:right;
+    top:-40mm;
+    left:-18mm;
+    width:20mm;
+    img {
+        width: 20mm;
+        height: 14mm;
+    }
+}
+.l10x10w-qr {
+    position:relative;
+    float:right;
+    top:-23mm;
+    left:3mm;
+    width: 22mm;
+    img {
+        width: 25mm;
+        height: 25mm;
+    }
+}
+.l10x10w-warning {
+    position:relative;
+    float:right;
+    top:5mm;
+    left:40mm;
+    width: 50mm;
+    overflow: hidden;
+    line-height: 0.5;
+    span {
+        font-size:6pt!important;
+        font-weight: bold!important;
+    }
+}
+.l10x10w-logo-warning {
+    position:relative;
+    float:right;
+    top: 7mm;
+    left:35mm;
+    img {
+        max-height: 11mm;
+    }
+}
+.l10x10w-made_by {
+    position:relative;
+    float:right;
+    top:9mm;
+    left:0;
+    width: 70mm;
+    height: 21mm;
+    overflow: hidden;
+    line-height: 0.5!important;
+    span {
+        font-size:6pt!important;
+        font-weight: bold!important;
+        line-height: 0.5!important;
+    }
+}
+
+#label32x52 {
+    position:relative;
+    left:-4mm;
+    width: 55mm!important;
+    height: 91mm!important;
+    overflow: hidden;
+}
+.l32x52-bader {
+    position:relative;
+    float:left;
+    top:0;
+    img {
+        max-height: 4mm;
+    }
+}
+.l32x52-product {
+    position:relative;
+    float:left;
+    width: 55mm;
+    height: 17mm;
+    overflow: hidden;
+    line-height: 1!important;
+    font-size: 10pt!important;
+    span {
+        font-size: 10pt!important;
+        line-height: 1!important;
+    }
+}
+.l32x52-serial {
+    position:relative;
+    float:left;
+    height: 7mm;
+    width: 55mm;
+    span {
+        font-size:10pt!important;
+    }
+}
+.l32x52-first-logos {
+    position:relative;
+    float:left;
+    width: 55mm;
+    text-align: center;
+}
+.l32x52-qr {
+    position:relative;
+}
+.l32x52-udi {
+    position:relative;
+    padding-left: 5mm;
+    img {
+        max-height: 6mm;
+    }
+}
+.l32x52-barcode {
+    text-align:center;
+    span {
+        font-size: 6pt!important;
+    }
+}
+.l32x52-second-logos {
+    position:relative;
+    float:right;
+    width: 50mm;
+}
+.l32x52-ce {
+    position:relative;
+    width:15mm;
+    img {
+        max-height: 6mm;
+    }
+    span {
+        padding-top:4mm!important;
+        font-size: 5pt!important;
+    }
+}
+.l32x52-degree {
+    position:relative;
+    margin-left: 5mm;
+    img {
+        max-height: 6mm;
+    }
+}
+.l32x52-md {
+    position:relative;
+    margin-left:6mm;
+    img {
+        max-height: 10mm;
+    }
+}
+.l32x52-third-logos {
+    position:relative;
+    float:left;
+    margin-top: 2mm;
+    width: 55mm;
+}
+.l32x52-factory {
+    position:relative;
+    top: 2mm;
+    img {
+        max-height: 4mm;
+    }
+}
+.l32x52-label_manufacturer {
+    position:relative;
+    width: 47mm;
+    height:18mm;
+    overflow: hidden;
+    line-height: 0.8!important;
+    margin-left:2mm;
+    font-size: 7pt!important;
+    span {
+        font-size: 7pt!important;
+        line-height: 0.8!important;
+    }
+}
+.l32x52-fourth-logos {
+    position:relative;
+    float:left;
+    width: 55mm;
+    min-height: 20mm;
+}
+.l32x52-commercial {
+    position:relative;
+    top: 5mm;
+    img {
+        max-height: 6mm;
+    }
+}
+.l32x52-made_by {
+    position:relative;
+    width: 42mm;
+    height: 15mm;
+    overflow: hidden;
+    margin-left: 2mm;
+    line-height: 0.8!important;
+    font-size: 7pt!important;
+    span {
+        font-size: 7pt!important;
+        line-height: 0.8!important;
+    }
+}
+
+.l70x40-logo-bader {
+    position:relative;
+    float:left;
+    top:0;
+    left:-3mm;
+    img {
+        max-height: 7mm;
+    }
+}
+.l70x40-ce {
+    position:relative;
+    float:right;
+    top:0;
+    left:-3mm;
+    img {
+        max-height: 8mm;
+    }
+}
+.l70x40-table {
+    width:100%!important;
+}
+.l70x40-serial{
+    position:relative;
+    max-width:25mm!important;
+    padding-right: 1mm;
+    line-height: 0.3!important;
+    span {
+        font-size: 10pt!important;
+        font-weight: bold;
+    }
+}
+.l70x40-qr {
+    padding-right: 1mm;
+    img {
+        width: 15mm;
+        height: 15mm;
+    }
+}
+.l70x40-barcode {
+    text-align:center;
+    span {
+        font-size: 6pt!important;
+    }
+}
+.l70x40-product {
+    line-height: 0.3!important;
+    span {
+        font-size: 10pt!important;
+    }
+}
+.l70x40w-table {
+    width:100%!important;
+    text-align: center;
+}
+.l70x40w-logo-bader {
+    position:relative;
+    top:0;
+    left:-3mm;
+    img {
+        max-height: 10mm;
+    }
+}
+.l70x40w-serial {
+    max-width:80mm;
+    text-align: left;
+    span {
+        font-size: 12pt!important;
+    }
+}
+.l70x40w-qr {
+    padding-top: 3mm!important;
+    img {
+        width: 10mm;
+        height: 10mm;
+    }
+}
+.l70x40w-product {
+    width:50mm;
+    height:20mm;
+    text-align: left;
+    overflow: hidden;
+    line-height: 1!important;
+    font-size: 10pt!important;
+    span {
+        font-size: 10pt!important;
+        line-height: 1!important;
+    }
+}
+.l70x40w-ce {
+    position:relative;
+    top:0;
+    img {
+        max-height: 12mm;
+    }
+}
+.l70x40w-logo-warning {
+    position:relative;
+    img {
+        max-height: 10mm;
+    }
+}
+.l70x40w-warning {
+    position:relative;
+    width: 50mm;
+    height: 13mm;
+    overflow: hidden;
+    line-height: 1!important;
+    font-size:8pt!important;
+    span {
+        font-size:8pt!important;
+        line-height: 1!important;
+    }
+}
+.l70x40w-barcode {
+    text-align:center;
+    span {
+        font-size: 6pt!important;
+    }
+}
+
+.l54x34-logo-bader {
+    position:relative;
+    top:0;
+    left:-3mm;
+    float:left;
+    img {
+        max-height: 6mm;
+    }
+}
+.l54x34-ce {
+    position:relative;
+    float:right;
+    top:0;
+    img {
+        max-height: 6mm;
+    }
+}
+.l54x34-table {
+    position:relative;
+    width:100%!important;
+    padding-top:10mm;
+}
+.l54x34-table td {
+    line-height: 2pt!important;
+    span {
+        line-height: 2pt!important;
+    }
+}
+.l54x34-table, .l54x34-table tr, .l54x34-table td {
+    border:1px solid black;
+}
+.l54x34-serial {
+    position:relative;
+    width:100%!important;
+    text-align: center;
+}
+.l54x34-tech_name, .l54x34-tech_value {
+    font-size: 6pt!important;
+    span {
+        font-size: 6pt!important;
+    }
+}
+.l54x34-tech_value {
+    text-align: center;
+}
+#label70x40r {
+    position:relative;
+    left:-4mm;
+    width: 85mm!important;
+    height: 47mm!important;
+    overflow: hidden;
+}
+.l70x40r-first-logos {
+    position:relative;
+    text-align: center!important;
+    width: 85mm;
+}
+.l70x40r-logo-bader {
+    position:relative;
+    img {
+        max-height: 6mm;
+    }
+}
+.l70x40r-degree {
+    position:relative;
+    margin-left:20mm;
+    img {
+        max-height: 6mm;
+    }
+}
+.l70x40r-md {
+    position:relative;;
+    margin-left:5mm;
+    img {
+        max-height: 6mm;
+    }
+}
+.l70x40r-ce {
+    position:relative;;
+    margin-left:5mm;
+    img {
+        max-height: 6mm;
+    }
+    span {
+        padding-top:4mm!important;
+        font-size: 5pt!important;
+    }
+}
+.l70x40r-label_manufacturer {
+    position:relative;
+    width: 85mm;
+    height:10mm;
+    line-height: 0.9!important;
+    padding-top:1mm;
+    font-size: 6pt!important;
+    overflow: hidden;
+    span {
+        font-size: 6pt!important;
+        line-height: 0.9!important;
+    }
+}
+.l70x40r-second-logos {
+    position:relative;
+    text-align: center!important;
+    width: 85mm;
+    height: 10mm;
+    overflow: hidden;
+}
+.l70x40r-third-logos {
+    position:relative;
+    text-align: center!important;
+    width: 85mm;
+    height: 14mm;
+    overflow: hidden;
+}
+.l70x40r-commercial {
+    position:relative;
+    top: 2mm;
+    img {
+        max-height: 6mm;
+    }
+}
+.l70x40r-made_by {
+    position:relative;
+    width: 72mm;
+    height: 6mm;
+    overflow: hidden;
+    margin-left: 2mm;
+    line-height: 0.8!important;
+    font-size: 6pt!important;
+    text-align: left;
+    span {
+        font-size: 6pt!important;
+        line-height: 0.8!important;
+    }
+}
+.l70x40r-sn {
+    position:relative;
+    img {
+        max-height: 6mm;
+    }
+
+}
+.l70x40r-lot {
+    position: relative;
+    padding-left: 2mm;
+    span {
+        font-size: 8pt !important;
+    }
+}
+.l70x40r-qr {
+    position:relative;
+    left:-5mm;
+    width:20mm;
+    height: 20mm;
+}
+.l70x40r-udi {
+    position:relative;
+    padding-left:5mm;
+    img {
+        max-height: 6mm;
+    }
+}
+.l70x40r-barcode {
+    text-align:center;
+    span {
+        font-size: 6pt!important;
+    }
+}
+.l70x40r-product {
+    position:relative;
+    width: 85mm;
+    height:7mm;
+    overflow: hidden;
+    line-height: 0.6!important;
+    span {
+        line-height: 0.6!important;
+        font-size: 7pt!important;
+        font-weight:bold;
+    }
+}
+#label100x100r {
+    position:relative;
+    left:-4mm;
+    width: 114.5mm!important;
+    height: 114.5mm!important;
+    overflow: hidden;
+}
+.l100x100r-first-logos {
+    position:relative;
+    text-align: center!important;
+    width: 114mm;
+}
+.l100x100r-logo-bader {
+    position:relative;
+    img {
+        max-height: 12mm;
+    }
+}
+.l100x100r-degree {
+    position:relative;
+    margin-left:20mm;
+    img {
+        max-height: 6mm;
+    }
+}
+.l100x100r-md {
+    position:relative;;
+    margin-left:10mm;
+    img {
+        max-height: 12mm;
+    }
+}
+.l100x100r-ce {
+    position:relative;;
+    margin-left:10mm;
+    img {
+        max-height: 12mm;
+    }
+    span {
+        padding-top:4mm!important;
+        font-size: 10pt!important;
+    }
+}
+.l100x100r-label_manufacturer {
+    position:relative;
+    width: 114mm;
+    height:20mm;
+    line-height: 1.2!important;
+    padding-top:1mm;
+    font-size: 10pt!important;
+    overflow: hidden;
+    span {
+        font-size: 10pt!important;
+        line-height: 1.2!important;
+    }
+}
+.l100x100r-second-logos {
+    position:relative;
+    text-align: center!important;
+    width: 114mm;
+    height: 20mm;
+    overflow: hidden;
+}
+.l100x100r-commercial {
+    position:relative;
+    top: 2mm;
+    img {
+        max-height: 12mm;
+    }
+}
+.l100x100r-made_by {
+    position:relative;
+    width: 95mm;
+    height: 15mm;
+    overflow: hidden;
+    margin-left: 2mm;
+    line-height: 1.2!important;
+    font-size: 10pt!important;
+    text-align: left;
+    span {
+        font-size: 10pt!important;
+        line-height: 1.2!important;
+    }
+}
+.l100x100r-third-logos {
+    position:relative;
+    text-align: center!important;
+    width: 114mm;
+    height: 38mm;
+    overflow: hidden;
+    padding-top:5mm;
+}
+.l100x100r-sn {
+    position:relative;
+    img {
+        max-height: 12mm;
+    }
+}
+.l100x100r-lot {
+    position: relative;
+    padding-left: 2mm;
+    span {
+        font-size: 12pt!important;
+    }
+}
+.l100x100r-qr {
+    position:relative;
+    padding-left: 2mm;
+}
+.l100x100r-udi {
+    position:relative;
+    padding-left:5mm;
+    img {
+        max-height: 8mm;
+    }
+}
+.l100x100r-barcode {
+    text-align:center;
+    span {
+        font-size: 10pt!important;
+    }
+}
+.l100x100r-product {
+    position:relative;
+    width: 114mm;
+    height:25mm;
+    overflow: hidden;
+    line-height: 1.2!important;
+    span {
+        line-height: 1.2!important;
+        font-size: 14pt!important;
+        font-weight:bold;
+    }
+}

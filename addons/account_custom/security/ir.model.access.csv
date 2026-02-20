@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_invoice_list_tag_data,invoice_list_tag_data,model_invoice_list_tag_data,account.group_account_invoice,1,1,1,1
+access_invoice_list_tag_wizard,invoice_list_tag_wizard,model_invoice_list_tag_wizard,account.group_account_invoice,1,1,1,1

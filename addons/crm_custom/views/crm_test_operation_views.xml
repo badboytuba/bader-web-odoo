@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="crm_test_operation_tree_view" model="ir.ui.view">
+        <field name="model">crm.test.operation</field>
+        <field name="arch" type="xml">
+            <tree string="Operation Tests" editable="bottom">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    <record id="crm_test_operation_act" model="ir.actions.act_window">
+        <field name="name">Operation Tests</field>
+        <field name="res_model">crm.test.operation</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

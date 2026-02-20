@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="label_10x10_warning_report_document">
+        <t t-call="web.basic_layout">
+            <div class="page">
+                <t t-foreach="quants" t-as="quant">
+                    <div id="label10x10w">
+                        <div class="l10x10w-product">
+                            <span>REF: </span><span t-field="quant.product_id.default_code"/><br/>
+                            <span t-field="quant.product_id.name"/>
+                        </div>
+                        <div class="l10x10w-barcode">
+                            <img t-att-src="'/report/barcode/Code128/'+quant.product_id.barcode" height="70" width="230" alt="Barcode"/><br/>
+                            <span t-field="quant.product_id.barcode"/><br/>
+                        </div>
+                        <div class="l10x10w-serial">
+                            <t t-if="quant.lot_id.name">
+                                <span class="strong">LOTE: </span><br/>
+                                <span class="strong" t-field="quant.lot_id.name"/>
+                            </t>
+                        </div>
+                        <div class="l10x10w-ce">
+                            <img src="/stock_quant_labels/static/src/img/ce.png" alt="Logo CE"/>
+                        </div>
+                        <div class="l10x10w-qr">
+                            <img t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s' %('QR', quant.product_id.barcode, 70, 70)" max-height="70" alt="Barcode"/><br/>
+                        </div>
+                        <div class="l10x10w-warning">
+                            <span t-field="quant.product_id.label_warning"/><br/>
+                        </div>
+                        <div class="l10x10w-logo-warning">
+                            <img src="/stock_quant_labels/static/src/img/logo-warning.png" alt="Logo Warning"/>
+                        </div>
+                        <div class="l10x10w-made_by">
+                            <span t-field="quant.product_id.label_made_by"/><br/>
+                        </div>
+                        <div style="page-break-after:always"/>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+    <template id="label_10x10_warning_report_label">
+        <t t-call="web.html_container">
+            <t t-set="quants" t-value="docs.env['stock.quant'].browse(quant_ids)"/>
+            <t t-call="stock_quant_labels.label_10x10_warning_report_document"/>
+        </t>
+    </template>
+</odoo>

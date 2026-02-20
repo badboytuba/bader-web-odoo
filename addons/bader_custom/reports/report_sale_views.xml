@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template
+            id="report_saleorder_document"
+            inherit_id="sale.report_saleorder_document"
+            priority="9999"
+    >
+        <xpath expr="//th[@name='th_taxes']" position="replace"/>
+        <xpath expr="//td[@name='td_taxes']" position="replace"/>
+    </template>
+    <record
+            id="sale.action_report_saleorder"
+            model="ir.actions.report"
+    >
+        <field name="paperformat_id" ref="bader_custom.bader_a4" />
+    </record>
+     <record
+            id="sale.action_report_pro_forma_invoice"
+            model="ir.actions.report"
+    >
+        <field name="paperformat_id" ref="bader_custom.bader_a4" />
+    </record>
+</odoo>

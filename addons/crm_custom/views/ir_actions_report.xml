@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_after_sale_report" model="ir.actions.report">
+        <field name="name">After Sale Report</field>
+        <field name="model">crm.claim</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">crm_custom.after_sale_report_document</field>
+        <field name="report_file">crm_custom.after_sale_report</field>
+        <field name="print_report_name">'Claim - %s' % object.code</field>
+        <field name="binding_model_id" ref="crm_claim.model_crm_claim"/>
+        <field name="paperformat_id" ref="crm_custom.paperformat_after_sale_report"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="action_report_crm_claim" model="ir.actions.report">
+        <field name="name">Crm Claim Report</field>
+        <field name="model">crm.claim</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">crm_custom.report_crm_claim</field>
+        <field name="report_file">crm_custom.report_crm_claim</field>
+        <field name="paperformat_id" ref="crm_custom.bader_claim" />
+        <field name="binding_model_id" ref="crm_claim.model_crm_claim"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

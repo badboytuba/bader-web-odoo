@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="act_leads_from_claims" model="ir.actions.act_window">
+        <field name="res_model">crm.lead</field>
+        <field name="name">Leads</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_claim_id': [active_id], 'default_claim_id': active_id}</field>
+    </record>
+    <record id="crm_case_claims_form_view" model="ir.ui.view">
+        <field name="model">crm.claim</field>
+        <field name="inherit_id" ref="crm_claim.crm_case_claims_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/header" position="inside">
+                <button name="action_create_lead" type="object" string="Create Lead" class="btn-primary" confirm="Are you sure you want to create a lead?"/>
+            </xpath>
+            <xpath expr="//field[@name='name']/.." position="before">
+                <div class="oe_button_box" name="button_box">
+                    <button name="%(crm_custom.act_leads_from_claims)d"
+                            type="action"
+                            class="oe_stat_button"
+                            icon="fa-handshake-o"
+                    >
+                        <field name="lead_count" widget="statinfo" string="Leads"/>
+                    </button>
+                </div>
+            </xpath>
+            <field name="email_from" position="after">
+                <field name="alternative_contact_id"/>
+            </field>
+            <field name="description" position="replace">
+                <group>
+                    <field name="description" colspan="4" nolabel="1"/>
+                    <label for="costs" style="font-weight: bold;"/>
+                    <field name="costs" colspan="4" nolabel="1"/>
+                    <label for="test_operation_id" style="font-weight: bold;"/>
+                    <field name="test_operation_id" colspan="4" nolabel="1" widget="selection"/>
+                    <group>
+                        <group>
+                            <label for="test_speed_id"/>
+                            <field name="test_speed_id" colspan="4" nolabel="1" widget="selection"/>
+                        </group>
+                        <group>
+                            <label for="speed_result_id"/>
+                            <field name="speed_result_id" colspan="4" nolabel="1" widget="selection"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <label for="test_torque_id"/>
+                            <field name="test_torque_id" colspan="4" nolabel="1" widget="selection"/>
+                        </group>
+                        <group>
+                            <label for="torque_result_id"/>
+                            <field name="torque_result_id" colspan="4" nolabel="1" widget="selection"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <label for="test_force_id"/>
+                            <field name="test_force_id" colspan="4" nolabel="1" widget="selection"/>
+                        </group>
+                        <group>
+                            <label for="force_result_id"/>
+                            <field name="force_result_id" colspan="4" nolabel="1" widget="selection"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <label for="test_sound_id"/>
+                            <field name="test_sound_id" colspan="4" nolabel="1" widget="selection"/>
+                        </group>
+                        <group>
+                            <label for="sound_result_id"/>
+                            <field name="sound_result_id" colspan="4" nolabel="1" widget="selection"/>
+                        </group>
+                    </group>
+                    <label for="tests_done" style="font-weight: bold;"/>
+                    <field name="tests_done" colspan="4" nolabel="1"/>
+                    <label for="comments" style="font-weight: bold;"/>
+                    <field name="comments" colspan="4" nolabel="1"/>
+                </group>
+            </field>
+        </field>
+    </record>
+</odoo>

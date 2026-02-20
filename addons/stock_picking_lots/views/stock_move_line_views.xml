@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_picking_form" model="ir.ui.view">
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="priority" eval="9999"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_import_lots_wizard" string="Importar Lotes"
+                        icon="fa-upload" class="oe_stat_button"
+                        type="object"
+                        attrs="{'invisible': [('show_operations','=',False)]}"/>
+            </div>
+            <xpath expr="//field[@name='move_line_ids_without_package']/tree/field[@name='lot_name']"
+                   position="after">
+                <field name="lot_ref" groups="stock.group_production_lot"
+                       attrs="{'invisible': [('lots_visible', '=', False)]}"/>
+            </xpath>
+            <page name="note" position="after">
+                <page string="Import Result" name="import_result" attrs="{'invisible': [('import_line_ids', '=', [])]}">
+                    <button name="update_picking_lots" string="Update Picking Lots" type="object" class="oe_highlight"/>
+                    <field name="import_line_ids" nolabel="1" options="{'no_create': True}">
+                        <tree editable="bottom" decoration-danger="import_now==False" decoration-info="import_now==True">
+                            <field name="product_id" readonly="True"/>
+                            <field name="location_id"/>
+                            <field name="lot_id" domain="[('product_id', '=', product_id)]" groups="stock.group_production_lot" context="{'default_product_id': product_id}"/>
+                            <field name="lot_name" readonly="True"/>
+                            <field name="lot_ref" readonly="True"/>
+                            <field name="error" readononly="True"/>
+                            <field name="import_now"/>
+                            <button name="recheck_lots" type="object" icon="fa-ambulance" title="Recheck Lot" groups="base.group_erp_manager" attrs="{'invisible': [('import_now', '=', True)]}"/>
+                        </tree>
+                    </field>
+                </page>
+            </page>
+        </field>
+    </record>
+</odoo>

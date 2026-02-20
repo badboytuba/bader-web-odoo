@@ -1,0 +1,5 @@
+<odoo>
+    <data noupdate="1">
+        <function model="call.register" name="set_notification_token" context="{'install_mode' : True}"/>
+    </data>
+</odoo>

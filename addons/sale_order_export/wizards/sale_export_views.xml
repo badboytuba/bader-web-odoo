@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="sale_export_csv" model="ir.actions.report">
+        <field name="name">Dentaltix Export CSV</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">csv</field>
+        <field name="report_name">report_csv.sale</field>
+        <field name="report_file">sale_order</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+    </record>
+</odoo>

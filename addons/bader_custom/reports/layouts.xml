@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="bader_a4" model="report.paperformat">
+        <field name="name">European A4 for Bader</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top" eval="5" />
+        <field name="margin_bottom" eval="30" />
+        <field name="margin_left" eval="15" />
+        <field name="margin_right" eval="7" />
+        <field name="header_line" eval="False" />
+        <field name="header_spacing" eval="10" />
+        <field name="dpi" eval="90" />
+    </record>
+    <record id="bader_picking_a4" model="report.paperformat">
+        <field name="name">European A4 for pickings in Bader</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top" eval="15" />
+        <field name="margin_bottom" eval="10" />
+        <field name="margin_left" eval="15" />
+        <field name="margin_right" eval="7" />
+        <field name="header_line" eval="False" />
+        <field name="header_spacing" eval="10" />
+        <field name="dpi" eval="90" />
+    </record>
+    <template
+            id="external_layout_standard"
+            inherit_id="web.external_layout_standard"
+            name="external_layout_standard"
+            priority="9999"
+    >
+        <xpath expr="//div[contains(@t-attf-class, 'header')]" position="attributes">
+            <attribute name="t-if">False</attribute>
+        </xpath>
+        <xpath expr="//div[contains(@t-attf-class, 'header')]" position="after">
+            <div class="header">
+                <xpath expr="//t[@t-set='address']" positions="before">
+                    <t t-set="information_block">
+                        <div class="company_data">
+                            <img
+                                    t-att-src="image_data_uri(company.logo)"
+                                    style="max-width:200px;margin-left:-7px;padding-top:15px;float:left;"
+                            /><br /><br /><br /><br /><br /><br />
+                            <strong><span
+                                    t-field="company.name"
+                            /></strong><br />
+                            <strong><span t-field="company.vat" /></strong><br
+                        />
+                            <t t-if="'street' in company">
+                                <span class="company_street"
+
+                                      t-field="company.street"
+                                /><br />
+                                <span class="company_street" t-field="company.zip" /> <span class="company_street"
+                                                                                            t-field="company.city"
+                            /><br />
+                                <span class="company_street" t-field="company.email" /><br />
+                            </t>
+                            <strong><span class="phone_header">Phone: </span><span class="phone_header"
+                                                                                   t-field="company.phone"
+                            /></strong><br />
+                        </div>
+                        <br /><br /><br /><br /><br /><br /><br /><br /><br /><br
+                    /><br /><br /><br /><br />
+                    </t>
+                </xpath>
+                <xpath expr="//t[@t-set='address']" position="replace">
+                    <t t-if="doc_model in ['account.move', 'purchase.order', 'sale.order']">
+                        <t t-set="address">
+                            <div class="partner_address">
+                                <t t-if="o">
+                                    <address
+                                            style="font-size:12px!important;"
+                                            t-field="o.partner_id"
+                                            t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'
+                                    />
+                                    <div
+                                            t-if="o.partner_id.vat"
+                                            class="mt16"
+                                            style="font-size:12px!important;"
+                                    ><t t-esc="company.country_id.vat_label or 'Tax ID'" />: <span
+                                            t-field="o.partner_id.vat"
+                                    /></div></t></div>
+                        </t>
+                    </t>
+                    <t t-if="doc_model in ['stock.picking']">
+                        <t t-set="address">
+                            <div class="picking_partner_address">
+                                <t t-if="o">
+                                    <address
+                                            style="font-size:12px!important;"
+                                            t-field="o.partner_id"
+                                            t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'
+                                    />
+                                    <div
+                                            t-if="o.partner_id.vat"
+                                            class="mt16"
+                                            style="font-size:12px!important;"
+                                    ><t t-esc="company.country_id.vat_label or 'Tax ID'" />: <span
+                                            t-field="o.partner_id.vat"
+                                    /></div></t></div>
+                        </t>
+                        <br /><br /><br /><br /><br /><br /><br /><br /><br /><br
+                    /><br /><br /><br /><br />
+                    </t>
+                    <t t-if="doc_model in ['repair.order']">
+                       <t t-set="address">
+                            <div class="partner_address">
+                                <t t-if="o">
+                                    <address
+                                            style="font-size:12px!important;"
+                                            t-field="o.address_id"
+                                            t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'
+                                    />
+                                    <div
+                                            t-if="o.address_id.vat"
+                                            class="mt16"
+                                            style="font-size:12px!important;"
+                                    ><t t-esc="company.country_id.vat_label or 'Tax ID'" />: <span
+                                            t-field="o.address_id.vat"
+                                    /></div></t></div>
+                        </t>
+                        <br /><br /><br /><br /><br /><br /><br /><br /><br /><br
+                    /><br /><br /><br /><br />
+                    </t>
+                </xpath>
+            </div>
+        </xpath>
+        <xpath
+                expr="//div[contains(@t-attf-class, 'footer')]"
+                position="replace"
+        >
+            <div class="footer o_standard_footer small">
+                <t t-if="doc_model in ['account.move', 'sale.order']">
+                    <p class="text-justify privacy very-small">
+                        BANKINTER: IBAN ES39 0128 0182 2901 0001 4537 · CAIXABANK, S.A.: IBAN ES16 2100 6254 9902 0007 4553
+    BBVA: IBAN ES34 0182 1583 0502 0154 4667 · ABANCA: IBAN ES94 2080 5052 1230 4003 9471
+    ABANCA PT: IBAN PT50 0170 3453 0304 0002 1416 5 · SANTANDER: IBAN ES85 0049 6755 6025 1629 2603
+                    </p>
+                    <p class="text-justify privacy very-small">
+    Inscripción en el Registro de Productores de Producto (RPP) ENV/2024/000039998
+                    </p>
+                </t>
+                <div
+                        t-if="report_type == 'pdf'"
+                        class="text-muted small text-center paginator"
+                >
+                    Page: <span class="page" /> / <span class="topage" />
+                </div>
+            </div>
+        </xpath>
+    </template>
+    <record id="account.account_invoices" model="ir.actions.report">
+        <field name="paperformat_id" ref="bader_custom.bader_a4" />
+    </record>
+    <record
+            id="account.account_invoices_without_payment"
+            model="ir.actions.report"
+    >
+        <field name="paperformat_id" ref="bader_custom.bader_a4" />
+    </record>
+</odoo>

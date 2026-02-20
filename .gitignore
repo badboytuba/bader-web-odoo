@@ -1,0 +1,29 @@
+# Environment & credentials
+.env
+.env.*
+
+# Agent/IDE config (not needed in repo)
+.agent/
+.gemini/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node (if any frontend tooling)
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

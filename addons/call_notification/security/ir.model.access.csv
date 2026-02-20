@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_call_register,access_call_register,model_call_register,base.group_user,1,1,1,1
+access_notification_popup,access_notification_popup,model_notification_popup,base.group_user,1,1,1,1

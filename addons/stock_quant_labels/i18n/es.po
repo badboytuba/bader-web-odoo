@@ -1,0 +1,465 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* stock_labels
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-23 06:31+0000\n"
+"PO-Revision-Date: 2025-09-23 08:33+0200\n"
+"Last-Translator: \n"
+"Language-Team: Odoo\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.7\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_32x52_report_document
+msgid "<span class=\"strong\">LOTE: </span>"
+msgstr "<span class=\"strong\">LOTE: </span>"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_10x10_warning_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_warning_report_document
+msgid "<span class=\"strong\">LOTE: </span><br/>"
+msgstr "<span class=\"strong\">LOTE: </span><br/>"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_54x34_report_document
+msgid "<span class=\"strong\">SERIE: </span>"
+msgstr "<span class=\"strong\">SERIE: </span>"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_10x10_report_document
+msgid "<span class=\"strong\">SERIE: </span><br/>"
+msgstr "<span class=\"strong\">SERIE: </span><br/>"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_100x100_rotaries_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_10x10_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_10x10_warning_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_32x52_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_rotaries_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_warning_report_document
+msgid "<span>REF: </span>"
+msgstr "<span>REF: </span>"
+
+#. module: stock_quant_labels
+#: model:ir.model.constraint,message:stock_quant_labels.constraint_stock_quant_label_name_uniq
+msgid "A label with the same name already exists."
+msgstr "Ya existe una etiqueta con el mismo nombre."
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_100x100_rotaries_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_10x10_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_10x10_warning_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_32x52_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_rotaries_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_warning_report_document
+msgid "Barcode"
+msgstr "Código de barras"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.product_normal_form_view
+msgid "CE Code"
+msgstr "CE Code"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.quant_print_label_form
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_quant_print_label__create_uid
+#: model:ir.model.fields,field_description:stock_quant_labels.field_stock_quant_label__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_quant_print_label__create_date
+#: model:ir.model.fields,field_description:stock_quant_labels.field_stock_quant_label__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_product_product__tech_description
+msgid "Description"
+msgstr "Descripción"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_quant_print_label__display_name
+#: model:ir.model.fields,field_description:stock_quant_labels.field_stock_quant_label__display_name
+msgid "Display Name"
+msgstr "Nombre a mostrar"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_quant_print_label__id
+#: model:ir.model.fields,field_description:stock_quant_labels.field_stock_quant_label__id
+msgid "ID"
+msgstr "Identificador"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_quant_print_label__label_id
+msgid "Label"
+msgstr "Etiqueta"
+
+#. module: stock_quant_labels
+#: model:ir.actions.report,name:stock_quant_labels.action_label_100x100_rotaries_report
+#: model:stock.quant.label,name:stock_quant_labels.label_100x100_rotaries
+msgid "Label 100x100 Rotaries"
+msgstr "Etiqueta 100x100 Rotatorios"
+
+#. module: stock_quant_labels
+#: model:ir.actions.report,name:stock_quant_labels.action_label_10x10_report
+#: model:stock.quant.label,name:stock_quant_labels.label_10x10
+msgid "Label 10x10"
+msgstr "Etiqueta 10x10"
+
+#. module: stock_quant_labels
+#: model:ir.actions.report,name:stock_quant_labels.action_label_10x10_warning_report
+#: model:stock.quant.label,name:stock_quant_labels.label_10x10_warning
+msgid "Label 10x10 With Warning"
+msgstr "Etiqueta 10x10 con aviso"
+
+#. module: stock_quant_labels
+#: model:ir.actions.report,name:stock_quant_labels.action_label_32x52_report
+#: model:stock.quant.label,name:stock_quant_labels.label_32x52
+msgid "Label 32x52 Milling"
+msgstr "Etiqueta 32x52 Fresas"
+
+#. module: stock_quant_labels
+#: model:ir.actions.report,name:stock_quant_labels.action_label_54x34_report
+#: model:stock.quant.label,name:stock_quant_labels.label_54x34
+msgid "Label 54x34"
+msgstr "Etiqueta 54x34"
+
+#. module: stock_quant_labels
+#: model:ir.actions.report,name:stock_quant_labels.action_label_70x40_report
+#: model:stock.quant.label,name:stock_quant_labels.label_70x40
+msgid "Label 70x40"
+msgstr "Etiqueta 70x40"
+
+#. module: stock_quant_labels
+#: model:ir.actions.report,name:stock_quant_labels.action_label_70x40_rotaries_report
+#: model:stock.quant.label,name:stock_quant_labels.label_70x40_rotaries
+msgid "Label 70x40 Rotaries"
+msgstr "Etiqueta 70x40 Rotatorios"
+
+#. module: stock_quant_labels
+#: model:ir.actions.report,name:stock_quant_labels.action_label_70x40_warning_report
+#: model:stock.quant.label,name:stock_quant_labels.label_70x40_warning
+msgid "Label 70x40 With Warning"
+msgstr "Etiqueta 70x40 con aviso"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_stock_quant_label__name
+msgid "Label Name"
+msgstr "Nombre de la etiqueta"
+
+#. module: stock_quant_labels
+#: model:ir.actions.report,print_report_name:stock_quant_labels.action_label_100x100_rotaries_report
+msgid "Label-100x100r"
+msgstr "Etiqueta-10x10r"
+
+#. module: stock_quant_labels
+#: model:ir.actions.report,print_report_name:stock_quant_labels.action_label_10x10_report
+msgid "Label-10x10"
+msgstr "Etiqueta-10x10"
+
+#. module: stock_quant_labels
+#: model:ir.actions.report,print_report_name:stock_quant_labels.action_label_10x10_warning_report
+msgid "Label-10x10W"
+msgstr "Etiqueta-10x10W"
+
+#. module: stock_quant_labels
+#: model:ir.actions.report,print_report_name:stock_quant_labels.action_label_32x52_report
+msgid "Label-32x52"
+msgstr "Etiqueta-32x52"
+
+#. module: stock_quant_labels
+#: model:ir.actions.report,print_report_name:stock_quant_labels.action_label_54x34_report
+msgid "Label-54x34"
+msgstr "Etiqueta-54x34"
+
+#. module: stock_quant_labels
+#: model:ir.actions.report,print_report_name:stock_quant_labels.action_label_70x40_report
+msgid "Label-70x40"
+msgstr "Etiqueta-70x40"
+
+#. module: stock_quant_labels
+#: model:ir.actions.report,print_report_name:stock_quant_labels.action_label_70x40_rotaries_report
+msgid "Label-70x40-rotaries"
+msgstr "Etiqueta-70x40-rotatorios"
+
+#. module: stock_quant_labels
+#: model:ir.actions.report,print_report_name:stock_quant_labels.action_label_70x40_warning_report
+msgid "Label-70x40-warning"
+msgstr "Etiqueta-70x40-warning"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.product_normal_form_view
+msgid "Labels"
+msgstr "Etiquetas"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_quant_print_label____last_update
+#: model:ir.model.fields,field_description:stock_quant_labels.field_stock_quant_label____last_update
+msgid "Last Modified on"
+msgstr "Última modificación el"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_quant_print_label__write_uid
+#: model:ir.model.fields,field_description:stock_quant_labels.field_stock_quant_label__write_uid
+msgid "Last Updated by"
+msgstr "Última modificación por"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_quant_print_label__write_date
+#: model:ir.model.fields,field_description:stock_quant_labels.field_stock_quant_label__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_100x100_rotaries_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_54x34_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_rotaries_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_warning_report_document
+msgid "Logo Bader"
+msgstr "Logo de Bader"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_100x100_rotaries_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_10x10_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_10x10_warning_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_32x52_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_54x34_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_rotaries_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_warning_report_document
+msgid "Logo CE"
+msgstr "Logo CE"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_100x100_rotaries_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_32x52_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_rotaries_report_document
+msgid "Logo Commercial"
+msgstr "Logo comercial"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_32x52_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_rotaries_report_document
+msgid "Logo Degree"
+msgstr "Logo de grados"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_32x52_report_document
+msgid "Logo Factory"
+msgstr "Logo fábrica"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_100x100_rotaries_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_32x52_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_rotaries_report_document
+msgid "Logo MD"
+msgstr "Logo MD"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_100x100_rotaries_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_rotaries_report_document
+msgid "Logo SN"
+msgstr "Logo SN"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_100x100_rotaries_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_32x52_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_rotaries_report_document
+msgid "Logo UDI"
+msgstr "Logo UDI"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_10x10_warning_report_document
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.label_70x40_warning_report_document
+msgid "Logo Warning"
+msgstr "Logo de aviso"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_product_product__label_made_by
+msgid "Made By"
+msgstr "Fabricado por"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_product_product__label_manufacturer
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.product_normal_form_view
+msgid "Manufacturer"
+msgstr "Fabricante"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.product_normal_form_view
+msgid "Name"
+msgstr "Nombre"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_product_product__on_label
+msgid "ON"
+msgstr "ON"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.quant_print_label_form
+msgid "Print"
+msgstr "Imprimir"
+
+#. module: stock_quant_labels
+#: model:ir.actions.act_window,name:stock_quant_labels.quant_print_label_action
+msgid "Print Label"
+msgstr "Imprimir etiquetas"
+
+#. module: stock_quant_labels
+#: model:ir.model,name:stock_quant_labels.model_quant_print_label
+msgid "Print Quant Label"
+msgstr "Imprimir etiquetas"
+
+#. module: stock_quant_labels
+#: model:ir.model,name:stock_quant_labels.model_product_product
+msgid "Product Variant"
+msgstr "Variante de producto"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_quant_print_label__quant_ids
+msgid "Quants"
+msgstr "Quants"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_stock_quant_label__reference
+msgid "Reference"
+msgstr "Referencia"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.quant_print_label_form
+msgid "Select Label"
+msgstr "Seleccionar etiqueta"
+
+#. module: stock_quant_labels
+#: model:ir.model,name:stock_quant_labels.model_stock_quant_label
+msgid "Stock Quant Label"
+msgstr "Etiquetado de lotes"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_product_product__tech_name_1
+msgid "Tech Name 1"
+msgstr "Nombre técnico 1"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_product_product__tech_name_2
+msgid "Tech Name 2"
+msgstr "Nombre técnico 2"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_product_product__tech_name_3
+msgid "Tech Name 3"
+msgstr "Nombre técnico 3"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_product_product__tech_name_4
+msgid "Tech Name 4"
+msgstr "Nombre técnico 4"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_product_product__tech_name_5
+msgid "Tech Name 5"
+msgstr "Nombre técnico 5"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_product_product__tech_value_1
+msgid "Tech Value 1"
+msgstr "Valor 1"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_product_product__tech_value_2
+msgid "Tech Value 2"
+msgstr "Valor 2"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_product_product__tech_value_3
+msgid "Tech Value 3"
+msgstr "Valor 3"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_product_product__tech_value_4
+msgid "Tech Value 4"
+msgstr "Valor 4"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_product_product__tech_value_5
+msgid "Tech Value 5"
+msgstr "Valor 5"
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.product_normal_form_view
+msgid "Technical Data"
+msgstr "Datos técnicos"
+
+#. module: stock_quant_labels
+#. odoo-python
+#: code:addons/stock_quant_labels/wizards/quant_print_label.py:0
+#, python-format
+msgid "That report is not available yet."
+msgstr "La etiqueta todavía no está disponible para imprimir."
+
+#. module: stock_quant_labels
+#: model_terms:ir.ui.view,arch_db:stock_quant_labels.product_normal_form_view
+msgid "Value"
+msgstr "Valor"
+
+#. module: stock_quant_labels
+#: model:ir.model.fields,field_description:stock_quant_labels.field_product_product__label_warning
+msgid "Warning"
+msgstr "Aviso"
+
+#~ msgid ""
+#~ "<br/>\n"
+#~ "                            <span>P. E. PORTO DE MOLLE</span><br/>\n"
+#~ "                            <span>RUA DA MADANELA, NAVE 3D</span><br/>\n"
+#~ "                            <span>36350 NIGRAN - PONTEVEDRA</span><br/>\n"
+#~ "                            <span>T: 986 190 307 - F: 902 996 948</span><br/>\n"
+#~ "                            <span>www.bader.es</span><br/>"
+#~ msgstr ""
+#~ "<br/>\n"
+#~ "                            <span>P. E. PORTO DE MOLLE</span><br/>\n"
+#~ "                            <span>RUA DA MADANELA, NAVE 3D</span><br/>\n"
+#~ "                            <span>36350 NIGRAN - PONTEVEDRA</span><br/>\n"
+#~ "                            <span>T: 986 190 307 - F: 902 996 948</span><br/>\n"
+#~ "                            <span>www.bader.es</span><br/>"
+
+#~ msgid ""
+#~ "<span>ADVERTENCIA: producto no conveniente\n"
+#~ "                                 para niños menores de 36 meses ya que\n"
+#~ "                                 contiene partes pequeñas que podrían\n"
+#~ "                                 ocasionar riesgo de asfixia en infantes\n"
+#~ "                                 de 0 a 3 años.\n"
+#~ "                             </span>"
+#~ msgstr ""
+#~ "<span>ADVERTENCIA: producto no conveniente\n"
+#~ "                                 para niños menores de 36 meses ya que\n"
+#~ "                                 contiene partes pequeñas que podrían\n"
+#~ "                                 ocasionar riesgo de asfixia en infantes\n"
+#~ "                                 de 0 a 3 años.\n"
+#~ "                             </span>"
+
+#~ msgid "Lot/Serial"
+#~ msgstr "Lote/Nº de serie"
+
+#~ msgid "QR"
+#~ msgstr "QR"
+
+#~ msgid "Label-10x10w"
+#~ msgstr "Etiqueta-10x10w"

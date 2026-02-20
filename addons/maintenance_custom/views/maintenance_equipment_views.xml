@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_equipment_view_form_custom" model="ir.ui.view">
+        <field name="model">maintenance.equipment</field>
+        <field name="inherit_id" ref="maintenance_equipment_sequence.hr_equipment_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//label[@for='serial_no']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='serial_no']/.." position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <field name="scrap_date" position="after">
+                <field name="contact_id"/>
+            </field>
+        </field>
+    </record>
+    <record id="hr_equipment_view_form" model="ir.ui.view">
+        <field name="model">maintenance.equipment</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_view_form"/>
+        <field name="priority">9999</field>
+        <field name="arch" type="xml">
+            <field name="product_id" position="after">
+                <field name="lot_id"/>
+            </field>
+        </field>
+    </record>
+    <record id="hr_equipment_view_tree_custom" model="ir.ui.view">
+        <field name="model">maintenance.equipment</field>
+        <field name="inherit_id" ref="maintenance_equipment_sequence.hr_equipment_view_tree" />
+        <field name="arch" type="xml">
+            <field name="serial_no" position="replace">
+                <field name="serial_no"/>
+            </field>
+        </field>
+    </record>
+    <record id="hr_equipment_view_search_custom" model="ir.ui.view">
+        <field name="model">maintenance.equipment</field>
+        <field name="inherit_id" ref="maintenance_equipment_sequence.hr_equipment_view_search" />
+        <field name="arch" type="xml">
+            <field name="serial_no" position="replace">
+                <field name="contact_id"/>
+                <field name="lot_id"/>
+            </field>
+        </field>
+    </record>
+    <record id="hr_equipment_view_kanban" model="ir.ui.view">
+        <field name="model">maintenance.equipment</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_view_kanban" />
+        <field name="arch" type="xml">
+            <field name="name">
+                <field name="contact_id"/>
+            </field>
+            <xpath expr="//div[@t-if='record.serial_no.raw_value']" position="before">
+                <strong><field name="contact_id"/></strong>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,42 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* stock_custom
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-09-24 10:10+0000\n"
+"PO-Revision-Date: 2023-09-24 10:10+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: stock_custom
+#: model:ir.model.fields,field_description:stock_custom.field_stock_move__is_pack
+#: model:ir.model.fields,field_description:stock_custom.field_stock_move_line__is_pack
+msgid "Is Pack"
+msgstr ""
+
+#. module: stock_custom
+#: model:ir.model,name:stock_custom.model_stock_move_line
+msgid "Product Moves (Stock Move Line)"
+msgstr ""
+
+#. module: stock_custom
+#: model:ir.model.fields,field_description:stock_custom.field_stock_picking__client_order_ref
+msgid "Sale Reference"
+msgstr ""
+
+#. module: stock_custom
+#: model:ir.model,name:stock_custom.model_stock_move
+msgid "Stock Move"
+msgstr ""
+
+#. module: stock_custom
+#: model:ir.model,name:stock_custom.model_stock_picking
+msgid "Transfer"
+msgstr ""
