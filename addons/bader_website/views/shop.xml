@@ -2,56 +2,37 @@
 <odoo>
 
     <!-- =============================================
-         Bader Shop Grid — Light Theme Override
-         Replicated from Bader-AR React reference
+         Bader Shop — Light Theme Template Overrides
          ============================================= -->
 
-    <!-- Override the product listing grid wrapper -->
+    <!-- Add Bader class to main shop container -->
     <template id="bader_shop_style" inherit_id="website_sale.products"
               name="Bader Shop Styling" priority="20">
-
-        <!-- Add Bader class to the main wrapper -->
         <xpath expr="//div[@id='products_grid']" position="attributes">
             <attribute name="class" add="bader-shop-grid" separator=" "/>
         </xpath>
-
-        <!-- Wrap page header with Bader styling -->
-        <xpath expr="//div[hasclass('o_wsale_products_main_row')]" position="attributes">
-            <attribute name="class" add="bader-products-main" separator=" "/>
-        </xpath>
     </template>
 
     <!-- ========================================
-         Bader Product Card — Enhanced Layout
-         ======================================== -->
-    <template id="bader_product_card" inherit_id="website_sale.products_item"
-              name="Bader Product Card" priority="20">
-
-        <!-- Add hover lift class and Bader styling to card -->
-        <xpath expr="//div[hasclass('oe_product_cart')]" position="attributes">
-            <attribute name="class" add="bader-card" separator=" "/>
-        </xpath>
-
-        <!-- Add stock badge after product info -->
-        <xpath expr="//div[hasclass('o_wsale_product_information')]" position="inside">
-            <div class="bader-stock-badge mt-1">
-                <span class="bader-stock-icon">✓</span> En stock
-            </div>
-        </xpath>
-    </template>
-
-    <!-- ========================================
-         Bader Product Detail — Enhanced Layout
+         Bader Product Detail — Enhanced Content
          ======================================== -->
     <template id="bader_product_detail" inherit_id="website_sale.product"
               name="Bader Product Detail" priority="20">
 
-        <!-- Add Bader class to the product detail container -->
+        <!-- Add Bader class to the product detail wrapper -->
         <xpath expr="//div[@id='product_detail']" position="attributes">
             <attribute name="class" add="bader-product-detail" separator=" "/>
         </xpath>
 
-        <!-- Add benefits panel after add-to-cart section -->
+        <!-- Add IVA note after price section -->
+        <xpath expr="//div[hasclass('product_price')]" position="inside">
+            <span class="bader-price-note d-block mt-1"
+                  style="font-size: 14px; color: #64748B;">
+                IVA incluido
+            </span>
+        </xpath>
+
+        <!-- Add benefits panel after add-to-cart -->
         <xpath expr="//a[@id='add_to_cart']/.." position="after">
             <div class="bader-product-benefits mt-4">
                 <div class="bader-benefit">
@@ -72,46 +53,16 @@
                 </div>
             </div>
         </xpath>
-
-        <!-- Add IVA note after price -->
-        <xpath expr="//div[hasclass('product_price')]" position="inside">
-            <span class="bader-price-note d-block mt-1"
-                  style="font-size: 14px; color: #64748B;">
-                IVA incluido
-            </span>
-        </xpath>
     </template>
 
     <!-- ========================================
-         Bader Cart Page — Enhanced Layout
+         Bader Cart — Enhanced Styling
          ======================================== -->
-    <template id="bader_cart_style" inherit_id="website_sale.cart"
-              name="Bader Cart Styling" priority="20">
-
-        <!-- Add Bader class to cart container -->
+    <template id="bader_cart_benefits" inherit_id="website_sale.cart"
+              name="Bader Cart Benefits" priority="20">
+        <!-- Add Bader class to cart wrapper -->
         <xpath expr="//div[hasclass('oe_cart')]" position="attributes">
             <attribute name="class" add="bader-cart" separator=" "/>
-        </xpath>
-    </template>
-
-    <!-- Add checkout benefits to cart summary -->
-    <template id="bader_cart_benefits" inherit_id="website_sale.cart_summary"
-              name="Bader Cart Benefits" priority="20">
-        <xpath expr="//div[hasclass('card')]" position="inside">
-            <div class="bader-checkout-benefits">
-                <div class="bader-benefit">
-                    <i class="fa fa-truck"/>
-                    <span>Envío gratis a todo Argentina</span>
-                </div>
-                <div class="bader-benefit">
-                    <i class="fa fa-shield"/>
-                    <span>Pago seguro</span>
-                </div>
-                <div class="bader-benefit">
-                    <i class="fa fa-credit-card"/>
-                    <span>Hasta 12 cuotas sin interés</span>
-                </div>
-            </div>
         </xpath>
     </template>
 
