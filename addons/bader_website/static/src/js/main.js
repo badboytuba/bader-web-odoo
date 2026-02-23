@@ -305,4 +305,99 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     })();
 
+    // ---- 7. Product Gallery — Lightbox Zoom ----
+    (function initGalleryLightbox() {
+        var mainImage = document.querySelector('#product_detail .carousel-inner img, #product_detail .o_carousel_product_outer img');
+        if (!mainImage) return;
+
+        mainImage.style.cursor = 'zoom-in';
+
+        mainImage.addEventListener('click', function () {
+            var src = this.src;
+
+            // Create lightbox
+            var lightbox = document.createElement('div');
+            lightbox.className = 'bader-lightbox';
+            lightbox.innerHTML =
+                '<div class="bader-lightbox__content">' +
+                '<button class="bader-lightbox__close">&times;</button>' +
+                '<img src="' + src + '" alt="Zoom"/>' +
+                '</div>';
+
+            document.body.appendChild(lightbox);
+            document.body.style.overflow = 'hidden';
+
+            // Close on click
+            lightbox.addEventListener('click', function (e) {
+                if (e.target === lightbox || e.target.classList.contains('bader-lightbox__close')) {
+                    document.body.removeChild(lightbox);
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // Close on ESC
+            function onEsc(e) {
+                if (e.key === 'Escape') {
+                    if (document.body.contains(lightbox)) {
+                        document.body.removeChild(lightbox);
+                        document.body.style.overflow = '';
+                    }
+                    document.removeEventListener('keydown', onEsc);
+                }
+            }
+            document.addEventListener('keydown', onEsc);
+        });
+    })();
+
+    // ---- 8. Quantity Selector ± (Product Detail) ----
+    (function initQtySelector() {
+        var qtyInput = document.querySelector('#product_detail input[name="add_qty"], #product_detail .css_quantity input');
+        if (!qtyInput) return;
+
+        var parent = qtyInput.closest('.input-group, .css_quantity');
+        if (!parent) return;
+
+        // Style the buttons
+        var buttons = parent.querySelectorAll('a, button');
+        buttons.forEach(function (btn) {
+            btn.classList.add('bader-qty-btn');
+        });
+    })();
+
+    // ---- 9. Add-to-Cart Animation Feedback ----
+    (function initAddToCartFeedback() {
+        var addBtn = document.querySelector('#product_detail #add_to_cart, #product_detail .a-submit');
+        if (!addBtn) return;
+
+        addBtn.addEventListener('click', function () {
+            var btn = this;
+            var originalText = btn.innerHTML;
+
+            btn.classList.add('bader-added');
+            btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> ¡Agregado!';
+
+            setTimeout(function () {
+                btn.classList.remove('bader-added');
+                btn.innerHTML = originalText;
+            }, 2000);
+        });
+    })();
+
+    // ---- 10. Product Card Hover Animations ----
+    (function initCardAnimations() {
+        var cards = document.querySelectorAll('.oe_product_cart');
+        if (cards.length === 0) return;
+
+        cards.forEach(function (card) {
+            card.addEventListener('mouseenter', function () {
+                this.style.transform = 'translateY(-4px)';
+                this.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)';
+            });
+            card.addEventListener('mouseleave', function () {
+                this.style.transform = '';
+                this.style.boxShadow = '';
+            });
+        });
+    })();
+
 });

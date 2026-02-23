@@ -71,6 +71,8 @@
             'bader_website/static/src/scss/_estudiantes.scss',
             # 6. Shop Pages
             'bader_website/static/src/scss/_shop.scss',
+            'bader_website/static/src/scss/_product_detail.scss',
+            'bader_website/static/src/scss/_checkout.scss',
             # 7. Global overrides (last)
             'bader_website/static/src/scss/main.scss',
             # 8. JavaScript

@@ -1,0 +1,389 @@
+// ============================================
+// Bader — Cart & Checkout (Light Theme)
+// Replicated from Bader-AR React reference
+// ============================================
+
+// --- Cart Page ---
+.oe_website_sale .oe_cart,
+.oe_cart {
+    background: $bader-muted;
+    min-height: 100vh;
+    padding: 40px 0 80px;
+
+    .container,
+    .oe_cart>.container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    // Page title
+    h1,
+    .h1 {
+        font-size: 32px;
+        font-weight: 700;
+        color: $gray-800;
+        margin-bottom: 32px;
+    }
+
+    // ─── Cart Layout: Items + Summary ───
+    >.container>.row,
+    .row {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 40px;
+        align-items: start;
+
+        @media (max-width: 968px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    // ─── Cart Items Section ───
+    .oe_cart_items,
+    #cart_products {
+        h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: $gray-800;
+            margin-bottom: 20px;
+        }
+    }
+
+    // ─── Individual Cart Item ───
+    .oe_cart_line,
+    .o_cart_product {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+        background: $white;
+        border: 1px solid $bader-card-border;
+        border-radius: 12px;
+        margin-bottom: 16px;
+
+        // Product image
+        .o_image,
+        td:first-child,
+        .o_cart_product_image {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: $gray-50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+        }
+
+        // Product info
+        .td-product_name,
+        .o_cart_product_info {
+            flex: 1;
+
+            a,
+            strong,
+            .product-name {
+                font-size: 15px;
+                font-weight: 500;
+                color: $gray-800;
+                text-decoration: none;
+                margin-bottom: 4px;
+                display: block;
+            }
+
+            .text-muted,
+            .o_cart_product_code {
+                font-size: 12px;
+                color: $gray-500;
+                font-family: monospace;
+            }
+        }
+
+        // Quantity controls
+        .css_quantity,
+        .o_cart_qty {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: $gray-50;
+            border-radius: 8px;
+            padding: 4px;
+
+            button,
+            .btn,
+            a.js_add_cart_json {
+                width: 32px;
+                height: 32px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: $white;
+                border: 1px solid $bader-card-border;
+                border-radius: 6px;
+                cursor: pointer;
+                color: $gray-800;
+                font-size: 14px;
+
+                &:hover {
+                    border-color: $bader-green-light;
+                }
+            }
+
+            input {
+                width: 40px;
+                text-align: center;
+                font-weight: 500;
+                border: none;
+                background: transparent;
+                font-size: 14px;
+                color: $gray-800;
+            }
+        }
+
+        // Price
+        .oe_currency_value,
+        .td-price,
+        .o_cart_product_price {
+            font-size: 16px;
+            font-weight: 600;
+            color: $bader-green-dark;
+            min-width: 100px;
+            text-align: right;
+        }
+
+        // Remove button
+        .js_delete_product,
+        .o_cart_remove {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: $gray-400;
+            cursor: pointer;
+            transition: color 0.2s ease;
+
+            &:hover {
+                color: #dc2626;
+            }
+        }
+    }
+
+    // ─── Cart table override (make it card-like) ───
+    table#cart_products {
+        border: none;
+
+        thead {
+            display: none;
+        }
+
+        tr {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px;
+            background: $white;
+            border: 1px solid $bader-card-border;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        td {
+            border: none;
+            padding: 0;
+        }
+    }
+
+    // ─── Order Summary Sidebar ───
+    #right_column,
+    .oe_cart_summary {
+
+        .card,
+        .o_total_card {
+            padding: 24px;
+            background: $white;
+            border: 1px solid $bader-card-border;
+            border-radius: 16px;
+            position: sticky;
+            top: 100px;
+            box-shadow: none;
+
+            h2 {
+                font-size: 18px;
+                font-weight: 600;
+                color: $gray-800;
+                margin-bottom: 20px;
+            }
+        }
+    }
+
+    // Summary rows
+    .o_total_row,
+    .total_row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        color: $gray-600;
+        padding: 8px 0;
+    }
+
+    // Total
+    .o_total_total,
+    .total_row.total {
+        font-size: 18px;
+        font-weight: 700;
+        color: $gray-800;
+        padding-top: 12px;
+        border-top: 1px solid $bader-card-border;
+        margin-top: 8px;
+    }
+
+    // Free shipping
+    .bader-free-shipping {
+        color: $bader-green;
+        font-weight: 500;
+    }
+
+    // ─── Checkout Button ───
+    a.btn-primary,
+    .btn-primary,
+    .o_total_submit {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 16px;
+        background: #009ee3 !important; // Mercado Pago blue
+        color: $white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        text-decoration: none;
+        margin-top: 16px;
+
+        &:hover {
+            background: #0087c5 !important;
+        }
+
+        &:disabled,
+        &.disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+    }
+
+    // ─── Benefits at Bottom ───
+    .bader-checkout-benefits {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid $bader-card-border;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+
+        .bader-benefit {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: $gray-600;
+
+            svg,
+            i,
+            .fa {
+                color: $bader-green;
+            }
+        }
+    }
+}
+
+// ─── Empty Cart ───
+.oe_cart .oe_empty_cart,
+.bader-empty-cart {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    h1 {
+        font-size: 24px;
+        font-weight: 700;
+        color: $gray-800;
+        margin-bottom: 12px;
+    }
+
+    p {
+        color: $gray-500;
+        margin-bottom: 24px;
+    }
+
+    a.btn,
+    .bader-continue-btn {
+        display: inline-flex;
+        padding: 14px 28px;
+        background: $bader-green-dark;
+        color: $white !important;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background 0.2s ease;
+
+        &:hover {
+            background: $bader-green;
+        }
+    }
+}
+
+// ─── Payment / Checkout Flow Pages ───
+.oe_website_sale .oe_pay,
+.oe_website_sale #payment_method {
+    background: $bader-muted;
+
+    .card {
+        background: $white;
+        border: 1px solid $bader-card-border;
+        border-radius: 12px;
+        box-shadow: none;
+    }
+
+    h3,
+    h4 {
+        color: $gray-800;
+        font-weight: 600;
+    }
+
+    label {
+        color: $gray-700;
+    }
+
+    input,
+    select,
+    textarea {
+        border: 1px solid $bader-border;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 14px;
+        color: $gray-700;
+
+        &:focus {
+            border-color: $bader-green-light;
+            outline: none;
+            box-shadow: 0 0 0 3px $bader-green-bg;
+        }
+    }
+}

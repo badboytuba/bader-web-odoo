@@ -1,104 +1,262 @@
 // ============================================
-// Bader — Shop & Product Pages
+// Bader — Shop & Product Listing (Light Theme)
+// Replicated from Bader-AR React reference
 // ============================================
 
-// --- Shop Page Grid ---
+// --- Shop Page Container ---
 .oe_website_sale {
-    background: $bader-dark !important;
+    background: $bader-muted !important;
+    min-height: 100vh;
+    padding-bottom: 80px;
 
-    // Page title
+    // ─── Page Title ───
     .o_wsale_products_main_row h1,
     #products_grid_before h1 {
-        color: $white;
+        font-size: 28px;
+        font-weight: 700;
+        color: $gray-800;
+        margin-bottom: 8px;
     }
 
-    // --- Product Card ---
-    .oe_product_cart {
-        @include card($bader-dark-card);
-        overflow: hidden;
-        border-radius: $radius-lg !important;
+    // Product count subtitle
+    .o_wsale_products_main_row .text-muted,
+    #products_grid_before .text-muted {
+        font-size: 14px;
+        color: $gray-500;
+    }
 
+    // ─── Layout: Sidebar + Grid ───
+    .o_wsale_products_main_row {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    // ─── Product Card ───
+    .oe_product_cart {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        background: $white;
+        border: 1px solid $bader-card-border;
+        border-radius: 12px !important;
+        overflow: hidden;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        box-shadow: none;
+
+        &:hover {
+            border-color: $bader-green-light;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transform: translateY(-4px);
+        }
+
+        // ─── Product Image ───
         .oe_product_image {
-            background: $bader-dark-surface;
-            border-radius: $radius-lg $radius-lg 0 0;
+            width: 100%;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: $gray-50;
+            padding: 20px;
+            border-radius: 12px 12px 0 0;
             overflow: hidden;
             position: relative;
 
-            img {
-                transition: transform $transition-slow;
+            img,
+            .img-fluid {
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+                transition: transform 0.3s ease;
             }
 
-            &:hover img {
+            &:hover img,
+            &:hover .img-fluid {
                 transform: scale(1.05);
             }
         }
 
-        // Product info section
+        // ─── Product Info Section ───
         .o_wsale_product_information {
-            padding: $space-md;
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        // Product name
+        // ─── Category Label ───
+        .o_wsale_product_information .product_price .text-muted,
+        .oe_subdescription {
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: $bader-green-dark;
+        }
+
+        // ─── Product Name ───
         .o_wsale_product_information h6 a,
         .oe_product_cart h6 a,
         .o_wsale_products_item a h6 {
-            color: $white !important;
-            font-weight: 600;
-            font-size: 0.95rem;
+            color: $gray-800 !important;
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 1.4;
             text-decoration: none;
-            transition: color $transition-fast;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.2s ease;
 
             &:hover {
-                color: $bader-green !important;
+                color: $bader-green-dark !important;
             }
         }
 
-        // Description snippet
-        .o_wsale_product_information .product_price,
-        .oe_subdescription {
-            font-size: 0.82rem;
-            color: $gray-400;
-        }
-
-        // Price
+        // ─── Price ───
         .product_price .oe_currency_value,
         .oe_product_cart .oe_price {
-            color: $bader-green !important;
+            color: $bader-green-dark !important;
             font-weight: 700;
-            font-size: 1.3rem;
+            font-size: 18px;
         }
 
+        // ─── Original Price (strikethrough) ───
         .oe_product_cart .text-danger,
         .product_price del {
-            color: $gray-500 !important;
-            font-size: 0.85rem;
+            color: $gray-400 !important;
+            font-size: 14px;
+            text-decoration: line-through;
         }
 
-        // Wishlist / Comparison buttons
+        // ─── Wishlist / Comparison Buttons ───
         .o_wsale_product_btn,
         .o_add_wishlist,
         .o_add_compare {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: $white;
+            border: 1px solid $bader-card-border;
+            border-radius: 50%;
             color: $gray-400;
-            border: 1px solid $bader-dark-border;
-            border-radius: $radius-sm;
-            background: rgba(255, 255, 255, 0.04);
-            transition: all $transition-fast;
+            cursor: pointer;
+            z-index: 2;
+            transition: all 0.2s ease;
 
             &:hover {
-                color: $bader-green;
-                border-color: rgba(78, 203, 113, 0.3);
-                background: $bader-green-bg;
+                color: #dc3545;
+                border-color: #dc3545;
+            }
+        }
+
+        // Position wishlist top-right
+        .o_add_wishlist {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+        }
+
+        // ─── Add to Cart Button ───
+        .o_wsale_product_btn:not(.o_add_wishlist):not(.o_add_compare),
+        .a-submit {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: calc(100% - 32px);
+            margin: 0 16px 16px;
+            padding: 12px;
+            background: $bader-green-dark;
+            color: $white !important;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            text-decoration: none;
+
+            &:hover {
+                background: $bader-green;
             }
         }
     }
 
-    // --- Filters / Sidebar ---
+    // ─── Product Grid ───
+    #products_grid {
+        .o_wsale_products_grid_table_wrapper {
+            .table {
+                border: none;
+                background: transparent;
+
+                td {
+                    border: none;
+                    padding: 12px;
+                    vertical-align: top;
+                }
+            }
+        }
+    }
+
+    // ─── Badges (New / Discount) ───
+    .oe_product_cart .badge,
+    .oe_product_cart .o_ribbon {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        z-index: 2;
+        padding: 4px 10px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        border-radius: 4px;
+    }
+
+    .oe_product_cart .badge-success,
+    .oe_product_cart .badge-primary {
+        background: $bader-green-dark !important;
+        color: $white;
+    }
+
+    .oe_product_cart .badge-danger {
+        background: #dc3545 !important;
+        color: $white;
+    }
+
+    // ─── Stock Badge ───
+    .bader-stock-badge {
+        font-size: 12px;
+        font-weight: 500;
+        padding: 0;
+        position: static;
+        background: transparent;
+
+        color: $bader-green;
+
+        &--out {
+            color: #dc3545;
+        }
+    }
+
+    // ─── Filters / Sidebar ───
     .css_attributes,
     #products_grid_before {
-        color: $gray-300;
+        background: $white;
+        border: 1px solid $bader-card-border;
+        border-radius: 12px;
+        padding: 20px;
+        color: $gray-700;
 
         .form-check-label {
-            color: $gray-300;
+            color: $gray-700;
+            font-size: 14px;
         }
 
         .form-check-input:checked {
@@ -106,127 +264,155 @@
             border-color: $bader-green;
         }
 
-        .nav-link {
-            color: $gray-400 !important;
+        // Search input
+        input[type="search"],
+        .o_wsale_search input {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            border: 1px solid $bader-border;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease;
+            background: $white;
+            color: $gray-700;
 
-            &.active,
+            &:focus {
+                border-color: $bader-green-light;
+            }
+        }
+
+        // Section headings
+        h5,
+        h6,
+        .h5,
+        .h6 {
+            font-size: 14px;
+            font-weight: 600;
+            color: $gray-800;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        // ─── Category List ───
+        .nav-link {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            color: $gray-600 !important;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+
             &:hover {
-                color: $bader-green !important;
+                background: $gray-50;
+                color: $gray-800 !important;
+            }
+
+            &.active {
+                background: $bader-green-dark !important;
+                color: $white !important;
+                border-radius: 6px;
             }
         }
     }
 
-    // --- Pagination ---
+    // ─── Pagination ───
     .pagination {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 48px;
+        padding-top: 32px;
+        border-top: 1px solid $bader-card-border;
+
         .page-link {
-            background: $bader-dark-card;
-            border-color: $bader-dark-border;
-            color: $gray-300;
+            padding: 10px 20px;
+            background: $white;
+            border: 1px solid $bader-border;
+            border-radius: 8px;
+            color: $gray-800;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
 
             &:hover {
-                background: $bader-green-bg;
-                color: $bader-green;
+                border-color: $bader-green-light;
+                color: $bader-green-dark;
             }
         }
 
         .page-item.active .page-link {
-            background: $bader-green;
-            border-color: $bader-green;
+            background: $bader-green-dark;
+            border-color: $bader-green-dark;
             color: $white;
         }
-    }
 
-    // --- Sort dropdown ---
-    .o_wsale_apply_sort {
-        background: $bader-dark-card !important;
-        border-color: $bader-dark-border !important;
-        color: $gray-300 !important;
-    }
-}
-
-// --- Product Detail Page ---
-#product_detail,
-.oe_website_sale #product_detail {
-    background: $bader-dark;
-    color: $gray-300;
-
-    .product_price {
-        .oe_price .oe_currency_value {
-            color: $bader-green !important;
-            font-size: 2rem;
-            font-weight: 800;
-        }
-    }
-
-    h1[itemprop="name"],
-    #product_detail_main h1 {
-        color: $white;
-    }
-
-    .nav-tabs {
-        border-color: $bader-dark-border;
-
-        .nav-link {
+        .page-item.disabled .page-link {
+            background: $gray-50;
+            border-color: $bader-card-border;
             color: $gray-400;
-
-            &.active {
-                color: $bader-green;
-                border-color: $bader-green;
-                background: transparent;
-            }
         }
     }
 
-    .tab-content {
-        color: $gray-300;
+    // ─── Sort Dropdown ───
+    .o_wsale_apply_sort,
+    select.form-select {
+        background: $white !important;
+        border: 1px solid $bader-border !important;
+        border-radius: 8px !important;
+        color: $gray-700 !important;
+        font-size: 14px;
+        padding: 8px 12px;
     }
 }
 
-// --- Breadcrumb (dark) ---
+// ─── Breadcrumb (Light) ───
+.oe_website_sale .breadcrumb,
 .breadcrumb {
     background: transparent;
+    padding: 10px 0;
+    margin-bottom: 8px;
 
     .breadcrumb-item {
         a {
-            color: $gray-400;
+            color: $gray-500;
+            text-decoration: none;
+            font-size: 13px;
 
             &:hover {
-                color: $bader-green;
+                color: $bader-green-dark;
             }
         }
 
         &.active {
-            color: $gray-300;
+            color: $gray-700;
+            font-size: 13px;
         }
 
         +.breadcrumb-item::before {
-            color: $gray-500;
+            color: $gray-400;
         }
     }
 }
 
-// --- Stock Badges ---
-.bader-stock-badge {
-    @include badge($in-stock, $white);
-    font-size: 11px;
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    z-index: 2;
-
-    &--out {
-        background: $out-stock;
-    }
-}
-
-// --- Installment Price ---
+// ─── Installment Price ───
 .bader-installment {
-    color: $gray-400;
-    font-size: 0.82rem;
+    color: $gray-500;
+    font-size: 12px;
     margin-top: 4px;
 
     .bader-installment__price {
-        color: $gray-300;
+        color: $gray-700;
         font-weight: 500;
     }
 }
