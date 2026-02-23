@@ -32,22 +32,22 @@
                             <div class="bader-about__hero-stats">
                                 <div class="bader-about__hero-stat">
                                     <i class="fa fa-building"/>
-                                    <div class="bader-about__hero-stat-value">800+</div>
+                                    <div class="bader-about__hero-stat-value" data-count-to="800" data-count-suffix="+">800+</div>
                                     <div class="bader-about__hero-stat-label">Distribuidores activos</div>
                                 </div>
                                 <div class="bader-about__hero-stat">
                                     <i class="fa fa-cubes"/>
-                                    <div class="bader-about__hero-stat-value">1,300+</div>
+                                    <div class="bader-about__hero-stat-value" data-count-to="1300" data-count-suffix="+">1,300+</div>
                                     <div class="bader-about__hero-stat-label">Productos disponibles</div>
                                 </div>
                                 <div class="bader-about__hero-stat">
                                     <i class="fa fa-globe"/>
-                                    <div class="bader-about__hero-stat-value">15</div>
+                                    <div class="bader-about__hero-stat-value" data-count-to="15" data-count-suffix="">15</div>
                                     <div class="bader-about__hero-stat-label">Países</div>
                                 </div>
                                 <div class="bader-about__hero-stat">
                                     <i class="fa fa-star"/>
-                                    <div class="bader-about__hero-stat-value">16+</div>
+                                    <div class="bader-about__hero-stat-value" data-count-to="16" data-count-suffix="+">16+</div>
                                     <div class="bader-about__hero-stat-label">Años de experiencia</div>
                                 </div>
                             </div>

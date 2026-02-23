@@ -129,53 +129,65 @@
                         </div>
 
                         <div class="bader-page-section__grid bader-page-section__grid--3">
-                            <a href="/shop?category=kits-rotatorio" class="bader-page-card bader-animate">
-                                <div class="bader-gradient-icon" style="background:linear-gradient(135deg,#10B981,#065F46);">
-                                    <i class="fa fa-cogs" style="color:white;"/>
+                            <a href="/shop?category=kits-rotatorio" class="bader-category-card bader-animate">
+                                <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=600&amp;q=80');"/>
+                                <div class="bader-category-card__overlay"/>
+                                <div class="bader-category-card__badge" style="background:rgba(16,185,129,0.90);"><i class="fa fa-cogs"/></div>
+                                <div class="bader-category-card__content">
+                                    <h3 class="bader-category-card__title">Kits Rotatorios</h3>
+                                    <p class="bader-category-card__text">Kits completos para comenzar tu práctica.</p>
+                                    <span class="bader-category-card__link" style="color:#34D399;"><i class="fa fa-arrow-right"/> Ver kits</span>
                                 </div>
-                                <h3 class="bader-page-card__title" style="margin-top:1rem;">Kits Rotatorios</h3>
-                                <p class="bader-page-card__text">Kits completos para comenzar tu práctica.</p>
-                                <span class="bader-page-card__highlight" style="color:#10B981;"><i class="fa fa-arrow-right"/> Ver kits</span>
                             </a>
-                            <a href="/shop?category=simuladores" class="bader-page-card bader-animate">
-                                <div class="bader-gradient-icon" style="background:linear-gradient(135deg,#10B981,#065F46);">
-                                    <i class="fa fa-desktop" style="color:white;"/>
+                            <a href="/shop?category=simuladores" class="bader-category-card bader-animate">
+                                <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&amp;q=80');"/>
+                                <div class="bader-category-card__overlay"/>
+                                <div class="bader-category-card__badge" style="background:rgba(16,185,129,0.90);"><i class="fa fa-desktop"/></div>
+                                <div class="bader-category-card__content">
+                                    <h3 class="bader-category-card__title">Simuladores</h3>
+                                    <p class="bader-category-card__text">Simuladores de práctica odontológica.</p>
+                                    <span class="bader-category-card__link" style="color:#34D399;"><i class="fa fa-arrow-right"/> Ver simuladores</span>
                                 </div>
-                                <h3 class="bader-page-card__title" style="margin-top:1rem;">Simuladores</h3>
-                                <p class="bader-page-card__text">Simuladores de práctica odontológica.</p>
-                                <span class="bader-page-card__highlight" style="color:#10B981;"><i class="fa fa-arrow-right"/> Ver simuladores</span>
                             </a>
-                            <a href="/shop?category=tipodontos" class="bader-page-card bader-animate">
-                                <div class="bader-gradient-icon" style="background:linear-gradient(135deg,#10B981,#065F46);">
-                                    <i class="fa fa-magic" style="color:white;"/>
+                            <a href="/shop?category=tipodontos" class="bader-category-card bader-animate">
+                                <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&amp;q=80');"/>
+                                <div class="bader-category-card__overlay"/>
+                                <div class="bader-category-card__badge" style="background:rgba(16,185,129,0.90);"><i class="fa fa-magic"/></div>
+                                <div class="bader-category-card__content">
+                                    <h3 class="bader-category-card__title">Tipodontos</h3>
+                                    <p class="bader-category-card__text">Modelos anatómicos para práctica.</p>
+                                    <span class="bader-category-card__link" style="color:#34D399;"><i class="fa fa-arrow-right"/> Ver tipodontos</span>
                                 </div>
-                                <h3 class="bader-page-card__title" style="margin-top:1rem;">Tipodontos</h3>
-                                <p class="bader-page-card__text">Modelos anatómicos para práctica.</p>
-                                <span class="bader-page-card__highlight" style="color:#10B981;"><i class="fa fa-arrow-right"/> Ver tipodontos</span>
                             </a>
-                            <a href="/shop?category=fantomas" class="bader-page-card bader-animate">
-                                <div class="bader-gradient-icon" style="background:linear-gradient(135deg,#10B981,#065F46);">
-                                    <i class="fa fa-user" style="color:white;"/>
+                            <a href="/shop?category=fantomas" class="bader-category-card bader-animate">
+                                <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=600&amp;q=80');"/>
+                                <div class="bader-category-card__overlay"/>
+                                <div class="bader-category-card__badge" style="background:rgba(16,185,129,0.90);"><i class="fa fa-user"/></div>
+                                <div class="bader-category-card__content">
+                                    <h3 class="bader-category-card__title">Fantomas</h3>
+                                    <p class="bader-category-card__text">Cabezas de práctica para simulación.</p>
+                                    <span class="bader-category-card__link" style="color:#34D399;"><i class="fa fa-arrow-right"/> Ver fantomas</span>
                                 </div>
-                                <h3 class="bader-page-card__title" style="margin-top:1rem;">Fantomas</h3>
-                                <p class="bader-page-card__text">Cabezas de práctica para simulación.</p>
-                                <span class="bader-page-card__highlight" style="color:#10B981;"><i class="fa fa-arrow-right"/> Ver fantomas</span>
                             </a>
-                            <a href="/shop?category=dientes" class="bader-page-card bader-animate">
-                                <div class="bader-gradient-icon" style="background:linear-gradient(135deg,#10B981,#065F46);">
-                                    <i class="fa fa-heart" style="color:white;"/>
+                            <a href="/shop?category=dientes" class="bader-category-card bader-animate">
+                                <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=600&amp;q=80');"/>
+                                <div class="bader-category-card__overlay"/>
+                                <div class="bader-category-card__badge" style="background:rgba(16,185,129,0.90);"><i class="fa fa-heart"/></div>
+                                <div class="bader-category-card__content">
+                                    <h3 class="bader-category-card__title">Dientes</h3>
+                                    <p class="bader-category-card__text">Dientes de reposición para tipodontos.</p>
+                                    <span class="bader-category-card__link" style="color:#34D399;"><i class="fa fa-arrow-right"/> Ver dientes</span>
                                 </div>
-                                <h3 class="bader-page-card__title" style="margin-top:1rem;">Dientes</h3>
-                                <p class="bader-page-card__text">Dientes de reposición para tipodontos.</p>
-                                <span class="bader-page-card__highlight" style="color:#10B981;"><i class="fa fa-arrow-right"/> Ver dientes</span>
                             </a>
-                            <a href="/shop?category=accesorios" class="bader-page-card bader-animate">
-                                <div class="bader-gradient-icon" style="background:linear-gradient(135deg,#10B981,#065F46);">
-                                    <i class="fa fa-puzzle-piece" style="color:white;"/>
+                            <a href="/shop?category=accesorios" class="bader-category-card bader-animate">
+                                <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1581594693702-fbdc51b2763b?w=600&amp;q=80');"/>
+                                <div class="bader-category-card__overlay"/>
+                                <div class="bader-category-card__badge" style="background:rgba(16,185,129,0.90);"><i class="fa fa-puzzle-piece"/></div>
+                                <div class="bader-category-card__content">
+                                    <h3 class="bader-category-card__title">Accesorios</h3>
+                                    <p class="bader-category-card__text">Complementos para tu equipamiento.</p>
+                                    <span class="bader-category-card__link" style="color:#34D399;"><i class="fa fa-arrow-right"/> Ver accesorios</span>
                                 </div>
-                                <h3 class="bader-page-card__title" style="margin-top:1rem;">Accesorios</h3>
-                                <p class="bader-page-card__text">Complementos para tu equipamiento.</p>
-                                <span class="bader-page-card__highlight" style="color:#10B981;"><i class="fa fa-arrow-right"/> Ver accesorios</span>
                             </a>
                         </div>
                     </div>

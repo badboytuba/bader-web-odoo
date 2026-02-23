@@ -74,82 +74,70 @@
                         </div>
 
                         <div class="bader-page-section__grid bader-page-section__grid--3">
-                            <a href="/shop?category=sillones" class="bader-clinic__category-card bader-page-card bader-animate">
-                                <div class="bader-gradient-icon bader-gradient-icon--green">
-                                    <i class="fa fa-bed"/>
+                            <a href="/shop?category=sillones" class="bader-category-card bader-animate">
+                                <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&amp;q=80');"/>
+                                <div class="bader-category-card__overlay"/>
+                                <div class="bader-category-card__badge"><i class="fa fa-bed"/></div>
+                                <div class="bader-category-card__content">
+                                    <h3 class="bader-category-card__title">Sillones Dentales</h3>
+                                    <p class="bader-category-card__text">Sillones de última generación con máxima comodidad para paciente y profesional.</p>
+                                    <span class="bader-category-card__link"><i class="fa fa-arrow-right"/> Ver sillones</span>
                                 </div>
-                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Sillones Dentales</h3>
-                                <p class="bader-page-card__text">
-                                    Sillones de última generación con máxima comodidad para paciente y profesional.
-                                </p>
-                                <span class="bader-page-card__highlight">
-                                    <i class="fa fa-arrow-right"/> Ver sillones
-                                </span>
                             </a>
 
-                            <a href="/shop?category=autoclaves" class="bader-clinic__category-card bader-page-card bader-animate">
-                                <div class="bader-gradient-icon bader-gradient-icon--blue">
-                                    <i class="fa fa-fire"/>
+                            <a href="/shop?category=autoclaves" class="bader-category-card bader-animate">
+                                <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1581594693702-fbdc51b2763b?w=600&amp;q=80');"/>
+                                <div class="bader-category-card__overlay"/>
+                                <div class="bader-category-card__badge"><i class="fa fa-fire"/></div>
+                                <div class="bader-category-card__content">
+                                    <h3 class="bader-category-card__title">Autoclaves</h3>
+                                    <p class="bader-category-card__text">Equipos de esterilización con ciclos rápidos y certificación europea.</p>
+                                    <span class="bader-category-card__link"><i class="fa fa-arrow-right"/> Ver autoclaves</span>
                                 </div>
-                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Autoclaves</h3>
-                                <p class="bader-page-card__text">
-                                    Equipos de esterilización con ciclos rápidos y certificación europea.
-                                </p>
-                                <span class="bader-page-card__highlight">
-                                    <i class="fa fa-arrow-right"/> Ver autoclaves
-                                </span>
                             </a>
 
-                            <a href="/shop?category=rayos" class="bader-clinic__category-card bader-page-card bader-animate">
-                                <div class="bader-gradient-icon bader-gradient-icon--purple">
-                                    <i class="fa fa-bolt"/>
+                            <a href="/shop?category=rayos" class="bader-category-card bader-animate">
+                                <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=600&amp;q=80');"/>
+                                <div class="bader-category-card__overlay"/>
+                                <div class="bader-category-card__badge"><i class="fa fa-bolt"/></div>
+                                <div class="bader-category-card__content">
+                                    <h3 class="bader-category-card__title">Rayos X</h3>
+                                    <p class="bader-category-card__text">Equipos de radiología digital con máxima resolución y mínima radiación.</p>
+                                    <span class="bader-category-card__link"><i class="fa fa-arrow-right"/> Ver rayos X</span>
                                 </div>
-                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Rayos X</h3>
-                                <p class="bader-page-card__text">
-                                    Equipos de radiología digital con máxima resolución y mínima radiación.
-                                </p>
-                                <span class="bader-page-card__highlight">
-                                    <i class="fa fa-arrow-right"/> Ver rayos X
-                                </span>
                             </a>
 
-                            <a href="/shop?category=compresores" class="bader-clinic__category-card bader-page-card bader-animate">
-                                <div class="bader-gradient-icon bader-gradient-icon--orange">
-                                    <i class="fa fa-wind"/>
+                            <a href="/shop?category=compresores" class="bader-category-card bader-animate">
+                                <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&amp;q=80');"/>
+                                <div class="bader-category-card__overlay"/>
+                                <div class="bader-category-card__badge"><i class="fa fa-cog"/></div>
+                                <div class="bader-category-card__content">
+                                    <h3 class="bader-category-card__title">Compresores</h3>
+                                    <p class="bader-category-card__text">Compresores silenciosos oil-free diseñados para uso odontológico profesional.</p>
+                                    <span class="bader-category-card__link"><i class="fa fa-arrow-right"/> Ver compresores</span>
                                 </div>
-                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Compresores</h3>
-                                <p class="bader-page-card__text">
-                                    Compresores silenciosos oil-free diseñados para uso odontológico profesional.
-                                </p>
-                                <span class="bader-page-card__highlight">
-                                    <i class="fa fa-arrow-right"/> Ver compresores
-                                </span>
                             </a>
 
-                            <a href="/shop?category=instrumental" class="bader-clinic__category-card bader-page-card bader-animate">
-                                <div class="bader-gradient-icon bader-gradient-icon--teal">
-                                    <i class="fa fa-wrench"/>
+                            <a href="/shop?category=instrumental" class="bader-category-card bader-animate">
+                                <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=600&amp;q=80');"/>
+                                <div class="bader-category-card__overlay"/>
+                                <div class="bader-category-card__badge"><i class="fa fa-wrench"/></div>
+                                <div class="bader-category-card__content">
+                                    <h3 class="bader-category-card__title">Instrumental</h3>
+                                    <p class="bader-category-card__text">Instrumental rotatorio y manual de alta precisión para cada procedimiento.</p>
+                                    <span class="bader-category-card__link"><i class="fa fa-arrow-right"/> Ver instrumental</span>
                                 </div>
-                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Instrumental</h3>
-                                <p class="bader-page-card__text">
-                                    Instrumental rotatorio y manual de alta precisión para cada procedimiento.
-                                </p>
-                                <span class="bader-page-card__highlight">
-                                    <i class="fa fa-arrow-right"/> Ver instrumental
-                                </span>
                             </a>
 
-                            <a href="/shop?category=materiales" class="bader-clinic__category-card bader-page-card bader-animate">
-                                <div class="bader-gradient-icon bader-gradient-icon--indigo">
-                                    <i class="fa fa-flask"/>
+                            <a href="/shop?category=materiales" class="bader-category-card bader-animate">
+                                <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=600&amp;q=80');"/>
+                                <div class="bader-category-card__overlay"/>
+                                <div class="bader-category-card__badge"><i class="fa fa-flask"/></div>
+                                <div class="bader-category-card__content">
+                                    <h3 class="bader-category-card__title">Materiales</h3>
+                                    <p class="bader-category-card__text">Consumibles y materiales dentales de las mejores marcas europeas.</p>
+                                    <span class="bader-category-card__link"><i class="fa fa-arrow-right"/> Ver materiales</span>
                                 </div>
-                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Materiales</h3>
-                                <p class="bader-page-card__text">
-                                    Consumibles y materiales dental de las mejores marcas europeas.
-                                </p>
-                                <span class="bader-page-card__highlight">
-                                    <i class="fa fa-arrow-right"/> Ver materiales
-                                </span>
                             </a>
                         </div>
                     </div>

@@ -719,3 +719,124 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
         }
     }
 }
+
+// --- Image-Based Category Card (React-style) ---
+.bader-category-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 18rem;
+    border-radius: $radius-xl;
+    overflow: hidden;
+    text-decoration: none;
+    color: $white;
+    box-shadow: $shadow-md;
+    transition:
+        transform $transition-base,
+        box-shadow $transition-base;
+
+    &:hover {
+        transform: translateY(-6px);
+        box-shadow: $shadow-xl;
+        color: $white;
+        text-decoration: none;
+    }
+
+    // Background image
+    &__img {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        transition: transform 0.6s ease;
+
+        .bader-category-card:hover & {
+            transform: scale(1.08);
+        }
+    }
+
+    // Gradient overlay
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top,
+                rgba($bader-dark, 0.85) 0%,
+                rgba($bader-dark, 0.40) 50%,
+                rgba($bader-dark, 0.15) 100%);
+        transition: background $transition-base;
+
+        .bader-category-card:hover & {
+            background: linear-gradient(to top,
+                    rgba($bader-dark, 0.90) 0%,
+                    rgba($bader-dark, 0.30) 50%,
+                    rgba($bader-dark, 0.05) 100%);
+        }
+    }
+
+    // Floating icon badge (top-left)
+    &__badge {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: $radius-lg;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba($bader-green, 0.90);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        z-index: 2;
+        transition: transform $transition-base;
+
+        .bader-category-card:hover & {
+            transform: scale(1.10);
+        }
+
+        i {
+            color: $white;
+            font-size: 1rem;
+        }
+    }
+
+    // Text content (bottom)
+    &__content {
+        position: relative;
+        z-index: 2;
+        padding: 1.5rem;
+    }
+
+    &__title {
+        font-family: $font-display;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: $white;
+        margin-bottom: 0.35rem;
+    }
+
+    &__text {
+        font-size: 0.85rem;
+        color: rgba(white, 0.75);
+        line-height: 1.5;
+        margin-bottom: 0.5rem;
+    }
+
+    &__link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: $bader-green;
+        transition: gap $transition-base;
+
+        .bader-category-card:hover & {
+            gap: 0.65rem;
+        }
+
+        i {
+            font-size: 0.75rem;
+        }
+    }
+}

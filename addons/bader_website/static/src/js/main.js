@@ -231,4 +231,61 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 6000);
     })();
 
+    // ---- 6. Counter Animation (CountUp) ----
+    (function initCounters() {
+        var counters = document.querySelectorAll('[data-count-to]');
+        if (counters.length === 0) return;
+
+        function animateCounter(el) {
+            var raw = el.getAttribute('data-count-to');
+            var suffix = el.getAttribute('data-count-suffix') || '';
+            var target = parseFloat(raw.replace(/,/g, ''));
+            var isDecimal = raw.indexOf('.') !== -1;
+            var duration = 2000; // ms
+            var startTime = null;
+
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                var progress = Math.min((timestamp - startTime) / duration, 1);
+                // Ease out cubic
+                var eased = 1 - Math.pow(1 - progress, 3);
+                var current = target * eased;
+
+                if (isDecimal) {
+                    el.textContent = current.toFixed(1) + suffix;
+                } else {
+                    var formatted = Math.floor(current).toLocaleString('es-AR');
+                    el.textContent = formatted + suffix;
+                }
+
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                }
+            }
+
+            el.textContent = isDecimal ? '0.0' : '0';
+            requestAnimationFrame(step);
+        }
+
+        if ('IntersectionObserver' in window) {
+            var counterObserver = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        animateCounter(entry.target);
+                        counterObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.3 });
+
+            counters.forEach(function (el) {
+                counterObserver.observe(el);
+            });
+        } else {
+            // Fallback: just show the value
+            counters.forEach(function (el) {
+                el.textContent = el.getAttribute('data-count-to') + (el.getAttribute('data-count-suffix') || '');
+            });
+        }
+    })();
+
 });
