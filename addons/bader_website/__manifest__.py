@@ -39,6 +39,8 @@
         'views/clinica_dental.xml',
         'views/laboratorio_dental.xml',
         'views/estudiantes_odontologia.xml',
+        # Website page records (for Odoo backend integration)
+        'data/website_pages.xml',
     ],
     'assets': {
         # Override Odoo's primary SCSS variables (loads BEFORE everything)
