@@ -127,6 +127,10 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
     overflow: hidden;
     color: $white;
 
+    @include mobile {
+        padding: 4rem 0 3rem;
+    }
+
     // Decorative blur circles
     &__blur {
         position: absolute;
@@ -191,6 +195,10 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
         line-height: 1.1;
         letter-spacing: -0.02em;
 
+        @include mobile {
+            font-size: 1.75rem;
+        }
+
         @media (min-width: $bp-desktop) {
             font-size: 3.75rem;
         }
@@ -202,12 +210,20 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
         max-width: 48rem;
         margin: 0 auto 2rem;
         line-height: 1.7;
+
+        @include mobile {
+            font-size: 0.95rem;
+        }
     }
 }
 
 // --- Page Section (generic light bg section) ---
 .bader-page-section {
     padding: 5rem 0;
+
+    @include mobile {
+        padding: 3rem 0;
+    }
 
     &--muted {
         background: $bader-muted;
