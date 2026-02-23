@@ -17,62 +17,79 @@ document.addEventListener('DOMContentLoaded', function () {
         var megaPanel = document.getElementById('baderMegaMenu');
         if (!megaPanel) return;
 
-        // Find the "Productos" / "Shop" menu link in the header
-        var productLink = null;
-        var navLinks = document.querySelectorAll('header#top .navbar-nav .nav-link, header#top #top_menu > li > a');
-        navLinks.forEach(function (link) {
-            var text = (link.textContent || '').trim().toLowerCase();
-            if (text === 'productos' || text === 'shop' || text.indexOf('producto') !== -1) {
-                productLink = link;
-            }
-        });
-        if (!productLink) return;
-
-        var parentLi = productLink.closest('li');
-        var hideTimeout = null;
-
-        function showMega() {
-            clearTimeout(hideTimeout);
-            megaPanel.style.display = 'block';
-            // Prevent Odoo's default dropdown for this item
-            if (parentLi) parentLi.classList.add('bader-mega-active');
+        function findProductLink() {
+            var productLink = null;
+            // Strategy 1: check by href containing /shop
+            var allLinks = document.querySelectorAll('header#top a.nav-link, header#top #top_menu a');
+            allLinks.forEach(function (link) {
+                var href = (link.getAttribute('href') || '').toLowerCase();
+                var text = (link.textContent || '').trim().toLowerCase();
+                if (text === 'productos' || text === 'shop' || text.indexOf('producto') !== -1 ||
+                    href.indexOf('/shop') !== -1) {
+                    productLink = link;
+                }
+            });
+            return productLink;
         }
 
-        function hideMega() {
-            hideTimeout = setTimeout(function () {
-                megaPanel.style.display = 'none';
-                if (parentLi) parentLi.classList.remove('bader-mega-active');
-            }, 200);
+        function setupMegaMenu(productLink) {
+            var parentLi = productLink.closest('li');
+            var hideTimeout = null;
+
+            function showMega() {
+                clearTimeout(hideTimeout);
+                megaPanel.classList.add('bader-mega--open');
+                if (parentLi) parentLi.classList.add('bader-mega-active');
+            }
+
+            function hideMega() {
+                hideTimeout = setTimeout(function () {
+                    megaPanel.classList.remove('bader-mega--open');
+                    if (parentLi) parentLi.classList.remove('bader-mega-active');
+                }, 200);
+            }
+
+            // Hover on the nav link
+            productLink.addEventListener('mouseenter', showMega);
+            if (parentLi) {
+                parentLi.addEventListener('mouseenter', showMega);
+                parentLi.addEventListener('mouseleave', hideMega);
+            }
+
+            // Hover on the mega panel itself
+            megaPanel.addEventListener('mouseenter', function () {
+                clearTimeout(hideTimeout);
+            });
+            megaPanel.addEventListener('mouseleave', hideMega);
+
+            // Click navigates to shop
+            productLink.addEventListener('click', function (e) {
+                if (megaPanel.classList.contains('bader-mega--open')) {
+                    window.location.href = '/shop';
+                    e.preventDefault();
+                }
+            });
+
+            // Close mega menu on Escape
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && megaPanel.classList.contains('bader-mega--open')) {
+                    megaPanel.classList.remove('bader-mega--open');
+                }
+            });
         }
 
-        // Hover on the nav link
-        productLink.addEventListener('mouseenter', showMega);
-        if (parentLi) {
-            parentLi.addEventListener('mouseenter', showMega);
-            parentLi.addEventListener('mouseleave', hideMega);
+        // Retry up to 5 times (Odoo may render nav items after DOMContentLoaded)
+        var attempts = 0;
+        function tryInit() {
+            var link = findProductLink();
+            if (link) {
+                setupMegaMenu(link);
+            } else if (attempts < 5) {
+                attempts++;
+                setTimeout(tryInit, 500);
+            }
         }
-
-        // Hover on the mega panel itself
-        megaPanel.addEventListener('mouseenter', function () {
-            clearTimeout(hideTimeout);
-        });
-        megaPanel.addEventListener('mouseleave', hideMega);
-
-        // Prevent Odoo's default dropdown toggle on click
-        productLink.addEventListener('click', function (e) {
-            if (megaPanel.style.display === 'block') {
-                // If mega is open, navigate to shop
-                window.location.href = '/shop';
-                e.preventDefault();
-            }
-        });
-
-        // Close mega menu on Escape
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && megaPanel.style.display === 'block') {
-                megaPanel.style.display = 'none';
-            }
-        });
+        tryInit();
     })();
 
     // ---- 1b. SEARCH PILL — "Buscar con IA" click handler ----

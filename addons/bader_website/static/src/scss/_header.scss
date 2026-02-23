@@ -319,7 +319,18 @@ html.o_connected_user #wrapwrap>header#top {
     box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.08);
     border-top: 3px solid $bader-green;
     padding: 0;
-    animation: baderMegaSlide 0.25s ease-out;
+    // Hidden by default — use CSS class instead of inline display
+    display: none;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+
+    &--open {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+        animation: baderMegaSlide 0.25s ease-out;
+    }
 
     &__header {
         display: flex;

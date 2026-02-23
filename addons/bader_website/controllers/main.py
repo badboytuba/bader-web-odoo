@@ -19,7 +19,7 @@ class BaderWebsite(Website):
         return request.render('bader_website.bader_homepage', {})
 
     # ─── Sobre Nosotros ────────────────────────────────────────
-    @http.route(['/sobre-nosotros', '/quienes-somos'], type='http', auth='public',
+    @http.route(['/sobre-nosotros', '/quienes-somos', '/nosotros'], type='http', auth='public',
                 website=True, sitemap=True)
     def sobre_nosotros(self, **kw):
         """About Us page."""
