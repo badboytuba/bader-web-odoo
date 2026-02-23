@@ -39,12 +39,25 @@ class BaderWebsite(Website):
         """Services page."""
         return request.render('bader_website.bader_servicios', {})
 
-    # ─── Clínica Dental ────────────────────────────────────────
     @http.route('/clinica-dental', type='http', auth='public',
                 website=True, sitemap=True)
     def clinica_dental(self, **kw):
         """Dental clinic niche landing page."""
         return request.render('bader_website.bader_clinica_dental', {})
+
+    # ─── Laboratorio Dental ────────────────────────────────────
+    @http.route('/laboratorio-dental', type='http', auth='public',
+                website=True, sitemap=True)
+    def laboratorio_dental(self, **kw):
+        """Dental laboratory niche landing page."""
+        return request.render('bader_website.bader_laboratorio_dental', {})
+
+    # ─── Estudiantes Odontología ───────────────────────────────
+    @http.route('/estudiantes-odontologia', type='http', auth='public',
+                website=True, sitemap=True)
+    def estudiantes_odontologia(self, **kw):
+        """Students niche landing page."""
+        return request.render('bader_website.bader_estudiantes_odontologia', {})
 
     # ─── Thank You Pages ──────────────────────────────────────
     @http.route('/contacto/gracias', type='http', auth='public',

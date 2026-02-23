@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ====================================================
+         ESTUDIANTES ODONTOLOGÍA — Green-themed niche page
+         Matches Bader-AR EstudiantesOdontologia.tsx structure
+         ==================================================== -->
+    <template id="bader_estudiantes_odontologia" name="Bader Estudiantes Odontología">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+
+                <!-- ============================
+                     HERO — Green gradient
+                     ============================ -->
+                <section class="bader-page-hero bader-page-hero--green bader-animate">
+                    <div class="bader-page-hero__blur bader-page-hero__blur--1"/>
+                    <div class="bader-page-hero__blur bader-page-hero__blur--2"/>
+                    <div class="bader-page-hero__container">
+                        <div class="bader-split">
+                            <!-- Left: Text -->
+                            <div>
+                                <span class="bader-page-hero__badge bader-page-hero__badge--green">
+                                    <i class="fa fa-graduation-cap"/> Para Estudiantes
+                                </span>
+                                <h1 class="bader-page-hero__title" style="text-align:left;">
+                                    Tu Kit Rotatorio <span style="color:#86EFAC;">Profesional</span>
+                                </h1>
+                                <p class="bader-page-hero__subtitle" style="text-align:left; margin-left:0;">
+                                    Descubrí nuestros kits de Instrumental Rotatorio diseñados pensando
+                                    en las necesidades de estudiantes de odontología. El kit perfecto
+                                    para empezar tu carrera profesional con calidad BADER.
+                                </p>
+                                <!-- Feature badges -->
+                                <div style="display:flex; flex-wrap:wrap; gap:0.75rem; margin-top:1.5rem; margin-bottom:1.5rem;">
+                                    <span style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:2rem; background:rgba(134,239,172,0.15); color:#86EFAC; font-size:0.85rem; font-weight:600;">
+                                        <i class="fa fa-shield"/> Garantía estudiantil
+                                    </span>
+                                    <span style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:2rem; background:rgba(134,239,172,0.15); color:#86EFAC; font-size:0.85rem; font-weight:600;">
+                                        <i class="fa fa-diamond"/> Fresas incluidas
+                                    </span>
+                                    <span style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:2rem; background:rgba(134,239,172,0.15); color:#86EFAC; font-size:0.85rem; font-weight:600;">
+                                        <i class="fa fa-check"/> Revisión gratuita
+                                    </span>
+                                </div>
+                                <div style="display:flex; flex-wrap:wrap; gap:1rem; margin-top:1rem;">
+                                    <a href="/shop" class="btn-bader" style="background:#10B981;">
+                                        Ver Kits <i class="fa fa-arrow-right"/>
+                                    </a>
+                                    <a href="#categorias" class="btn-bader-outline" style="border-color:rgba(255,255,255,0.3); color:white;">
+                                        Explorar Categorías
+                                    </a>
+                                </div>
+                            </div>
+                            <!-- Right: Image -->
+                            <div class="bader-niche-hero-img" style="display:none;">
+                                <div class="bader-niche-hero-img__wrap">
+                                    <img src="/bader_website/static/src/img/hero/hero-estudiantes-odontologia.png"
+                                         alt="Kit de estudiante de odontología" loading="lazy"/>
+                                    <div class="bader-niche-hero-img__overlay bader-niche-hero-img__overlay--green"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================
+                     KIT MODELS — 4 highlighted kits
+                     ============================ -->
+                <section class="bader-page-section bader-page-section--white bader-animate">
+                    <div class="bader-page-section__container">
+                        <div class="bader-page-section__heading">
+                            <span class="bader-page-hero__badge" style="background:rgba(16,185,129,0.10); color:#10B981;">
+                                Nuestros Kits
+                            </span>
+                            <h2 class="bader-section__title">
+                                Modelos de <span style="color:#10B981;">Kit Rotatorio</span>
+                            </h2>
+                            <p class="bader-section__subtitle">
+                                Elegí el kit que mejor se adapte a tus necesidades y presupuesto
+                            </p>
+                        </div>
+
+                        <div class="bader-page-section__grid bader-page-section__grid--4">
+                            <!-- Kit 4matic -->
+                            <div class="bader-page-card bader-animate" style="border:2px solid transparent; text-align:center; position:relative;">
+                                <span style="position:absolute; top:-10px; right:16px; background:#10B981; color:white; font-size:0.72rem; font-weight:700; padding:4px 12px; border-radius:2rem;">Más vendido</span>
+                                <div style="font-size:2.5rem; color:#10B981; margin-bottom:1rem;"><i class="fa fa-cogs"/></div>
+                                <h3 style="color:#003841; font-weight:800; font-size:1.1rem; margin-bottom:0.5rem;">Kit 4matic</h3>
+                                <p style="color:#64748B; font-size:0.85rem;">Kit completo con turbina, contra-ángulo, micromotor y pieza recta</p>
+                                <a href="/shop?category=kits" class="btn-bader btn-bader--sm" style="margin-top:1rem; background:#10B981;">Ver Kit</a>
+                            </div>
+                            <!-- Kit Smart -->
+                            <div class="bader-page-card bader-animate" style="border:2px solid transparent; text-align:center;">
+                                <div style="font-size:2.5rem; color:#10B981; margin-bottom:1rem;"><i class="fa fa-lightbulb-o"/></div>
+                                <h3 style="color:#003841; font-weight:800; font-size:1.1rem; margin-bottom:0.5rem;">Kit Smart</h3>
+                                <p style="color:#64748B; font-size:0.85rem;">Kit esencial con turbina y contra-ángulo smart</p>
+                                <a href="/shop?category=kits" class="btn-bader btn-bader--sm" style="margin-top:1rem; background:#10B981;">Ver Kit</a>
+                            </div>
+                            <!-- Kit Uptrend -->
+                            <div class="bader-page-card bader-animate" style="border:2px solid transparent; text-align:center;">
+                                <div style="font-size:2.5rem; color:#10B981; margin-bottom:1rem;"><i class="fa fa-rocket"/></div>
+                                <h3 style="color:#003841; font-weight:800; font-size:1.1rem; margin-bottom:0.5rem;">Kit Uptrend</h3>
+                                <p style="color:#64748B; font-size:0.85rem;">Kit avanzado con generador LED y acabados premium</p>
+                                <a href="/shop?category=kits" class="btn-bader btn-bader--sm" style="margin-top:1rem; background:#10B981;">Ver Kit</a>
+                            </div>
+                            <!-- Kit Neo -->
+                            <div class="bader-page-card bader-animate" style="border:2px solid transparent; text-align:center;">
+                                <div style="font-size:2.5rem; color:#10B981; margin-bottom:1rem;"><i class="fa fa-flash"/></div>
+                                <h3 style="color:#003841; font-weight:800; font-size:1.1rem; margin-bottom:0.5rem;">Kit Neo</h3>
+                                <p style="color:#64748B; font-size:0.85rem;">Kit económico ideal para iniciar tu práctica profesional</p>
+                                <a href="/shop?category=kits" class="btn-bader btn-bader--sm" style="margin-top:1rem; background:#10B981;">Ver Kit</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================
+                     CATEGORIES GRID — 6 cards
+                     ============================ -->
+                <section class="bader-page-section bader-page-section--muted bader-animate" id="categorias">
+                    <div class="bader-page-section__container">
+                        <div class="bader-page-section__heading">
+                            <span class="bader-page-hero__badge" style="background:rgba(16,185,129,0.10); color:#10B981;">
+                                Categorías
+                            </span>
+                            <h2 class="bader-section__title">
+                                Todo lo que necesitás como <span style="color:#10B981;">estudiante</span>
+                            </h2>
+                        </div>
+
+                        <div class="bader-page-section__grid bader-page-section__grid--3">
+                            <a href="/shop?category=kits-rotatorio" class="bader-page-card bader-animate">
+                                <div class="bader-gradient-icon" style="background:linear-gradient(135deg,#10B981,#065F46);">
+                                    <i class="fa fa-cogs" style="color:white;"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top:1rem;">Kits Rotatorios</h3>
+                                <p class="bader-page-card__text">Kits completos para comenzar tu práctica.</p>
+                                <span class="bader-page-card__highlight" style="color:#10B981;"><i class="fa fa-arrow-right"/> Ver kits</span>
+                            </a>
+                            <a href="/shop?category=simuladores" class="bader-page-card bader-animate">
+                                <div class="bader-gradient-icon" style="background:linear-gradient(135deg,#10B981,#065F46);">
+                                    <i class="fa fa-desktop" style="color:white;"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top:1rem;">Simuladores</h3>
+                                <p class="bader-page-card__text">Simuladores de práctica odontológica.</p>
+                                <span class="bader-page-card__highlight" style="color:#10B981;"><i class="fa fa-arrow-right"/> Ver simuladores</span>
+                            </a>
+                            <a href="/shop?category=tipodontos" class="bader-page-card bader-animate">
+                                <div class="bader-gradient-icon" style="background:linear-gradient(135deg,#10B981,#065F46);">
+                                    <i class="fa fa-magic" style="color:white;"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top:1rem;">Tipodontos</h3>
+                                <p class="bader-page-card__text">Modelos anatómicos para práctica.</p>
+                                <span class="bader-page-card__highlight" style="color:#10B981;"><i class="fa fa-arrow-right"/> Ver tipodontos</span>
+                            </a>
+                            <a href="/shop?category=fantomas" class="bader-page-card bader-animate">
+                                <div class="bader-gradient-icon" style="background:linear-gradient(135deg,#10B981,#065F46);">
+                                    <i class="fa fa-user" style="color:white;"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top:1rem;">Fantomas</h3>
+                                <p class="bader-page-card__text">Cabezas de práctica para simulación.</p>
+                                <span class="bader-page-card__highlight" style="color:#10B981;"><i class="fa fa-arrow-right"/> Ver fantomas</span>
+                            </a>
+                            <a href="/shop?category=dientes" class="bader-page-card bader-animate">
+                                <div class="bader-gradient-icon" style="background:linear-gradient(135deg,#10B981,#065F46);">
+                                    <i class="fa fa-heart" style="color:white;"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top:1rem;">Dientes</h3>
+                                <p class="bader-page-card__text">Dientes de reposición para tipodontos.</p>
+                                <span class="bader-page-card__highlight" style="color:#10B981;"><i class="fa fa-arrow-right"/> Ver dientes</span>
+                            </a>
+                            <a href="/shop?category=accesorios" class="bader-page-card bader-animate">
+                                <div class="bader-gradient-icon" style="background:linear-gradient(135deg,#10B981,#065F46);">
+                                    <i class="fa fa-puzzle-piece" style="color:white;"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top:1rem;">Accesorios</h3>
+                                <p class="bader-page-card__text">Complementos para tu equipamiento.</p>
+                                <span class="bader-page-card__highlight" style="color:#10B981;"><i class="fa fa-arrow-right"/> Ver accesorios</span>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================
+                     FEATURES — 4 cards
+                     ============================ -->
+                <section class="bader-page-section bader-page-section--white bader-animate">
+                    <div class="bader-page-section__container">
+                        <div class="bader-page-section__grid bader-page-section__grid--4">
+                            <div class="bader-page-card" style="text-align:center; border:2px solid transparent;">
+                                <div class="bader-page-card__icon" style="margin:0 auto 1rem; background:rgba(16,185,129,0.1);">
+                                    <i class="fa fa-heart" style="color:#10B981;"/>
+                                </div>
+                                <h4 style="color:#003841; font-weight:700; margin-bottom:0.5rem;">Pensado para Vos</h4>
+                                <p style="color:#64748B; font-size:0.85rem;">Precios especiales para estudiantes de odontología</p>
+                            </div>
+                            <div class="bader-page-card" style="text-align:center; border:2px solid transparent;">
+                                <div class="bader-page-card__icon" style="margin:0 auto 1rem; background:rgba(16,185,129,0.1);">
+                                    <i class="fa fa-diamond" style="color:#10B981;"/>
+                                </div>
+                                <h4 style="color:#003841; font-weight:700; margin-bottom:0.5rem;">Calidad Premium</h4>
+                                <p style="color:#64748B; font-size:0.85rem;">Comenzá con instrumental que te va a acompañar toda tu carrera</p>
+                            </div>
+                            <div class="bader-page-card" style="text-align:center; border:2px solid transparent;">
+                                <div class="bader-page-card__icon" style="margin:0 auto 1rem; background:rgba(16,185,129,0.1);">
+                                    <i class="fa fa-credit-card" style="color:#10B981;"/>
+                                </div>
+                                <h4 style="color:#003841; font-weight:700; margin-bottom:0.5rem;">Hasta 12 Cuotas</h4>
+                                <p style="color:#64748B; font-size:0.85rem;">Financiación sin interés con todas las tarjetas</p>
+                            </div>
+                            <div class="bader-page-card" style="text-align:center; border:2px solid transparent;">
+                                <div class="bader-page-card__icon" style="margin:0 auto 1rem; background:rgba(16,185,129,0.1);">
+                                    <i class="fa fa-shield" style="color:#10B981;"/>
+                                </div>
+                                <h4 style="color:#003841; font-weight:700; margin-bottom:0.5rem;">Garantía Especial</h4>
+                                <p style="color:#64748B; font-size:0.85rem;">Garantía estudiantil con revisión gratuita incluida</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================
+                     CTA — Green gradient
+                     ============================ -->
+                <section class="bader-page-section bader-animate" style="background:linear-gradient(135deg,#065F46,#10B981); color:white;">
+                    <div class="bader-page-section__container" style="text-align:center;">
+                        <h2 style="font-family:'BaderSans',sans-serif; font-size:2rem; font-weight:800; color:white; margin-bottom:1rem;">
+                            ¡Equipate con la mejor calidad para tu carrera!
+                        </h2>
+                        <p style="color:rgba(255,255,255,0.85); margin-bottom:2rem; max-width:36rem; margin-left:auto; margin-right:auto;">
+                            Kits de instrumental rotatorio diseñados especialmente para estudiantes de odontología.
+                            Calidad europea a precio de estudiante.
+                        </p>
+                        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1rem;">
+                            <a href="/shop" class="btn-bader" style="background:white; color:#065F46;">
+                                <i class="fa fa-shopping-bag"/> Ver todos los Kits
+                            </a>
+                            <a href="https://wa.me/5491124522097" target="_blank" rel="noopener noreferrer"
+                               class="btn-bader-outline" style="border-color:white; color:white;">
+                                <i class="fa fa-whatsapp"/> Consultar
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </t>
+    </template>
+
+</odoo>

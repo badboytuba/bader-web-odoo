@@ -180,4 +180,55 @@ document.addEventListener('DOMContentLoaded', function () {
         }, { passive: true });
     }
 
+    // ---- 5. Hero Persona Tab Switching ----
+    (function initPersonaTabs() {
+        var tabs = document.querySelectorAll('.bader-hero__tab[data-persona]');
+        if (tabs.length === 0) return;
+
+        function switchPersona(persona) {
+            // Tabs
+            tabs.forEach(function (t) {
+                t.classList.toggle('bader-hero__tab--active', t.getAttribute('data-persona') === persona);
+            });
+            // Text content blocks
+            document.querySelectorAll('[data-persona-content]').forEach(function (el) {
+                var isMatch = el.getAttribute('data-persona-content') === persona;
+                el.style.display = isMatch ? '' : 'none';
+                el.classList.toggle('bader-hero__persona--active', isMatch);
+            });
+            // Hero images
+            document.querySelectorAll('[data-persona-img]').forEach(function (img) {
+                var isMatch = img.getAttribute('data-persona-img') === persona;
+                img.style.display = isMatch ? '' : 'none';
+                img.classList.toggle('bader-hero__persona-img--active', isMatch);
+            });
+            // Dots
+            document.querySelectorAll('.bader-hero__image-dots .dot[data-persona]').forEach(function (dot) {
+                dot.classList.toggle('active', dot.getAttribute('data-persona') === persona);
+            });
+        }
+
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function (e) {
+                e.preventDefault();
+                switchPersona(this.getAttribute('data-persona'));
+            });
+        });
+
+        // Also clicking dots switches persona
+        document.querySelectorAll('.bader-hero__image-dots .dot[data-persona]').forEach(function (dot) {
+            dot.addEventListener('click', function () {
+                switchPersona(this.getAttribute('data-persona'));
+            });
+        });
+
+        // Auto-rotate every 6 seconds
+        var personas = ['clinica', 'laboratorio', 'estudiantes'];
+        var currentIdx = 0;
+        setInterval(function () {
+            currentIdx = (currentIdx + 1) % personas.length;
+            switchPersona(personas[currentIdx]);
+        }, 6000);
+    })();
+
 });

@@ -37,6 +37,8 @@
         'views/ser_distribuidor.xml',
         'views/servicios.xml',
         'views/clinica_dental.xml',
+        'views/laboratorio_dental.xml',
+        'views/estudiantes_odontologia.xml',
     ],
     'assets': {
         # Override Odoo's primary SCSS variables (loads BEFORE everything)
@@ -62,6 +64,8 @@
             'bader_website/static/src/scss/_sobre_nosotros.scss',
             'bader_website/static/src/scss/_servicios.scss',
             'bader_website/static/src/scss/_clinica_dental.scss',
+            'bader_website/static/src/scss/_laboratorio_dental.scss',
+            'bader_website/static/src/scss/_estudiantes.scss',
             # 6. Shop Pages
             'bader_website/static/src/scss/_shop.scss',
             # 7. Global overrides (last)

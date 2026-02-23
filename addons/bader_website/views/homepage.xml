@@ -14,13 +14,13 @@
                         <!-- Category Tabs (centered above hero) -->
                         <div class="bader-hero__tabs-wrapper">
                             <div class="bader-hero__tabs">
-                                <a href="#" class="bader-hero__tab bader-hero__tab--active">
+                                <a href="#" class="bader-hero__tab bader-hero__tab--active" data-persona="clinica">
                                     <i class="fa fa-medkit"/> Clínica Dental
                                 </a>
-                                <a href="#" class="bader-hero__tab">
+                                <a href="#" class="bader-hero__tab" data-persona="laboratorio">
                                     <i class="fa fa-flask"/> Laboratorio
                                 </a>
-                                <a href="#" class="bader-hero__tab">
+                                <a href="#" class="bader-hero__tab" data-persona="estudiantes">
                                     <i class="fa fa-graduation-cap"/> Estudiantes
                                 </a>
                             </div>
@@ -30,17 +30,50 @@
                             <!-- Left: Text Content -->
                             <div class="bader-hero__text">
 
-                                <span class="bader-hero__label">
-                                    <i class="fa fa-star"/> Para Clínica Dental
-                                </span>
-                                <h1 class="bader-hero__title">
-                                    Tu Clinica,<br/>
-                                    <span class="text-green">Tu Exito</span>
-                                </h1>
-                                <p class="bader-hero__subtitle">
-                                    Equipamiento de ultima generacion para que tus pacientes
-                                    confien en cada sonrisa que creas.
-                                </p>
+                                <!-- Clínica Dental content (DEFAULT) -->
+                                <div class="bader-hero__persona bader-hero__persona--active" data-persona-content="clinica">
+                                    <span class="bader-hero__label">
+                                        <i class="fa fa-star"/> Para Clínica Dental
+                                    </span>
+                                    <h1 class="bader-hero__title">
+                                        Tu Clinica,<br/>
+                                        <span class="text-green">Tu Exito</span>
+                                    </h1>
+                                    <p class="bader-hero__subtitle">
+                                        Equipamiento de ultima generacion para que tus pacientes
+                                        confien en cada sonrisa que creas.
+                                    </p>
+                                </div>
+
+                                <!-- Laboratorio content -->
+                                <div class="bader-hero__persona" data-persona-content="laboratorio" style="display:none;">
+                                    <span class="bader-hero__label">
+                                        <i class="fa fa-flask"/> Para Laboratorio Dental
+                                    </span>
+                                    <h1 class="bader-hero__title">
+                                        Equipos de<br/>
+                                        <span class="text-green">Precision</span>
+                                    </h1>
+                                    <p class="bader-hero__subtitle">
+                                        Productos de laboratorio dental que destacan por su durabilidad,
+                                        precision y alto rendimiento para el protesico.
+                                    </p>
+                                </div>
+
+                                <!-- Estudiantes content -->
+                                <div class="bader-hero__persona" data-persona-content="estudiantes" style="display:none;">
+                                    <span class="bader-hero__label">
+                                        <i class="fa fa-graduation-cap"/> Para Estudiantes
+                                    </span>
+                                    <h1 class="bader-hero__title">
+                                        Tu Kit Rotatorio<br/>
+                                        <span class="text-green">Profesional</span>
+                                    </h1>
+                                    <p class="bader-hero__subtitle">
+                                        Descubre nuestros kits de Instrumental Rotatorio diseñados
+                                        pensando en las necesidades de estudiantes de odontologia.
+                                    </p>
+                                </div>
 
                                 <!-- Inline Stats -->
                                 <div class="bader-hero__inline-stats">
@@ -89,14 +122,28 @@
 
                             <!-- Right: Image -->
                             <div class="bader-hero__image">
-                                <img src="/bader_website/static/src/img/hero-clinic.jpg"
+                                <img src="/bader_website/static/src/img/hero/hero-clinica.png"
                                      alt="Clinica dental moderna"
+                                     class="bader-hero__persona-img bader-hero__persona-img--active"
+                                     data-persona-img="clinica"
+                                     loading="lazy"/>
+                                <img src="/bader_website/static/src/img/hero/hero-laboratorio.png"
+                                     alt="Laboratorio dental profesional"
+                                     class="bader-hero__persona-img"
+                                     data-persona-img="laboratorio"
+                                     style="display:none;"
+                                     loading="lazy"/>
+                                <img src="/bader_website/static/src/img/hero/hero-estudiantes.png"
+                                     alt="Kit de estudiante de odontologia"
+                                     class="bader-hero__persona-img"
+                                     data-persona-img="estudiantes"
+                                     style="display:none;"
                                      loading="lazy"/>
                                 <!-- Carousel dots overlay -->
                                 <div class="bader-hero__image-dots">
-                                    <span class="dot active">1</span>
-                                    <span class="dot">2</span>
-                                    <span class="dot">3</span>
+                                    <span class="dot active" data-persona="clinica">1</span>
+                                    <span class="dot" data-persona="laboratorio">2</span>
+                                    <span class="dot" data-persona="estudiantes">3</span>
                                     <span class="bader-hero__image-count">+10,000<br/><small>Clientes felices</small></span>
                                 </div>
                                 <!-- Guarantee Badge -->

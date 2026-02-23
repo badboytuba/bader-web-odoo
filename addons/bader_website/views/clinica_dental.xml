@@ -17,24 +17,40 @@
                     <div class="bader-page-hero__blur bader-page-hero__blur--1"/>
                     <div class="bader-page-hero__blur bader-page-hero__blur--2"/>
                     <div class="bader-page-hero__container">
-                        <div class="bader-page-hero__center">
-                            <span class="bader-page-hero__badge">
-                                <i class="fa fa-medkit"/> Clínica Dental
-                            </span>
-                            <h1 class="bader-page-hero__title">
-                                Todo para tu <span class="text-green">clínica dental</span>
-                            </h1>
-                            <p class="bader-page-hero__subtitle">
-                                Equipamiento de última generación para que tus pacientes confíen
-                                en cada sonrisa que creas. Calidad europea al mejor precio.
-                            </p>
-                            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 2rem;">
-                                <a href="/shop" class="btn-bader">
-                                    Explorar productos <i class="fa fa-arrow-right"/>
-                                </a>
-                                <a href="#categorias" class="btn-bader-outline" style="border-color: rgba(255,255,255,0.3); color: white;">
-                                    <i class="fa fa-th"/> Ver categorías
-                                </a>
+                        <div class="bader-split">
+                            <!-- Left: Text -->
+                            <div>
+                                <span class="bader-page-hero__badge">
+                                    <i class="fa fa-medkit"/> Clínica Dental
+                                </span>
+                                <h1 class="bader-page-hero__title" style="text-align:left;">
+                                    Equipamiento <span class="text-green">profesional</span> para tu clínica
+                                </h1>
+                                <p class="bader-page-hero__subtitle" style="text-align:left; margin-left:0;">
+                                    Ofrecemos una amplia gama de productos para clínica dental, fabricados
+                                    con materiales duraderos. Cada detalle está pensado para asegurar el
+                                    bienestar del profesional odontólogo.
+                                </p>
+                                <div style="display:flex; flex-wrap:wrap; gap:1rem; margin-top:2rem;">
+                                    <a href="/shop" class="btn-bader">
+                                        Ver Productos <i class="fa fa-arrow-right"/>
+                                    </a>
+                                    <a href="#categorias" class="btn-bader-outline" style="border-color:rgba(255,255,255,0.3); color:white;">
+                                        <i class="fa fa-th"/> Explorar Categorías
+                                    </a>
+                                </div>
+                            </div>
+                            <!-- Right: Image -->
+                            <div class="bader-niche-hero-img" style="display:none;">
+                                <div class="bader-niche-hero-img__wrap">
+                                    <img src="/bader_website/static/src/img/hero/hero-clinica-dental.png"
+                                         alt="Clínica dental moderna" loading="lazy"/>
+                                    <div class="bader-niche-hero-img__overlay"/>
+                                    <div class="bader-niche-hero-img__badge">
+                                        <i class="fa fa-check-circle"/>
+                                        <span>+2800 referencias en stock</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

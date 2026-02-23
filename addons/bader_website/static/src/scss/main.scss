@@ -616,3 +616,90 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
         color: $bader-dark;
     }
 }
+
+// ============================================
+// Shared: Split Layout for Niche Hero Sections
+// ============================================
+.bader-split {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 3rem;
+    align-items: center;
+
+    @include tablet-down {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+// ============================================
+// Shared: Niche Hero Image (right side)
+// ============================================
+.bader-niche-hero-img {
+    position: relative;
+
+    @media (min-width: 769px) {
+        display: block !important;
+    }
+
+    @include tablet-down {
+        display: none !important;
+    }
+
+    &__wrap {
+        position: relative;
+        border-radius: $radius-xl;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: 440px;
+            object-fit: cover;
+            border-radius: $radius-xl;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+            transition: transform 0.6s ease;
+        }
+
+        &:hover img {
+            transform: scale(1.03);
+        }
+    }
+
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0, 56, 65, 0.6), transparent 70%);
+        border-radius: $radius-xl;
+        pointer-events: none;
+
+        &--purple {
+            background: linear-gradient(to top, rgba(88, 28, 135, 0.6), transparent 70%);
+        }
+
+        &--green {
+            background: linear-gradient(to top, rgba(6, 78, 59, 0.6), transparent 70%);
+        }
+    }
+
+    &__badge {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(8px);
+        border-radius: $radius-pill;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: $bader-dark;
+
+        i {
+            color: $bader-green;
+            font-size: 1rem;
+        }
+    }
+}
