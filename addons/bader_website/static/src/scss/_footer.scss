@@ -1,0 +1,230 @@
+// ============================================
+// Bader Layout — Footer Styling
+// ============================================
+
+#bottom {
+    background: $bader-dark !important;
+    color: $gray-300;
+    border-top: 1px solid $bader-dark-border;
+    padding-top: $space-4xl;
+
+    // --- Footer Grid ---
+    .bader-footer-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr 1fr;
+        gap: $space-3xl;
+        max-width: $container-max;
+        margin: 0 auto;
+        padding: 0 $container-padding $space-3xl;
+
+        @include tablet-down {
+            grid-template-columns: 1fr 1fr;
+            gap: $space-xl;
+        }
+
+        @include mobile {
+            grid-template-columns: 1fr;
+            gap: $space-xl;
+        }
+    }
+
+    // --- Column Title ---
+    .bader-footer__title {
+        color: $white;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: $space-lg;
+        letter-spacing: -0.01em;
+    }
+
+    // --- Company Description ---
+    .bader-footer__desc {
+        color: $gray-400;
+        font-size: 0.9rem;
+        line-height: 1.7;
+        margin-bottom: $space-lg;
+    }
+
+    // --- Contact Info ---
+    .bader-footer__contact {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 $space-lg;
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 0;
+            color: $gray-400;
+            font-size: 0.88rem;
+
+            i {
+                color: $bader-green;
+                width: 18px;
+                text-align: center;
+                font-size: 0.85rem;
+            }
+
+            a {
+                color: $gray-400;
+                text-decoration: none;
+
+                &:hover {
+                    color: $bader-green;
+                }
+            }
+        }
+    }
+
+    // --- Social Icons ---
+    .bader-footer__social {
+        display: flex;
+        gap: 12px;
+
+        a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: $radius-full;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: $gray-300;
+            font-size: 1rem;
+            transition: all $transition-base;
+
+            &:hover {
+                background: $bader-green;
+                border-color: $bader-green;
+                color: $white;
+                transform: translateY(-2px);
+            }
+        }
+    }
+
+    // --- Link Lists ---
+    .bader-footer__links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        a {
+            color: $gray-400;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color $transition-fast, padding-left $transition-fast;
+
+            &:hover {
+                color: $bader-green;
+                padding-left: 4px;
+            }
+        }
+    }
+
+    // --- Trust Badges Bar ---
+    .bader-footer__trust {
+        display: flex;
+        justify-content: center;
+        gap: $space-3xl;
+        padding: $space-xl 0;
+        border-top: 1px solid $bader-dark-border;
+        border-bottom: 1px solid $bader-dark-border;
+        max-width: $container-max;
+        margin: 0 auto;
+
+        @include mobile {
+            flex-direction: column;
+            align-items: center;
+            gap: $space-md;
+        }
+
+        .bader-trust-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: $gray-300;
+            font-size: 0.88rem;
+            font-weight: 500;
+
+            i {
+                color: $bader-green;
+                font-size: 1.1rem;
+            }
+        }
+    }
+
+    // --- Copyright ---
+    .bader-footer__copyright {
+        text-align: center;
+        padding: $space-xl $container-padding;
+        color: $gray-500;
+        font-size: 0.82rem;
+        max-width: $container-max;
+        margin: 0 auto;
+
+        a {
+            color: $gray-400;
+            text-decoration: none;
+            margin: 0 12px;
+
+            &:hover {
+                color: $bader-green;
+            }
+        }
+    }
+}
+
+// --- WhatsApp Button ---
+.bader-whatsapp {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: $z-whatsapp;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    transition: all $transition-base;
+
+    &__btn {
+        width: 56px;
+        height: 56px;
+        border-radius: $radius-full;
+        background: #25D366;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
+        transition: transform $transition-base, box-shadow $transition-base;
+        text-decoration: none;
+
+        i {
+            color: $white;
+            font-size: 28px;
+        }
+
+        &:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 24px rgba(37, 211, 102, 0.5);
+        }
+    }
+
+    @include mobile {
+        bottom: 16px;
+        left: 16px;
+
+        &__btn {
+            width: 48px;
+            height: 48px;
+        }
+
+        &__btn i {
+            font-size: 24px;
+        }
+    }
+}

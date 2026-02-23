@@ -1,0 +1,47 @@
+// ============================================
+// Servicios — Page Styles
+// ============================================
+
+.bader-services__card {
+    display: flex;
+    flex-direction: column;
+}
+
+.bader-services__features {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0;
+
+    li {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0;
+        font-size: 0.85rem;
+        color: $gray-500;
+
+        i {
+            color: $bader-green;
+            font-size: 0.75rem;
+        }
+    }
+}
+
+.bader-services__info-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+}
+
+.bader-services__info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    strong {
+        display: block;
+        color: $bader-dark;
+        font-size: 0.95rem;
+    }
+}

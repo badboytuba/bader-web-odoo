@@ -1,0 +1,192 @@
+// ============================================
+// Bader Homepage — CTA Section (dark accent)
+// ============================================
+// Keeps dark background for contrast with light page
+
+.bader-cta {
+    background: linear-gradient(135deg, $bader-dark 0%, $bader-dark-alt 100%);
+    padding: $space-4xl 0;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(132, 204, 22, 0.06) 0%, transparent 70%);
+        top: -200px;
+        right: -100px;
+    }
+
+    &__container {
+        @include section-container;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: $space-3xl;
+        align-items: center;
+
+        @include tablet-down {
+            grid-template-columns: 1fr;
+            gap: $space-2xl;
+        }
+    }
+
+    &__content {
+        position: relative;
+        z-index: 1;
+    }
+
+    &__label {
+        @include badge(rgba(132, 204, 22, 0.15), $bader-green);
+        margin-bottom: $space-md;
+    }
+
+    &__title {
+        font-family: 'Montserrat', 'Inter', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: $white;
+        line-height: 1.1;
+        margin-bottom: $space-lg;
+
+        .text-green {
+            color: $bader-green;
+        }
+
+        @include mobile {
+            font-size: 1.75rem;
+        }
+    }
+
+    &__subtitle {
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: $space-xl;
+        line-height: 1.7;
+    }
+
+    &__benefits {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 $space-xl;
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.95rem;
+
+            i {
+                color: $bader-green;
+                font-size: 0.85rem;
+            }
+        }
+    }
+
+    &__trust {
+        display: flex;
+        gap: $space-xl;
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 0.82rem;
+
+        span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            i {
+                font-size: 0.75rem;
+            }
+        }
+    }
+
+    // --- Form Card ---
+    &__form-card {
+        background: $white;
+        border-radius: $radius-xl;
+        padding: $space-2xl;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+        position: relative;
+        z-index: 1;
+
+        @include mobile {
+            padding: $space-xl;
+        }
+    }
+
+    &__form-group {
+        margin-bottom: $space-md;
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: $gray-600;
+            margin-bottom: 6px;
+        }
+
+        .bader-input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: 1.5px solid $gray-200;
+            border-radius: $radius-md;
+            font-size: 0.95rem;
+            color: $gray-800;
+            background: $white;
+            font-family: 'Inter', sans-serif;
+            transition: border-color $transition-fast, box-shadow $transition-fast;
+
+            &::placeholder {
+                color: $gray-400;
+            }
+
+            &:focus {
+                outline: none;
+                border-color: $bader-green;
+                box-shadow: 0 0 0 3px rgba(132, 204, 22, 0.15);
+            }
+        }
+
+        .input-wrapper {
+            position: relative;
+
+            i {
+                position: absolute;
+                left: 14px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: $gray-400;
+                font-size: 0.9rem;
+            }
+        }
+
+        select.bader-input {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+        }
+    }
+
+    &__submit-btn {
+        @include btn-glow;
+        width: 100%;
+        padding: 14px;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: $space-lg;
+    }
+
+    &__form-footer {
+        text-align: center;
+        margin-top: $space-md;
+        font-size: 0.78rem;
+        color: $gray-500;
+    }
+}

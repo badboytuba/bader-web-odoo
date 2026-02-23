@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==============================================
+         Bader Header — Dark theme + Custom Right Side
+         Reference: BADER. | Nav | 🔍 Buscar con IA | 🛒 | 👤▾
+         ============================================== -->
+    <template id="bader_header_class" inherit_id="website.layout"
+              name="Bader Header Styling" customize_show="True" priority="50">
+
+        <!-- Add Bader class to header -->
+        <xpath expr="//header[@id='top']" position="attributes">
+            <attribute name="class" add="bader-header" separator=" "/>
+        </xpath>
+
+        <!-- Inject search pill AFTER the navbar collapse menu (right side) -->
+        <xpath expr="//div[@id='top_menu_collapse']" position="after">
+            <div class="bader-header-right d-none d-lg-flex align-items-center">
+                <!-- AI Search Pill Button -->
+                <a href="#" class="bader-search-pill" id="baderSearchPill">
+                    <i class="fa fa-search"/>
+                    <span>Buscar con IA</span>
+                    <kbd>Q</kbd>
+                </a>
+            </div>
+        </xpath>
+
+        <!-- Inject mega menu panel after header (inside wrapwrap) -->
+        <xpath expr="//header[@id='top']" position="after">
+            <div id="baderMegaMenu" class="bader-mega" style="display:none;">
+                <div class="container">
+                    <div class="bader-mega__header">
+                        <h3 class="bader-mega__title">Nuestros Productos</h3>
+                        <a href="/shop" class="bader-mega__view-all">
+                            Ver todos los productos <i class="fa fa-arrow-right"/>
+                        </a>
+                    </div>
+
+                    <div class="bader-mega__grid">
+                        <!-- Column 1: Clínica Dental -->
+                        <div class="bader-mega__col">
+                            <div class="bader-mega__col-header">
+                                <div class="bader-mega__icon bader-mega__icon--clinica">
+                                    <i class="fa fa-medkit"/>
+                                </div>
+                                <div>
+                                    <div class="bader-mega__col-title">Clínica Dental</div>
+                                    <div class="bader-mega__col-desc">Equipamiento profesional</div>
+                                </div>
+                            </div>
+                            <ul class="bader-mega__list">
+                                <t t-foreach="request.env['product.public.category'].sudo().search([('parent_id','=',2)], order='sequence, id', limit=5)" t-as="cat">
+                                    <li>
+                                        <a t-attf-href="/shop/category/#{slug(cat)}">
+                                            <i class="fa fa-chevron-right"/>
+                                            <t t-esc="cat.name"/>
+                                        </a>
+                                    </li>
+                                </t>
+                            </ul>
+                            <a href="/shop/category/clinica-2" class="bader-mega__more">
+                                Ver todo <i class="fa fa-plus"/>
+                            </a>
+                        </div>
+
+                        <!-- Column 2: Laboratorio Dental -->
+                        <div class="bader-mega__col">
+                            <div class="bader-mega__col-header">
+                                <div class="bader-mega__icon bader-mega__icon--lab">
+                                    <i class="fa fa-flask"/>
+                                </div>
+                                <div>
+                                    <div class="bader-mega__col-title">Laboratorio Dental</div>
+                                    <div class="bader-mega__col-desc">Equipos de precisión</div>
+                                </div>
+                            </div>
+                            <ul class="bader-mega__list">
+                                <t t-foreach="request.env['product.public.category'].sudo().search([('parent_id','=',4)], order='sequence, id', limit=5)" t-as="cat">
+                                    <li>
+                                        <a t-attf-href="/shop/category/#{slug(cat)}">
+                                            <i class="fa fa-chevron-right"/>
+                                            <t t-esc="cat.name"/>
+                                        </a>
+                                    </li>
+                                </t>
+                            </ul>
+                            <a href="/shop/category/laboratorio-4" class="bader-mega__more">
+                                Ver todo <i class="fa fa-plus"/>
+                            </a>
+                        </div>
+
+                        <!-- Column 3: Estudiantes -->
+                        <div class="bader-mega__col">
+                            <div class="bader-mega__col-header">
+                                <div class="bader-mega__icon bader-mega__icon--student">
+                                    <i class="fa fa-graduation-cap"/>
+                                </div>
+                                <div>
+                                    <div class="bader-mega__col-title">Estudiantes</div>
+                                    <div class="bader-mega__col-desc">Kits y materiales</div>
+                                </div>
+                            </div>
+                            <ul class="bader-mega__list">
+                                <t t-foreach="request.env['product.public.category'].sudo().search([('parent_id','=',53)], order='sequence, id', limit=5)" t-as="cat">
+                                    <li>
+                                        <a t-attf-href="/shop/category/#{slug(cat)}">
+                                            <i class="fa fa-chevron-right"/>
+                                            <t t-esc="cat.name"/>
+                                        </a>
+                                    </li>
+                                </t>
+                            </ul>
+                            <a href="/shop/category/estudiantes-53" class="bader-mega__more">
+                                Ver todo <i class="fa fa-plus"/>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+
+    </template>
+
+</odoo>

@@ -1,0 +1,618 @@
+// ============================================
+// Bader — Global Overrides (Main SCSS)
+// ============================================
+// LIGHT BODY THEME — matches shop.bader.com.ar
+// Header + footer use dark teal. Page body is white/light.
+
+// --- @font-face for Bader Sans ---
+@font-face {
+    font-family: 'BaderSans';
+    src: url('/bader_website/static/src/font/BaderSans.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+// --- Smooth Scrolling ---
+html {
+    scroll-behavior: smooth;
+}
+
+// --- Global LIGHT Background ---
+#wrapwrap {
+    background: $white !important;
+    color: $bader-dark;
+    font-family: $font-body;
+}
+
+// --- Main Content Area ---
+#wrap {
+    background: transparent;
+}
+
+// --- Editable Sections ---
+.oe_structure {
+
+    >section,
+    >.container,
+    >.container-fluid {
+        background: transparent;
+    }
+}
+
+// --- Links ---
+a {
+    color: $bader-green;
+    transition: color $transition-fast;
+
+    &:hover {
+        color: $bader-green-dark;
+    }
+}
+
+// --- Labels / Badges ---
+.bader-label {
+    @include badge($bader-green-bg, $bader-green);
+    margin-bottom: $space-md;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.75rem;
+}
+
+// --- Section Titles (light bg) ---
+.bader-section__title {
+    font-family: $font-display;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: $bader-dark;
+    margin-bottom: $space-md;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+
+    &--dark {
+        @extend .bader-section__title;
+    }
+
+    @include mobile {
+        font-size: 1.75rem;
+    }
+}
+
+.bader-section__subtitle {
+    font-size: 1.05rem;
+    color: $bader-muted-fg;
+    max-width: 640px;
+    margin: 0 auto;
+    line-height: 1.7;
+
+    &--dark {
+        @extend .bader-section__subtitle;
+    }
+
+    @include mobile {
+        font-size: 0.95rem;
+    }
+}
+
+// --- Fade-in Animation Class ---
+.bader-animate {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+body.bader-js-ready .bader-animate:not(.bader-visible) {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+// --- Section Spacing ---
+.bader-section {
+    padding: $space-4xl 0;
+
+    @include mobile {
+        padding: $space-2xl 0;
+    }
+}
+
+// ============================================
+// SHARED PAGE STYLES (used across all pages)
+// ============================================
+
+// --- Page Hero (dark accent bg) ---
+.bader-page-hero {
+    position: relative;
+    background: $bader-dark;
+    padding: 6rem 0 5rem;
+    overflow: hidden;
+    color: $white;
+
+    // Decorative blur circles
+    &__blur {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        pointer-events: none;
+
+        &--1 {
+            top: 5rem;
+            left: 5rem;
+            width: 18rem;
+            height: 18rem;
+            background: rgba($bader-green, 0.20);
+        }
+
+        &--2 {
+            bottom: 2.5rem;
+            right: 5rem;
+            width: 24rem;
+            height: 24rem;
+            background: rgba($bader-green, 0.10);
+        }
+    }
+
+    &__container {
+        max-width: $container-max;
+        margin: 0 auto;
+        padding: 0 $container-padding;
+        position: relative;
+        z-index: 2;
+    }
+
+    &__center {
+        max-width: 56rem;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    &__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: rgba($bader-green, 0.20);
+        color: $bader-green;
+        padding: 0.35rem 0.85rem;
+        border-radius: $radius-pill;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+
+        i {
+            margin-right: 0.25rem;
+        }
+    }
+
+    &__title {
+        font-family: $font-display;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: $white;
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+
+        @media (min-width: $bp-desktop) {
+            font-size: 3.75rem;
+        }
+    }
+
+    &__subtitle {
+        font-size: 1.15rem;
+        color: rgba($white, 0.80);
+        max-width: 48rem;
+        margin: 0 auto 2rem;
+        line-height: 1.7;
+    }
+}
+
+// --- Page Section (generic light bg section) ---
+.bader-page-section {
+    padding: 5rem 0;
+
+    &--muted {
+        background: $bader-muted;
+    }
+
+    &--white {
+        background: $white;
+    }
+
+    &--accent {
+        background: $bader-dark;
+        color: $white;
+    }
+
+    &--green {
+        background: linear-gradient(135deg, $bader-green, rgba($bader-green, 0.85));
+        color: $white;
+    }
+
+    &__container {
+        max-width: $container-max;
+        margin: 0 auto;
+        padding: 0 $container-padding;
+    }
+
+    &__heading {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    // Card Grid
+    &__grid {
+        display: grid;
+        gap: 1.5rem;
+
+        &--2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        &--3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        &--4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        &--6 {
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        @include mobile {
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: $bp-tablet) and (max-width: #{$bp-desktop - 1}) {
+
+            &--3,
+            &--4,
+            &--6 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    }
+}
+
+// --- Page Card (white card with hover) ---
+.bader-page-card {
+    background: $white;
+    border: 1px solid $bader-card-border;
+    border-radius: $radius-xl;
+    padding: 2rem;
+    transition:
+        box-shadow $transition-base,
+        transform $transition-base,
+        border-color $transition-base;
+
+    &:hover {
+        box-shadow: $shadow-lg;
+        transform: translateY(-4px);
+        border-color: rgba($bader-green, 0.20);
+    }
+
+    &__icon {
+        width: 4rem;
+        height: 4rem;
+        border-radius: $radius-xl;
+        background: linear-gradient(135deg, rgba($bader-green, 0.20), rgba($bader-green, 0.05));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        transition: transform $transition-base;
+
+        i {
+            font-size: 1.5rem;
+            color: $bader-green;
+        }
+
+        .bader-page-card:hover & {
+            transform: scale(1.10);
+        }
+    }
+
+    &__title {
+        font-family: $font-display;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: $bader-dark;
+        margin-bottom: 0.75rem;
+    }
+
+    &__text {
+        font-size: 0.95rem;
+        color: $gray-600;
+        line-height: 1.6;
+    }
+
+    &__highlight {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        font-size: 0.85rem;
+        color: $bader-green;
+        font-weight: 600;
+
+        i {
+            font-size: 0.9rem;
+        }
+    }
+}
+
+// --- Gradient Icon Box ---
+.bader-gradient-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: $radius-xl;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: $shadow-md;
+
+    i {
+        font-size: 1.5rem;
+        color: $white;
+    }
+
+    &--green {
+        background: linear-gradient(135deg, #70D44B, #5AB836);
+    }
+
+    &--blue {
+        background: linear-gradient(135deg, #3B82F6, #2563EB);
+    }
+
+    &--purple {
+        background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+    }
+
+    &--orange {
+        background: linear-gradient(135deg, #F97316, #EA580C);
+    }
+
+    &--pink {
+        background: linear-gradient(135deg, #EC4899, #DB2777);
+    }
+
+    &--teal {
+        background: linear-gradient(135deg, #14B8A6, #0D9488);
+    }
+
+    &--indigo {
+        background: linear-gradient(135deg, #6366F1, #4F46E5);
+    }
+
+    &--red {
+        background: linear-gradient(135deg, #EF4444, #DC2626);
+    }
+}
+
+// --- Split Layout ---
+.bader-split {
+    display: grid;
+    gap: 3rem;
+    align-items: center;
+
+    @media (min-width: $bp-desktop) {
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+    }
+}
+
+// --- Two-Col Form Layout ---
+.bader-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+
+    @include mobile {
+        grid-template-columns: 1fr;
+    }
+}
+
+// --- Text Utilities ---
+.text-green {
+    color: $bader-green !important;
+}
+
+.text-accent {
+    color: $bader-dark !important;
+}
+
+// --- Check List ---
+.bader-checklist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 0;
+        color: $gray-700;
+        font-size: 0.95rem;
+
+        i {
+            color: $bader-green;
+            flex-shrink: 0;
+        }
+    }
+}
+
+// --- Alert / Flash Messages ---
+.alert {
+    border-radius: $radius-md;
+}
+
+// --- Odoo Forms on Light BG ---
+.s_website_form {
+
+    .form-control,
+    .form-select {
+        background: $white;
+        border-color: $gray-200;
+        color: $gray-700;
+        border-radius: $radius-md;
+
+        &:focus {
+            border-color: $bader-green;
+            box-shadow: 0 0 0 3px $bader-green-glow;
+        }
+
+        &::placeholder {
+            color: $gray-400;
+        }
+    }
+
+    label {
+        color: $gray-600;
+        font-weight: 500;
+    }
+}
+
+// --- Bader Custom Form ---
+.bader-form {
+    background: $white;
+    border-radius: $radius-2xl;
+    box-shadow: $shadow-xl;
+    padding: 2rem;
+
+    &__title {
+        font-family: $font-display;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: $bader-dark;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+
+    &__subtitle {
+        font-size: 0.9rem;
+        color: $gray-500;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .bader-form__group {
+        margin-bottom: 1.25rem;
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: $gray-700;
+            margin-bottom: 0.35rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+
+            i {
+                position: absolute;
+                left: 0.75rem;
+                top: 50%;
+                transform: translateY(-50%);
+                color: $gray-400;
+                font-size: 0.9rem;
+            }
+
+            input,
+            select,
+            textarea {
+                width: 100%;
+                padding: 0.65rem 0.75rem 0.65rem 2.25rem;
+                border: 1px solid $gray-200;
+                border-radius: $radius-md;
+                font-size: 0.9rem;
+                color: $gray-700;
+                background: $white;
+                transition: border-color $transition-fast, box-shadow $transition-fast;
+
+                &:focus {
+                    outline: none;
+                    border-color: $bader-green;
+                    box-shadow: 0 0 0 3px $bader-green-glow;
+                }
+
+                &::placeholder {
+                    color: $gray-400;
+                }
+            }
+
+            textarea {
+                padding-top: 0.75rem;
+                resize: vertical;
+                min-height: 5rem;
+            }
+        }
+    }
+
+    &__submit {
+        width: 100%;
+        padding: 0.85rem 1.5rem;
+        background: $bader-green;
+        color: $white;
+        border: none;
+        border-radius: $radius-md;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: background $transition-fast, box-shadow $transition-fast;
+
+        &:hover {
+            background: $bader-green-dark;
+            box-shadow: $shadow-green;
+        }
+    }
+
+    &__footer {
+        text-align: center;
+        font-size: 0.75rem;
+        color: $gray-400;
+        margin-top: 1rem;
+    }
+}
+
+// --- Portal --- (keep light for logged-in area)
+.o_portal {
+    background: $gray-50;
+    color: $gray-700;
+
+    .card {
+        background: $white;
+        border-color: $gray-200;
+        color: $gray-700;
+
+        .card-header {
+            background: $gray-50;
+            color: $bader-dark;
+        }
+    }
+
+    .table {
+        color: $gray-700;
+    }
+}
+
+// --- Blog Posts ---
+.o_wblog_post_page,
+.o_blog_post {
+    background: $white;
+    color: $gray-700;
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: $bader-dark;
+    }
+}

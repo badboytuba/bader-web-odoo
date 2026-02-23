@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Bader styling for the Shop / Product Listing page -->
+    <template id="bader_shop_style" inherit_id="website_sale.products"
+              name="Bader Shop Styling">
+        <xpath expr="//div[@id='products_grid']" position="attributes">
+            <attribute name="class" add="bader-shop-grid" separator=" "/>
+        </xpath>
+    </template>
+
+</odoo>

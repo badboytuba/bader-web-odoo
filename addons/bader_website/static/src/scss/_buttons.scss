@@ -1,0 +1,91 @@
+// ============================================
+// Bader Design System — Buttons (light theme)
+// ============================================
+
+// --- Primary CTA Button (green pill) ---
+.btn-bader {
+    @include btn-glow;
+    padding: 14px 32px;
+    font-size: 1rem;
+    letter-spacing: 0.01em;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    i,
+    .fa {
+        margin-left: 4px;
+    }
+
+    &--lg {
+        padding: 16px 40px;
+        font-size: 1.05rem;
+    }
+
+    @include mobile {
+        padding: 12px 24px;
+        font-size: 0.9rem;
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+.btn-bader-sm {
+    @include btn-glow;
+    padding: 10px 20px;
+    font-size: 0.875rem;
+}
+
+// --- Outline Button (on light bg = gray border, dark text) ---
+.btn-bader-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    background: transparent;
+    color: $bader-dark;
+    border: 1.5px solid $gray-300;
+    border-radius: $radius-pill;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all $transition-base;
+    text-decoration: none;
+
+    &:hover {
+        background: $bader-dark;
+        color: $white;
+        border-color: $bader-dark;
+        text-decoration: none;
+    }
+}
+
+// --- Ghost Button (on dark bg, e.g. stats/CTA sections) ---
+.btn-bader-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    background: rgba(255, 255, 255, 0.06);
+    color: $white;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: $radius-pill;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all $transition-base;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.25);
+    }
+}
+
+// --- Odoo Shop Buttons Override ---
+.oe_website_sale {
+
+    .btn-primary,
+    .a-submit {
+        @include btn-glow;
+        padding: 12px 28px;
+    }
+}

@@ -1,0 +1,171 @@
+// ============================================
+// Bader Homepage — Testimonials Carousel (light)
+// ============================================
+
+.bader-testimonials {
+    background: $white;
+    padding: $space-4xl 0;
+
+    &__container {
+        @include section-container;
+    }
+
+    &__heading {
+        text-align: center;
+        margin-bottom: $space-3xl;
+    }
+
+    &__carousel {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    &__card {
+        background: $white;
+        border: 1px solid $gray-200;
+        border-radius: $radius-xl;
+        padding: $space-2xl $space-xl;
+        margin: 0 auto;
+        max-width: 700px;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+
+        @include mobile {
+            padding: $space-xl $space-lg;
+        }
+    }
+
+    &__quote-icon {
+        color: $bader-green;
+        font-size: 2.5rem;
+        margin-bottom: $space-md;
+        opacity: 0.6;
+    }
+
+    &__stars {
+        display: flex;
+        gap: 4px;
+        margin-bottom: $space-md;
+
+        i {
+            color: $stars-color;
+            font-size: 1rem;
+        }
+    }
+
+    &__text {
+        color: $gray-600;
+        font-size: 1.05rem;
+        line-height: 1.8;
+        font-style: italic;
+        margin-bottom: $space-xl;
+
+        @include mobile {
+            font-size: 0.95rem;
+        }
+    }
+
+    &__author {
+        display: flex;
+        align-items: center;
+        gap: $space-md;
+
+        img {
+            width: 48px;
+            height: 48px;
+            border-radius: $radius-full;
+            object-fit: cover;
+            border: 2px solid $gray-200;
+        }
+    }
+
+    &__author-name {
+        color: $bader-dark;
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
+
+    &__author-role {
+        color: $gray-400;
+        font-size: 0.82rem;
+    }
+
+    &__author-clinic {
+        color: $bader-green;
+        font-size: 0.82rem;
+        font-weight: 500;
+    }
+
+    // Carousel navigation dots
+    &__dots {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: $space-xl;
+    }
+
+    &__dot {
+        width: 8px;
+        height: 8px;
+        border-radius: $radius-full;
+        background: $gray-200;
+        border: none;
+        cursor: pointer;
+        transition: all $transition-base;
+        padding: 0;
+
+        &.active,
+        &:hover {
+            background: $bader-green;
+            width: 24px;
+            border-radius: 4px;
+        }
+    }
+
+    // Arrow buttons
+    &__arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 44px;
+        height: 44px;
+        border-radius: $radius-full;
+        background: $white;
+        border: 1px solid $gray-200;
+        color: $bader-dark;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all $transition-base;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+        &:hover {
+            background: $bader-green;
+            border-color: $bader-green;
+            color: $white;
+        }
+
+        &--prev {
+            left: -60px;
+        }
+
+        &--next {
+            right: -60px;
+        }
+
+        @include tablet-down {
+            &--prev {
+                left: -10px;
+            }
+
+            &--next {
+                right: -10px;
+            }
+        }
+
+        @include mobile {
+            display: none;
+        }
+    }
+}

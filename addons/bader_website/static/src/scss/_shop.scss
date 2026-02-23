@@ -1,0 +1,232 @@
+// ============================================
+// Bader — Shop & Product Pages
+// ============================================
+
+// --- Shop Page Grid ---
+.oe_website_sale {
+    background: $bader-dark !important;
+
+    // Page title
+    .o_wsale_products_main_row h1,
+    #products_grid_before h1 {
+        color: $white;
+    }
+
+    // --- Product Card ---
+    .oe_product_cart {
+        @include card($bader-dark-card);
+        overflow: hidden;
+        border-radius: $radius-lg !important;
+
+        .oe_product_image {
+            background: $bader-dark-surface;
+            border-radius: $radius-lg $radius-lg 0 0;
+            overflow: hidden;
+            position: relative;
+
+            img {
+                transition: transform $transition-slow;
+            }
+
+            &:hover img {
+                transform: scale(1.05);
+            }
+        }
+
+        // Product info section
+        .o_wsale_product_information {
+            padding: $space-md;
+        }
+
+        // Product name
+        .o_wsale_product_information h6 a,
+        .oe_product_cart h6 a,
+        .o_wsale_products_item a h6 {
+            color: $white !important;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: color $transition-fast;
+
+            &:hover {
+                color: $bader-green !important;
+            }
+        }
+
+        // Description snippet
+        .o_wsale_product_information .product_price,
+        .oe_subdescription {
+            font-size: 0.82rem;
+            color: $gray-400;
+        }
+
+        // Price
+        .product_price .oe_currency_value,
+        .oe_product_cart .oe_price {
+            color: $bader-green !important;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        .oe_product_cart .text-danger,
+        .product_price del {
+            color: $gray-500 !important;
+            font-size: 0.85rem;
+        }
+
+        // Wishlist / Comparison buttons
+        .o_wsale_product_btn,
+        .o_add_wishlist,
+        .o_add_compare {
+            color: $gray-400;
+            border: 1px solid $bader-dark-border;
+            border-radius: $radius-sm;
+            background: rgba(255, 255, 255, 0.04);
+            transition: all $transition-fast;
+
+            &:hover {
+                color: $bader-green;
+                border-color: rgba(78, 203, 113, 0.3);
+                background: $bader-green-bg;
+            }
+        }
+    }
+
+    // --- Filters / Sidebar ---
+    .css_attributes,
+    #products_grid_before {
+        color: $gray-300;
+
+        .form-check-label {
+            color: $gray-300;
+        }
+
+        .form-check-input:checked {
+            background-color: $bader-green;
+            border-color: $bader-green;
+        }
+
+        .nav-link {
+            color: $gray-400 !important;
+
+            &.active,
+            &:hover {
+                color: $bader-green !important;
+            }
+        }
+    }
+
+    // --- Pagination ---
+    .pagination {
+        .page-link {
+            background: $bader-dark-card;
+            border-color: $bader-dark-border;
+            color: $gray-300;
+
+            &:hover {
+                background: $bader-green-bg;
+                color: $bader-green;
+            }
+        }
+
+        .page-item.active .page-link {
+            background: $bader-green;
+            border-color: $bader-green;
+            color: $white;
+        }
+    }
+
+    // --- Sort dropdown ---
+    .o_wsale_apply_sort {
+        background: $bader-dark-card !important;
+        border-color: $bader-dark-border !important;
+        color: $gray-300 !important;
+    }
+}
+
+// --- Product Detail Page ---
+#product_detail,
+.oe_website_sale #product_detail {
+    background: $bader-dark;
+    color: $gray-300;
+
+    .product_price {
+        .oe_price .oe_currency_value {
+            color: $bader-green !important;
+            font-size: 2rem;
+            font-weight: 800;
+        }
+    }
+
+    h1[itemprop="name"],
+    #product_detail_main h1 {
+        color: $white;
+    }
+
+    .nav-tabs {
+        border-color: $bader-dark-border;
+
+        .nav-link {
+            color: $gray-400;
+
+            &.active {
+                color: $bader-green;
+                border-color: $bader-green;
+                background: transparent;
+            }
+        }
+    }
+
+    .tab-content {
+        color: $gray-300;
+    }
+}
+
+// --- Breadcrumb (dark) ---
+.breadcrumb {
+    background: transparent;
+
+    .breadcrumb-item {
+        a {
+            color: $gray-400;
+
+            &:hover {
+                color: $bader-green;
+            }
+        }
+
+        &.active {
+            color: $gray-300;
+        }
+
+        +.breadcrumb-item::before {
+            color: $gray-500;
+        }
+    }
+}
+
+// --- Stock Badges ---
+.bader-stock-badge {
+    @include badge($in-stock, $white);
+    font-size: 11px;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+
+    &--out {
+        background: $out-stock;
+    }
+}
+
+// --- Installment Price ---
+.bader-installment {
+    color: $gray-400;
+    font-size: 0.82rem;
+    margin-top: 4px;
+
+    .bader-installment__price {
+        color: $gray-300;
+        font-weight: 500;
+    }
+}

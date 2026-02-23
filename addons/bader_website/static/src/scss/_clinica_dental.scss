@@ -1,0 +1,23 @@
+// ============================================
+// Clínica Dental — Page Styles
+// ============================================
+
+.bader-clinic__category-card {
+    display: block;
+    text-decoration: none !important;
+    color: inherit !important;
+    cursor: pointer;
+}
+
+.bader-clinic__feature-card {
+    background: $white;
+    border: 1px solid $bader-card-border;
+    border-radius: $radius-xl;
+    padding: 1.5rem 1rem;
+    transition: box-shadow $transition-base, transform $transition-base;
+
+    &:hover {
+        box-shadow: $shadow-md;
+        transform: translateY(-2px);
+    }
+}

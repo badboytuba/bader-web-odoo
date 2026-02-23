@@ -1,0 +1,188 @@
+// ============================================
+// Bader Design System — Mixins
+// ============================================
+
+// --- Responsive Media Queries ---
+@mixin mobile {
+    @media (max-width: $bp-tablet - 1) {
+        @content;
+    }
+}
+
+@mixin tablet {
+    @media (min-width: $bp-tablet) and (max-width: $bp-desktop - 1) {
+        @content;
+    }
+}
+
+@mixin tablet-down {
+    @media (max-width: $bp-desktop - 1) {
+        @content;
+    }
+}
+
+@mixin desktop {
+    @media (min-width: $bp-desktop) {
+        @content;
+    }
+}
+
+@mixin wide {
+    @media (min-width: $bp-wide) {
+        @content;
+    }
+}
+
+// Legacy compat
+@mixin responsive($breakpoint) {
+    @if $breakpoint ==mobile {
+        @include mobile {
+            @content;
+        }
+    }
+
+    @else if $breakpoint ==tablet {
+        @include tablet-down {
+            @content;
+        }
+    }
+
+    @else if $breakpoint ==desktop {
+        @include desktop {
+            @content;
+        }
+    }
+}
+
+// --- Glassmorphism ---
+@mixin glass($bg: rgba(13, 27, 42, 0.85), $blur: 20px) {
+    background: $bg;
+    backdrop-filter: blur($blur);
+    -webkit-backdrop-filter: blur($blur);
+}
+
+// --- Card Style ---
+@mixin card($bg: $bader-dark-card) {
+    background: $bg;
+    border: 1px solid $bader-dark-border;
+    border-radius: $radius-lg;
+    transition: transform $transition-base, box-shadow $transition-base;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: $shadow-lg;
+    }
+}
+
+// --- Green Glow Button ---
+@mixin btn-glow {
+    background: $bader-green;
+    color: $white;
+    border: none;
+    border-radius: $radius-pill;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all $transition-base;
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+        background: $bader-green-dark;
+        box-shadow: $shadow-green;
+        transform: translateY(-2px);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+// --- Badge Pill ---
+@mixin badge($bg: $bader-green, $color: $white) {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: $bg;
+    color: $color;
+    border-radius: $radius-pill;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1;
+}
+
+// --- Section Container ---
+@mixin section-container {
+    max-width: $container-max;
+    margin: 0 auto;
+    padding: 0 $container-padding;
+}
+
+// --- Fade In Animation ---
+@mixin fade-in-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+
+    &.bader-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// --- Text Truncate ---
+@mixin truncate($lines: 2) {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+// --- Section Heading (light theme) ---
+@mixin section-heading {
+    text-align: center;
+    margin-bottom: $space-3xl;
+
+    .bader-section__label,
+    .bader-label {
+        @include badge(rgba(132, 204, 22, 0.1), $bader-green);
+        margin-bottom: $space-md;
+    }
+
+    .bader-section__title {
+        font-family: 'Montserrat', 'Inter', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: $bader-dark;
+        margin-bottom: $space-md;
+        letter-spacing: -0.03em;
+
+        @include mobile {
+            font-size: 1.75rem;
+        }
+    }
+
+    .bader-section__subtitle {
+        font-size: 1.05rem;
+        color: $gray-500;
+        max-width: 640px;
+        margin: 0 auto;
+        line-height: 1.7;
+
+        @include mobile {
+            font-size: 0.95rem;
+        }
+    }
+}
+
+// --- Overlay gradient ---
+@mixin gradient-overlay($direction: to bottom, $from: rgba(13, 27, 42, 0.9), $to: transparent) {
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient($direction, $from, $to);
+        pointer-events: none;
+    }
+}

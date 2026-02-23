@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Bader Homepage — standalone template called by controller -->
+    <template id="bader_homepage" name="Bader Homepage">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+
+                <!-- ==========================================
+                     HERO SECTION — Split layout like reference
+                     ========================================== -->
+                <section class="bader-hero bader-animate">
+                    <div class="bader-hero__container">
+                        <!-- Category Tabs (centered above hero) -->
+                        <div class="bader-hero__tabs-wrapper">
+                            <div class="bader-hero__tabs">
+                                <a href="#" class="bader-hero__tab bader-hero__tab--active">
+                                    <i class="fa fa-medkit"/> Clínica Dental
+                                </a>
+                                <a href="#" class="bader-hero__tab">
+                                    <i class="fa fa-flask"/> Laboratorio
+                                </a>
+                                <a href="#" class="bader-hero__tab">
+                                    <i class="fa fa-graduation-cap"/> Estudiantes
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="bader-hero__split">
+                            <!-- Left: Text Content -->
+                            <div class="bader-hero__text">
+
+                                <span class="bader-hero__label">
+                                    <i class="fa fa-star"/> Para Clínica Dental
+                                </span>
+                                <h1 class="bader-hero__title">
+                                    Tu Clinica,<br/>
+                                    <span class="text-green">Tu Exito</span>
+                                </h1>
+                                <p class="bader-hero__subtitle">
+                                    Equipamiento de ultima generacion para que tus pacientes
+                                    confien en cada sonrisa que creas.
+                                </p>
+
+                                <!-- Inline Stats -->
+                                <div class="bader-hero__inline-stats">
+                                    <div class="bader-hero__stat">
+                                        <span class="bader-hero__stat-num">10,000+</span>
+                                        <span class="bader-hero__stat-label">Clientes satisfechos</span>
+                                    </div>
+                                    <div class="bader-hero__stat">
+                                        <span class="bader-hero__stat-num">4.7</span>
+                                        <span class="bader-hero__stat-label">Google Reviews</span>
+                                    </div>
+                                    <div class="bader-hero__stat">
+                                        <span class="bader-hero__stat-num">1,300+</span>
+                                        <span class="bader-hero__stat-label">Productos</span>
+                                    </div>
+                                </div>
+
+                                <div class="bader-hero__actions">
+                                    <a href="/shop" class="btn-bader">
+                                        Equipar mi clinica <i class="fa fa-arrow-right"/>
+                                    </a>
+                                    <a href="/shop" class="btn-bader-outline">
+                                        <i class="fa fa-play"/> Ver productos
+                                    </a>
+                                </div>
+
+                                <!-- Testimonial Card -->
+                                <div class="bader-hero__testimonial">
+                                    <div class="bader-hero__testimonial-stars">
+                                        <i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/>
+                                        <i class="fa fa-star"/><i class="fa fa-star"/>
+                                    </div>
+                                    <p class="bader-hero__testimonial-text">
+                                        "Los equipos Bader transformaron la experiencia de mis pacientes.
+                                        Es como tener tecnologia del futuro hoy."
+                                    </p>
+                                    <div class="bader-hero__testimonial-author">
+                                        <i class="fa fa-heart text-green"/>
+                                        <div>
+                                            <strong>Dra. Maria Garcia</strong>
+                                            <span>Odontologa, Buenos Aires</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right: Image -->
+                            <div class="bader-hero__image">
+                                <img src="/bader_website/static/src/img/hero-clinic.jpg"
+                                     alt="Clinica dental moderna"
+                                     loading="lazy"/>
+                                <!-- Carousel dots overlay -->
+                                <div class="bader-hero__image-dots">
+                                    <span class="dot active">1</span>
+                                    <span class="dot">2</span>
+                                    <span class="dot">3</span>
+                                    <span class="bader-hero__image-count">+10,000<br/><small>Clientes felices</small></span>
+                                </div>
+                                <!-- Guarantee Badge -->
+                                <div class="bader-hero__guarantee">
+                                    <i class="fa fa-check-circle"/>
+                                    <div>
+                                        <small>Garantia</small>
+                                        <strong>15 anos</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     BENEFITS SECTION — POR QUE ELEGIRNOS
+                     ========================================== -->
+                <section class="bader-benefits bader-animate">
+                    <div class="bader-benefits__container">
+                        <span class="bader-label">POR QUE ELEGIRNOS</span>
+                        <h2 class="bader-section__title bader-section__title--dark">
+                            Beneficios Exclusivos Para Tu Consultorio
+                        </h2>
+                        <p class="bader-section__subtitle bader-section__subtitle--dark">
+                            Mas que un proveedor, somos tu socio estrategico en el crecimiento
+                            de tu practica odontologica
+                        </p>
+
+                        <div class="bader-benefits__grid">
+                            <!-- Benefit 1 -->
+                            <div class="bader-benefits__card">
+                                <div class="bader-benefits__icon">
+                                    <i class="fa fa-shield"/>
+                                </div>
+                                <div class="bader-benefits__content">
+                                    <h3>Garantia Europea Oficial</h3>
+                                    <p>Todos nuestros equipos cuentan con garantia oficial del
+                                       fabricante europeo. Tu inversion esta protegida.</p>
+                                    <span class="bader-benefits__highlight">
+                                        <i class="fa fa-check-circle"/> 2 anos de cobertura
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Benefit 2 -->
+                            <div class="bader-benefits__card">
+                                <div class="bader-benefits__icon">
+                                    <i class="fa fa-credit-card"/>
+                                </div>
+                                <div class="bader-benefits__content">
+                                    <h3>Hasta 12 Cuotas Sin Interes</h3>
+                                    <p>Financia tu compra con todas las tarjetas. Paga comodamente
+                                       sin recargos adicionales.</p>
+                                    <span class="bader-benefits__highlight">
+                                        <i class="fa fa-check-circle"/> Con todas las tarjetas
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Benefit 3 -->
+                            <div class="bader-benefits__card">
+                                <div class="bader-benefits__icon">
+                                    <i class="fa fa-truck"/>
+                                </div>
+                                <div class="bader-benefits__content">
+                                    <h3>Envio Gratis a Todo el Pais</h3>
+                                    <p>Recibe tu equipo en la puerta de tu consultorio sin costo
+                                       adicional de envio.</p>
+                                    <span class="bader-benefits__highlight">
+                                        <i class="fa fa-check-circle"/> Entrega en 48-72hs
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Benefit 4 -->
+                            <div class="bader-benefits__card">
+                                <div class="bader-benefits__icon">
+                                    <i class="fa fa-headphones"/>
+                                </div>
+                                <div class="bader-benefits__content">
+                                    <h3>Soporte Tecnico Especializado</h3>
+                                    <p>Equipo de tecnicos certificados disponibles para ayudarte
+                                       con instalacion y mantenimiento.</p>
+                                    <span class="bader-benefits__highlight">
+                                        <i class="fa fa-check-circle"/> Respuesta en 24hs
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Benefit 5 -->
+                            <div class="bader-benefits__card">
+                                <div class="bader-benefits__icon">
+                                    <i class="fa fa-certificate"/>
+                                </div>
+                                <div class="bader-benefits__content">
+                                    <h3>Calidad Premium Certificada</h3>
+                                    <p>Productos que cumplen con las normas ISO y certificaciones
+                                       internacionales mas exigentes.</p>
+                                    <span class="bader-benefits__highlight">
+                                        <i class="fa fa-check-circle"/> ISO 13485 certificado
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Benefit 6 -->
+                            <div class="bader-benefits__card">
+                                <div class="bader-benefits__icon">
+                                    <i class="fa fa-refresh"/>
+                                </div>
+                                <div class="bader-benefits__content">
+                                    <h3>Devoluciones Sin Complicaciones</h3>
+                                    <p>Si no estas satisfecho, tienes 30 dias para devolver tu
+                                       producto sin preguntas.</p>
+                                    <span class="bader-benefits__highlight">
+                                        <i class="fa fa-check-circle"/> 30 dias de prueba
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Trust banner -->
+                        <div class="bader-benefits__trust-banner">
+                            <i class="fa fa-bolt"/>
+                            +10,000 profesionales ya confian en Bader Argentina
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     FEATURED PRODUCTS — Productos Destacados
+                     ========================================== -->
+                <section class="bader-products bader-animate">
+                    <div class="bader-products__container">
+                        <span class="bader-label">Productos Destacados</span>
+                        <h2 class="bader-section__title bader-section__title--dark">
+                            Equipos Que Transforman Tu Practica
+                        </h2>
+                        <p class="bader-section__subtitle bader-section__subtitle--dark">
+                            Seleccionamos los mejores equipos odontologicos de Europa para que tu
+                            consultorio ofrezca la mejor experiencia a tus pacientes
+                        </p>
+                        <!-- Products loaded dynamically from Odoo shop -->
+                        <div class="bader-products__cta">
+                            <a href="/shop" class="btn-bader btn-bader--lg">
+                                Ver Catalogo Completo <i class="fa fa-arrow-right"/>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Stats Section (dark background) -->
+                <section class="bader-stats bader-animate">
+                    <div class="bader-stats__container">
+                        <div class="bader-stats__grid">
+                            <div class="bader-stats__card">
+                                <div class="bader-stats__icon">
+                                    <i class="fa fa-users"/>
+                                </div>
+                                <div class="bader-stats__number" data-count="10000">10,000+</div>
+                                <div class="bader-stats__label">Clientes Activos</div>
+                            </div>
+                            <div class="bader-stats__card">
+                                <div class="bader-stats__icon">
+                                    <i class="fa fa-building"/>
+                                </div>
+                                <div class="bader-stats__number" data-count="800">800+</div>
+                                <div class="bader-stats__label">Distribuidores</div>
+                            </div>
+                            <div class="bader-stats__card">
+                                <div class="bader-stats__icon">
+                                    <i class="fa fa-cubes"/>
+                                </div>
+                                <div class="bader-stats__number" data-count="1300">1,300+</div>
+                                <div class="bader-stats__label">Productos</div>
+                            </div>
+                            <div class="bader-stats__card">
+                                <div class="bader-stats__icon">
+                                    <i class="fa fa-star"/>
+                                </div>
+                                <div class="bader-stats__number">4.7/5</div>
+                                <div class="bader-stats__label">Google Reviews</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Testimonials Section -->
+                <section class="bader-testimonials bader-animate">
+                    <div class="bader-testimonials__container">
+                        <div class="bader-testimonials__heading">
+                            <span class="bader-label">Testimonios Reales</span>
+                            <h2 class="bader-section__title">Lo Que Dicen Nuestros Clientes</h2>
+                            <p class="bader-section__subtitle">
+                                Miles de profesionales ya transformaron sus consultorios con Bader Argentina
+                            </p>
+                        </div>
+
+                        <div class="bader-testimonials__carousel" id="baderTestimonialCarousel">
+                            <div class="bader-testimonials__card bader-testimonial-slide active" data-slide="0">
+                                <div class="bader-testimonials__quote-icon">
+                                    <i class="fa fa-quote-left"/>
+                                </div>
+                                <div class="bader-testimonials__stars">
+                                    <i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/>
+                                    <i class="fa fa-star"/><i class="fa fa-star"/>
+                                </div>
+                                <p class="bader-testimonials__text">
+                                    "Llevo 3 anos trabajando con equipos Bader y jamas he tenido problemas.
+                                    El servicio postventa es excelente y la garantia europea me da total tranquilidad."
+                                </p>
+                                <div class="bader-testimonials__author">
+                                    <div>
+                                        <div class="bader-testimonials__author-name">Dra. Patricia Alvarez</div>
+                                        <div class="bader-testimonials__author-role">Periodoncista</div>
+                                        <div class="bader-testimonials__author-clinic">Clinica Plein Centre</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bader-testimonials__card bader-testimonial-slide" data-slide="1" style="display:none;">
+                                <div class="bader-testimonials__quote-icon">
+                                    <i class="fa fa-quote-left"/>
+                                </div>
+                                <div class="bader-testimonials__stars">
+                                    <i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/>
+                                    <i class="fa fa-star"/><i class="fa fa-star"/>
+                                </div>
+                                <p class="bader-testimonials__text">
+                                    "Los sillones Bader tienen la mejor relacion calidad-precio del mercado.
+                                    Mis pacientes siempre comentan lo comodos que son."
+                                </p>
+                                <div class="bader-testimonials__author">
+                                    <div>
+                                        <div class="bader-testimonials__author-name">Dr. Carlos Mendez</div>
+                                        <div class="bader-testimonials__author-role">Odontologo General</div>
+                                        <div class="bader-testimonials__author-clinic">Consultorio Mendez</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bader-testimonials__card bader-testimonial-slide" data-slide="2" style="display:none;">
+                                <div class="bader-testimonials__quote-icon">
+                                    <i class="fa fa-quote-left"/>
+                                </div>
+                                <div class="bader-testimonials__stars">
+                                    <i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/>
+                                    <i class="fa fa-star"/><i class="fa fa-star"/>
+                                </div>
+                                <p class="bader-testimonials__text">
+                                    "La financiacion en cuotas sin interes fue clave para equipar mi nuevo
+                                    consultorio. El equipo de Bader me asesoro en cada paso."
+                                </p>
+                                <div class="bader-testimonials__author">
+                                    <div>
+                                        <div class="bader-testimonials__author-name">Dra. Laura Gomez</div>
+                                        <div class="bader-testimonials__author-role">Endodoncista</div>
+                                        <div class="bader-testimonials__author-clinic">Dental Care BA</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="bader-testimonials__arrow bader-testimonials__arrow--prev" id="testimonialPrev">
+                                <i class="fa fa-chevron-left"/>
+                            </button>
+                            <button class="bader-testimonials__arrow bader-testimonials__arrow--next" id="testimonialNext">
+                                <i class="fa fa-chevron-right"/>
+                            </button>
+                        </div>
+
+                        <div class="bader-testimonials__dots">
+                            <button class="bader-testimonials__dot active" data-slide="0"/>
+                            <button class="bader-testimonials__dot" data-slide="1"/>
+                            <button class="bader-testimonials__dot" data-slide="2"/>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CTA Section -->
+                <section class="bader-cta bader-animate">
+                    <div class="bader-cta__container">
+                        <div class="bader-cta__content">
+                            <span class="bader-cta__label">
+                                <i class="fa fa-gift"/> Oferta Exclusiva
+                            </span>
+                            <h2 class="bader-cta__title">
+                                Obtene un <span class="text-green">10% de Descuento</span>
+                                en Tu Primera Compra
+                            </h2>
+                            <p class="bader-cta__subtitle">
+                                Registrate ahora y recibe acceso exclusivo a:
+                            </p>
+                            <ul class="bader-cta__benefits">
+                                <li><i class="fa fa-check-circle"/> Catalogo completo con precios especiales</li>
+                                <li><i class="fa fa-check-circle"/> Asesoria personalizada de un experto</li>
+                                <li><i class="fa fa-check-circle"/> Financiamiento hasta 12 cuotas sin interes</li>
+                                <li><i class="fa fa-check-circle"/> Envio gratis a todo el pais</li>
+                                <li><i class="fa fa-check-circle"/> Garantia europea oficial</li>
+                            </ul>
+                            <div class="bader-cta__trust">
+                                <span><i class="fa fa-lock"/> Datos seguros</span>
+                                <span><i class="fa fa-ban"/> Sin spam</span>
+                            </div>
+                        </div>
+
+                        <div class="bader-cta__form-card">
+                            <form action="/bader/cta-form" method="POST">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="bader-cta__form-group">
+                                    <label>Nombre completo</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa fa-user"/>
+                                        <input type="text" name="name" class="bader-input"
+                                               placeholder="Dr. Juan Perez" required="required"/>
+                                    </div>
+                                </div>
+                                <div class="bader-cta__form-group">
+                                    <label>Email</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa fa-envelope"/>
+                                        <input type="email" name="email" class="bader-input"
+                                               placeholder="tu@email.com" required="required"/>
+                                    </div>
+                                </div>
+                                <div class="bader-cta__form-group">
+                                    <label>Telefono (opcional)</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa fa-phone"/>
+                                        <input type="tel" name="phone" class="bader-input"
+                                               placeholder="+54 11 1234 5678"/>
+                                    </div>
+                                </div>
+                                <div class="bader-cta__form-group">
+                                    <label>Consultorio / Clinica (opcional)</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa fa-hospital-o"/>
+                                        <input type="text" name="clinic" class="bader-input"
+                                               placeholder="Nombre de tu consultorio"/>
+                                    </div>
+                                </div>
+                                <div class="bader-cta__form-group">
+                                    <label>Profesion</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa fa-briefcase"/>
+                                        <select name="profession" class="bader-input">
+                                            <option value="">Selecciona tu profesion</option>
+                                            <option value="odontologo">Odontologo/a General</option>
+                                            <option value="ortodoncista">Ortodoncista</option>
+                                            <option value="endodoncista">Endodoncista</option>
+                                            <option value="periodoncista">Periodoncista</option>
+                                            <option value="implantologista">Implantologista</option>
+                                            <option value="protesista">Protesista</option>
+                                            <option value="estudiante">Estudiante</option>
+                                            <option value="otro">Otro</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="bader-cta__submit-btn">
+                                    <i class="fa fa-rocket"/> Obtene tu Descuento
+                                </button>
+                                <div class="bader-cta__form-footer">
+                                    Al registrarte aceptas nuestros terminos y condiciones
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </t>
+    </template>
+
+    <!-- Thank You page after CTA form submission -->
+    <template id="bader_thankyou" name="Bader Thank You Page">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <section class="bader-hero" style="min-height:500px;">
+                    <div class="bader-hero__container">
+                        <div style="font-size:4rem; margin-bottom:24px;">
+                            <i class="fa fa-check-circle text-green"/>
+                        </div>
+                        <h1 class="bader-hero__title">
+                            <span class="text-green">Gracias</span> por registrarte!
+                        </h1>
+                        <p class="bader-hero__subtitle">
+                            Hemos recibido tu solicitud. Un asesor de Bader se
+                            pondra en contacto contigo muy pronto con tu descuento exclusivo.
+                        </p>
+                        <div class="bader-hero__actions">
+                            <a href="/shop" class="btn-bader">
+                                <i class="fa fa-shopping-bag"/> Ver Catalogo
+                            </a>
+                            <a href="/" class="btn-bader-outline">
+                                <i class="fa fa-home"/> Volver al Inicio
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+</odoo>

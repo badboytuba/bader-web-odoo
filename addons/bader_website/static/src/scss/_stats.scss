@@ -1,0 +1,82 @@
+// ============================================
+// Bader Homepage — Stats Counters (dark accent)
+// ============================================
+// Stats section keeps dark teal background as a visual break
+
+.bader-stats {
+    background: linear-gradient(135deg, $bader-dark 0%, $bader-dark-alt 100%);
+    padding: $space-4xl 0;
+
+    @include mobile {
+        padding: $space-2xl 0;
+    }
+
+    &__container {
+        @include section-container;
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: $space-xl;
+
+        @include tablet-down {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @include mobile {
+            grid-template-columns: 1fr 1fr;
+            gap: $space-md;
+        }
+    }
+
+    &__card {
+        text-align: center;
+        padding: $space-xl;
+        border-radius: $radius-lg;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: transform $transition-base, border-color $transition-base;
+
+        &:hover {
+            transform: translateY(-4px);
+            border-color: rgba(132, 204, 22, 0.2);
+        }
+    }
+
+    &__icon {
+        width: 56px;
+        height: 56px;
+        border-radius: $radius-full;
+        background: rgba(132, 204, 22, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto $space-md;
+
+        i {
+            color: $bader-green;
+            font-size: 1.3rem;
+        }
+    }
+
+    &__number {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: $white;
+        letter-spacing: -0.02em;
+        line-height: 1;
+        margin-bottom: $space-xs;
+
+        @include mobile {
+            font-size: 2rem;
+        }
+    }
+
+    &__label {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.88rem;
+        font-weight: 500;
+    }
+}

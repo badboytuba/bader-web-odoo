@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Replace Odoo's default footer with Bader premium footer -->
+    <template id="bader_footer" inherit_id="website.layout"
+              name="Bader Custom Footer" customize_show="True">
+        <xpath expr="//div[@id='footer']" position="replace">
+            <div id="footer" class="oe_structure">
+                <footer id="bottom">
+
+                    <!-- Main Footer Grid -->
+                    <div class="bader-footer-grid">
+
+                        <!-- Column 1: Company Info -->
+                        <div class="bader-footer__col">
+                            <h5 class="bader-footer__title">
+                                Bader <span class="text-green">Iberoamericana</span> SRL
+                            </h5>
+                            <p class="bader-footer__desc">
+                                Lider en equipos odontologicos de alta calidad. Mas
+                                de 15 anos equipando consultorios en toda Argentina
+                                con productos de origen europeo.
+                            </p>
+                            <ul class="bader-footer__contact">
+                                <li>
+                                    <i class="fa fa-phone"/>
+                                    <a href="tel:+541124522097">+54 9 11 2452-2097</a>
+                                </li>
+                                <li>
+                                    <i class="fa fa-envelope"/>
+                                    <a href="mailto:hola@bader.com.ar">hola@bader.com.ar</a>
+                                </li>
+                                <li>
+                                    <i class="fa fa-map-marker"/>
+                                    <span>Uriburu 1079 Piso 4to, Buenos Aires</span>
+                                </li>
+                                <li>
+                                    <i class="fa fa-clock-o"/>
+                                    <span>Lun-Vie: 9:00 - 18:00</span>
+                                </li>
+                            </ul>
+                            <div class="bader-footer__social">
+                                <a href="https://instagram.com/bader.ar" target="_blank" aria-label="Instagram">
+                                    <i class="fa fa-instagram"/>
+                                </a>
+                                <a href="https://facebook.com/bader.ar" target="_blank" aria-label="Facebook">
+                                    <i class="fa fa-facebook"/>
+                                </a>
+                                <a href="https://linkedin.com/company/bader" target="_blank" aria-label="LinkedIn">
+                                    <i class="fa fa-linkedin"/>
+                                </a>
+                                <a href="https://youtube.com/@bader" target="_blank" aria-label="YouTube">
+                                    <i class="fa fa-youtube-play"/>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Column 2: Products -->
+                        <div class="bader-footer__col">
+                            <h5 class="bader-footer__title">Productos</h5>
+                            <ul class="bader-footer__links">
+                                <li><a href="/shop?category=sillones">Sillones Dentales</a></li>
+                                <li><a href="/shop?category=autoclaves">Autoclaves</a></li>
+                                <li><a href="/shop?category=rayos">Rayos X</a></li>
+                                <li><a href="/shop?category=compresores">Compresores</a></li>
+                                <li><a href="/shop?category=instrumental">Instrumental</a></li>
+                                <li><a href="/shop?category=materiales">Materiales</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Column 3: Company -->
+                        <div class="bader-footer__col">
+                            <h5 class="bader-footer__title">Empresa</h5>
+                            <ul class="bader-footer__links">
+                                <li><a href="/quienes-somos">Quienes Somos</a></li>
+                                <li><a href="/ser-distribuidor">Ser Distribuidor</a></li>
+                                <li><a href="/servicios">Servicios</a></li>
+                                <li><a href="/clinica-dental">Clinica Dental</a></li>
+                                <li><a href="/blog">Blog</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Column 4: Help -->
+                        <div class="bader-footer__col">
+                            <h5 class="bader-footer__title">Ayuda</h5>
+                            <ul class="bader-footer__links">
+                                <li><a href="/garantia">Garantia</a></li>
+                                <li><a href="/devoluciones">Devoluciones</a></li>
+                                <li><a href="/financiacion">Financiacion</a></li>
+                                <li><a href="/envios">Envios</a></li>
+                                <li><a href="/faq">FAQ</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Trust Badges -->
+                    <div class="bader-footer__trust">
+                        <span class="bader-trust-item">
+                            <i class="fa fa-shield"/> Garantia Europea
+                        </span>
+                        <span class="bader-trust-item">
+                            <i class="fa fa-lock"/> Pago Seguro
+                        </span>
+                        <span class="bader-trust-item">
+                            <i class="fa fa-certificate"/> Calidad Certificada
+                        </span>
+                    </div>
+
+                    <!-- Copyright -->
+                    <div class="bader-footer__copyright">
+                        <span>2026 Bader Iberoamericana SRL. Todos los derechos reservados.</span>
+                        <br/>
+                        <a href="/terminos">Terminos y Condiciones</a>
+                        <a href="/privacidad">Politica de Privacidad</a>
+                        <a href="/cookies">Cookies</a>
+                    </div>
+
+                </footer>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- WhatsApp Floating Button -->
+    <template id="bader_whatsapp_button" inherit_id="website.layout"
+              name="Bader WhatsApp Button">
+        <xpath expr="//div[@id='wrapwrap']" position="inside">
+            <div class="bader-whatsapp">
+                <a class="bader-whatsapp__btn"
+                   href="https://wa.me/5491124522097?text=Hola!%20Necesito%20ayuda"
+                   target="_blank" aria-label="WhatsApp">
+                    <i class="fa fa-whatsapp"/>
+                </a>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>

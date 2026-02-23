@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ====================================================
+         CLÍNICA DENTAL — Niche landing page
+         Matches Bader-AR ClinicaDental.tsx structure
+         Product categories + featured products
+         ==================================================== -->
+    <template id="bader_clinica_dental" name="Bader Clínica Dental">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+
+                <!-- ============================
+                     HERO — Dark accent bg
+                     ============================ -->
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__blur bader-page-hero__blur--1"/>
+                    <div class="bader-page-hero__blur bader-page-hero__blur--2"/>
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <span class="bader-page-hero__badge">
+                                <i class="fa fa-medkit"/> Clínica Dental
+                            </span>
+                            <h1 class="bader-page-hero__title">
+                                Todo para tu <span class="text-green">clínica dental</span>
+                            </h1>
+                            <p class="bader-page-hero__subtitle">
+                                Equipamiento de última generación para que tus pacientes confíen
+                                en cada sonrisa que creas. Calidad europea al mejor precio.
+                            </p>
+                            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 2rem;">
+                                <a href="/shop" class="btn-bader">
+                                    Explorar productos <i class="fa fa-arrow-right"/>
+                                </a>
+                                <a href="#categorias" class="btn-bader-outline" style="border-color: rgba(255,255,255,0.3); color: white;">
+                                    <i class="fa fa-th"/> Ver categorías
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================
+                     CATEGORIES GRID — Muted bg
+                     ============================ -->
+                <section class="bader-page-section bader-page-section--muted bader-animate" id="categorias">
+                    <div class="bader-page-section__container">
+                        <div class="bader-page-section__heading">
+                            <span class="bader-page-hero__badge" style="background: rgba(112,212,75,0.10);">
+                                Categorías
+                            </span>
+                            <h2 class="bader-section__title">
+                                Equipamiento para cada <span class="text-green">necesidad</span>
+                            </h2>
+                            <p class="bader-section__subtitle">
+                                Encontrá todo lo que necesitás para equipar o renovar tu clínica dental
+                            </p>
+                        </div>
+
+                        <div class="bader-page-section__grid bader-page-section__grid--3">
+                            <a href="/shop?category=sillones" class="bader-clinic__category-card bader-page-card bader-animate">
+                                <div class="bader-gradient-icon bader-gradient-icon--green">
+                                    <i class="fa fa-bed"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Sillones Dentales</h3>
+                                <p class="bader-page-card__text">
+                                    Sillones de última generación con máxima comodidad para paciente y profesional.
+                                </p>
+                                <span class="bader-page-card__highlight">
+                                    <i class="fa fa-arrow-right"/> Ver sillones
+                                </span>
+                            </a>
+
+                            <a href="/shop?category=autoclaves" class="bader-clinic__category-card bader-page-card bader-animate">
+                                <div class="bader-gradient-icon bader-gradient-icon--blue">
+                                    <i class="fa fa-fire"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Autoclaves</h3>
+                                <p class="bader-page-card__text">
+                                    Equipos de esterilización con ciclos rápidos y certificación europea.
+                                </p>
+                                <span class="bader-page-card__highlight">
+                                    <i class="fa fa-arrow-right"/> Ver autoclaves
+                                </span>
+                            </a>
+
+                            <a href="/shop?category=rayos" class="bader-clinic__category-card bader-page-card bader-animate">
+                                <div class="bader-gradient-icon bader-gradient-icon--purple">
+                                    <i class="fa fa-bolt"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Rayos X</h3>
+                                <p class="bader-page-card__text">
+                                    Equipos de radiología digital con máxima resolución y mínima radiación.
+                                </p>
+                                <span class="bader-page-card__highlight">
+                                    <i class="fa fa-arrow-right"/> Ver rayos X
+                                </span>
+                            </a>
+
+                            <a href="/shop?category=compresores" class="bader-clinic__category-card bader-page-card bader-animate">
+                                <div class="bader-gradient-icon bader-gradient-icon--orange">
+                                    <i class="fa fa-wind"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Compresores</h3>
+                                <p class="bader-page-card__text">
+                                    Compresores silenciosos oil-free diseñados para uso odontológico profesional.
+                                </p>
+                                <span class="bader-page-card__highlight">
+                                    <i class="fa fa-arrow-right"/> Ver compresores
+                                </span>
+                            </a>
+
+                            <a href="/shop?category=instrumental" class="bader-clinic__category-card bader-page-card bader-animate">
+                                <div class="bader-gradient-icon bader-gradient-icon--teal">
+                                    <i class="fa fa-wrench"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Instrumental</h3>
+                                <p class="bader-page-card__text">
+                                    Instrumental rotatorio y manual de alta precisión para cada procedimiento.
+                                </p>
+                                <span class="bader-page-card__highlight">
+                                    <i class="fa fa-arrow-right"/> Ver instrumental
+                                </span>
+                            </a>
+
+                            <a href="/shop?category=materiales" class="bader-clinic__category-card bader-page-card bader-animate">
+                                <div class="bader-gradient-icon bader-gradient-icon--indigo">
+                                    <i class="fa fa-flask"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Materiales</h3>
+                                <p class="bader-page-card__text">
+                                    Consumibles y materiales dental de las mejores marcas europeas.
+                                </p>
+                                <span class="bader-page-card__highlight">
+                                    <i class="fa fa-arrow-right"/> Ver materiales
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================
+                     FEATURES — White bg
+                     ============================ -->
+                <section class="bader-page-section bader-page-section--white bader-animate">
+                    <div class="bader-page-section__container">
+                        <div class="bader-page-section__heading">
+                            <span class="bader-page-hero__badge" style="background: rgba(112,212,75,0.10);">
+                                ¿Por qué Bader?
+                            </span>
+                            <h2 class="bader-section__title">
+                                Ventajas de elegirnos para tu <span class="text-green">clínica</span>
+                            </h2>
+                        </div>
+
+                        <div class="bader-page-section__grid bader-page-section__grid--4">
+                            <div class="bader-clinic__feature-card">
+                                <div class="bader-page-card__icon" style="margin: 0 auto 1rem;">
+                                    <i class="fa fa-shield"/>
+                                </div>
+                                <h4 style="text-align:center; color: #003841; font-weight: 700; margin-bottom: 0.5rem;">Garantía Europea</h4>
+                                <p style="text-align:center; color: #64748B; font-size: 0.85rem;">
+                                    2 años de cobertura oficial del fabricante
+                                </p>
+                            </div>
+                            <div class="bader-clinic__feature-card">
+                                <div class="bader-page-card__icon" style="margin: 0 auto 1rem;">
+                                    <i class="fa fa-credit-card"/>
+                                </div>
+                                <h4 style="text-align:center; color: #003841; font-weight: 700; margin-bottom: 0.5rem;">12 Cuotas Sin Interés</h4>
+                                <p style="text-align:center; color: #64748B; font-size: 0.85rem;">
+                                    Con todas las tarjetas de crédito
+                                </p>
+                            </div>
+                            <div class="bader-clinic__feature-card">
+                                <div class="bader-page-card__icon" style="margin: 0 auto 1rem;">
+                                    <i class="fa fa-truck"/>
+                                </div>
+                                <h4 style="text-align:center; color: #003841; font-weight: 700; margin-bottom: 0.5rem;">Envío Gratis</h4>
+                                <p style="text-align:center; color: #64748B; font-size: 0.85rem;">
+                                    Entrega en todo el país sin cargo
+                                </p>
+                            </div>
+                            <div class="bader-clinic__feature-card">
+                                <div class="bader-page-card__icon" style="margin: 0 auto 1rem;">
+                                    <i class="fa fa-headphones"/>
+                                </div>
+                                <h4 style="text-align:center; color: #003841; font-weight: 700; margin-bottom: 0.5rem;">Soporte 24hs</h4>
+                                <p style="text-align:center; color: #64748B; font-size: 0.85rem;">
+                                    Asistencia técnica especializada
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================
+                     BENEFITS BAR — Dark accent
+                     ============================ -->
+                <section class="bader-page-section bader-page-section--accent bader-animate">
+                    <div class="bader-page-section__container">
+                        <div class="bader-about__benefits-bar">
+                            <div class="bader-about__benefit-item">
+                                <div class="bader-about__benefit-icon">
+                                    <i class="fa fa-certificate"/>
+                                </div>
+                                <span>ISO 13485 Certificado</span>
+                            </div>
+                            <div class="bader-about__benefit-item">
+                                <div class="bader-about__benefit-icon">
+                                    <i class="fa fa-globe"/>
+                                </div>
+                                <span>Fabricación Europea</span>
+                            </div>
+                            <div class="bader-about__benefit-item">
+                                <div class="bader-about__benefit-icon">
+                                    <i class="fa fa-users"/>
+                                </div>
+                                <span>+10,000 Profesionales</span>
+                            </div>
+                            <div class="bader-about__benefit-item">
+                                <div class="bader-about__benefit-icon">
+                                    <i class="fa fa-star"/>
+                                </div>
+                                <span>4.7/5 en Google</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================
+                     CTA — Green gradient
+                     ============================ -->
+                <section class="bader-page-section bader-page-section--green bader-animate">
+                    <div class="bader-page-section__container" style="text-align: center;">
+                        <h2 style="font-family: 'BaderSans', sans-serif; font-size: 2rem; font-weight: 800; color: white; margin-bottom: 1rem;">
+                            ¿Listo para equipar tu clínica?
+                        </h2>
+                        <p style="color: rgba(255,255,255,0.85); margin-bottom: 2rem; max-width: 36rem; margin-left: auto; margin-right: auto;">
+                            Explorá nuestro catálogo completo y encontrá los mejores equipos al mejor precio.
+                        </p>
+                        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem;">
+                            <a href="/shop" class="btn-bader" style="background: white; color: #70D44B;">
+                                <i class="fa fa-shopping-bag"/> Ver catálogo
+                            </a>
+                            <a href="/#bader-cta" class="btn-bader-outline" style="border-color: white; color: white;">
+                                Solicitar asesoría
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </t>
+    </template>
+
+</odoo>

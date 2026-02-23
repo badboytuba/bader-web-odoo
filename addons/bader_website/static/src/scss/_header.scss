@@ -1,0 +1,513 @@
+// ============================================
+// Bader Layout — Header Styling + Mega Menu
+// ============================================
+// NUCLEAR override: targets #wrapwrap > header#top
+// to beat ANY Odoo theme/color system specificity.
+// Reference: dark teal header matching shop.bader.com.ar
+
+// -----------------------------------------------
+// 1. Override website theme color variables
+// -----------------------------------------------
+:root {
+    --header-bg: #{$bader-dark} !important;
+}
+
+// -----------------------------------------------
+// 2. Main Header — Maximum Specificity Override
+// -----------------------------------------------
+#wrapwrap {
+
+    >header#top,
+    >header#top.o_header_standard,
+    >header#top.o_header_affixed {
+        background-color: $bader-dark !important;
+        background: $bader-dark !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+        position: sticky;
+        top: 0;
+        z-index: $z-header;
+        transition: background $transition-base, box-shadow $transition-base;
+
+        &.o_header_is_scrolled {
+            @include glass(rgba(10, 46, 54, 0.95), 20px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+            border-bottom-color: transparent !important;
+        }
+
+        // Override ALL Odoo color combinations
+        &.o-cc1,
+        &.o-cc2,
+        &.o-cc3,
+        &.o-cc4,
+        &.o-cc5 {
+            background-color: $bader-dark !important;
+            background: $bader-dark !important;
+        }
+
+        // Override boxed background
+        .o_header_boxed_background {
+            background-color: $bader-dark !important;
+        }
+
+        // Navbar container
+        .navbar,
+        nav.navbar,
+        .navbar.navbar-expand-sm {
+            background-color: transparent !important;
+            background: transparent !important;
+            padding: 12px 0;
+
+            @include mobile {
+                padding: 8px 0;
+            }
+        }
+
+        // Logo — green like reference
+        .navbar-brand {
+            margin-right: 40px;
+
+            img {
+                max-height: 28px;
+                // Remove brightness invert, use green tint
+                filter: brightness(1.2) saturate(1.3);
+            }
+        }
+
+        // -----------------------------------------------
+        // Nav Links — Clean, minimal style
+        // -----------------------------------------------
+        .navbar-nav .nav-link,
+        .top_menu>li>a,
+        #top_menu>li>a,
+        .o_menu_sections .nav-link,
+        #top_menu_container .nav-link,
+        .nav-item>a.nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-weight: 400;
+            font-size: 0.875rem;
+            padding: 8px 14px !important;
+            transition: color $transition-fast;
+            letter-spacing: 0.01em;
+            text-transform: none;
+            text-decoration: none;
+
+            &:hover,
+            &:focus,
+            &.active {
+                color: $white !important;
+                text-decoration: none;
+            }
+        }
+
+        // Active menu item - underline effect like reference
+        .navbar-nav .nav-item.active>.nav-link,
+        #top_menu>li.active>a {
+            color: $white !important;
+            position: relative;
+
+            &::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 14px;
+                right: 14px;
+                height: 2px;
+                background: $bader-green;
+                border-radius: 1px;
+            }
+        }
+
+        // Dropdown arrow for Productos
+        .dropdown-toggle::after {
+            border-top-color: rgba(255, 255, 255, 0.5);
+            margin-left: 4px;
+            vertical-align: 0.1em;
+            font-size: 0.65em;
+        }
+
+        // Standard dropdowns (non-mega)
+        .dropdown-menu:not(.bader-mega) {
+            @include glass(rgba(10, 46, 54, 0.95), 24px);
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: $radius-md;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            padding: 8px;
+
+            .dropdown-item {
+                color: rgba(255, 255, 255, 0.7) !important;
+                border-radius: $radius-sm;
+                padding: 10px 16px;
+                transition: background $transition-fast, color $transition-fast;
+
+                &:hover {
+                    background: rgba(132, 204, 22, 0.1) !important;
+                    color: $bader-green !important;
+                }
+            }
+        }
+
+        // -----------------------------------------------
+        // Custom Right-Side Elements
+        // -----------------------------------------------
+        .bader-header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-left: auto;
+        }
+
+        // ----- AI Search Pill — White border like reference -----
+        .bader-search-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 100px;
+            color: $white !important;
+            padding: 7px 16px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            text-decoration: none !important;
+            cursor: pointer;
+            transition: all $transition-fast;
+            white-space: nowrap;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.12);
+                border-color: rgba(255, 255, 255, 0.5);
+                box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+                color: $white !important;
+                text-decoration: none !important;
+            }
+
+            .fa-search {
+                font-size: 0.75rem;
+            }
+
+            kbd {
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 4px;
+                color: rgba(255, 255, 255, 0.6);
+                font-size: 0.65rem;
+                padding: 1px 5px;
+                font-family: inherit;
+                font-weight: 600;
+            }
+        }
+
+        // Also style Odoo's default search if present
+        .o_searchbar_form {
+            background: rgba(255, 255, 255, 0.06) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 100px !important;
+            color: $white !important;
+            transition: border-color $transition-fast, box-shadow $transition-fast;
+            padding: 4px 12px !important;
+            font-size: 0.82rem;
+
+            &:focus-within {
+                border-color: $bader-green !important;
+                box-shadow: 0 0 0 3px $bader-green-glow !important;
+                background: rgba(255, 255, 255, 0.1) !important;
+            }
+
+            input {
+                color: $white !important;
+                font-size: 0.82rem;
+
+                &::placeholder {
+                    color: rgba(255, 255, 255, 0.5) !important;
+                }
+            }
+
+            .btn,
+            button {
+                color: $white !important;
+            }
+        }
+
+        // -----------------------------------------------
+        // Cart & User Icons — Match reference design
+        // -----------------------------------------------
+        .o_wsale_my_cart,
+        .o_shopping_cart,
+        a[href="/shop/cart"],
+        a[href="/my/home"],
+        .o_extra_menu_items a {
+            color: $white !important;
+            transition: color $transition-fast;
+
+            &:hover {
+                color: $bader-green !important;
+            }
+        }
+
+        // "TU CUENTA" style — green text like reference
+        .o_header_call_to_action a,
+        a[href="/web/login"],
+        a[href="/my/home"] {
+            color: $bader-green !important;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        // Hide the default "Contáctenos" call-to-action button
+        .o_header_call_to_action .btn-primary,
+        .navbar .btn-primary {
+            display: none !important;
+        }
+
+        // Style the user dropdown (avatar area)
+        #top_menu_collapse .o_extra_menu_items,
+        .o_header_call_to_action {
+
+            .dropdown-toggle,
+            >a {
+                color: $bader-green !important;
+                font-size: 0.85rem;
+                font-weight: 600;
+                text-transform: uppercase;
+
+                &:hover {
+                    color: $bader-green-light !important;
+                }
+            }
+        }
+
+        // Cart badge
+        .o_wsale_my_cart .badge,
+        .o_shopping_cart .badge,
+        sup {
+            background-color: $bader-green !important;
+            color: $bader-dark !important;
+            font-size: 0.6rem;
+            font-weight: 700;
+        }
+
+        // Mobile Toggler
+        .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.15) !important;
+            color: $white !important;
+
+            .navbar-toggler-icon {
+                filter: brightness(0) invert(1);
+            }
+        }
+    }
+}
+
+// Edit mode: also override in connected user mode
+html.o_connected_user #wrapwrap>header#top {
+    background: $bader-dark !important;
+}
+
+
+// -----------------------------------------------
+// 3. MEGA MENU – Bader Productos Dropdown
+// -----------------------------------------------
+.bader-mega {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    right: 0;
+    z-index: $z-header - 1;
+    background: $white;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.08);
+    border-top: 3px solid $bader-green;
+    padding: 0;
+    animation: baderMegaSlide 0.25s ease-out;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 24px 0 16px;
+        border-bottom: 1px solid $gray-100;
+    }
+
+    &__title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: $bader-dark;
+        margin: 0;
+    }
+
+    &__view-all {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: $bader-green;
+        text-decoration: none;
+        transition: color $transition-fast;
+
+        &:hover {
+            color: darken($bader-green, 10%);
+        }
+
+        .fa {
+            margin-left: 4px;
+            font-size: 0.7rem;
+        }
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0;
+        padding: 20px 0 28px;
+    }
+
+    &__col {
+        padding: 0 24px;
+
+        &:not(:last-child) {
+            border-right: 1px solid $gray-100;
+        }
+    }
+
+    &__col-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    &__icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        color: $white;
+        flex-shrink: 0;
+
+        &--clinica {
+            background: linear-gradient(135deg, #1a8f6e, #14b88e);
+        }
+
+        &--lab {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+        }
+
+        &--student {
+            background: linear-gradient(135deg, #059669, #10b981);
+        }
+    }
+
+    &__col-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: $bader-dark;
+    }
+
+    &__col-desc {
+        font-size: 0.75rem;
+        color: $gray-400;
+        margin-top: 2px;
+    }
+
+    &__list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 12px;
+
+        li {
+            margin-bottom: 2px;
+        }
+
+        a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 8px;
+            color: $gray-600;
+            font-size: 0.84rem;
+            font-weight: 400;
+            text-decoration: none;
+            border-radius: $radius-sm;
+            transition: background $transition-fast, color $transition-fast;
+
+            .fa-chevron-right {
+                font-size: 0.55rem;
+                color: $bader-green;
+                opacity: 0;
+                transition: opacity $transition-fast;
+            }
+
+            &:hover {
+                background: rgba(132, 204, 22, 0.07);
+                color: $bader-dark;
+
+                .fa-chevron-right {
+                    opacity: 1;
+                }
+            }
+        }
+    }
+
+    &__more {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: $bader-green;
+        text-decoration: none;
+        padding: 4px 8px;
+        border-radius: $radius-sm;
+        transition: background $transition-fast;
+
+        &:hover {
+            background: rgba(132, 204, 22, 0.1);
+        }
+
+        .fa {
+            font-size: 0.6rem;
+        }
+    }
+}
+
+@keyframes baderMegaSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// -----------------------------------------------
+// 4. Responsive — Mobile
+// -----------------------------------------------
+@include mobile {
+    .bader-mega {
+        position: static;
+        box-shadow: none;
+        border-top: none;
+
+        &__grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        &__col {
+            padding: 0;
+            border-right: none !important;
+            border-bottom: 1px solid $gray-100;
+            padding-bottom: 16px;
+        }
+    }
+
+    // Hide search pill on mobile
+    .bader-search-pill {
+        display: none !important;
+    }
+}

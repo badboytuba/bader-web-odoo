@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ====================================================
+         SERVICIOS — Services page
+         Matches Bader-AR Servicios.tsx structure
+         6 service cards + service request form
+         ==================================================== -->
+    <template id="bader_servicios" name="Bader Servicios">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+
+                <!-- ============================
+                     HERO — Dark accent bg
+                     ============================ -->
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__blur bader-page-hero__blur--1"/>
+                    <div class="bader-page-hero__blur bader-page-hero__blur--2"/>
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <span class="bader-page-hero__badge">
+                                <i class="fa fa-cogs"/> Nuestros Servicios
+                            </span>
+                            <h1 class="bader-page-hero__title">
+                                Servicios <span class="text-green">profesionales</span>
+                            </h1>
+                            <p class="bader-page-hero__subtitle">
+                                Ofrecemos servicios integrales de soporte técnico, instalación,
+                                capacitación y mantenimiento para todos nuestros equipos.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================
+                     SERVICES GRID — Muted bg
+                     ============================ -->
+                <section class="bader-page-section bader-page-section--muted bader-animate">
+                    <div class="bader-page-section__container">
+                        <div class="bader-page-section__heading">
+                            <span class="bader-page-hero__badge" style="background: rgba(112,212,75,0.10);">
+                                ¿Qué ofrecemos?
+                            </span>
+                            <h2 class="bader-section__title">
+                                Servicios <span class="text-green">integrales</span>
+                            </h2>
+                            <p class="bader-section__subtitle">
+                                Acompañamos a nuestros clientes en cada etapa con servicios especializados
+                            </p>
+                        </div>
+
+                        <div class="bader-page-section__grid bader-page-section__grid--3">
+                            <!-- Service 1: Instalación -->
+                            <div class="bader-services__card bader-page-card bader-animate">
+                                <div class="bader-gradient-icon bader-gradient-icon--green">
+                                    <i class="fa fa-wrench"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Instalación Profesional</h3>
+                                <p class="bader-page-card__text">
+                                    Nuestro equipo técnico realiza la instalación completa de todos los equipos,
+                                    garantizando su correcto funcionamiento desde el primer día.
+                                </p>
+                                <ul class="bader-services__features">
+                                    <li><i class="fa fa-check"/> Instalación en sitio</li>
+                                    <li><i class="fa fa-check"/> Configuración inicial</li>
+                                    <li><i class="fa fa-check"/> Pruebas de funcionamiento</li>
+                                </ul>
+                            </div>
+
+                            <!-- Service 2: Soporte Técnico -->
+                            <div class="bader-services__card bader-page-card bader-animate">
+                                <div class="bader-gradient-icon bader-gradient-icon--blue">
+                                    <i class="fa fa-life-ring"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Soporte Técnico</h3>
+                                <p class="bader-page-card__text">
+                                    Equipo de técnicos certificados disponibles para resolver cualquier
+                                    incidencia con tus equipos de forma rápida y eficiente.
+                                </p>
+                                <ul class="bader-services__features">
+                                    <li><i class="fa fa-check"/> Respuesta en 24hs</li>
+                                    <li><i class="fa fa-check"/> Diagnóstico remoto</li>
+                                    <li><i class="fa fa-check"/> Repuestos originales</li>
+                                </ul>
+                            </div>
+
+                            <!-- Service 3: Mantenimiento -->
+                            <div class="bader-services__card bader-page-card bader-animate">
+                                <div class="bader-gradient-icon bader-gradient-icon--purple">
+                                    <i class="fa fa-heartbeat"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Mantenimiento Preventivo</h3>
+                                <p class="bader-page-card__text">
+                                    Planes de mantenimiento preventivo para extender la vida útil de tus equipos
+                                    y evitar paradas no programadas.
+                                </p>
+                                <ul class="bader-services__features">
+                                    <li><i class="fa fa-check"/> Revisión periódica</li>
+                                    <li><i class="fa fa-check"/> Calibración de equipos</li>
+                                    <li><i class="fa fa-check"/> Reporte de estado</li>
+                                </ul>
+                            </div>
+
+                            <!-- Service 4: Capacitación -->
+                            <div class="bader-services__card bader-page-card bader-animate">
+                                <div class="bader-gradient-icon bader-gradient-icon--orange">
+                                    <i class="fa fa-graduation-cap"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Capacitación</h3>
+                                <p class="bader-page-card__text">
+                                    Formación completa sobre el uso correcto de cada equipo para que
+                                    aproveches al máximo tu inversión.
+                                </p>
+                                <ul class="bader-services__features">
+                                    <li><i class="fa fa-check"/> Capacitación in situ</li>
+                                    <li><i class="fa fa-check"/> Videos tutoriales</li>
+                                    <li><i class="fa fa-check"/> Manual de usuario</li>
+                                </ul>
+                            </div>
+
+                            <!-- Service 5: Garantía -->
+                            <div class="bader-services__card bader-page-card bader-animate">
+                                <div class="bader-gradient-icon bader-gradient-icon--teal">
+                                    <i class="fa fa-shield"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Garantía Extendida</h3>
+                                <p class="bader-page-card__text">
+                                    Todos nuestros equipos cuentan con garantía oficial europea. Opcionalmente
+                                    podés extender la cobertura hasta 5 años.
+                                </p>
+                                <ul class="bader-services__features">
+                                    <li><i class="fa fa-check"/> 2 años de garantía base</li>
+                                    <li><i class="fa fa-check"/> Garantía extendida opcional</li>
+                                    <li><i class="fa fa-check"/> Cobertura total</li>
+                                </ul>
+                            </div>
+
+                            <!-- Service 6: Financiación -->
+                            <div class="bader-services__card bader-page-card bader-animate">
+                                <div class="bader-gradient-icon bader-gradient-icon--indigo">
+                                    <i class="fa fa-credit-card"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Financiación Flexible</h3>
+                                <p class="bader-page-card__text">
+                                    Múltiples opciones de pago para que puedas equipar tu consultorio
+                                    sin comprometer tu flujo de caja.
+                                </p>
+                                <ul class="bader-services__features">
+                                    <li><i class="fa fa-check"/> Hasta 12 cuotas sin interés</li>
+                                    <li><i class="fa fa-check"/> Todas las tarjetas</li>
+                                    <li><i class="fa fa-check"/> Transferencia con descuento</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================
+                     SERVICE REQUEST FORM — White bg
+                     ============================ -->
+                <section class="bader-page-section bader-page-section--white bader-animate" id="servicio-form">
+                    <div class="bader-page-section__container">
+                        <div class="bader-split">
+                            <!-- Left: Info -->
+                            <div>
+                                <span class="bader-page-hero__badge" style="background: rgba(112,212,75,0.10);">
+                                    <i class="fa fa-headphones"/> Solicitar Servicio
+                                </span>
+                                <h2 class="bader-section__title">
+                                    ¿Necesitás <span class="text-green">ayuda</span>?
+                                </h2>
+                                <p style="color: #475569; margin-bottom: 1.5rem; line-height: 1.7;">
+                                    Completá el formulario y nuestro equipo técnico se comunicará con
+                                    vos para coordinar el servicio que necesitás.
+                                </p>
+
+                                <div class="bader-services__info-items">
+                                    <div class="bader-services__info-item">
+                                        <div class="bader-about__benefit-icon">
+                                            <i class="fa fa-clock-o"/>
+                                        </div>
+                                        <div>
+                                            <strong>Respuesta rápida</strong>
+                                            <p style="margin: 0; font-size: 0.85rem; color: #64748B;">Te respondemos en menos de 24hs</p>
+                                        </div>
+                                    </div>
+                                    <div class="bader-services__info-item">
+                                        <div class="bader-about__benefit-icon">
+                                            <i class="fa fa-certificate"/>
+                                        </div>
+                                        <div>
+                                            <strong>Técnicos certificados</strong>
+                                            <p style="margin: 0; font-size: 0.85rem; color: #64748B;">Personal capacitado en fábrica</p>
+                                        </div>
+                                    </div>
+                                    <div class="bader-services__info-item">
+                                        <div class="bader-about__benefit-icon">
+                                            <i class="fa fa-map-marker"/>
+                                        </div>
+                                        <div>
+                                            <strong>Cobertura nacional</strong>
+                                            <p style="margin: 0; font-size: 0.85rem; color: #64748B;">Servicio en todo el país</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right: Form -->
+                            <div class="bader-form">
+                                <h3 class="bader-form__title">Solicitar servicio</h3>
+                                <p class="bader-form__subtitle">
+                                    Completá tus datos y un técnico se pondrá en contacto
+                                </p>
+                                <form action="/bader/servicio-form" method="POST">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                    <div class="bader-form-grid">
+                                        <div class="bader-form__group">
+                                            <label>Nombre completo *</label>
+                                            <div class="input-wrapper">
+                                                <i class="fa fa-user"/>
+                                                <input type="text" name="name"
+                                                       placeholder="Tu nombre" required="required"/>
+                                            </div>
+                                        </div>
+                                        <div class="bader-form__group">
+                                            <label>Email *</label>
+                                            <div class="input-wrapper">
+                                                <i class="fa fa-envelope"/>
+                                                <input type="email" name="email"
+                                                       placeholder="tu@email.com" required="required"/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="bader-form-grid">
+                                        <div class="bader-form__group">
+                                            <label>Teléfono *</label>
+                                            <div class="input-wrapper">
+                                                <i class="fa fa-phone"/>
+                                                <input type="tel" name="phone"
+                                                       placeholder="+54 11 1234 5678" required="required"/>
+                                            </div>
+                                        </div>
+                                        <div class="bader-form__group">
+                                            <label>Tipo de servicio *</label>
+                                            <div class="input-wrapper">
+                                                <i class="fa fa-cog"/>
+                                                <select name="service_type" required="required">
+                                                    <option value="">Seleccioná el servicio</option>
+                                                    <option value="instalacion">Instalación</option>
+                                                    <option value="soporte_tecnico">Soporte Técnico</option>
+                                                    <option value="mantenimiento">Mantenimiento</option>
+                                                    <option value="capacitacion">Capacitación</option>
+                                                    <option value="garantia">Garantía</option>
+                                                    <option value="otro">Otro</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="bader-form__group">
+                                        <label>Equipo / Producto</label>
+                                        <div class="input-wrapper">
+                                            <i class="fa fa-medkit"/>
+                                            <input type="text" name="product"
+                                                   placeholder="Nombre o modelo del equipo"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="bader-form__group">
+                                        <label>Descripción del problema o solicitud</label>
+                                        <div class="input-wrapper">
+                                            <i class="fa fa-comment" style="top: 1.15rem;"/>
+                                            <textarea name="description"
+                                                      placeholder="Describí brevemente tu solicitud..." rows="4"/>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="bader-form__submit">
+                                        <i class="fa fa-paper-plane"/> Solicitar servicio
+                                    </button>
+
+                                    <div class="bader-form__footer">
+                                        <i class="fa fa-lock"/> Tus datos están protegidos
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================
+                     CTA — Green gradient
+                     ============================ -->
+                <section class="bader-page-section bader-page-section--green bader-animate">
+                    <div class="bader-page-section__container" style="text-align: center;">
+                        <h2 style="font-family: 'BaderSans', sans-serif; font-size: 2rem; font-weight: 800; color: white; margin-bottom: 1rem;">
+                            ¿Necesitás asistencia urgente?
+                        </h2>
+                        <p style="color: rgba(255,255,255,0.85); margin-bottom: 2rem; max-width: 36rem; margin-left: auto; margin-right: auto;">
+                            Nuestro equipo está disponible de lunes a viernes de 9:00 a 18:00.
+                        </p>
+                        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem;">
+                            <a href="https://wa.me/5491124522097?text=Hola!%20Necesito%20servicio%20técnico"
+                               target="_blank" class="btn-bader" style="background: white; color: #70D44B;">
+                                <i class="fa fa-whatsapp"/> WhatsApp
+                            </a>
+                            <a href="tel:+541124522097" class="btn-bader-outline" style="border-color: white; color: white;">
+                                <i class="fa fa-phone"/> Llamar ahora
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================
+         Thank You — Service request
+         ============================ -->
+    <template id="bader_servicio_gracias" name="Bader Servicio Gracias">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <section class="bader-page-hero" style="min-height: 450px;">
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <div style="font-size: 4rem; margin-bottom: 1.5rem;">
+                                <i class="fa fa-check-circle text-green"/>
+                            </div>
+                            <h1 class="bader-page-hero__title">
+                                <span class="text-green">¡Solicitud</span> recibida!
+                            </h1>
+                            <p class="bader-page-hero__subtitle">
+                                Nuestro equipo técnico revisará tu solicitud y se comunicará
+                                contigo dentro de las próximas 24 horas hábiles.
+                            </p>
+                            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 2rem;">
+                                <a href="/shop" class="btn-bader">
+                                    <i class="fa fa-shopping-bag"/> Ver catálogo
+                                </a>
+                                <a href="/" class="btn-bader-outline" style="border-color: rgba(255,255,255,0.3); color: white;">
+                                    <i class="fa fa-home"/> Volver al inicio
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+</odoo>

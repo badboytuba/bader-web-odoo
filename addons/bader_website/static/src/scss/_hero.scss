@@ -1,0 +1,470 @@
+// ============================================
+// Bader Homepage — Hero Section (split layout)
+// ============================================
+// Light background matching shop.bader.com.ar
+// Text left, image right, category tabs centered above
+
+.bader-hero {
+    position: relative;
+    min-height: 700px;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(180deg, $white 0%, $gray-50 60%, rgba(132, 204, 22, 0.03) 100%);
+    overflow: hidden;
+    padding: 40px 0 $space-3xl;
+
+    @include mobile {
+        min-height: auto;
+        padding: $space-xl 0 $space-2xl;
+    }
+
+    &__container {
+        @include section-container;
+        position: relative;
+        z-index: 1;
+    }
+
+    // Category Tabs — centered above content
+    &__tabs {
+        display: flex;
+        justify-content: center;
+        gap: 0;
+        margin-bottom: $space-3xl;
+        background: $white;
+        border-radius: $radius-pill;
+        padding: 6px;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+        display: inline-flex;
+        margin-left: auto;
+        margin-right: auto;
+        width: auto;
+
+        // Wrap in a center container
+        &-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: $space-3xl;
+        }
+    }
+
+    &__tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 28px;
+        border-radius: $radius-pill;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: $gray-500;
+        background: transparent;
+        border: none;
+        text-decoration: none;
+        transition: all $transition-base;
+        cursor: pointer;
+        font-family: 'Inter', sans-serif;
+
+        i {
+            font-size: 0.85rem;
+        }
+
+        &:hover {
+            color: $bader-dark;
+            background: $gray-50;
+            text-decoration: none;
+        }
+
+        &--active {
+            color: $white !important;
+            background: $bader-green !important;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(132, 204, 22, 0.3);
+        }
+    }
+
+    // Split layout — text left, image right
+    &__split {
+        display: grid;
+        grid-template-columns: 1fr 1.1fr;
+        gap: $space-3xl;
+        align-items: center;
+
+        @include tablet-down {
+            grid-template-columns: 1fr;
+            gap: $space-xl;
+        }
+    }
+
+    &__text {
+        text-align: left;
+    }
+
+    &__label {
+        @include badge(rgba(132, 204, 22, 0.1), $bader-green);
+        margin-bottom: $space-lg;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    &__title {
+        font-family: 'Montserrat', 'Inter', sans-serif;
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: $bader-dark;
+        line-height: 1.05;
+        margin-bottom: $space-lg;
+        letter-spacing: -0.03em;
+        text-transform: uppercase;
+
+        .text-green {
+            color: $bader-green;
+            font-style: italic;
+        }
+
+        @include tablet-down {
+            font-size: 2.8rem;
+        }
+
+        @include mobile {
+            font-size: 2.2rem;
+        }
+    }
+
+    &__subtitle {
+        font-size: 1.05rem;
+        color: $gray-500;
+        max-width: 460px;
+        margin: 0 0 $space-xl;
+        line-height: 1.7;
+
+        @include mobile {
+            font-size: 0.95rem;
+        }
+    }
+
+    // Inline Stats
+    &__inline-stats {
+        display: flex;
+        gap: $space-3xl;
+        margin-bottom: $space-xl;
+
+        @include mobile {
+            gap: $space-lg;
+            flex-wrap: wrap;
+        }
+    }
+
+    &__stat {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__stat-num {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: $bader-dark;
+    }
+
+    &__stat-label {
+        font-size: 0.78rem;
+        color: $gray-400;
+        margin-top: 2px;
+    }
+
+    // Action Buttons
+    &__actions {
+        display: flex;
+        gap: $space-md;
+        flex-wrap: wrap;
+        margin-bottom: $space-xl;
+
+        @include mobile {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }
+
+    // Testimonial mini-card in hero
+    &__testimonial {
+        max-width: 500px;
+        background: $white;
+        border: 1px solid $gray-200;
+        border-radius: $radius-lg;
+        padding: $space-lg $space-xl;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+
+        @include mobile {
+            max-width: 100%;
+        }
+    }
+
+    &__testimonial-stars {
+        margin-bottom: $space-sm;
+
+        .fa-star {
+            color: $stars-color;
+            font-size: 0.85rem;
+        }
+    }
+
+    &__testimonial-text {
+        color: $gray-600;
+        font-size: 0.92rem;
+        line-height: 1.7;
+        margin-bottom: $space-md;
+        font-style: italic;
+    }
+
+    &__testimonial-author {
+        display: flex;
+        align-items: center;
+        gap: $space-sm;
+
+        .fa-heart {
+            font-size: 1.2rem;
+            color: $bader-green;
+        }
+
+        strong {
+            display: block;
+            color: $bader-dark;
+            font-size: 0.88rem;
+            font-weight: 700;
+        }
+
+        span {
+            color: $gray-400;
+            font-size: 0.78rem;
+        }
+    }
+
+    // Right side: Image
+    &__image {
+        position: relative;
+        border-radius: $radius-xl;
+        overflow: visible;
+
+        @include tablet-down {
+            display: none;
+        }
+
+        img {
+            width: 100%;
+            height: 520px;
+            object-fit: cover;
+            border-radius: $radius-xl;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.10);
+        }
+    }
+
+    &__image-dots {
+        position: absolute;
+        top: 16px;
+        right: -20px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: $white;
+        border-radius: $radius-pill;
+        padding: 8px 16px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+        .dot {
+            width: 28px;
+            height: 28px;
+            border-radius: $radius-full;
+            background: $gray-100;
+            border: 2px solid $gray-200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: $gray-500;
+            cursor: pointer;
+
+            &.active {
+                background: $bader-green;
+                border-color: $bader-green;
+                color: $white;
+            }
+        }
+    }
+
+    &__image-count {
+        margin-left: 8px;
+        color: $bader-dark;
+        font-size: 0.82rem;
+        font-weight: 800;
+        line-height: 1.2;
+
+        small {
+            font-weight: 400;
+            font-size: 0.65rem;
+            color: $gray-400;
+            display: block;
+        }
+    }
+
+    &__guarantee {
+        position: absolute;
+        bottom: -10px;
+        left: 20px;
+        background: $white;
+        border: 1px solid $gray-200;
+        border-radius: $radius-lg;
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+
+        .fa-check-circle {
+            color: $bader-green;
+            font-size: 1.4rem;
+        }
+
+        small {
+            display: block;
+            font-size: 0.72rem;
+            color: $gray-400;
+        }
+
+        strong {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: $bader-green;
+        }
+    }
+}
+
+// ============================================
+// Benefits Section — POR QUE ELEGIRNOS (light)
+// ============================================
+.bader-benefits {
+    background: $gray-50;
+    padding: $space-4xl 0;
+
+    @include mobile {
+        padding: $space-2xl 0;
+    }
+
+    &__container {
+        @include section-container;
+        text-align: center;
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: $space-lg;
+        margin-top: $space-2xl;
+
+        @include tablet-down {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @include mobile {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__card {
+        background: $white;
+        border: 1px solid $gray-200;
+        border-radius: $radius-lg;
+        padding: $space-xl;
+        text-align: left;
+        transition: all $transition-base;
+        display: flex;
+        gap: $space-md;
+
+        &:hover {
+            border-color: rgba(132, 204, 22, 0.3);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            transform: translateY(-3px);
+        }
+    }
+
+    &__icon {
+        flex-shrink: 0;
+        width: 48px;
+        height: 48px;
+        border-radius: $radius-md;
+        background: rgba(132, 204, 22, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 2px;
+
+        i {
+            font-size: 1.2rem;
+            color: $bader-green;
+        }
+    }
+
+    &__content {
+        h3 {
+            font-family: 'Montserrat', 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: $bader-dark;
+            margin-bottom: $space-sm;
+            text-transform: uppercase;
+            letter-spacing: 0.01em;
+        }
+
+        p {
+            font-size: 0.88rem;
+            color: $gray-500;
+            line-height: 1.6;
+            margin-bottom: $space-sm;
+        }
+    }
+
+    &__highlight {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: $bader-green;
+
+        i {
+            margin-right: 4px;
+        }
+    }
+
+    &__trust-banner {
+        margin-top: $space-2xl;
+        padding: $space-md $space-xl;
+        background: $bader-dark;
+        color: $white;
+        border-radius: $radius-pill;
+        display: inline-flex;
+        align-items: center;
+        gap: $space-sm;
+        font-size: 0.88rem;
+        font-weight: 600;
+
+        i {
+            color: $bader-green;
+        }
+    }
+}
+
+// ============================================
+// Featured Products — heading area
+// ============================================
+.bader-products {
+    padding: $space-4xl 0;
+    background: $white;
+
+    &__container {
+        @include section-container;
+        text-align: center;
+    }
+
+    &__cta {
+        margin-top: $space-2xl;
+    }
+}

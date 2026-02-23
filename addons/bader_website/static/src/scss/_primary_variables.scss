@@ -1,0 +1,18 @@
+// ============================================
+// Bader — Primary Variable Overrides
+// ============================================
+// This file loads in web._assets_primary_variables
+// BEFORE all other SCSS to override Odoo's theme colors.
+
+// Override the Odoo website theme colors at the variable level
+$o-color-1: #0a2e36 !default; // Primary = dark teal (matched to reference)
+$o-color-2: #84cc16 !default; // Secondary = lime green (matched to reference)
+$o-color-3: #0d3640 !default; // Extra 1 = dark alt
+$o-color-4: #103d48 !default; // Extra 2 = dark surface
+$o-color-5: #F8FAFB !default; // Extra 3 = light
+
+// Override Odoo's menu/header bg
+$o-menu-color: $o-color-1 !default;
+
+// Override the website font
+$o-theme-font: 'Inter' !default;

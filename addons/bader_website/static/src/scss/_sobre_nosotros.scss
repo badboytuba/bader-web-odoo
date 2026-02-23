@@ -1,0 +1,284 @@
+// ============================================
+// Sobre Nosotros — Page Styles
+// ============================================
+// Matches Bader-AR SobreNosotros.tsx visual design.
+
+// --- Hero Stats Grid ---
+.bader-about__hero-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+
+    @media (max-width: $bp-tablet) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+.bader-about__hero-stat {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(white, 0.05);
+    border: 1px solid rgba(white, 0.10);
+    border-radius: $radius-xl;
+    transition: background $transition-base;
+
+    &:hover {
+        background: rgba(white, 0.08);
+    }
+
+    i {
+        font-size: 1.5rem;
+        color: $bader-green;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    &-value {
+        font-family: $font-display;
+        font-size: 2rem;
+        font-weight: 800;
+        color: $white;
+        line-height: 1;
+    }
+
+    &-label {
+        font-size: 0.8rem;
+        color: rgba(white, 0.60);
+        margin-top: 0.25rem;
+    }
+}
+
+// --- Values Grid ---
+.bader-about__values-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+
+    @media (max-width: $bp-mobile) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.bader-about__value-card {
+    background: $white;
+    border: 1px solid $bader-card-border;
+    border-radius: $radius-xl;
+    padding: 1.25rem;
+    transition:
+        box-shadow $transition-base,
+        transform $transition-base;
+
+    &:hover {
+        box-shadow: $shadow-md;
+        transform: translateY(-2px);
+    }
+}
+
+// --- Timeline ---
+.bader-about__timeline {
+    position: relative;
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 2rem 0;
+}
+
+.bader-about__timeline-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, $bader-green, rgba($bader-green, 0.20));
+    transform: translateX(-50%);
+    border-radius: 2px;
+
+    @media (max-width: $bp-tablet) {
+        left: 1.25rem;
+    }
+}
+
+.bader-about__timeline-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 3rem;
+    position: relative;
+
+    &--left {
+        flex-direction: row-reverse;
+        text-align: right;
+
+        .bader-about__timeline-content {
+            padding-right: 2rem;
+        }
+    }
+
+    &--right {
+        text-align: left;
+
+        .bader-about__timeline-content {
+            padding-left: 2rem;
+        }
+    }
+
+    @media (max-width: $bp-tablet) {
+        flex-direction: row !important;
+        text-align: left !important;
+
+        .bader-about__timeline-content {
+            padding-right: 0 !important;
+            padding-left: 2rem !important;
+        }
+    }
+}
+
+.bader-about__timeline-dot {
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: $bader-green;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 4px rgba($bader-green, 0.20);
+
+    i {
+        color: $white;
+        font-size: 0.85rem;
+    }
+}
+
+.bader-about__timeline-content {
+    flex: 1;
+
+    h3 {
+        font-family: $font-display;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: $bader-dark;
+        margin-bottom: 0.5rem;
+    }
+
+    p {
+        font-size: 0.9rem;
+        color: $gray-500;
+        line-height: 1.6;
+    }
+}
+
+.bader-about__timeline-year {
+    display: inline-block;
+    background: $bader-green-bg;
+    color: $bader-green;
+    padding: 0.2rem 0.6rem;
+    border-radius: $radius-pill;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+// --- Benefits Bar ---
+.bader-about__benefits-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+
+    @media (max-width: $bp-tablet) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    @media (max-width: $bp-mobile) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.bader-about__benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: rgba(white, 0.85);
+    font-size: 0.9rem;
+}
+
+.bader-about__benefit-icon {
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: $radius-lg;
+    background: rgba($bader-green, 0.20);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+        color: $bader-green;
+        font-size: 1rem;
+    }
+}
+
+// --- Stat Row ---
+.bader-about__stat-row {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 1.5rem 0;
+
+    @media (max-width: $bp-mobile) {
+        justify-content: space-around;
+        gap: 1rem;
+    }
+}
+
+.bader-about__stat-item {
+    text-align: center;
+}
+
+.bader-about__stat-big {
+    font-family: $font-display;
+    font-size: 2rem;
+    font-weight: 800;
+    color: $bader-dark;
+    line-height: 1;
+}
+
+.bader-about__stat-desc {
+    font-size: 0.8rem;
+    color: $gray-500;
+    margin-top: 0.25rem;
+}
+
+.bader-about__stat-divider {
+    width: 1px;
+    height: 2.5rem;
+    background: $gray-200;
+}
+
+// --- Distributor Card ---
+.bader-about__distributor-card {
+    background: $bader-dark;
+    border-radius: $radius-2xl;
+    padding: 2rem;
+    color: $white;
+    box-shadow: $shadow-xl;
+
+    h3 {
+        font-family: $font-display;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: $white;
+        margin-bottom: 1.5rem;
+    }
+
+    .bader-checklist li {
+        color: rgba(white, 0.85);
+        padding: 0.65rem 0;
+        border-bottom: 1px solid rgba(white, 0.08);
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+}

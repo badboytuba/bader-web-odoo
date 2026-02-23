@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- This file is kept for backwards compatibility.
+         Homepage sections are now composed in homepage.xml. -->
+</odoo>
