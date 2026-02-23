@@ -8,7 +8,7 @@
          ==================================================== -->
     <template id="bader_ser_distribuidor" name="Bader Ser Distribuidor">
         <t t-call="website.layout">
-            <div id="wrap" class="oe_structure oe_empty">
+            <div id="wrap" class="oe_structure oe_empty bader-page-distribuidor">
 
                 <!-- ============================
                      HERO — Dark accent bg

@@ -1,16 +1,51 @@
 // ============================================
 // Servicios — Page Styles
 // ============================================
+// Matches Bader-AR Servicios.tsx visual design.
 
+// --- Service Card --- 
 .bader-services__card {
     display: flex;
     flex-direction: column;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, $bader-green, transparent);
+        opacity: 0;
+        transition: opacity $transition-base;
+    }
+
+    &:hover::before {
+        opacity: 1;
+    }
+
+    // On hover, scale the gradient icon
+    &:hover .bader-gradient-icon {
+        transform: scale(1.10);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .bader-gradient-icon {
+        transition:
+            transform $transition-base,
+            box-shadow $transition-base;
+    }
 }
 
+// --- Service Feature List ---
 .bader-services__features {
     list-style: none;
     padding: 0;
     margin: 1rem 0 0;
+    border-top: 1px solid rgba($bader-dark, 0.06);
+    padding-top: 0.75rem;
 
     li {
         display: flex;
@@ -19,6 +54,11 @@
         padding: 0.35rem 0;
         font-size: 0.85rem;
         color: $gray-500;
+        transition: padding-left $transition-base, color $transition-base;
+
+        .bader-services__card:hover & {
+            padding-left: 0.25rem;
+        }
 
         i {
             color: $bader-green;
@@ -27,6 +67,7 @@
     }
 }
 
+// --- Service Info Items ---
 .bader-services__info-items {
     display: flex;
     flex-direction: column;
@@ -38,6 +79,13 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: $radius-lg;
+    transition: background $transition-base;
+
+    &:hover {
+        background: rgba($bader-green, 0.04);
+    }
 
     strong {
         display: block;

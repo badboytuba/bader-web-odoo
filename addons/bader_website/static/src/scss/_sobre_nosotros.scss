@@ -18,14 +18,21 @@
 
 .bader-about__hero-stat {
     text-align: center;
-    padding: 1rem;
-    background: rgba(white, 0.05);
-    border: 1px solid rgba(white, 0.10);
+    padding: 1.25rem 1rem;
+    background: rgba(white, 0.06);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(white, 0.12);
     border-radius: $radius-xl;
-    transition: background $transition-base;
+    transition:
+        background $transition-base,
+        transform $transition-base,
+        box-shadow $transition-base;
 
     &:hover {
-        background: rgba(white, 0.08);
+        background: rgba(white, 0.10);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
 
     i {
@@ -33,6 +40,11 @@
         color: $bader-green;
         margin-bottom: 0.5rem;
         display: block;
+        transition: transform $transition-base;
+    }
+
+    &:hover i {
+        transform: scale(1.15);
     }
 
     &-value {
@@ -68,11 +80,18 @@
     padding: 1.25rem;
     transition:
         box-shadow $transition-base,
-        transform $transition-base;
+        transform $transition-base,
+        border-color $transition-base;
 
     &:hover {
         box-shadow: $shadow-md;
-        transform: translateY(-2px);
+        transform: translateY(-3px);
+        border-color: rgba($bader-green, 0.25);
+    }
+
+    &:hover .bader-page-card__icon {
+        transform: scale(1.10);
+        background: linear-gradient(135deg, rgba($bader-green, 0.25), rgba($bader-green, 0.08));
     }
 }
 
@@ -131,6 +150,15 @@
             padding-left: 2rem !important;
         }
     }
+
+    &:hover .bader-about__timeline-dot {
+        box-shadow: 0 0 0 6px rgba($bader-green, 0.25), 0 0 20px rgba($bader-green, 0.20);
+        transform: scale(1.10);
+    }
+
+    &:hover .bader-about__timeline-content h3 {
+        color: $bader-green;
+    }
 }
 
 .bader-about__timeline-dot {
@@ -143,6 +171,9 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 0 0 4px rgba($bader-green, 0.20);
+    transition:
+        box-shadow $transition-base,
+        transform $transition-base;
 
     i {
         color: $white;
@@ -159,6 +190,7 @@
         font-weight: 700;
         color: $bader-dark;
         margin-bottom: 0.5rem;
+        transition: color $transition-base;
     }
 
     p {
@@ -201,6 +233,11 @@
     gap: 0.75rem;
     color: rgba(white, 0.85);
     font-size: 0.9rem;
+    transition: transform $transition-base;
+
+    &:hover {
+        transform: translateX(4px);
+    }
 }
 
 .bader-about__benefit-icon {
@@ -212,6 +249,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: transform $transition-base;
+
+    .bader-about__benefit-item:hover & {
+        transform: scale(1.10);
+    }
 
     i {
         color: $bader-green;
@@ -263,6 +305,18 @@
     padding: 2rem;
     color: $white;
     box-shadow: $shadow-xl;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, $bader-green, #34D399, $bader-green);
+    }
 
     h3 {
         font-family: $font-display;
@@ -276,6 +330,11 @@
         color: rgba(white, 0.85);
         padding: 0.65rem 0;
         border-bottom: 1px solid rgba(white, 0.08);
+        transition: padding-left $transition-base;
+
+        &:hover {
+            padding-left: 0.5rem;
+        }
 
         &:last-child {
             border-bottom: none;

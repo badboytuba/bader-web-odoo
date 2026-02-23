@@ -63,6 +63,7 @@
             # 5. New Pages
             'bader_website/static/src/scss/_sobre_nosotros.scss',
             'bader_website/static/src/scss/_servicios.scss',
+            'bader_website/static/src/scss/_ser_distribuidor.scss',
             'bader_website/static/src/scss/_clinica_dental.scss',
             'bader_website/static/src/scss/_laboratorio_dental.scss',
             'bader_website/static/src/scss/_estudiantes.scss',

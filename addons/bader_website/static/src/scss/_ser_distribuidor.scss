@@ -1,0 +1,33 @@
+// ============================================
+// Ser Distribuidor — Page Styles
+// ============================================
+// Additional polish for the distributor landing page.
+
+// Hero gradient variant for distributor page — green undertone
+.bader-page-distribuidor {
+    .bader-page-hero {
+        background: linear-gradient(135deg,
+                #003841 0%,
+                #004D40 30%,
+                #00695C 60%,
+                #003841 100%) !important;
+    }
+
+    .bader-page-hero__blur--1 {
+        background: rgba($bader-green, 0.18) !important;
+    }
+
+    .bader-page-hero__blur--2 {
+        background: rgba(#34D399, 0.12) !important;
+    }
+}
+
+// Process step numbers
+.bader-about__distributor-card .bader-checklist li {
+    counter-increment: step;
+
+    i.fa-check-circle {
+        position: relative;
+        transition: color $transition-base;
+    }
+}
