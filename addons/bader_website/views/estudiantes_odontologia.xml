@@ -7,6 +7,16 @@
          ==================================================== -->
     <template id="bader_estudiantes_odontologia" name="Bader Estudiantes Odontología">
         <t t-call="website.layout">
+            <t t-set="head">
+                <title>Kits para Estudiantes de Odontología — Bader Argentina</title>
+                <meta name="description" content="Kits de instrumental rotatorio para estudiantes de odontología. Kit 4matic, Smart, Uptrend y Neo. Garantía estudiantil, fresas incluidas y revisión gratuita."/>
+                <meta property="og:title" content="Kits para Estudiantes de Odontología — Bader Argentina"/>
+                <meta property="og:description" content="Kits rotatorios profesionales a precio de estudiante. Garantía estudiantil, fresas incluidas y revisión gratuita."/>
+                <meta property="og:image" content="/bader_website/static/src/img/hero/hero-estudiantes-odontologia.png"/>
+                <meta property="og:type" content="website"/>
+                <meta property="og:url" content="https://qas.bader4business.com/estudiantes-odontologia"/>
+                <meta name="twitter:card" content="summary_large_image"/>
+            </t>
             <div id="wrap" class="oe_structure oe_empty">
 
                 <!-- ============================

@@ -8,6 +8,16 @@
          ==================================================== -->
     <template id="bader_clinica_dental" name="Bader Clínica Dental">
         <t t-call="website.layout">
+            <t t-set="head">
+                <title>Equipamiento para Clínica Dental — Bader Argentina</title>
+                <meta name="description" content="Equipamiento completo para tu clínica dental: sillones, autoclaves, rayos X, compresores, instrumental y materiales. Calidad europea con garantía y servicio técnico."/>
+                <meta property="og:title" content="Equipamiento para Clínica Dental — Bader Argentina"/>
+                <meta property="og:description" content="Sillones dentales, autoclaves, rayos X, compresores e instrumental. +2.800 referencias en stock con envío a todo el país."/>
+                <meta property="og:image" content="/bader_website/static/src/img/hero/hero-clinica-dental.png"/>
+                <meta property="og:type" content="website"/>
+                <meta property="og:url" content="https://qas.bader4business.com/clinica-dental"/>
+                <meta name="twitter:card" content="summary_large_image"/>
+            </t>
             <div id="wrap" class="oe_structure oe_empty">
 
                 <!-- ============================

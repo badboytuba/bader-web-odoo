@@ -7,6 +7,16 @@
          ==================================================== -->
     <template id="bader_laboratorio_dental" name="Bader Laboratorio Dental">
         <t t-call="website.layout">
+            <t t-set="head">
+                <title>Equipamiento para Laboratorio Dental — Bader Argentina</title>
+                <meta name="description" content="Equipamiento profesional para laboratorio dental: mesas de trabajo, cabinas de repasado, arenadoras, articuladores, termoformadoras e instrumental. Calidad europea."/>
+                <meta property="og:title" content="Equipamiento para Laboratorio Dental — Bader Argentina"/>
+                <meta property="og:description" content="Mesas, cabinas, arenadoras, articuladores y termoformadoras para protésicos dentales. Envíos a todo el país."/>
+                <meta property="og:image" content="/bader_website/static/src/img/hero/hero-laboratorio-dental.png"/>
+                <meta property="og:type" content="website"/>
+                <meta property="og:url" content="https://qas.bader4business.com/laboratorio-dental"/>
+                <meta name="twitter:card" content="summary_large_image"/>
+            </t>
             <div id="wrap" class="oe_structure oe_empty">
 
                 <!-- ============================

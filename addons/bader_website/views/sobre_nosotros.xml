@@ -7,6 +7,16 @@
          ==================================================== -->
     <template id="bader_sobre_nosotros" name="Bader Sobre Nosotros">
         <t t-call="website.layout">
+            <t t-set="head">
+                <title>Sobre Nosotros — Bader Argentina</title>
+                <meta name="description" content="Bader Iberoamericana: +30 años liderando el mercado de equipamiento odontológico. Presencia en 8 países, +500 distribuidores y certificación ISO 9001."/>
+                <meta property="og:title" content="Sobre Nosotros — Bader Argentina"/>
+                <meta property="og:description" content="+30 años en equipamiento odontológico. Presencia en 8 países con +500 distribuidores y +2.800 productos."/>
+                <meta property="og:image" content="/bader_website/static/src/img/bader_logotipo.png"/>
+                <meta property="og:type" content="website"/>
+                <meta property="og:url" content="https://qas.bader4business.com/sobre-nosotros"/>
+                <meta name="twitter:card" content="summary_large_image"/>
+            </t>
             <div id="wrap" class="oe_structure oe_empty">
 
                 <!-- ============================

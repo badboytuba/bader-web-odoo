@@ -8,6 +8,16 @@
          ==================================================== -->
     <template id="bader_servicios" name="Bader Servicios">
         <t t-call="website.layout">
+            <t t-set="head">
+                <title>Servicios — Bader Argentina</title>
+                <meta name="description" content="Servicio técnico oficial Bader: reparación, mantenimiento preventivo, instalación, calibración. Técnicos certificados, repuestos originales y soporte remoto."/>
+                <meta property="og:title" content="Servicios Técnicos — Bader Argentina"/>
+                <meta property="og:description" content="Servicio técnico oficial con técnicos certificados. Reparación, mantenimiento, instalación y calibración de equipamiento odontológico."/>
+                <meta property="og:image" content="/bader_website/static/src/img/bader_logotipo.png"/>
+                <meta property="og:type" content="website"/>
+                <meta property="og:url" content="https://qas.bader4business.com/servicios"/>
+                <meta name="twitter:card" content="summary_large_image"/>
+            </t>
             <div id="wrap" class="oe_structure oe_empty">
 
                 <!-- ============================
