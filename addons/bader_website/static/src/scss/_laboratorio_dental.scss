@@ -3,10 +3,27 @@
 // ============================================
 
 .bader-page-hero--purple {
-    background: linear-gradient(135deg, #2E1065 0%, #581C87 50%, #6D28D9 100%);
+    background: linear-gradient(135deg, #2E1065 0%, #581C87 50%, #6D28D9 100%) !important;
+
+    .bader-page-hero__blur--1 {
+        background: rgba(139, 92, 246, 0.25) !important;
+    }
+
+    .bader-page-hero__blur--2 {
+        background: rgba(196, 181, 253, 0.15) !important;
+    }
 }
 
 .bader-page-hero__badge--purple {
     background: rgba(139, 92, 246, 0.15) !important;
     color: #C4B5FD !important;
+}
+
+// Gradient icon for purple-themed category cards
+.bader-gradient-icon--purple {
+    background: linear-gradient(135deg, #8B5CF6, #581C87) !important;
+
+    i {
+        color: white !important;
+    }
 }
