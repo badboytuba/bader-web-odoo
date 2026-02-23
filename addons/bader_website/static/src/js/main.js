@@ -400,4 +400,76 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     })();
 
+    // ---- 11. Product Detail — JS-Injected Enhancements ----
+    // (Replaces XML xpath approach which was brittle for Odoo 16)
+    (function initProductDetailEnhancements() {
+        // Only run on product detail pages
+        var productPage = document.querySelector('#product_detail, .oe_website_sale .o_wsale_product_page');
+        if (!productPage) return;
+
+        // Add Bader class
+        productPage.classList.add('bader-product-detail');
+
+        // --- IVA Note ---
+        var priceDiv = document.querySelector('.product_price, [itemprop="price"]');
+        if (priceDiv && !priceDiv.querySelector('.bader-price-note')) {
+            var ivaNote = document.createElement('span');
+            ivaNote.className = 'bader-price-note d-block mt-1';
+            ivaNote.style.cssText = 'font-size: 14px; color: #64748B;';
+            ivaNote.textContent = 'IVA incluido';
+            priceDiv.appendChild(ivaNote);
+        }
+
+        // --- Benefits Panel ---
+        var addToCart = document.querySelector('#add_to_cart, .a-submit');
+        if (addToCart) {
+            var parent = addToCart.closest('div') || addToCart.parentElement;
+            if (parent && !parent.querySelector('.bader-product-benefits')) {
+                var benefits = document.createElement('div');
+                benefits.className = 'bader-product-benefits mt-4';
+                benefits.innerHTML =
+                    '<div class="bader-benefit">' +
+                    '<i class="fa fa-truck"></i>' +
+                    '<span>Envío a todo Argentina</span>' +
+                    '</div>' +
+                    '<div class="bader-benefit">' +
+                    '<i class="fa fa-shield"></i>' +
+                    '<span>Garantía oficial Bader</span>' +
+                    '</div>' +
+                    '<div class="bader-benefit">' +
+                    '<i class="fa fa-credit-card"></i>' +
+                    '<span>Hasta 12 cuotas sin interés</span>' +
+                    '</div>' +
+                    '<div class="bader-benefit">' +
+                    '<i class="fa fa-refresh"></i>' +
+                    '<span>30 días para devoluciones</span>' +
+                    '</div>';
+
+                // Insert after the add-to-cart button's container
+                parent.parentElement.insertBefore(benefits, parent.nextSibling);
+            }
+        }
+
+        // --- Cart Benefits ---
+        var cartSummary = document.querySelector('.oe_cart .card, .oe_cart_summary .card');
+        if (cartSummary && !cartSummary.querySelector('.bader-checkout-benefits')) {
+            var cartBenefits = document.createElement('div');
+            cartBenefits.className = 'bader-checkout-benefits';
+            cartBenefits.innerHTML =
+                '<div class="bader-benefit">' +
+                '<i class="fa fa-truck"></i>' +
+                '<span>Envío gratis a todo Argentina</span>' +
+                '</div>' +
+                '<div class="bader-benefit">' +
+                '<i class="fa fa-shield"></i>' +
+                '<span>Pago seguro</span>' +
+                '</div>' +
+                '<div class="bader-benefit">' +
+                '<i class="fa fa-credit-card"></i>' +
+                '<span>Hasta 12 cuotas sin interés</span>' +
+                '</div>';
+            cartSummary.appendChild(cartBenefits);
+        }
+    })();
+
 });
