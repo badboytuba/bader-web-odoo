@@ -3,66 +3,14 @@
 
     <!-- =============================================
          Bader Shop — Light Theme Template Overrides
+         Only uses confirmed Odoo 16 xpath targets
          ============================================= -->
 
-    <!-- Add Bader class to main shop container -->
+    <!-- Add Bader class to main shop grid container -->
     <template id="bader_shop_style" inherit_id="website_sale.products"
               name="Bader Shop Styling" priority="20">
         <xpath expr="//div[@id='products_grid']" position="attributes">
             <attribute name="class" add="bader-shop-grid" separator=" "/>
-        </xpath>
-    </template>
-
-    <!-- ========================================
-         Bader Product Detail — Enhanced Content
-         ======================================== -->
-    <template id="bader_product_detail" inherit_id="website_sale.product"
-              name="Bader Product Detail" priority="20">
-
-        <!-- Add Bader class to the product detail wrapper -->
-        <xpath expr="//div[@id='product_detail']" position="attributes">
-            <attribute name="class" add="bader-product-detail" separator=" "/>
-        </xpath>
-
-        <!-- Add IVA note after price section -->
-        <xpath expr="//div[hasclass('product_price')]" position="inside">
-            <span class="bader-price-note d-block mt-1"
-                  style="font-size: 14px; color: #64748B;">
-                IVA incluido
-            </span>
-        </xpath>
-
-        <!-- Add benefits panel after add-to-cart -->
-        <xpath expr="//a[@id='add_to_cart']/.." position="after">
-            <div class="bader-product-benefits mt-4">
-                <div class="bader-benefit">
-                    <i class="fa fa-truck"/>
-                    <span>Envío a todo Argentina</span>
-                </div>
-                <div class="bader-benefit">
-                    <i class="fa fa-shield"/>
-                    <span>Garantía oficial Bader</span>
-                </div>
-                <div class="bader-benefit">
-                    <i class="fa fa-credit-card"/>
-                    <span>Hasta 12 cuotas sin interés</span>
-                </div>
-                <div class="bader-benefit">
-                    <i class="fa fa-refresh"/>
-                    <span>30 días para devoluciones</span>
-                </div>
-            </div>
-        </xpath>
-    </template>
-
-    <!-- ========================================
-         Bader Cart — Enhanced Styling
-         ======================================== -->
-    <template id="bader_cart_benefits" inherit_id="website_sale.cart"
-              name="Bader Cart Benefits" priority="20">
-        <!-- Add Bader class to cart wrapper -->
-        <xpath expr="//div[hasclass('oe_cart')]" position="attributes">
-            <attribute name="class" add="bader-cart" separator=" "/>
         </xpath>
     </template>
 
