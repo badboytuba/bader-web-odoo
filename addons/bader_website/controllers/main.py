@@ -4,6 +4,7 @@ from datetime import datetime
 from odoo import http
 from odoo.http import request
 from odoo.addons.website.controllers.main import Website
+from odoo.addons.http_routing.models.ir_http import slug
 
 _logger = logging.getLogger(__name__)
 
@@ -61,13 +62,16 @@ class BaderWebsite(Website):
         # Static pages with priorities
         static_pages = [
             ('/', '1.0', 'daily'),
-            ('/shop', '0.9', 'daily'),
+            ('/productos', '0.9', 'daily'),
             ('/clinica-dental', '0.8', 'weekly'),
             ('/laboratorio-dental', '0.8', 'weekly'),
             ('/estudiantes-odontologia', '0.8', 'weekly'),
             ('/sobre-nosotros', '0.7', 'monthly'),
             ('/ser-distribuidor', '0.7', 'monthly'),
             ('/servicios', '0.7', 'monthly'),
+            ('/descargas', '0.6', 'monthly'),
+            ('/ayuda', '0.6', 'monthly'),
+            ('/blog', '0.6', 'weekly'),
         ]
 
         urls = []
@@ -135,6 +139,98 @@ class BaderWebsite(Website):
     def index(self, **kw):
         """Override the main homepage to render Bader template."""
         return request.render('bader_website.bader_homepage', {})
+
+    @http.route('/productos', type='http', auth='public', website=True, sitemap=True)
+    def productos(self, **kw):
+        """Frontend alias for Odoo catalog."""
+        query = request.httprequest.query_string.decode('utf-8')
+        return request.redirect('/shop%s' % ('?%s' % query if query else ''))
+
+    @http.route('/producto/<int:product_id>', type='http', auth='public',
+                website=True, sitemap=False)
+    def producto_por_id(self, product_id, **kw):
+        """Frontend alias for product detail page by id."""
+        product = request.env['product.template'].sudo().browse(product_id)
+        if not product.exists() or not product.website_published:
+            return request.not_found()
+        return request.redirect('/shop/product/%s' % slug(product))
+
+    @http.route('/checkout', type='http', auth='public', website=True, sitemap=False)
+    def checkout_alias(self, **kw):
+        """Frontend alias for checkout flow."""
+        return request.redirect('/shop/checkout')
+
+    @http.route('/mi-perfil', type='http', auth='public', website=True, sitemap=False)
+    def mi_perfil(self, **kw):
+        return request.redirect('/my/home')
+
+    @http.route('/mis-pedidos', type='http', auth='public', website=True, sitemap=False)
+    def mis_pedidos(self, **kw):
+        return request.redirect('/my/orders')
+
+    @http.route('/mis-facturas', type='http', auth='public', website=True, sitemap=False)
+    def mis_facturas(self, **kw):
+        return request.redirect('/my/invoices')
+
+    @http.route('/mis-favoritos', type='http', auth='public', website=True, sitemap=False)
+    def mis_favoritos(self, **kw):
+        return request.redirect('/shop/wishlist')
+
+    @http.route('/configuracion', type='http', auth='public', website=True, sitemap=False)
+    def configuracion(self, **kw):
+        return request.redirect('/my/account')
+
+    @http.route('/descargas', type='http', auth='public', website=True, sitemap=True)
+    def descargas(self, **kw):
+        return request.render('bader_website.bader_descargas', {})
+
+    @http.route('/ayuda', type='http', auth='public', website=True, sitemap=True)
+    def ayuda(self, **kw):
+        return request.render('bader_website.bader_ayuda', {})
+
+    @http.route('/blog', type='http', auth='public', website=True, sitemap=True)
+    def blog(self, **kw):
+        return request.render('bader_website.bader_blog', {})
+
+    @http.route('/blog/<string:post_slug>', type='http', auth='public',
+                website=True, sitemap=False)
+    def blog_post_placeholder(self, post_slug, **kw):
+        return request.render('bader_website.bader_blog_post_placeholder', {
+            'slug': post_slug
+        })
+
+    @http.route('/payment/success', type='http', auth='public', website=True, sitemap=False)
+    def payment_success(self, **kw):
+        return request.render('bader_website.bader_payment_success', {})
+
+    @http.route('/payment/failure', type='http', auth='public', website=True, sitemap=False)
+    def payment_failure(self, **kw):
+        return request.render('bader_website.bader_payment_failure', {})
+
+    @http.route('/payment/pending', type='http', auth='public', website=True, sitemap=False)
+    def payment_pending(self, **kw):
+        return request.render('bader_website.bader_payment_pending', {})
+
+    @http.route('/presupuesto/<string:token>', type='http', auth='public',
+                website=True, sitemap=False)
+    def presupuesto_publico(self, token, **kw):
+        return request.render('bader_website.bader_presupuesto_publico', {
+            'token': token
+        })
+
+    @http.route('/pago/<string:token>', type='http', auth='public',
+                website=True, sitemap=False)
+    def pago_publico(self, token, **kw):
+        return request.render('bader_website.bader_pago_publico', {
+            'token': token
+        })
+
+    @http.route('/recuperar-carrito/<string:token>', type='http', auth='public',
+                website=True, sitemap=False)
+    def recuperar_carrito(self, token, **kw):
+        return request.render('bader_website.bader_recuperar_carrito', {
+            'token': token
+        })
 
     # ─── Sobre Nosotros ────────────────────────────────────────
     @http.route(['/sobre-nosotros', '/quienes-somos', '/nosotros'], type='http', auth='public',

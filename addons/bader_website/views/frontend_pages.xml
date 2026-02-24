@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="bader_descargas" name="Bader Descargas">
+        <t t-call="website.layout">
+            <t t-set="head">
+                <title>Descargas - Bader Argentina</title>
+                <meta name="description" content="Descarga catalogos, fichas tecnicas y materiales comerciales de Bader Argentina."/>
+            </t>
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__blur bader-page-hero__blur--1"/>
+                    <div class="bader-page-hero__blur bader-page-hero__blur--2"/>
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <span class="bader-page-hero__badge">
+                                <i class="fa fa-download"/> Descargas
+                            </span>
+                            <h1 class="bader-page-hero__title">
+                                Materiales para tu <span class="text-green">equipo comercial</span>
+                            </h1>
+                            <p class="bader-page-hero__subtitle">
+                                Aqui encontrara catalogos y fichas para compartir con clientes y distribuidores.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bader-page-section bader-page-section--white bader-animate">
+                    <div class="bader-page-section__container">
+                        <div class="bader-page-section__grid bader-page-section__grid--3">
+                            <div class="bader-page-card">
+                                <div class="bader-page-card__icon">
+                                    <i class="fa fa-book"/>
+                                </div>
+                                <h3 class="bader-page-card__title">Catalogo General</h3>
+                                <p class="bader-page-card__text">Version web en preparacion para la nueva plataforma Odoo.</p>
+                                <a href="/productos" class="btn-bader" style="margin-top: 1rem;">Ver productos</a>
+                            </div>
+                            <div class="bader-page-card">
+                                <div class="bader-page-card__icon">
+                                    <i class="fa fa-file-pdf-o"/>
+                                </div>
+                                <h3 class="bader-page-card__title">Fichas Tecnicas</h3>
+                                <p class="bader-page-card__text">Documentacion tecnica por categoria de producto.</p>
+                                <a href="/productos" class="btn-bader" style="margin-top: 1rem;">Ir a catalogo</a>
+                            </div>
+                            <div class="bader-page-card">
+                                <div class="bader-page-card__icon">
+                                    <i class="fa fa-users"/>
+                                </div>
+                                <h3 class="bader-page-card__title">Material Comercial</h3>
+                                <p class="bader-page-card__text">Recursos para distribuidores y equipo de ventas.</p>
+                                <a href="/ser-distribuidor" class="btn-bader" style="margin-top: 1rem;">Ser distribuidor</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="bader_ayuda" name="Bader Ayuda">
+        <t t-call="website.layout">
+            <t t-set="head">
+                <title>Ayuda - Bader Argentina</title>
+                <meta name="description" content="Centro de ayuda Bader: garantias, envios, pagos y soporte tecnico."/>
+            </t>
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__blur bader-page-hero__blur--1"/>
+                    <div class="bader-page-hero__blur bader-page-hero__blur--2"/>
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <span class="bader-page-hero__badge">
+                                <i class="fa fa-life-ring"/> Ayuda
+                            </span>
+                            <h1 class="bader-page-hero__title">
+                                Centro de <span class="text-green">soporte</span>
+                            </h1>
+                            <p class="bader-page-hero__subtitle">
+                                Preguntas frecuentes y canales de contacto para clientes de Bader Argentina.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bader-page-section bader-page-section--white bader-animate">
+                    <div class="bader-page-section__container">
+                        <div class="bader-page-section__grid bader-page-section__grid--3">
+                            <div class="bader-page-card">
+                                <div class="bader-page-card__icon"><i class="fa fa-shield"/></div>
+                                <h3 class="bader-page-card__title">Garantias</h3>
+                                <p class="bader-page-card__text">Cobertura oficial y condiciones por tipo de equipo.</p>
+                            </div>
+                            <div class="bader-page-card">
+                                <div class="bader-page-card__icon"><i class="fa fa-truck"/></div>
+                                <h3 class="bader-page-card__title">Envios</h3>
+                                <p class="bader-page-card__text">Tiempos, zonas de entrega y seguimiento de pedidos.</p>
+                            </div>
+                            <div class="bader-page-card">
+                                <div class="bader-page-card__icon"><i class="fa fa-credit-card"/></div>
+                                <h3 class="bader-page-card__title">Pagos y cuotas</h3>
+                                <p class="bader-page-card__text">Medios de pago y opciones de financiacion vigentes.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="bader_blog" name="Bader Blog">
+        <t t-call="website.layout">
+            <t t-set="head">
+                <title>Blog - Bader Argentina</title>
+                <meta name="description" content="Novedades de productos, recomendaciones y contenidos para profesionales odontologicos."/>
+            </t>
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__blur bader-page-hero__blur--1"/>
+                    <div class="bader-page-hero__blur bader-page-hero__blur--2"/>
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <span class="bader-page-hero__badge">
+                                <i class="fa fa-rss"/> Blog
+                            </span>
+                            <h1 class="bader-page-hero__title">
+                                Contenido para <span class="text-green">profesionales</span>
+                            </h1>
+                            <p class="bader-page-hero__subtitle">
+                                Estamos terminando la migracion del blog para que conserve el mismo diseno del app.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+                <section class="bader-page-section bader-page-section--white bader-animate">
+                    <div class="bader-page-section__container">
+                        <div class="bader-page-card" style="text-align: center;">
+                            <h3 class="bader-page-card__title">Blog en transferencia</h3>
+                            <p class="bader-page-card__text">En breve publicaremos articulos con el mismo layout del app Bader-AR.</p>
+                            <a href="/" class="btn-bader" style="margin-top: 1rem;">Volver al inicio</a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="bader_blog_post_placeholder" name="Bader Blog Post Placeholder">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <span class="bader-page-hero__badge">
+                                <i class="fa fa-file-text-o"/> Blog
+                            </span>
+                            <h1 class="bader-page-hero__title">Articulo en transferencia</h1>
+                            <p class="bader-page-hero__subtitle">
+                                Este articulo se esta migrando al nuevo frontend Odoo.
+                            </p>
+                            <p class="bader-page-hero__subtitle" style="font-size: 0.95rem;">
+                                Slug: <strong t-esc="slug"/>
+                            </p>
+                            <a href="/blog" class="btn-bader">Volver al blog</a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="bader_payment_success" name="Bader Payment Success">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;"><i class="fa fa-check-circle text-green"/></div>
+                            <h1 class="bader-page-hero__title">Pago aprobado</h1>
+                            <p class="bader-page-hero__subtitle">Tu operacion fue confirmada correctamente.</p>
+                            <a href="/mis-pedidos" class="btn-bader">Ver mis pedidos</a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="bader_payment_failure" name="Bader Payment Failure">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;"><i class="fa fa-times-circle" style="color:#EF4444;"/></div>
+                            <h1 class="bader-page-hero__title">Pago rechazado</h1>
+                            <p class="bader-page-hero__subtitle">No se pudo completar el pago. Puedes intentar nuevamente.</p>
+                            <a href="/checkout" class="btn-bader">Volver al checkout</a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="bader_payment_pending" name="Bader Payment Pending">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;"><i class="fa fa-clock-o" style="color:#F59E0B;"/></div>
+                            <h1 class="bader-page-hero__title">Pago pendiente</h1>
+                            <p class="bader-page-hero__subtitle">Estamos esperando la confirmacion del medio de pago.</p>
+                            <a href="/mis-pedidos" class="btn-bader">Ver estado del pedido</a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="bader_presupuesto_publico" name="Bader Presupuesto Publico">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <span class="bader-page-hero__badge"><i class="fa fa-file-text-o"/> Presupuesto</span>
+                            <h1 class="bader-page-hero__title">Enlace de presupuesto</h1>
+                            <p class="bader-page-hero__subtitle">
+                                Estamos terminando la transferencia de esta pantalla al nuevo frontend.
+                            </p>
+                            <p class="bader-page-hero__subtitle" style="font-size: 0.95rem;">
+                                Token: <strong t-esc="token"/>
+                            </p>
+                            <a href="/" class="btn-bader">Volver al inicio</a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="bader_pago_publico" name="Bader Pago Publico">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <span class="bader-page-hero__badge"><i class="fa fa-credit-card"/> Pago</span>
+                            <h1 class="bader-page-hero__title">Enlace de pago</h1>
+                            <p class="bader-page-hero__subtitle">
+                                Esta vista publica se esta migrando al frontend Odoo con el mismo diseno del app.
+                            </p>
+                            <p class="bader-page-hero__subtitle" style="font-size: 0.95rem;">
+                                Token: <strong t-esc="token"/>
+                            </p>
+                            <a href="/" class="btn-bader">Volver al inicio</a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="bader_recuperar_carrito" name="Bader Recuperar Carrito">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <span class="bader-page-hero__badge"><i class="fa fa-shopping-cart"/> Recuperar carrito</span>
+                            <h1 class="bader-page-hero__title">Carrito en recuperacion</h1>
+                            <p class="bader-page-hero__subtitle">
+                                Estamos terminando la migracion de la recuperacion de carrito a Odoo.
+                            </p>
+                            <p class="bader-page-hero__subtitle" style="font-size: 0.95rem;">
+                                Token: <strong t-esc="token"/>
+                            </p>
+                            <a href="/productos" class="btn-bader">Ir al catalogo</a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+</odoo>

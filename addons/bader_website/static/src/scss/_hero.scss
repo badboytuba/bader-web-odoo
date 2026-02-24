@@ -61,7 +61,7 @@
         text-decoration: none;
         transition: all $transition-base;
         cursor: pointer;
-        font-family: 'Inter', sans-serif;
+        font-family: $font-body;
 
         i {
             font-size: 0.85rem;
@@ -107,7 +107,7 @@
     }
 
     &__title {
-        font-family: 'Montserrat', 'Inter', sans-serif;
+        font-family: $font-display;
         font-size: 3.5rem;
         font-weight: 800;
         color: $bader-dark;
@@ -160,7 +160,7 @@
     }
 
     &__stat-num {
-        font-family: 'Montserrat', sans-serif;
+        font-family: $font-display;
         font-size: 1.6rem;
         font-weight: 800;
         color: $bader-dark;
@@ -332,7 +332,7 @@
         }
 
         strong {
-            font-family: 'Montserrat', sans-serif;
+            font-family: $font-display;
             font-size: 1.1rem;
             font-weight: 800;
             color: $bader-green;
@@ -446,7 +446,7 @@
 
     &__content {
         h3 {
-            font-family: 'Montserrat', 'Inter', sans-serif;
+            font-family: $font-display;
             font-size: 0.95rem;
             font-weight: 700;
             color: $bader-dark;

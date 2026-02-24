@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
 
         <!-- ====================================================
-             website.page records — register custom pages in Odoo
-             so they appear in "Sitio Web > Páginas web" backend.
+             website.page records - register custom pages in Odoo
+             so they appear in Website > Pages backend.
              ==================================================== -->
 
         <!-- Homepage -->
@@ -14,9 +14,9 @@
             <field name="view_id" ref="bader_website.bader_homepage"/>
             <field name="website_indexed" eval="True"/>
             <field name="is_published" eval="True"/>
-            <field name="website_meta_title">Bader Argentina — Equipamiento Odontológico Profesional</field>
-            <field name="website_meta_description">Bader Argentina: líder en equipamiento odontológico. Sillones dentales, autoclaves, rayos X, compresores e instrumental. Envíos a todo el país. +2.800 productos en stock.</field>
-            <field name="website_meta_keywords">equipamiento odontológico, sillones dentales, autoclaves, rayos X, Bader Argentina</field>
+            <field name="website_meta_title">Bader Argentina - Equipamiento Odontologico Profesional</field>
+            <field name="website_meta_description">Bader Argentina: lider en equipamiento odontologico. Sillones dentales, autoclaves, rayos X, compresores e instrumental. Envios a todo el pais. +2.800 productos en stock.</field>
+            <field name="website_meta_keywords">equipamiento odontologico, sillones dentales, autoclaves, rayos X, Bader Argentina</field>
         </record>
 
         <!-- Sobre Nosotros -->
@@ -26,8 +26,8 @@
             <field name="view_id" ref="bader_website.bader_sobre_nosotros"/>
             <field name="website_indexed" eval="True"/>
             <field name="is_published" eval="True"/>
-            <field name="website_meta_title">Sobre Nosotros — Bader Argentina</field>
-            <field name="website_meta_description">Bader Iberoamericana: +30 años liderando el mercado de equipamiento odontológico. Presencia en 8 países, +500 distribuidores y certificación ISO 9001.</field>
+            <field name="website_meta_title">Sobre Nosotros - Bader Argentina</field>
+            <field name="website_meta_description">Bader Iberoamericana: +30 anos liderando el mercado de equipamiento odontologico. Presencia en 8 paises, +500 distribuidores y certificacion ISO 9001.</field>
             <field name="website_meta_keywords">Bader Iberoamericana, sobre nosotros, equipamiento dental, ISO 9001</field>
         </record>
 
@@ -38,8 +38,8 @@
             <field name="view_id" ref="bader_website.bader_ser_distribuidor"/>
             <field name="website_indexed" eval="True"/>
             <field name="is_published" eval="True"/>
-            <field name="website_meta_title">Ser Distribuidor Bader — Oportunidad de Negocio</field>
-            <field name="website_meta_description">Convertite en distribuidor oficial Bader. Márgenes atractivos, línea completa de +2.800 productos, soporte técnico y marketing.</field>
+            <field name="website_meta_title">Ser Distribuidor Bader - Oportunidad de Negocio</field>
+            <field name="website_meta_description">Convertite en distribuidor oficial Bader. Margenes atractivos, linea completa de +2.800 productos, soporte tecnico y marketing.</field>
             <field name="website_meta_keywords">distribuidor Bader, oportunidad negocio dental, ser distribuidor</field>
         </record>
 
@@ -50,21 +50,21 @@
             <field name="view_id" ref="bader_website.bader_servicios"/>
             <field name="website_indexed" eval="True"/>
             <field name="is_published" eval="True"/>
-            <field name="website_meta_title">Servicios — Bader Argentina</field>
-            <field name="website_meta_description">Servicio técnico oficial Bader: reparación, mantenimiento preventivo, instalación, calibración. Técnicos certificados, repuestos originales.</field>
-            <field name="website_meta_keywords">servicio técnico dental, reparación equipamiento, mantenimiento Bader</field>
+            <field name="website_meta_title">Servicios - Bader Argentina</field>
+            <field name="website_meta_description">Servicio tecnico oficial Bader: reparacion, mantenimiento preventivo, instalacion, calibracion. Tecnicos certificados, repuestos originales.</field>
+            <field name="website_meta_keywords">servicio tecnico dental, reparacion equipamiento, mantenimiento Bader</field>
         </record>
 
-        <!-- Clínica Dental -->
+        <!-- Clinica Dental -->
         <record id="page_clinica_dental" model="website.page">
-            <field name="name">Clínica Dental</field>
+            <field name="name">Clinica Dental</field>
             <field name="url">/clinica-dental</field>
             <field name="view_id" ref="bader_website.bader_clinica_dental"/>
             <field name="website_indexed" eval="True"/>
             <field name="is_published" eval="True"/>
-            <field name="website_meta_title">Equipamiento para Clínica Dental — Bader Argentina</field>
-            <field name="website_meta_description">Equipamiento completo para tu clínica dental: sillones, autoclaves, rayos X, compresores, instrumental y materiales. Calidad europea con garantía.</field>
-            <field name="website_meta_keywords">clínica dental, equipamiento dental, sillones dentales, autoclaves</field>
+            <field name="website_meta_title">Equipamiento para Clinica Dental - Bader Argentina</field>
+            <field name="website_meta_description">Equipamiento completo para tu clinica dental: sillones, autoclaves, rayos X, compresores, instrumental y materiales. Calidad europea con garantia.</field>
+            <field name="website_meta_keywords">clinica dental, equipamiento dental, sillones dentales, autoclaves</field>
         </record>
 
         <!-- Laboratorio Dental -->
@@ -74,21 +74,57 @@
             <field name="view_id" ref="bader_website.bader_laboratorio_dental"/>
             <field name="website_indexed" eval="True"/>
             <field name="is_published" eval="True"/>
-            <field name="website_meta_title">Equipamiento para Laboratorio Dental — Bader Argentina</field>
+            <field name="website_meta_title">Equipamiento para Laboratorio Dental - Bader Argentina</field>
             <field name="website_meta_description">Equipamiento profesional para laboratorio dental: mesas de trabajo, cabinas de repasado, arenadoras, articuladores, termoformadoras e instrumental.</field>
             <field name="website_meta_keywords">laboratorio dental, mesas trabajo dental, cabinas repasado, articuladores</field>
         </record>
 
-        <!-- Estudiantes Odontología -->
+        <!-- Estudiantes Odontologia -->
         <record id="page_estudiantes_odontologia" model="website.page">
-            <field name="name">Estudiantes Odontología</field>
+            <field name="name">Estudiantes Odontologia</field>
             <field name="url">/estudiantes-odontologia</field>
             <field name="view_id" ref="bader_website.bader_estudiantes_odontologia"/>
             <field name="website_indexed" eval="True"/>
             <field name="is_published" eval="True"/>
-            <field name="website_meta_title">Kits para Estudiantes de Odontología — Bader Argentina</field>
-            <field name="website_meta_description">Kits de instrumental rotatorio para estudiantes de odontología. Kit 4matic, Smart, Uptrend y Neo. Garantía estudiantil, fresas incluidas y revisión gratuita.</field>
-            <field name="website_meta_keywords">kits estudiantes odontología, instrumental rotatorio, kit dental estudiante</field>
+            <field name="website_meta_title">Kits para Estudiantes de Odontologia - Bader Argentina</field>
+            <field name="website_meta_description">Kits de instrumental rotatorio para estudiantes de odontologia. Kit 4matic, Smart, Uptrend y Neo. Garantia estudiantil, fresas incluidas y revision gratuita.</field>
+            <field name="website_meta_keywords">kits estudiantes odontologia, instrumental rotatorio, kit dental estudiante</field>
+        </record>
+
+        <!-- Descargas -->
+        <record id="page_descargas" model="website.page">
+            <field name="name">Descargas</field>
+            <field name="url">/descargas</field>
+            <field name="view_id" ref="bader_website.bader_descargas"/>
+            <field name="website_indexed" eval="True"/>
+            <field name="is_published" eval="True"/>
+            <field name="website_meta_title">Descargas - Bader Argentina</field>
+            <field name="website_meta_description">Catalogos, fichas tecnicas y materiales de soporte comercial de Bader Argentina.</field>
+            <field name="website_meta_keywords">descargas bader, catalogo dental, ficha tecnica dental</field>
+        </record>
+
+        <!-- Ayuda -->
+        <record id="page_ayuda" model="website.page">
+            <field name="name">Ayuda</field>
+            <field name="url">/ayuda</field>
+            <field name="view_id" ref="bader_website.bader_ayuda"/>
+            <field name="website_indexed" eval="True"/>
+            <field name="is_published" eval="True"/>
+            <field name="website_meta_title">Ayuda - Bader Argentina</field>
+            <field name="website_meta_description">Informacion de garantias, envios, pagos y soporte tecnico de Bader Argentina.</field>
+            <field name="website_meta_keywords">ayuda bader, soporte tecnico dental, garantia equipos dentales</field>
+        </record>
+
+        <!-- Blog -->
+        <record id="page_blog" model="website.page">
+            <field name="name">Blog</field>
+            <field name="url">/blog</field>
+            <field name="view_id" ref="bader_website.bader_blog"/>
+            <field name="website_indexed" eval="True"/>
+            <field name="is_published" eval="True"/>
+            <field name="website_meta_title">Blog - Bader Argentina</field>
+            <field name="website_meta_description">Novedades, recomendaciones y contenido para profesionales odontologicos.</field>
+            <field name="website_meta_keywords">blog dental, novedades odontologia, bader argentina</field>
         </record>
 
     </data>

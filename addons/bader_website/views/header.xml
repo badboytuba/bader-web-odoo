@@ -31,7 +31,7 @@
                 <div class="container">
                     <div class="bader-mega__header">
                         <h3 class="bader-mega__title">Nuestros Productos</h3>
-                        <a href="/shop" class="bader-mega__view-all">
+                        <a href="/productos" class="bader-mega__view-all">
                             Ver todos los productos <i class="fa fa-arrow-right"/>
                         </a>
                     </div>

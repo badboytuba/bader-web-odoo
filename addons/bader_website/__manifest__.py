@@ -32,6 +32,7 @@
         'views/footer.xml',
         'views/homepage.xml',
         'views/templates.xml',
+        'views/frontend_pages.xml',
         'views/shop.xml',
         # New pages
         'views/sobre_nosotros.xml',
@@ -40,6 +41,8 @@
         'views/clinica_dental.xml',
         'views/laboratorio_dental.xml',
         'views/estudiantes_odontologia.xml',
+        # Menu and website pages
+        'data/website_menu.xml',
         # Website page records (for Odoo backend integration)
         'data/website_pages.xml',
     ],

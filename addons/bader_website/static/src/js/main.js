@@ -35,7 +35,7 @@ odoo.define('bader_website.main', function (require) {
                     var href = (link.getAttribute('href') || '').toLowerCase();
                     var text = (link.textContent || '').trim().toLowerCase();
                     if (text === 'productos' || text === 'shop' || text.indexOf('producto') !== -1 ||
-                        href.indexOf('/shop') !== -1) {
+                        href.indexOf('/shop') !== -1 || href.indexOf('/productos') !== -1) {
                         productLink = link;
                     }
                 });
@@ -99,7 +99,7 @@ odoo.define('bader_website.main', function (require) {
                         toggleMega();
                     } else if (megaPanel.classList.contains('bader-mega--open')) {
                         // Desktop: if mega is open, clicking navigates to shop
-                        window.location.href = '/shop';
+                        window.location.href = '/productos';
                         e.preventDefault();
                     }
                 });
@@ -151,7 +151,7 @@ odoo.define('bader_website.main', function (require) {
                     return;
                 }
                 // Fallback: navigate to shop search
-                window.location.href = '/shop';
+                window.location.href = '/productos';
             });
 
             // Keyboard shortcut: press Q to open search
@@ -475,7 +475,7 @@ odoo.define('bader_website.main', function (require) {
                     '<span class="bader-hero__chevron">›</span>';
 
                 if (isCategory) {
-                    heroHtml += '<a href="/pt/shop">Productos</a>' +
+                    heroHtml += '<a href="/productos">Productos</a>' +
                         '<span class="bader-hero__chevron">›</span>' +
                         '<span>' + categoryName + '</span>';
                 } else {
@@ -499,7 +499,7 @@ odoo.define('bader_website.main', function (require) {
                     heroHtml += '<div class="bader-hero__segments">' +
 
                         // Clínica Dental
-                        '<a href="/pt/shop/category/clinica-dental" class="bader-segment-card">' +
+                        '<a href="/shop/category/clinica-dental" class="bader-segment-card">' +
                         '<div class="bader-segment-card__icon"><i class="fa fa-hospital-o"></i></div>' +
                         '<div class="bader-segment-card__content">' +
                         '<h3>Clínica Dental</h3>' +
@@ -511,7 +511,7 @@ odoo.define('bader_website.main', function (require) {
                         '</div></a>' +
 
                         // Laboratorio Dental
-                        '<a href="/pt/shop/category/laboratorio-dental" class="bader-segment-card">' +
+                        '<a href="/shop/category/laboratorio-dental" class="bader-segment-card">' +
                         '<div class="bader-segment-card__icon"><i class="fa fa-flask"></i></div>' +
                         '<div class="bader-segment-card__content">' +
                         '<h3>Laboratorio Dental</h3>' +
@@ -523,7 +523,7 @@ odoo.define('bader_website.main', function (require) {
                         '</div></a>' +
 
                         // Estudiantes
-                        '<a href="/pt/shop/category/estudiantes" class="bader-segment-card">' +
+                        '<a href="/shop/category/estudiantes" class="bader-segment-card">' +
                         '<div class="bader-segment-card__icon"><i class="fa fa-graduation-cap"></i></div>' +
                         '<div class="bader-segment-card__content">' +
                         '<h3>Estudiantes</h3>' +
@@ -623,10 +623,10 @@ odoo.define('bader_website.main', function (require) {
                 chips.className = 'bader-filter-chips';
                 chips.innerHTML =
                     '<span class="bader-filter-chips__label">Filtros rápidos:</span>' +
-                    '<a href="/pt/shop?order=website_sequence+asc" class="bader-chip"><i class="fa fa-tag"></i> Ofertas</a>' +
-                    '<a href="/pt/shop?order=create_date+desc" class="bader-chip"><i class="fa fa-star"></i> Nuevos</a>' +
-                    '<a href="/pt/shop?order=price+asc" class="bader-chip"><i class="fa fa-sort-amount-asc"></i> Menor precio</a>' +
-                    '<a href="/pt/shop?order=price+desc" class="bader-chip"><i class="fa fa-sort-amount-desc"></i> Mayor precio</a>';
+                    '<a href="/productos?order=website_sequence+asc" class="bader-chip"><i class="fa fa-tag"></i> Ofertas</a>' +
+                    '<a href="/productos?order=create_date+desc" class="bader-chip"><i class="fa fa-star"></i> Nuevos</a>' +
+                    '<a href="/productos?order=price+asc" class="bader-chip"><i class="fa fa-sort-amount-asc"></i> Menor precio</a>' +
+                    '<a href="/productos?order=price+desc" class="bader-chip"><i class="fa fa-sort-amount-desc"></i> Mayor precio</a>';
                 var headerEl = gridArea.querySelector('.products_header');
                 if (headerEl) {
                     headerEl.parentElement.insertBefore(chips, headerEl.nextSibling);
@@ -769,9 +769,9 @@ odoo.define('bader_website.main', function (require) {
                 if (!rail.querySelector('.bader-filter-section--segmento')) {
                     var currentPath = window.location.pathname.toLowerCase();
                     var segmentos = [
-                        { name: 'Clínica Dental', icon: 'fa-hospital-o', url: '/pt/shop/category/clinica-dental', count: '7' },
-                        { name: 'Laboratorio Dental', icon: 'fa-flask', url: '/pt/shop/category/laboratorio-dental', count: '6' },
-                        { name: 'Estudiantes', icon: 'fa-graduation-cap', url: '/pt/shop/category/estudiantes', count: '6' }
+                        { name: 'Clínica Dental', icon: 'fa-hospital-o', url: '/shop/category/clinica-dental', count: '7' },
+                        { name: 'Laboratorio Dental', icon: 'fa-flask', url: '/shop/category/laboratorio-dental', count: '6' },
+                        { name: 'Estudiantes', icon: 'fa-graduation-cap', url: '/shop/category/estudiantes', count: '6' }
                     ];
                     var segHtml = '<div class="bader-filter-section bader-filter-section--segmento">' +
                         '<div class="bader-filter-section__title">Segmento <span class="bader-chevron is-open">▾</span></div>' +
