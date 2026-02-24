@@ -246,6 +246,92 @@ odoo.define('bader_website.main', function (require) {
         (function initPersonaTabs() {
             var tabs = document.querySelectorAll('.bader-hero__tab[data-persona]');
             if (tabs.length === 0) return;
+            var personas = ['clinica', 'laboratorio', 'estudiantes'];
+
+            var personaMeta = {
+                clinica: {
+                    stats: [
+                        { value: '10,000+', label: 'Clientes satisfechos' },
+                        { value: '4.7', label: 'Google Reviews' },
+                        { value: '1,300+', label: 'Productos' },
+                    ],
+                    cta: { label: 'Equipar mi clinica', href: '/clinica-dental' },
+                    testimonial: {
+                        text: 'Los equipos Bader transformaron la experiencia de mis pacientes. Es como tener tecnologia del futuro hoy.',
+                        author: 'Dra. Maria Garcia',
+                        role: 'Odontologa, Buenos Aires',
+                    },
+                },
+                laboratorio: {
+                    stats: [
+                        { value: '800+', label: 'Distribuidores' },
+                        { value: '1,300+', label: 'Productos' },
+                        { value: '24/7', label: 'Soporte tecnico' },
+                    ],
+                    cta: { label: 'Ver equipos para laboratorio', href: '/laboratorio-dental' },
+                    testimonial: {
+                        text: 'La calidad de nuestras piezas mejoro un 40% desde que usamos equipos Bader.',
+                        author: 'Tec. Carlos Rodriguez',
+                        role: 'Lab Dental Premium, Cordoba',
+                    },
+                },
+                estudiantes: {
+                    stats: [
+                        { value: '10,000+', label: 'Clientes' },
+                        { value: '12', label: 'Cuotas sin interes' },
+                        { value: '800+', label: 'Distribuidores' },
+                    ],
+                    cta: { label: 'Plan estudiantes', href: '/estudiantes-odontologia' },
+                    testimonial: {
+                        text: 'Gracias al plan estudiantes pude equipar mi primer consultorio antes de graduarme.',
+                        author: 'Lucas Mendoza',
+                        role: 'Estudiante UBA, 5to ano',
+                    },
+                },
+            };
+
+            function applyPersonaMeta(persona) {
+                var meta = personaMeta[persona] || personaMeta.clinica;
+                var statNumbers = document.querySelectorAll('.bader-hero__inline-stats .bader-hero__stat-num');
+                var statLabels = document.querySelectorAll('.bader-hero__inline-stats .bader-hero__stat-label');
+                var i = 0;
+
+                for (i = 0; i < statNumbers.length && i < meta.stats.length; i++) {
+                    statNumbers[i].textContent = meta.stats[i].value;
+                }
+                for (i = 0; i < statLabels.length && i < meta.stats.length; i++) {
+                    statLabels[i].textContent = meta.stats[i].label;
+                }
+
+                var ctaBtn = document.querySelector('.bader-hero__actions .btn-bader');
+                if (ctaBtn) {
+                    ctaBtn.setAttribute('href', meta.cta.href);
+                    ctaBtn.textContent = meta.cta.label + ' ';
+                    var icon = document.createElement('i');
+                    icon.className = 'fa fa-arrow-right';
+                    ctaBtn.appendChild(icon);
+                }
+
+                var testimonialText = document.querySelector('.bader-hero__testimonial-text');
+                if (testimonialText) {
+                    testimonialText.textContent = '"' + meta.testimonial.text + '"';
+                }
+
+                var testimonialAuthor = document.querySelector('.bader-hero__testimonial-author strong');
+                if (testimonialAuthor) {
+                    testimonialAuthor.textContent = meta.testimonial.author;
+                }
+
+                var testimonialRole = document.querySelector('.bader-hero__testimonial-author span');
+                if (testimonialRole) {
+                    testimonialRole.textContent = meta.testimonial.role;
+                }
+            }
+
+            function personaIndex(persona) {
+                var idx = personas.indexOf(persona);
+                return idx === -1 ? 0 : idx;
+            }
 
             function switchPersona(persona) {
                 // Tabs
@@ -268,25 +354,31 @@ odoo.define('bader_website.main', function (require) {
                 document.querySelectorAll('.bader-hero__image-dots .dot[data-persona]').forEach(function (dot) {
                     dot.classList.toggle('active', dot.getAttribute('data-persona') === persona);
                 });
+
+                applyPersonaMeta(persona);
             }
 
             tabs.forEach(function (tab) {
                 tab.addEventListener('click', function (e) {
                     e.preventDefault();
-                    switchPersona(this.getAttribute('data-persona'));
+                    var persona = this.getAttribute('data-persona');
+                    currentIdx = personaIndex(persona);
+                    switchPersona(persona);
                 });
             });
 
             // Also clicking dots switches persona
             document.querySelectorAll('.bader-hero__image-dots .dot[data-persona]').forEach(function (dot) {
                 dot.addEventListener('click', function () {
-                    switchPersona(this.getAttribute('data-persona'));
+                    var persona = this.getAttribute('data-persona');
+                    currentIdx = personaIndex(persona);
+                    switchPersona(persona);
                 });
             });
 
             // Auto-rotate every 6 seconds
-            var personas = ['clinica', 'laboratorio', 'estudiantes'];
             var currentIdx = 0;
+            switchPersona(personas[currentIdx]);
             setInterval(function () {
                 currentIdx = (currentIdx + 1) % personas.length;
                 switchPersona(personas[currentIdx]);

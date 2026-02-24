@@ -4,6 +4,7 @@ from datetime import datetime
 from odoo import http
 from odoo.http import request
 from odoo.addons.website.controllers.main import Website
+from odoo.addons.website_sale.controllers.main import WebsiteSale
 from odoo.addons.http_routing.models.ir_http import slug
 
 _logger = logging.getLogger(__name__)
@@ -269,11 +270,21 @@ class BaderWebsite(Website):
         """Override the main homepage to render Bader template."""
         return request.render('bader_website.bader_homepage', {})
 
-    @http.route('/productos', type='http', auth='public', website=True, sitemap=True)
-    def productos(self, **kw):
-        """Frontend alias for Odoo catalog."""
-        query = request.httprequest.query_string.decode('utf-8')
-        return request.redirect('/shop%s' % ('?%s' % query if query else ''))
+    @http.route([
+        '/productos',
+        '/productos/page/<int:page>',
+        '/productos/category/<model("product.public.category"):category>',
+        '/productos/category/<model("product.public.category"):category>/page/<int:page>',
+    ], type='http', auth='public', website=True, sitemap=True)
+    def productos(self, page=0, category=None, search='', ppg=False, **post):
+        """Serve product catalog on /productos to match Bader-AR public URLs."""
+        return WebsiteSale().shop(
+            page=page,
+            category=category,
+            search=search,
+            ppg=ppg,
+            **post
+        )
 
     @http.route('/producto/<int:product_id>', type='http', auth='public',
                 website=True, sitemap=False)
