@@ -25,10 +25,6 @@
             </div>
         </xpath>
 
-        <!-- Remove default Odoo CTA snippet from header (Contáctenos button) -->
-        <xpath expr="//div[@id='top_menu_container']/div[contains(@class, 'oe_structure_solo')]"
-               position="replace"/>
-
         <!-- Inject mega menu panel after header (inside wrapwrap) -->
         <xpath expr="//header[@id='top']" position="after">
             <div id="baderMegaMenu" class="bader-mega">

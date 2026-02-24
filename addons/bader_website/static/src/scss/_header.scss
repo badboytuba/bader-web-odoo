@@ -261,6 +261,13 @@
             display: none !important;
         }
 
+        // Hide Website Builder CTA snippet injected in top menu container
+        #top_menu_container>.oe_structure_solo,
+        #top_menu_container .oe_structure_solo .btn_cta,
+        #top_menu_container .oe_structure_solo .btn-primary {
+            display: none !important;
+        }
+
         // Style the user dropdown (avatar area)
         #top_menu_collapse .o_extra_menu_items,
         .o_header_call_to_action {
