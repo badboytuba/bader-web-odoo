@@ -684,6 +684,220 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
     margin: 0;
 }
 
+// --- Descargas Page ---
+.bader-downloads-hero {
+    .bader-page-hero__center {
+        max-width: 62rem;
+    }
+}
+
+.bader-downloads-search {
+    margin-top: 1.5rem;
+    background: rgba($white, 0.12);
+    border: 1px solid rgba($white, 0.22);
+    border-radius: $radius-pill;
+    padding: 0.5rem 0.6rem 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+
+    i {
+        color: rgba($white, 0.8);
+        font-size: 1rem;
+    }
+
+    input {
+        flex: 1;
+        border: 0;
+        background: transparent;
+        color: $white;
+        font-size: 0.95rem;
+
+        &::placeholder {
+            color: rgba($white, 0.65);
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    .btn-bader-sm {
+        white-space: nowrap;
+    }
+
+    @include mobile {
+        flex-wrap: wrap;
+        border-radius: $radius-lg;
+        padding: 0.75rem;
+
+        .btn-bader-sm {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+}
+
+.bader-downloads-featured-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.bader-downloads-featured-sub {
+    font-size: 0.85rem;
+    color: $gray-500;
+}
+
+.bader-downloads-card {
+    &__row {
+        display: grid;
+        grid-template-columns: 90px 1fr;
+        gap: 0.9rem;
+    }
+
+    &__cover {
+        height: 122px;
+        border-radius: $radius-md;
+        overflow: hidden;
+        background: $gray-50;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__image-wrap {
+        position: relative;
+        height: 235px;
+        border-radius: $radius-lg;
+        overflow: hidden;
+        margin-bottom: 0.9rem;
+        background: linear-gradient(135deg, $gray-100, $gray-50);
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 0.8rem;
+        }
+    }
+}
+
+.bader-downloads-badge {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    background: $bader-green;
+    color: $white;
+    border-radius: $radius-pill;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+.bader-downloads-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba($bader-dark, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bader-downloads-soon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba($white, 0.95);
+    color: $bader-dark;
+    border-radius: $radius-pill;
+    padding: 0.32rem 0.8rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.bader-downloads-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: $gray-500;
+    margin-bottom: 0.85rem;
+}
+
+.bader-downloads-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+
+    .btn-bader-sm {
+        flex: 1;
+    }
+}
+
+.bader-downloads-filters {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.bader-downloads-filters__label {
+    color: $gray-500;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-right: 0.2rem;
+}
+
+.bader-downloads-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: $white;
+    color: $gray-700;
+    border: 1px solid $gray-200;
+    border-radius: $radius-pill;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: all $transition-fast;
+
+    &:hover {
+        border-color: $bader-green;
+        color: $bader-dark;
+        text-decoration: none;
+    }
+
+    &.is-active {
+        background: $bader-green;
+        border-color: $bader-green;
+        color: $white;
+    }
+}
+
+.bader-downloads-filter__count {
+    background: rgba($bader-dark, 0.08);
+    color: inherit;
+    border-radius: $radius-pill;
+    padding: 0.08rem 0.45rem;
+    font-weight: 700;
+}
+
+.bader-downloads-results {
+    font-size: 0.85rem;
+    color: $gray-500;
+    margin-bottom: 1rem;
+}
+
 // --- Blog Posts ---
 .o_wblog_post_page,
 .o_blog_post {

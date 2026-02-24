@@ -55,6 +55,107 @@ class BaderWebsite(Website):
             limit=1
         )
 
+    def _descargas_catalogs(self):
+        """Catalog list aligned with Bader-AR download page."""
+        return [
+            {
+                'id': 1,
+                'title': 'Catalogo General',
+                'description': 'Catalogo completo con todos los productos Bader para profesionales dentales.',
+                'image': 'https://bader.com.ar/web/image/7420-92f24f98/Catalogo-general-263x300-_1_.png',
+                'download_url': '/bader_website/static/src/pdf/descargas/catalogo-general-bader-es.pdf',
+                'category': 'general',
+                'available': True,
+                'featured': True,
+                'pages': '120+',
+                'year': '2024',
+            },
+            {
+                'id': 2,
+                'title': 'Fantasia Dental',
+                'description': 'Coleccion exclusiva de productos para tratamientos esteticos y restauraciones.',
+                'image': 'https://bader.com.ar/web/image/7431-8afd337c/Fantasia-dental-263x300-_2_.png',
+                'download_url': '/bader_website/static/src/pdf/descargas/catalogo-fantasia-dental-2023-es.pdf',
+                'category': 'clinica',
+                'available': True,
+                'featured': False,
+                'pages': '48',
+                'year': '2023',
+            },
+            {
+                'id': 3,
+                'title': 'Sillones Dentales',
+                'description': 'Equipos dentales de ultima generacion para clinicas modernas.',
+                'image': 'https://bader.com.ar/web/image/7437-2a297382/Mockup-sillones-dentales-1024x825-_2_.png',
+                'download_url': '/bader_website/static/src/pdf/descargas/catalogo-equipos-dentales-bader-europe-group.pdf',
+                'category': 'equipos',
+                'available': True,
+                'featured': True,
+                'pages': '64',
+                'year': '2024',
+            },
+            {
+                'id': 4,
+                'title': 'Fantomas y Tipodontos',
+                'description': 'Modelos de practica y simulacion para formacion odontologica.',
+                'image': 'https://bader.com.ar/web/image/7433-4aeb8a3e/Iconos-fantoma-e-tipodontos-263x300.png',
+                'download_url': '/bader_website/static/src/pdf/descargas/catalogo-tipodontos-y-fantomas-2023-es.pdf',
+                'category': 'formacion',
+                'available': True,
+                'featured': False,
+                'pages': '32',
+                'year': '2023',
+            },
+            {
+                'id': 5,
+                'title': 'Linea de Endodoncia',
+                'description': 'Instrumental especializado para tratamientos de conducto.',
+                'image': 'https://bader.com.ar/web/image/7434-23bdbe94/folleto-endodoncia-263x300-_1_.png',
+                'download_url': '/bader_website/static/src/pdf/descargas/folleto-endodoncia-2019-es.pdf',
+                'category': 'instrumental',
+                'available': False,
+                'featured': False,
+                'pages': '24',
+                'year': '2019',
+            },
+            {
+                'id': 6,
+                'title': 'Fresas y Abrasivos',
+                'description': 'Amplia gama de fresas dentales y materiales abrasivos de alta calidad.',
+                'image': 'https://bader.com.ar/web/image/7432-571e95bf/fresas-bader-263x300-_1_.png',
+                'download_url': '/bader_website/static/src/pdf/descargas/folleto-fresas-bader-1.pdf',
+                'category': 'instrumental',
+                'available': False,
+                'featured': False,
+                'pages': '36',
+                'year': '2023',
+            },
+            {
+                'id': 7,
+                'title': 'Mobiliario para Clinica',
+                'description': 'Muebles y equipamiento para disenar tu clinica dental perfecta.',
+                'image': 'https://bader.com.ar/web/image/7435-1ac7adde/Iconos-descargas-mobiliario-clinica-263x300-_1_.png',
+                'download_url': '/bader_website/static/src/pdf/descargas/catalago-muebles-clinica-dental.pdf',
+                'category': 'mobiliario',
+                'available': True,
+                'featured': False,
+                'pages': '28',
+                'year': '2024',
+            },
+            {
+                'id': 8,
+                'title': 'Instrumental Dental',
+                'description': 'Catalogo completo de instrumental odontologico profesional.',
+                'image': 'https://bader.com.ar/web/image/7436-201c1214/Instrumental-bader-263x300-_2_.png',
+                'download_url': '/bader_website/static/src/pdf/descargas/catalogo-instrumental-es.pdf',
+                'category': 'instrumental',
+                'available': True,
+                'featured': True,
+                'pages': '84',
+                'year': '2024',
+            },
+        ]
+
     # ─── robots.txt ────────────────────────────────────────────
     @http.route('/robots.txt', type='http', auth='public', sitemap=False, csrf=False)
     def robots_txt(self, **kw):
@@ -301,7 +402,48 @@ class BaderWebsite(Website):
 
     @http.route('/descargas', type='http', auth='public', website=True, sitemap=True)
     def descargas(self, **kw):
-        return request.render('bader_website.bader_descargas', {})
+        catalogs = self._descargas_catalogs()
+        search_query = (kw.get('q') or '').strip()
+        selected_category = (kw.get('category') or 'all').strip().lower()
+        search_lower = search_query.lower()
+
+        filtered_catalogs = []
+        for catalog in catalogs:
+            matches_category = selected_category == 'all' or catalog['category'] == selected_category
+            matches_search = (
+                not search_lower
+                or search_lower in catalog['title'].lower()
+                or search_lower in catalog['description'].lower()
+            )
+            if matches_category and matches_search:
+                filtered_catalogs.append(catalog)
+
+        featured_catalogs = [c for c in catalogs if c['featured']]
+        category_labels = {
+            'general': 'General',
+            'clinica': 'Clinica',
+            'equipos': 'Equipos',
+            'instrumental': 'Instrumental',
+            'formacion': 'Formacion',
+            'mobiliario': 'Mobiliario',
+        }
+        categories = [{'id': 'all', 'label': 'Todos', 'count': len(catalogs)}]
+        for category_id in ['general', 'clinica', 'equipos', 'instrumental', 'formacion', 'mobiliario']:
+            count = len([c for c in catalogs if c['category'] == category_id])
+            categories.append({
+                'id': category_id,
+                'label': category_labels[category_id],
+                'count': count,
+            })
+
+        return request.render('bader_website.bader_descargas', {
+            'catalogs': catalogs,
+            'featured_catalogs': featured_catalogs,
+            'filtered_catalogs': filtered_catalogs,
+            'categories': categories,
+            'selected_category': selected_category,
+            'search_query': search_query,
+        })
 
     @http.route('/ayuda', type='http', auth='public', website=True, sitemap=True)
     def ayuda(self, **kw):

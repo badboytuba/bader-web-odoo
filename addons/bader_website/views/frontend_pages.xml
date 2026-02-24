@@ -5,54 +5,147 @@
         <t t-call="website.layout">
             <t t-set="head">
                 <title>Descargas - Bader Argentina</title>
-                <meta name="description" content="Descarga catalogos, fichas tecnicas y materiales comerciales de Bader Argentina."/>
+                <meta name="description" content="Descarga catalogos y documentacion oficial de Bader Argentina en PDF."/>
             </t>
             <div id="wrap" class="oe_structure oe_empty">
-                <section class="bader-page-hero bader-animate">
+                <section class="bader-page-hero bader-downloads-hero bader-animate">
                     <div class="bader-page-hero__blur bader-page-hero__blur--1"/>
                     <div class="bader-page-hero__blur bader-page-hero__blur--2"/>
                     <div class="bader-page-hero__container">
                         <div class="bader-page-hero__center">
                             <span class="bader-page-hero__badge">
-                                <i class="fa fa-download"/> Descargas
+                                <i class="fa fa-book"/> Centro de Descargas
                             </span>
                             <h1 class="bader-page-hero__title">
-                                Materiales para tu <span class="text-green">equipo comercial</span>
+                                Catalogos y <span class="text-green">documentacion</span>
                             </h1>
                             <p class="bader-page-hero__subtitle">
-                                Aqui encontrara catalogos y fichas para compartir con clientes y distribuidores.
+                                Archivos PDF oficiales sincronizados con la seleccion del app Bader-AR.
                             </p>
+                            <form action="/descargas" method="get" class="bader-downloads-search">
+                                <input type="hidden" name="category" t-att-value="selected_category"/>
+                                <i class="fa fa-search"/>
+                                <input type="text" name="q" placeholder="Buscar catalogos..." t-att-value="search_query"/>
+                                <button type="submit" class="btn-bader-sm">Buscar</button>
+                            </form>
                         </div>
                     </div>
                 </section>
 
                 <section class="bader-page-section bader-page-section--white bader-animate">
                     <div class="bader-page-section__container">
+                        <div class="bader-downloads-featured-head">
+                            <span class="bader-page-hero__badge"><i class="fa fa-star"/> Destacados</span>
+                            <span class="bader-downloads-featured-sub">Los mas descargados</span>
+                        </div>
                         <div class="bader-page-section__grid bader-page-section__grid--3">
-                            <div class="bader-page-card">
-                                <div class="bader-page-card__icon">
-                                    <i class="fa fa-book"/>
+                            <div class="bader-page-card bader-downloads-card bader-downloads-card--featured"
+                                 t-foreach="featured_catalogs"
+                                 t-as="catalog">
+                                <div class="bader-downloads-card__row">
+                                    <div class="bader-downloads-card__cover">
+                                        <img t-att-src="catalog['image']" t-att-alt="catalog['title']"/>
+                                    </div>
+                                    <div class="bader-downloads-card__body">
+                                        <h3 class="bader-page-card__title" t-esc="catalog['title']"/>
+                                        <p class="bader-page-card__text" t-esc="catalog['description']"/>
+                                        <p class="bader-downloads-meta">
+                                            <span><i class="fa fa-file-text-o"/> <t t-esc="catalog['pages']"/> pags</span>
+                                            <span><t t-esc="catalog['year']"/></span>
+                                        </p>
+                                        <a t-if="catalog['available']"
+                                           t-att-href="catalog['download_url']"
+                                           target="_blank"
+                                           class="btn-bader-sm">
+                                            <i class="fa fa-download"/> Descargar PDF
+                                        </a>
+                                        <span t-else="" class="bader-downloads-soon">
+                                            <i class="fa fa-clock-o"/> Proximamente
+                                        </span>
+                                    </div>
                                 </div>
-                                <h3 class="bader-page-card__title">Catalogo General</h3>
-                                <p class="bader-page-card__text">Version web en preparacion para la nueva plataforma Odoo.</p>
-                                <a href="/productos" class="btn-bader" style="margin-top: 1rem;">Ver productos</a>
                             </div>
-                            <div class="bader-page-card">
-                                <div class="bader-page-card__icon">
-                                    <i class="fa fa-file-pdf-o"/>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bader-page-section bader-page-section--muted bader-animate">
+                    <div class="bader-page-section__container">
+                        <div class="bader-downloads-filters">
+                            <span class="bader-downloads-filters__label">
+                                <i class="fa fa-filter"/> Filtrar:
+                            </span>
+                            <a t-foreach="categories"
+                               t-as="category"
+                               t-attf-href="/descargas?category=#{category['id']}"
+                               t-attf-class="bader-downloads-filter #{'is-active' if selected_category == category['id'] else ''}">
+                                <t t-esc="category['label']"/>
+                                <span class="bader-downloads-filter__count" t-esc="category['count']"/>
+                            </a>
+                        </div>
+                        <p class="bader-downloads-results">
+                            Mostrando <strong t-esc="len(filtered_catalogs)"/> catalogos
+                        </p>
+
+                        <div class="bader-page-section__grid bader-page-section__grid--4" t-if="filtered_catalogs">
+                            <div class="bader-page-card bader-downloads-card"
+                                 t-foreach="filtered_catalogs"
+                                 t-as="catalog">
+                                <div class="bader-downloads-card__image-wrap">
+                                    <img t-att-src="catalog['image']" t-att-alt="catalog['title']"/>
+                                    <span t-if="catalog['featured'] and catalog['available']" class="bader-downloads-badge">
+                                        Destacado
+                                    </span>
+                                    <div t-if="not catalog['available']" class="bader-downloads-overlay">
+                                        <span class="bader-downloads-soon">
+                                            <i class="fa fa-clock-o"/> Proximamente
+                                        </span>
+                                    </div>
                                 </div>
-                                <h3 class="bader-page-card__title">Fichas Tecnicas</h3>
-                                <p class="bader-page-card__text">Documentacion tecnica por categoria de producto.</p>
-                                <a href="/productos" class="btn-bader" style="margin-top: 1rem;">Ir a catalogo</a>
-                            </div>
-                            <div class="bader-page-card">
-                                <div class="bader-page-card__icon">
-                                    <i class="fa fa-users"/>
+                                <h3 class="bader-page-card__title" t-esc="catalog['title']"/>
+                                <p class="bader-page-card__text" t-esc="catalog['description']"/>
+                                <p class="bader-downloads-meta">
+                                    <span><i class="fa fa-file-text-o"/> <t t-esc="catalog['pages']"/> pags</span>
+                                    <span><t t-esc="catalog['year']"/></span>
+                                </p>
+                                <div class="bader-downloads-actions">
+                                    <a t-if="catalog['available']"
+                                       t-att-href="catalog['download_url']"
+                                       target="_blank"
+                                       class="btn-bader-sm">
+                                        <i class="fa fa-download"/> Descargar
+                                    </a>
+                                    <span t-else="" class="btn btn-secondary disabled">
+                                        <i class="fa fa-clock-o"/> Pronto
+                                    </span>
+                                    <a t-if="catalog['available']"
+                                       t-att-href="catalog['download_url']"
+                                       target="_blank"
+                                       class="btn btn-outline-secondary btn-sm"
+                                       title="Ver PDF">
+                                        <i class="fa fa-eye"/>
+                                    </a>
                                 </div>
-                                <h3 class="bader-page-card__title">Material Comercial</h3>
-                                <p class="bader-page-card__text">Recursos para distribuidores y equipo de ventas.</p>
-                                <a href="/ser-distribuidor" class="btn-bader" style="margin-top: 1rem;">Ser distribuidor</a>
                             </div>
+                        </div>
+
+                        <div t-else="" class="bader-page-card text-center">
+                            <h3 class="bader-page-card__title">No se encontraron catalogos</h3>
+                            <p class="bader-page-card__text">Prueba otro texto de busqueda o categoria.</p>
+                            <a href="/descargas" class="btn-bader">Limpiar filtros</a>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bader-page-section bader-page-section--accent bader-animate">
+                    <div class="bader-page-section__container text-center">
+                        <h2 class="bader-section__title">Necesitas mas informacion?</h2>
+                        <p class="bader-section__subtitle">
+                            Nuestro equipo puede ayudarte a elegir el equipamiento ideal para tu clinica o laboratorio.
+                        </p>
+                        <div class="mt-4">
+                            <a href="/#contacto" class="btn-bader">Contactar a un asesor</a>
+                            <a href="/productos" class="btn btn-outline-secondary ms-2">Ver productos</a>
                         </div>
                     </div>
                 </section>
