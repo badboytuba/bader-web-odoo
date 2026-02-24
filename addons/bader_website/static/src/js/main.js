@@ -761,6 +761,12 @@ odoo.define('bader_website.main', function (require) {
                         var titleText = titleEl ? titleEl.textContent.trim() : '';
                         if (!titleText) return;
 
+                        // Hide Color filter per user request
+                        if (titleText.toLowerCase() === 'color') {
+                            item.style.display = 'none';
+                            return;
+                        }
+
                         var wrapper = document.createElement('div');
                         wrapper.className = 'bader-filter-section';
                         wrapper.innerHTML = '<div class="bader-filter-section__title">' + titleText + ' <span class="bader-chevron is-open">▾</span></div>';
