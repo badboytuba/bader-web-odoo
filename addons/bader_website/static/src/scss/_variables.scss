@@ -12,16 +12,18 @@ $bader-dark-surface: #00515E;
 $bader-dark-card: #004550;
 $bader-dark-border: rgba(255, 255, 255, 0.10);
 
-// --- Green Accents (primary from Bader-AR) ---
-// primary: hsl(102, 61%, 56%) = #70D44B
-$bader-green: #70D44B;
-$bader-green-light: #8FE06E;
-$bader-green-dark: #5AB836;
-$bader-green-bg: rgba(112, 212, 75, 0.08);
-$bader-green-glow: rgba(112, 212, 75, 0.25);
+// --- Green Accents (aligned with Bader-AR React CSS vars) ---
+// --bader-verde-oscuro: #003841  → $bader-green-dark
+// --bader-verde-claro:  #8DC63F  → $bader-green-light
+// --bader-verde-medio:  #5a9a30  → $bader-green
+$bader-green: #5a9a30;
+$bader-green-light: #8DC63F;
+$bader-green-dark: #003841;
+$bader-green-bg: rgba(141, 198, 63, 0.08);
+$bader-green-glow: rgba(141, 198, 63, 0.25);
 
 // --- Semantic Design Tokens (from Bader-AR) ---
-$bader-muted: #F3F5F6; // hsl(188, 10%, 96%)
+$bader-muted: #f8f9fa; // React --background
 $bader-muted-fg: #477B85; // hsl(188, 30%, 40%)
 $bader-border: #CFD9DC; // hsl(188, 20%, 85%)
 $bader-card: #FFFFFF;
@@ -40,8 +42,9 @@ $gray-700: #334155;
 $gray-800: #1E293B;
 
 // --- UI Colors ---
-$in-stock: #70D44B;
+$in-stock: #8DC63F;
 $out-stock: #EF4444;
+$bader-stock: $in-stock; // alias used in shop/detail SCSS
 $sale-badge: #F59E0B;
 $stars-color: #FBBF24;
 $info-blue: #3B82F6;
@@ -78,7 +81,7 @@ $shadow-md: 0 4px 16px rgba(0, 0, 0, 0.10);
 $shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.15);
 $shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.20);
 $shadow-2xl: 0 24px 64px rgba(0, 0, 0, 0.25);
-$shadow-green: 0 4px 20px rgba(112, 212, 75, 0.3);
+$shadow-green: 0 4px 20px rgba(141, 198, 63, 0.3);
 $shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
 
 // --- Breakpoints ---

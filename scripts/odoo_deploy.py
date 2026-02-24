@@ -64,6 +64,19 @@ def upload_module(sftp, module_name):
     print(f"📤 Uploading {module_name} → {remote_dir}")
     _upload_dir(sftp, str(local_dir), remote_dir)
     print(f"✅ Upload complete: {module_name}")
+    return remote_dir
+
+
+def fix_line_endings(client, remote_dir):
+    """Strip Windows CRLF line endings from uploaded text files on the Linux server."""
+    print("\n🔧 Fixing Windows line endings (CRLF → LF)...")
+    cmd = (
+        f"find {remote_dir} -type f \\( -name '*.xml' -o -name '*.py' -o -name '*.scss' "
+        f"-o -name '*.js' -o -name '*.csv' -o -name '*.txt' \\) "
+        f"-exec sed -i 's/\\r$//' {{}} +"
+    )
+    ssh_exec(client, cmd, timeout=15)
+    print("✅ Line endings fixed")
 
 
 def _upload_dir(sftp, local_path, remote_path):
@@ -97,9 +110,9 @@ def upgrade_module(client, module_name):
     """Upgrade a module in Odoo (via CLI)."""
     print(f"\n⬆️  Upgrading module: {module_name}")
     cmd = (
-        f"su - odoo -s /bin/bash -c "
-        f"'/opt/odoo/src/odoo/odoo-bin --config=/opt/odoo/conf/odoo-server.conf "
-        f"-d bader -u {module_name} --stop-after-init'"
+        f"sudo -u odoo /opt/odoo/.venv/bin/python /opt/odoo/src/odoo/odoo-bin "
+        f"-c /opt/odoo/conf/odoo-server.conf "
+        f"-d bader -u {module_name} --stop-after-init"
     )
     exit_code = ssh_exec(client, cmd, timeout=120)
     if exit_code == 0:
@@ -128,8 +141,11 @@ def main():
             return
 
         sftp = client.open_sftp()
-        upload_module(sftp, args.module)
+        remote_dir = upload_module(sftp, args.module)
         sftp.close()
+
+        # Fix Windows CRLF line endings on the Linux server
+        fix_line_endings(client, remote_dir)
 
         if args.upload_only:
             return

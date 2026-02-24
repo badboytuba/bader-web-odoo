@@ -27,6 +27,7 @@
         'website_crm',
     ],
     'data': [
+        'views/assets.xml',
         'views/header.xml',
         'views/footer.xml',
         'views/homepage.xml',

@@ -1,418 +1,1227 @@
 // ============================================
-// Bader — Shop & Product Listing (Light Theme)
-// Replicated from Bader-AR React reference
+// Bader Shop — Premium Page Redesign V2
+// Premium product cards + advanced filtering
 // ============================================
 
-// --- Shop Page Container ---
-.oe_website_sale {
-    background: $bader-muted !important;
-    min-height: 100vh;
-    padding-bottom: 80px;
+// ─── Hero Section ─────────────────────────
+.bader-hero {
+    background: linear-gradient(135deg, $bader-dark, $bader-dark-alt);
+    padding: 48px 0 56px;
+    margin-top: -1px;
 
-    // ─── Page Title ───
-    .o_wsale_products_main_row h1,
-    #products_grid_before h1 {
-        font-size: 28px;
-        font-weight: 700;
-        color: $gray-800;
-        margin-bottom: 8px;
-    }
-
-    // Product count subtitle
-    .o_wsale_products_main_row .text-muted,
-    #products_grid_before .text-muted {
-        font-size: 14px;
-        color: $gray-500;
-    }
-
-    // ─── Layout: Sidebar + Grid ───
-    .o_wsale_products_main_row {
-        max-width: 1400px;
+    &__container {
+        max-width: $container-max;
         margin: 0 auto;
-        padding: 40px 20px;
+        padding: 0 $container-padding;
     }
 
-    // ─── Product Card ───
-    .oe_product_cart {
-        position: relative;
+    &__breadcrumb {
         display: flex;
-        flex-direction: column;
-        background: $white;
-        border: 1px solid $bader-card-border;
-        border-radius: 12px !important;
-        overflow: hidden;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        box-shadow: none;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 16px;
 
-        &:hover {
-            border-color: $bader-green-light;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            transform: translateY(-4px);
+        a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            transition: color $transition-fast;
+
+            &:hover {
+                color: $white;
+            }
+        }
+    }
+
+    &__chevron {
+        font-size: 12px;
+    }
+
+    &__title {
+        font-family: $font-display;
+        font-size: 36px;
+        font-weight: 700;
+        color: $white;
+        margin: 0 0 12px;
+        line-height: 1.2;
+
+        @media (min-width: $bp-desktop) {
+            font-size: 42px;
+        }
+    }
+
+    &__subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 16px;
+        max-width: 640px;
+        margin: 0 0 32px;
+        line-height: 1.5;
+    }
+
+    &__segments {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+
+        @media (min-width: $bp-tablet) {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+}
+
+// ─── Segment Card (Hero) ─────────────────
+.bader-segment-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 24px;
+    border-radius: $radius-lg;
+    background: rgba(255, 255, 255, 0.10);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: $white;
+    text-decoration: none !important;
+    transition: all $transition-base;
+    cursor: pointer;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.18);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        color: $white;
+        text-decoration: none !important;
+    }
+
+    &__icon {
+        width: 56px;
+        height: 56px;
+        border-radius: $radius-md;
+        background: rgba(255, 255, 255, 0.20);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        i {
+            font-size: 24px;
+            color: $white;
+        }
+    }
+
+    &__content {
+        flex: 1;
+        min-width: 0;
+
+        h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0 0 4px;
+            color: $white;
         }
 
-        // ─── Product Image ───
-        .oe_product_image {
+        p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    }
+
+    &__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 12px;
+        padding: 4px 12px;
+        background: rgba(255, 255, 255, 0.20);
+        border-radius: $radius-pill;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    &__arrow {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.6);
+    }
+}
+
+// ─── Hide Odoo's default page title ──────
+.oe_website_sale {
+    h1:not(.bader-hero__title) {
+        &:first-of-type {
+            display: none !important;
+        }
+    }
+}
+
+// ─── Shop Grid Container ─────────────────
+.bader-shop-grid {
+    background: $gray-50;
+}
+
+// ─── Product Count ───────────────────────
+.bader-product-count {
+    font-size: 14px;
+    color: $gray-500;
+    padding: 0 0 12px;
+
+    span {
+        font-weight: 600;
+        color: $gray-700;
+    }
+}
+
+// ════════════════════════════════════════════
+// PREMIUM SIDEBAR — Advanced Filtering
+// ════════════════════════════════════════════
+
+.bader-sidebar-enhanced {
+
+    // Container card
+    .o_wsale_products_grid_before_rail {
+        background: $white;
+        border-radius: $radius-xl;
+        border: 1px solid $bader-card-border;
+        padding: 0;
+        position: sticky;
+        top: 88px;
+        overflow: hidden;
+        box-shadow: $shadow-sm;
+    }
+}
+
+// Sidebar header
+.bader-sidebar-header {
+    background: $bader-dark;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &__title {
+        font-family: $font-display;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: $white;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        i {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+    }
+
+    &__clear {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        cursor: pointer;
+        transition: color $transition-fast;
+        border: none;
+        background: none;
+        padding: 0;
+
+        &:hover {
+            color: $white;
+        }
+    }
+}
+
+// Filter section blocks
+.bader-filter-section {
+    padding: 20px;
+    border-bottom: 1px solid $bader-card-border;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &__title {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: $gray-700;
+        margin: 0 0 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        user-select: none;
+
+        .bader-chevron {
+            font-size: 10px;
+            color: $gray-400;
+            transition: transform $transition-fast;
+
+            &.is-open {
+                transform: rotate(180deg);
+            }
+        }
+    }
+
+    &__body {
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+}
+
+// Segmento radio buttons
+.bader-segmento-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.bader-segmento-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: $radius-md;
+    border: 1px solid $bader-card-border;
+    cursor: pointer;
+    transition: all $transition-fast;
+    font-size: 14px;
+    color: $gray-600;
+    background: $white;
+    text-decoration: none !important;
+
+    i {
+        font-size: 16px;
+        width: 20px;
+        text-align: center;
+        color: $gray-400;
+        transition: color $transition-fast;
+    }
+
+    &:hover {
+        border-color: $bader-dark;
+        background: rgba(0, 56, 65, 0.03);
+        color: $bader-dark;
+
+        i {
+            color: $bader-dark;
+        }
+    }
+
+    &--active {
+        border-color: $bader-dark;
+        background: rgba(0, 56, 65, 0.08);
+        color: $bader-dark;
+        font-weight: 600;
+
+        i {
+            color: $bader-dark;
+        }
+    }
+
+    .bader-segmento-count {
+        margin-left: auto;
+        font-size: 11px;
+        font-weight: 500;
+        color: $gray-400;
+        background: $gray-100;
+        padding: 2px 8px;
+        border-radius: $radius-pill;
+    }
+}
+
+// Category tree
+.bader-category-tree {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.bader-cat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    transition: all $transition-fast;
+    font-size: 13px;
+    color: $gray-600;
+    text-decoration: none !important;
+
+    &:hover {
+        background: $gray-50;
+        color: $bader-dark;
+    }
+
+    &--active {
+        background: rgba(0, 56, 65, 0.08);
+        color: $bader-dark;
+        font-weight: 600;
+    }
+
+    &--child {
+        padding-left: 28px;
+        font-size: 12px;
+    }
+
+    .bader-cat-chevron {
+        font-size: 8px;
+        color: $gray-400;
+        transition: transform $transition-fast;
+        width: 12px;
+
+        &.is-open {
+            transform: rotate(90deg);
+        }
+    }
+
+    .bader-cat-count {
+        margin-left: auto;
+        font-size: 11px;
+        color: $gray-400;
+        min-width: 20px;
+        text-align: right;
+    }
+}
+
+// Price range slider
+.bader-price-range {
+    &__inputs {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    &__input-group {
+        flex: 1;
+        position: relative;
+
+        label {
+            font-size: 10px;
+            color: $gray-400;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        input {
             width: 100%;
-            aspect-ratio: 1;
+            padding: 8px 10px 8px 22px;
+            border: 1px solid $bader-card-border;
+            border-radius: $radius-sm;
+            font-size: 13px;
+            color: $gray-700;
+            transition: border-color $transition-fast;
+
+            &:focus {
+                outline: none;
+                border-color: $bader-dark;
+                box-shadow: 0 0 0 3px rgba(0, 56, 65, 0.08);
+            }
+        }
+
+        .bader-currency-symbol {
+            position: absolute;
+            bottom: 9px;
+            left: 10px;
+            font-size: 13px;
+            color: $gray-400;
+        }
+    }
+
+    &__separator {
+        color: $gray-300;
+        font-size: 16px;
+        padding-top: 16px;
+    }
+
+    // Dual range slider
+    &__slider {
+        position: relative;
+        height: 6px;
+        background: $gray-200;
+        border-radius: 3px;
+        margin: 8px 0;
+    }
+
+    &__track {
+        position: absolute;
+        height: 100%;
+        background: $bader-dark;
+        border-radius: 3px;
+    }
+
+    &__thumb {
+        position: absolute;
+        top: 50%;
+        width: 18px;
+        height: 18px;
+        background: $white;
+        border: 2px solid $bader-dark;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        cursor: grab;
+        z-index: 2;
+        transition: box-shadow $transition-fast;
+
+        &:hover {
+            box-shadow: 0 0 0 4px rgba(0, 56, 65, 0.15);
+        }
+
+        &:active {
+            cursor: grabbing;
+            box-shadow: 0 0 0 6px rgba(0, 56, 65, 0.2);
+        }
+    }
+
+    &__labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: $gray-400;
+        margin-top: 4px;
+    }
+}
+
+// Toggle switches
+.bader-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+
+    &__label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: $gray-600;
+
+        i {
+            font-size: 14px;
+            color: $gray-400;
+            width: 16px;
+            text-align: center;
+        }
+    }
+}
+
+.bader-toggle {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    cursor: pointer;
+
+    input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .bader-toggle__track {
+        position: absolute;
+        inset: 0;
+        background: $gray-200;
+        border-radius: 11px;
+        transition: background $transition-fast;
+    }
+
+    .bader-toggle__thumb {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 18px;
+        height: 18px;
+        background: $white;
+        border-radius: 50%;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        transition: transform $transition-fast;
+    }
+
+    input:checked+.bader-toggle__track {
+        background: $bader-green;
+    }
+
+    input:checked+.bader-toggle__track+.bader-toggle__thumb,
+    input:checked~.bader-toggle__thumb {
+        transform: translateX(18px);
+    }
+}
+
+
+// ════════════════════════════════════════════
+// PREMIUM TOOLBAR — Search + Sort + Chips
+// ════════════════════════════════════════════
+
+.products_header {
+    background: $white;
+    border-radius: $radius-lg;
+    border: 1px solid $bader-card-border;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    box-shadow: $shadow-sm;
+}
+
+.o_wsale_products_searchbar_form {
+    max-width: 100%;
+
+    .form-control {
+        border-radius: $radius-md;
+        border: 1px solid $bader-card-border;
+        padding: 10px 16px 10px 40px;
+        font-size: 14px;
+        background: $gray-50;
+        transition: all $transition-fast;
+
+        &:focus {
+            border-color: $bader-dark;
+            box-shadow: 0 0 0 3px rgba(0, 56, 65, 0.08);
+            background: $white;
+        }
+    }
+}
+
+// Sort & view toggles
+.products_header .o_wsale_apply_sort,
+.products_header select,
+.products_header .btn-group {
+    border-radius: $radius-md !important;
+}
+
+// ─── Active Filter Chips ─────────────────
+.bader-active-filters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 0 0;
+    flex-wrap: wrap;
+}
+
+.bader-active-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background: rgba(0, 56, 65, 0.08);
+    border: 1px solid rgba(0, 56, 65, 0.15);
+    border-radius: $radius-pill;
+    font-size: 12px;
+    font-weight: 500;
+    color: $bader-dark;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    .bader-chip-x {
+        font-size: 10px;
+        color: rgba(0, 56, 65, 0.5);
+        font-weight: 700;
+        transition: color $transition-fast;
+    }
+
+    &:hover {
+        background: rgba(0, 56, 65, 0.15);
+
+        .bader-chip-x {
+            color: $bader-dark;
+        }
+    }
+}
+
+.bader-clear-all {
+    font-size: 12px;
+    color: $gray-400;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 5px 8px;
+
+    &:hover {
+        color: #dc3545;
+        text-decoration: underline;
+    }
+}
+
+// ─── Quick Filter Chips ──────────────────
+.bader-filter-chips {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 0 16px;
+    flex-wrap: wrap;
+
+    &__label {
+        font-size: 13px;
+        color: $gray-500;
+        font-style: italic;
+        margin-right: 4px;
+    }
+}
+
+.bader-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: 1px solid $bader-card-border;
+    border-radius: $radius-pill;
+    background: $white;
+    color: $gray-600;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none !important;
+    transition: all $transition-fast;
+    white-space: nowrap;
+    cursor: pointer;
+
+    i {
+        font-size: 12px;
+        color: $bader-muted-fg;
+    }
+
+    &:hover {
+        background: $bader-dark;
+        color: $white;
+        border-color: $bader-dark;
+        text-decoration: none !important;
+
+        i {
+            color: $white;
+        }
+    }
+
+    &--active {
+        background: $bader-dark;
+        color: $white;
+        border-color: $bader-dark;
+
+        i {
+            color: $white;
+        }
+    }
+}
+
+
+// ════════════════════════════════════════════
+// PREMIUM PRODUCT CARDS
+// ════════════════════════════════════════════
+
+// Grid wrapper
+#products_grid .o_wsale_products_grid_table_wrapper {
+    .oe_product {
+        padding: 0 !important;
+        margin-bottom: 24px;
+    }
+}
+
+// ─── Card Base ───────────────────────────
+.oe_product_cart {
+    background: $white;
+    border-radius: $radius-xl;
+    border: 1px solid transparent;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04);
+    position: relative;
+
+    &:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 30px rgba(0, 56, 65, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+        border-color: rgba(0, 56, 65, 0.1);
+    }
+
+    // ── Product Image ──
+    .oe_product_image {
+        width: 100%;
+        height: 220px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: $white;
+        padding: 20px;
+        border-radius: $radius-xl $radius-xl 0 0;
+        overflow: hidden;
+        position: relative;
+
+        // Fix Odoo's absolute-positioned wrapper layers collapsing to 0 width
+        .oe_product_image_link {
+            width: 100%;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: $gray-50;
-            padding: 20px;
-            border-radius: 12px 12px 0 0;
-            overflow: hidden;
-            position: relative;
-
-            img,
-            .img-fluid {
-                max-width: 100%;
-                max-height: 100%;
-                object-fit: contain;
-                transition: transform 0.3s ease;
-            }
-
-            &:hover img,
-            &:hover .img-fluid {
-                transform: scale(1.05);
-            }
+            position: static !important;
         }
 
-        // ─── Product Info Section ───
-        .o_wsale_product_information {
-            flex: 1;
-            padding: 16px;
+        .oe_product_image_img_wrapper {
+            width: 100% !important;
+            height: 100% !important;
+            position: static !important;
             display: flex;
-            flex-direction: column;
-            gap: 8px;
+            align-items: center;
+            justify-content: center;
         }
 
-        // ─── Category Label ───
-        .o_wsale_product_information .product_price .text-muted,
-        .oe_subdescription {
-            font-size: 11px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: $bader-green-dark;
+        // Bottom gradient overlay
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.03), transparent);
+            pointer-events: none;
+            z-index: 1;
         }
 
-        // ─── Product Name ───
-        .o_wsale_product_information h6 a,
-        .oe_product_cart h6 a,
-        .o_wsale_products_item a h6 {
-            color: $gray-800 !important;
-            font-weight: 500;
+        img,
+        .img-fluid {
+            max-width: 85%;
+            max-height: 85%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            position: static !important;
+            transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+    }
+
+    &:hover .oe_product_image {
+
+        img,
+        .img-fluid {
+            transform: scale(1.08);
+        }
+    }
+
+    // ── Floating Cart Button ──
+    .bader-floating-cart {
+        position: absolute;
+        bottom: 14px;
+        right: 14px;
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: $bader-dark;
+        color: $white;
+        border: none;
+        border-radius: 50%;
+        font-size: 16px;
+        cursor: pointer;
+        opacity: 0;
+        transform: scale(0.7) translateY(8px);
+        transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        z-index: 3;
+        box-shadow: 0 4px 12px rgba(0, 56, 65, 0.3);
+
+        &:hover {
+            background: $bader-green;
+            transform: scale(1.12) translateY(0) !important;
+            box-shadow: 0 6px 20px rgba(141, 198, 63, 0.4);
+        }
+    }
+
+    &:hover .bader-floating-cart {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+
+    // ── Info Section ──
+    .o_wsale_product_information {
+        flex: 1;
+        padding: 16px 18px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    // ── Category Path ──
+    .bader-category-path {
+        font-size: 11px;
+        font-weight: 600;
+        color: $bader-muted-fg;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        line-height: 1.3;
+        margin-bottom: 2px;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    // ── Product Title ──
+    .o_wsale_products_item_title {
+        margin-bottom: 4px;
+
+        a {
+            font-weight: 700;
             font-size: 14px;
-            line-height: 1.4;
+            color: $gray-800;
             text-decoration: none;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            transition: color 0.2s ease;
-
-            &:hover {
-                color: $bader-green-dark !important;
-            }
-        }
-
-        // ─── Price ───
-        .product_price .oe_currency_value,
-        .oe_product_cart .oe_price {
-            color: $bader-green-dark !important;
-            font-weight: 700;
-            font-size: 18px;
-        }
-
-        // ─── Original Price (strikethrough) ───
-        .oe_product_cart .text-danger,
-        .product_price del {
-            color: $gray-400 !important;
-            font-size: 14px;
-            text-decoration: line-through;
-        }
-
-        // ─── Wishlist / Comparison Buttons ───
-        .o_wsale_product_btn,
-        .o_add_wishlist,
-        .o_add_compare {
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: $white;
-            border: 1px solid $bader-card-border;
-            border-radius: 50%;
-            color: $gray-400;
-            cursor: pointer;
-            z-index: 2;
-            transition: all 0.2s ease;
-
-            &:hover {
-                color: #dc3545;
-                border-color: #dc3545;
-            }
-        }
-
-        // Position wishlist top-right
-        .o_add_wishlist {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-        }
-
-        // ─── Add to Cart Button ───
-        .o_wsale_product_btn:not(.o_add_wishlist):not(.o_add_compare),
-        .a-submit {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: calc(100% - 32px);
-            margin: 0 16px 16px;
-            padding: 12px;
-            background: $bader-green-dark;
-            color: $white !important;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s ease;
-            text-decoration: none;
-
-            &:hover {
-                background: $bader-green;
-            }
+            line-height: 1.45;
+            transition: color $transition-base;
+            letter-spacing: -0.01em;
         }
     }
 
-    // ─── Product Grid ───
-    #products_grid {
-        .o_wsale_products_grid_table_wrapper {
-            .table {
-                border: none;
-                background: transparent;
-
-                td {
-                    border: none;
-                    padding: 12px;
-                    vertical-align: top;
-                }
-            }
-        }
+    &:hover .o_wsale_products_item_title a {
+        color: $bader-dark;
     }
 
-    // ─── Badges (New / Discount) ───
-    .oe_product_cart .badge,
-    .oe_product_cart .o_ribbon {
-        position: absolute;
-        top: 12px;
-        left: 12px;
-        z-index: 2;
-        padding: 4px 10px;
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        border-radius: 4px;
+    // ── Product Sub (price + actions) ──
+    .o_wsale_product_sub {
+        margin-top: auto;
+        padding-top: 10px;
     }
 
-    .oe_product_cart .badge-success,
-    .oe_product_cart .badge-primary {
-        background: $bader-green-dark !important;
-        color: $white;
-    }
-
-    .oe_product_cart .badge-danger {
-        background: #dc3545 !important;
-        color: $white;
-    }
-
-    // ─── Stock Badge ───
-    .bader-stock-badge {
-        font-size: 12px;
-        font-weight: 500;
-        padding: 0;
-        position: static;
-        background: transparent;
-
-        color: $bader-green;
-
-        &--out {
-            color: #dc3545;
-        }
-    }
-
-    // ─── Filters / Sidebar ───
-    .css_attributes,
-    #products_grid_before {
-        background: $white;
-        border: 1px solid $bader-card-border;
-        border-radius: 12px;
-        padding: 20px;
-        color: $gray-700;
-
-        .form-check-label {
-            color: $gray-700;
-            font-size: 14px;
-        }
-
-        .form-check-input:checked {
-            background-color: $bader-green;
-            border-color: $bader-green;
-        }
-
-        // Search input
-        input[type="search"],
-        .o_wsale_search input {
-            width: 100%;
-            padding: 12px 12px 12px 40px;
-            border: 1px solid $bader-border;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s ease;
-            background: $white;
-            color: $gray-700;
-
-            &:focus {
-                border-color: $bader-green-light;
-            }
-        }
-
-        // Section headings
-        h5,
-        h6,
-        .h5,
-        .h6 {
-            font-size: 14px;
-            font-weight: 600;
-            color: $gray-800;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        // ─── Category List ───
-        .nav-link {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 12px;
-            background: transparent;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            color: $gray-600 !important;
-            cursor: pointer;
-            text-align: left;
-            transition: all 0.2s ease;
-
-            &:hover {
-                background: $gray-50;
-                color: $gray-800 !important;
-            }
-
-            &.active {
-                background: $bader-green-dark !important;
-                color: $white !important;
-                border-radius: 6px;
-            }
-        }
-    }
-
-    // ─── Pagination ───
-    .pagination {
+    // ── Price Row ──
+    .bader-price-row {
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: space-between;
         gap: 8px;
-        margin-top: 48px;
-        padding-top: 32px;
-        border-top: 1px solid $bader-card-border;
+        flex-wrap: wrap;
+    }
 
-        .page-link {
-            padding: 10px 20px;
-            background: $white;
-            border: 1px solid $bader-border;
-            border-radius: 8px;
-            color: $gray-800;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s ease;
+    .product_price .oe_currency_value,
+    .oe_price {
+        color: $bader-dark !important;
+        font-weight: 800;
+        font-size: 20px;
+        letter-spacing: -0.02em;
+    }
+
+    // Original price (strikethrough)
+    .text-danger,
+    .product_price del {
+        color: $gray-400 !important;
+        font-size: 13px;
+        text-decoration: line-through;
+    }
+
+    // ── Cuotas Badge ──
+    .bader-installment {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 10px;
+        border: 1.5px dashed $bader-card-border;
+        border-radius: $radius-pill;
+        color: $gray-500;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+        background: $gray-50;
+        letter-spacing: 0.01em;
+    }
+
+    // ── Hide Odoo default extras ──
+    .o_add_wishlist,
+    .o_add_compare {
+        display: none;
+    }
+
+    // ── Offer Badge ──
+    .bader-badge-oferta {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        z-index: 2;
+        padding: 5px 12px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-radius: $radius-pill;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: $white;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);
+    }
+
+    // ── Featured Badge ──
+    .bader-badge-destacado {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        z-index: 2;
+        padding: 5px 12px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-radius: $radius-pill;
+        background: linear-gradient(135deg, $bader-dark, $bader-dark-alt);
+        color: $white;
+        box-shadow: 0 2px 8px rgba(0, 56, 65, 0.35);
+    }
+
+    // ── Odoo native badges ──
+    .badge,
+    .o_ribbon {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        z-index: 2;
+        padding: 5px 12px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        border-radius: $radius-pill;
+    }
+
+    .badge-success,
+    .badge-primary {
+        background: $bader-dark !important;
+        color: $white;
+    }
+}
+
+// ─── Stock Indicator ─────────────────────
+.bader-stock-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 6px;
+
+    &--in {
+        color: $in-stock;
+    }
+
+    &--out {
+        color: $out-stock;
+    }
+}
+
+.bader-stock-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: baderPulse 2s ease-in-out infinite;
+}
+
+@keyframes baderPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: scale(0.85);
+    }
+}
+
+// ─── Free Shipping Badge ─────────────────
+.bader-free-shipping-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    font-size: 11px;
+    font-weight: 600;
+    color: $bader-dark;
+    background: rgba(0, 56, 65, 0.04);
+    border-top: 1px solid $bader-card-border;
+    margin-top: auto;
+    letter-spacing: 0.02em;
+
+    i {
+        font-size: 13px;
+        color: $bader-green;
+    }
+}
+
+// ─── Card Entrance Stagger Animation ─────
+.oe_product {
+    animation: baderCardIn 0.5s ease both;
+
+    @for $i from 1 through 20 {
+        &:nth-child(#{$i}) {
+            animation-delay: #{$i * 0.06}s;
+        }
+    }
+}
+
+@keyframes baderCardIn {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+// ─── Category Filmstrip ──────────────────
+.o_wsale_filmstip_container {
+    margin-bottom: 16px;
+
+    .o_filmstrip_wrapper {
+        gap: 8px;
+    }
+
+    .o_category_card {
+        border-radius: $radius-md !important;
+        border: 1px solid $bader-card-border;
+        overflow: hidden;
+        transition: all $transition-fast;
+
+        &:hover {
+            border-color: $bader-dark;
+            box-shadow: $shadow-sm;
+        }
+    }
+}
+
+// ─── Category Header Banner ──────────────
+.bader-category-header {
+    background: linear-gradient(135deg, $bader-dark, $bader-dark-alt);
+    padding: 40px $container-padding;
+    text-align: left;
+
+    &__inner {
+        max-width: $container-max;
+        margin: 0 auto;
+    }
+
+    &__breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 12px;
+
+        a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
 
             &:hover {
-                border-color: $bader-green-light;
-                color: $bader-green-dark;
+                color: $white;
             }
         }
 
-        .page-item.active .page-link {
-            background: $bader-green-dark;
-            border-color: $bader-green-dark;
+        strong {
             color: $white;
         }
-
-        .page-item.disabled .page-link {
-            background: $gray-50;
-            border-color: $bader-card-border;
-            color: $gray-400;
-        }
     }
 
-    // ─── Sort Dropdown ───
-    .o_wsale_apply_sort,
-    select.form-select {
-        background: $white !important;
-        border: 1px solid $bader-border !important;
-        border-radius: 8px !important;
-        color: $gray-700 !important;
-        font-size: 14px;
-        padding: 8px 12px;
+    &__title {
+        font-family: $font-display;
+        font-size: 32px;
+        font-weight: 700;
+        color: $white;
+        margin: 0;
     }
 }
 
-// ─── Breadcrumb (Light) ───
-.oe_website_sale .breadcrumb,
-.breadcrumb {
-    background: transparent;
-    padding: 10px 0;
-    margin-bottom: 8px;
 
-    .breadcrumb-item {
-        a {
-            color: $gray-500;
-            text-decoration: none;
-            font-size: 13px;
+// ─── Pager ───────────────────────────────
+.bader-shop-grid .products_pager {
+    display: flex;
+    justify-content: center;
+    padding: 32px 0;
+
+    .pagination {
+        gap: 4px;
+
+        .page-link {
+            border-radius: $radius-md;
+            border: 1px solid $bader-card-border;
+            color: $gray-600;
+            padding: 8px 14px;
+            font-size: 14px;
+            transition: all $transition-fast;
 
             &:hover {
-                color: $bader-green-dark;
+                background: $bader-dark;
+                color: $white;
+                border-color: $bader-dark;
             }
         }
 
-        &.active {
-            color: $gray-700;
-            font-size: 13px;
-        }
-
-        +.breadcrumb-item::before {
-            color: $gray-400;
+        .active .page-link {
+            background: $bader-dark;
+            border-color: $bader-dark;
+            color: $white;
         }
     }
 }
 
-// ─── Installment Price ───
-.bader-installment {
-    color: $gray-500;
-    font-size: 12px;
-    margin-top: 4px;
 
-    .bader-installment__price {
-        color: $gray-700;
-        font-weight: 500;
+// ════════════════════════════════════════════
+// RESPONSIVE
+// ════════════════════════════════════════════
+
+@media (max-width: $bp-tablet) {
+    .bader-hero {
+        padding: 32px 0 40px;
+
+        &__title {
+            font-size: 28px;
+        }
+
+        &__segments {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .bader-filter-chips {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px;
+    }
+
+    .oe_product_cart .oe_product_image {
+        height: 180px;
+    }
+
+    .bader-sidebar-enhanced .o_wsale_products_grid_before_rail {
+        position: static;
+    }
+}
+
+@media (max-width: $bp-mobile) {
+    .oe_product_cart {
+        .oe_product_image {
+            height: 160px;
+        }
+
+        .o_wsale_product_information {
+            padding: 12px 14px 10px;
+        }
+
+        .product_price .oe_currency_value,
+        .oe_price {
+            font-size: 17px !important;
+        }
     }
 }
