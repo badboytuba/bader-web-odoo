@@ -27,3 +27,32 @@ node_modules/
 .idea/
 *.swp
 *.swo
+
+# ─── Large folders (not part of the addon) ───
+odoo_core_modules/
+Bader-AR/
+static/
+
+# ─── Utility/debug scripts (keep only deploy scripts) ───
+scripts/analyze_*.py
+scripts/check_*.py
+scripts/clear_*.py
+scripts/debug_*.py
+scripts/deep_*.py
+scripts/diagnose_*.py
+scripts/download_*.py
+scripts/fix_*.py
+scripts/investigate_*.py
+scripts/read_*.py
+scripts/register_*.py
+scripts/search_*.py
+scripts/set_*.py
+scripts/test_*.py
+scripts/update_*.py
+scripts/validate_*.py
+scripts/verify_*.py
+scripts/deploy_and_upgrade.py
+scripts/deploy_js_fix.py
+scripts/deploy_text_files.py
+scripts/full_bundle_analysis.py
+scripts/odoo_shell_check.py
