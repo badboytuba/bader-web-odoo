@@ -14,4 +14,11 @@
         </xpath>
     </template>
 
+    <template id="bader_shop_title" inherit_id="website_sale.products"
+              name="Bader Shop Title" priority="21">
+        <xpath expr="//t[@t-set='additional_title']" position="replace">
+            <t t-set="additional_title">Productos</t>
+        </xpath>
+    </template>
+
 </odoo>
