@@ -1,389 +1,506 @@
 // ============================================
-// Bader — Cart & Checkout (Light Theme)
-// Replicated from Bader-AR React reference
+// Bader Cart and Checkout
 // ============================================
 
-// --- Cart Page ---
-.oe_website_sale .oe_cart,
-.oe_cart {
-    background: $bader-muted;
-    min-height: 100vh;
-    padding: 40px 0 80px;
+.bader-cart-page,
+.bader-checkout-page,
+.bader-address-page,
+.bader-payment-page {
+    max-width: 1240px;
+    padding-top: 1.25rem;
+    padding-bottom: 3.5rem;
+}
 
-    .container,
-    .oe_cart>.container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 20px;
-    }
+// --------------------------------------------
+// Wizard
+// --------------------------------------------
 
-    // Page title
-    h1,
-    .h1 {
-        font-size: 32px;
-        font-weight: 700;
-        color: $gray-800;
-        margin-bottom: 32px;
-    }
+.bader-checkout-wizard {
+    margin-bottom: 1.25rem;
 
-    // ─── Cart Layout: Items + Summary ───
-    >.container>.row,
-    .row {
-        display: grid;
-        grid-template-columns: 1fr 400px;
-        gap: 40px;
-        align-items: start;
-
-        @media (max-width: 968px) {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    // ─── Cart Items Section ───
-    .oe_cart_items,
-    #cart_products {
-        h2 {
-            font-size: 18px;
-            font-weight: 600;
-            color: $gray-800;
-            margin-bottom: 20px;
-        }
-    }
-
-    // ─── Individual Cart Item ───
-    .oe_cart_line,
-    .o_cart_product {
+    .progress-wizard {
         display: flex;
-        align-items: center;
-        gap: 16px;
-        padding: 20px;
-        background: $white;
-        border: 1px solid $bader-card-border;
-        border-radius: 12px;
-        margin-bottom: 16px;
-
-        // Product image
-        .o_image,
-        td:first-child,
-        .o_cart_product_image {
-            width: 80px;
-            height: 80px;
-            border-radius: 8px;
-            overflow: hidden;
-            background: $gray-50;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-
-            img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-            }
-        }
-
-        // Product info
-        .td-product_name,
-        .o_cart_product_info {
-            flex: 1;
-
-            a,
-            strong,
-            .product-name {
-                font-size: 15px;
-                font-weight: 500;
-                color: $gray-800;
-                text-decoration: none;
-                margin-bottom: 4px;
-                display: block;
-            }
-
-            .text-muted,
-            .o_cart_product_code {
-                font-size: 12px;
-                color: $gray-500;
-                font-family: monospace;
-            }
-        }
-
-        // Quantity controls
-        .css_quantity,
-        .o_cart_qty {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: $gray-50;
-            border-radius: 8px;
-            padding: 4px;
-
-            button,
-            .btn,
-            a.js_add_cart_json {
-                width: 32px;
-                height: 32px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background: $white;
-                border: 1px solid $bader-card-border;
-                border-radius: 6px;
-                cursor: pointer;
-                color: $gray-800;
-                font-size: 14px;
-
-                &:hover {
-                    border-color: $bader-green-light;
-                }
-            }
-
-            input {
-                width: 40px;
-                text-align: center;
-                font-weight: 500;
-                border: none;
-                background: transparent;
-                font-size: 14px;
-                color: $gray-800;
-            }
-        }
-
-        // Price
-        .oe_currency_value,
-        .td-price,
-        .o_cart_product_price {
-            font-size: 16px;
-            font-weight: 600;
-            color: $bader-green-dark;
-            min-width: 100px;
-            text-align: right;
-        }
-
-        // Remove button
-        .js_delete_product,
-        .o_cart_remove {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            border: none;
-            color: $gray-400;
-            cursor: pointer;
-            transition: color 0.2s ease;
-
-            &:hover {
-                color: #dc2626;
-            }
-        }
-    }
-
-    // ─── Cart table override (make it card-like) ───
-    table#cart_products {
-        border: none;
-
-        thead {
-            display: none;
-        }
-
-        tr {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 20px;
-            background: $white;
-            border: 1px solid $bader-card-border;
-            border-radius: 12px;
-            margin-bottom: 16px;
-        }
-
-        td {
-            border: none;
-            padding: 0;
-        }
-    }
-
-    // ─── Order Summary Sidebar ───
-    #right_column,
-    .oe_cart_summary {
-
-        .card,
-        .o_total_card {
-            padding: 24px;
-            background: $white;
-            border: 1px solid $bader-card-border;
-            border-radius: 16px;
-            position: sticky;
-            top: 100px;
-            box-shadow: none;
-
-            h2 {
-                font-size: 18px;
-                font-weight: 600;
-                color: $gray-800;
-                margin-bottom: 20px;
-            }
-        }
-    }
-
-    // Summary rows
-    .o_total_row,
-    .total_row {
-        display: flex;
-        justify-content: space-between;
-        font-size: 14px;
-        color: $gray-600;
-        padding: 8px 0;
-    }
-
-    // Total
-    .o_total_total,
-    .total_row.total {
-        font-size: 18px;
-        font-weight: 700;
-        color: $gray-800;
-        padding-top: 12px;
-        border-top: 1px solid $bader-card-border;
-        margin-top: 8px;
-    }
-
-    // Free shipping
-    .bader-free-shipping {
-        color: $bader-green;
-        font-weight: 500;
-    }
-
-    // ─── Checkout Button ───
-    a.btn-primary,
-    .btn-primary,
-    .o_total_submit {
-        width: 100%;
-        display: flex;
-        align-items: center;
         justify-content: center;
-        gap: 10px;
-        padding: 16px;
-        background: #009ee3 !important; // Mercado Pago blue
-        color: $white !important;
-        border: none !important;
-        border-radius: 8px !important;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.2s ease;
-        text-decoration: none;
-        margin-top: 16px;
-
-        &:hover {
-            background: #0087c5 !important;
-        }
-
-        &:disabled,
-        &.disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
+        gap: 0;
     }
 
-    // ─── Benefits at Bottom ───
-    .bader-checkout-benefits {
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 1px solid $bader-card-border;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
+    .progress-wizard-step {
+        min-width: 180px;
 
-        .bader-benefit {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 13px;
-            color: $gray-600;
+        .progress-wizard-dot {
+            border-color: $bader-border;
+            background: $white;
+        }
 
-            svg,
-            i,
-            .fa {
-                color: $bader-green;
+        .progress-wizard-steplabel {
+            color: $gray-500;
+            font-weight: 600;
+            font-size: 0.84rem;
+            letter-spacing: 0.02em;
+        }
+
+        &.active {
+            .progress-wizard-dot {
+                border-color: $bader-green;
+                background: $bader-green;
+            }
+
+            .progress-wizard-steplabel {
+                color: $bader-dark;
+            }
+        }
+
+        &.complete {
+            .progress-wizard-dot {
+                border-color: $bader-dark;
+                background: $bader-dark;
+            }
+
+            .progress-wizard-steplabel {
+                color: $bader-dark;
             }
         }
     }
 }
 
-// ─── Empty Cart ───
-.oe_cart .oe_empty_cart,
+// --------------------------------------------
+// Shared cards, totals and actions
+// --------------------------------------------
+
+.bader-cart-page,
+.bader-checkout-page,
+.bader-address-page,
+.bader-payment-page {
+
+    .bader-summary-card,
+    #o_cart_summary .card,
+    .js_cart_summary,
+    #address_on_payment .card {
+        border: 1px solid $bader-card-border;
+        border-radius: 16px;
+        background: $white;
+        box-shadow: none;
+    }
+
+    #o_cart_summary .card,
+    .js_cart_summary {
+        position: sticky;
+        top: 100px;
+    }
+
+    .bader-summary-card .card-body,
+    #o_cart_summary .card .card-body,
+    .js_cart_summary .card-body {
+        padding: 1.25rem 1.2rem;
+    }
+
+    #cart_total table {
+        width: 100%;
+        margin-bottom: 0;
+
+        tr td {
+            border: 0;
+            color: $gray-600;
+            font-size: 0.9rem;
+            padding: 0.28rem 0;
+        }
+
+        tr#order_total td {
+            border-top: 1px solid $bader-card-border;
+            padding-top: 0.7rem;
+            margin-top: 0.2rem;
+            color: $gray-800;
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+    }
+
+    .bader-cart-cta,
+    .btn-primary.bader-cart-cta {
+        width: 100%;
+        border: 0;
+        border-radius: 10px;
+        padding: 0.82rem 1rem;
+        background: #009ee3;
+        color: $white;
+        font-weight: 700;
+        font-size: 0.96rem;
+        transition: background $transition-fast;
+
+        &:hover,
+        &:focus {
+            background: #0087c5;
+            color: $white;
+        }
+    }
+
+    .btn-secondary {
+        border-radius: 10px;
+    }
+}
+
+.bader-checkout-benefits {
+    margin-top: 1rem;
+    border-top: 1px solid $bader-card-border;
+    padding-top: 1rem;
+    display: grid;
+    gap: 0.6rem;
+
+    .bader-benefit {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        color: $gray-600;
+        font-size: 0.83rem;
+        font-weight: 500;
+
+        i {
+            color: $bader-green;
+        }
+    }
+}
+
+// --------------------------------------------
+// Cart lines
+// --------------------------------------------
+
+.bader-cart-page {
+    .oe_cart .row {
+        row-gap: 1rem;
+    }
+
+    .bader-cart-table {
+        border-collapse: separate;
+        border-spacing: 0 12px;
+        margin-bottom: 1rem;
+
+        thead th {
+            border: 0;
+            color: $gray-500;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0 0.6rem;
+        }
+
+        tbody tr td {
+            background: $white;
+            border-top: 1px solid $bader-card-border;
+            border-bottom: 1px solid $bader-card-border;
+            padding: 0.95rem 0.6rem;
+            vertical-align: middle;
+        }
+
+        tbody tr td:first-child {
+            border-left: 1px solid $bader-card-border;
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+        }
+
+        tbody tr td:last-child {
+            border-right: 1px solid $bader-card-border;
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+        .td-img {
+            width: 92px;
+        }
+
+        .td-img img {
+            border-radius: 8px;
+            background: $gray-50;
+        }
+
+        .td-product_name {
+            strong,
+            a {
+                color: $gray-800;
+                font-size: 0.95rem;
+                font-weight: 600;
+                text-decoration: none;
+            }
+
+            .text-muted {
+                font-size: 0.8rem;
+                color: $gray-500;
+            }
+        }
+
+        .td-price {
+            font-size: 1rem;
+            font-weight: 700;
+            color: $bader-green-dark;
+        }
+
+        .td-action {
+            width: 44px;
+            text-align: center;
+        }
+    }
+
+    .bader-qty-control {
+        max-width: 140px;
+        background: $gray-50;
+        border: 1px solid $bader-card-border;
+        border-radius: 10px;
+        padding: 0.15rem;
+
+        .btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 7px;
+            background: $white;
+            border: 1px solid $bader-card-border;
+            color: $gray-700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+
+            &:hover {
+                border-color: $bader-green;
+                color: $bader-dark;
+            }
+        }
+
+        .bader-qty-input {
+            border: 0;
+            background: transparent;
+            text-align: center;
+            font-weight: 700;
+            color: $gray-800;
+            max-width: 46px;
+            box-shadow: none;
+        }
+    }
+
+    .bader-remove-line {
+        color: $gray-400;
+
+        &:hover {
+            color: #dc2626;
+        }
+    }
+}
+
+// --------------------------------------------
+// Empty cart
+// --------------------------------------------
+
 .bader-empty-cart {
-    min-height: 60vh;
+    min-height: 62vh;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
+    background: $white;
+    border: 1px solid $bader-card-border;
+    border-radius: 16px;
+
+    &__content {
+        max-width: 440px;
+        padding: 2rem 1rem;
+    }
+
+    &__icon {
+        font-size: 2.7rem;
+        color: $bader-green;
+        margin-bottom: 0.65rem;
+    }
 
     h1 {
-        font-size: 24px;
-        font-weight: 700;
+        font-family: $font-display;
+        font-size: 1.7rem;
         color: $gray-800;
-        margin-bottom: 12px;
+        margin-bottom: 0.45rem;
     }
 
     p {
         color: $gray-500;
-        margin-bottom: 24px;
+        margin-bottom: 1.1rem;
     }
 
-    a.btn,
     .bader-continue-btn {
         display: inline-flex;
-        padding: 14px 28px;
-        background: $bader-green-dark;
-        color: $white !important;
-        border-radius: 8px;
+        align-items: center;
+        justify-content: center;
+        background: $bader-dark;
+        color: $white;
+        border-radius: 10px;
+        padding: 0.72rem 1.1rem;
+        font-weight: 700;
         text-decoration: none;
-        font-weight: 600;
-        transition: background 0.2s ease;
 
         &:hover {
-            background: $bader-green;
+            color: $white;
+            background: #004b59;
         }
     }
 }
 
-// ─── Payment / Checkout Flow Pages ───
-.oe_website_sale .oe_pay,
-.oe_website_sale #payment_method {
-    background: $bader-muted;
+// --------------------------------------------
+// Checkout/address cards and forms
+// --------------------------------------------
 
-    .card {
+.bader-checkout-page,
+.bader-address-page {
+    .o_page_header {
+        margin-top: 0.3rem;
+        margin-bottom: 0.9rem;
+        color: $gray-800;
+        font-size: 1.15rem;
+        font-weight: 700;
+    }
+
+    .one_kanban .card {
+        border-radius: 14px;
+        border: 1px solid $bader-card-border;
+        transition: border-color $transition-fast, box-shadow $transition-fast;
+
+        &:hover {
+            border-color: rgba($bader-green, 0.55);
+            box-shadow: 0 6px 18px rgba(0, 56, 65, 0.08);
+        }
+    }
+
+    .one_kanban .card-footer {
+        background: $gray-50;
+        border-top: 1px solid $bader-card-border;
+    }
+
+    .checkout_autoformat {
         background: $white;
         border: 1px solid $bader-card-border;
-        border-radius: 12px;
-        box-shadow: none;
+        border-radius: 16px;
+        padding: 1.2rem;
     }
 
-    h3,
-    h4 {
-        color: $gray-800;
-        font-weight: 600;
-    }
-
-    label {
-        color: $gray-700;
-    }
-
-    input,
-    select,
-    textarea {
+    .form-control,
+    .form-select {
         border: 1px solid $bader-border;
-        border-radius: 8px;
-        padding: 12px 16px;
-        font-size: 14px;
+        border-radius: 10px;
         color: $gray-700;
 
         &:focus {
-            border-color: $bader-green-light;
-            outline: none;
+            border-color: $bader-green;
             box-shadow: 0 0 0 3px $bader-green-bg;
+        }
+    }
+}
+
+// --------------------------------------------
+// Payment
+// --------------------------------------------
+
+.bader-payment-page {
+    #payment_method {
+        margin-top: 1rem;
+        padding: 1rem;
+        border: 1px solid $bader-card-border;
+        border-radius: 14px;
+        background: $white;
+    }
+
+    #payment_method h3 {
+        margin-bottom: 1rem;
+        color: $gray-800;
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+
+    #address_on_payment .card-body {
+        padding: 1rem 1.1rem;
+        color: $gray-700;
+    }
+
+    .alert-warning {
+        border-radius: 10px;
+    }
+}
+
+// --------------------------------------------
+// Mobile
+// --------------------------------------------
+
+@media (max-width: 991px) {
+
+    .bader-cart-page,
+    .bader-checkout-page,
+    .bader-address-page,
+    .bader-payment-page {
+        padding-top: 0.8rem;
+        padding-bottom: 2.4rem;
+
+        #o_cart_summary .card,
+        .js_cart_summary {
+            position: static;
+        }
+    }
+
+    .bader-checkout-wizard {
+        .progress-wizard-step {
+            min-width: auto;
+
+            .progress-wizard-steplabel {
+                font-size: 0.76rem;
+            }
+        }
+    }
+
+    .bader-cart-page {
+        .bader-cart-table {
+            thead {
+                display: none;
+            }
+
+            tbody,
+            tr,
+            td {
+                display: block;
+                width: 100%;
+            }
+
+            tbody tr {
+                border: 1px solid $bader-card-border;
+                border-radius: 12px;
+                background: $white;
+                padding: 0.8rem;
+                margin-bottom: 0.7rem;
+            }
+
+            tbody tr td {
+                border: 0;
+                background: transparent;
+                padding: 0.28rem 0;
+            }
+
+            tbody tr td:first-child,
+            tbody tr td:last-child {
+                border-radius: 0;
+            }
+
+            .td-img {
+                width: 72px;
+                margin-bottom: 0.35rem;
+            }
+
+            .td-qty {
+                margin-top: 0.25rem;
+            }
+
+            .td-price {
+                text-align: left;
+            }
+
+            .td-action {
+                text-align: right;
+            }
+        }
+
+        .bader-qty-control {
+            max-width: 130px;
         }
     }
 }

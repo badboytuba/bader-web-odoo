@@ -1198,7 +1198,12 @@ odoo.define('bader_website.main', function (require) {
 
             // ── Cart Page Benefits ──
             (function injectCartBenefits() {
-                var cartSummary = document.querySelector('.oe_cart .card, .oe_cart_summary .card');
+                var path = window.location.pathname || '';
+                if (path.indexOf('/shop/cart') !== 0 && path.indexOf('/checkout') !== 0) {
+                    return;
+                }
+
+                var cartSummary = document.querySelector('#o_cart_summary .card, .js_cart_summary.bader-summary-card, .bader-summary-card');
                 if (cartSummary && !cartSummary.querySelector('.bader-checkout-benefits')) {
                     var cartBenefits = document.createElement('div');
                     cartBenefits.className = 'bader-checkout-benefits';
