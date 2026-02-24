@@ -159,6 +159,32 @@
     }
 }
 
+// ─── Anti-FOUC: Pre-hide raw Odoo elements before JS enhances them ──
+// CSS loads instantly, JS takes a moment — this prevents the "flash"
+#products_grid_before {
+
+    // Hide raw sidebar until JS adds .bader-sidebar-enhanced
+    &:not(.bader-sidebar-enhanced) {
+
+        .accordion-item,
+        .nav-item {
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+        }
+    }
+}
+
+// Hide Odoo's native price range (our JS replaces it)
+#o_wsale_price_range_option {
+    display: none !important;
+}
+
+// Hide raw breadcrumbs (Odoo native) — our styling handles them
+.oe_website_sale>.container>nav.breadcrumb {
+    display: none !important;
+}
+
 // ─── Shop Grid Container ─────────────────
 .bader-shop-grid {
     background: $gray-50;
