@@ -16,15 +16,67 @@
                                 Hola, <span class="text-green" t-esc="partner.name or 'Cliente'"/>
                             </h1>
                             <p class="bader-page-hero__subtitle">
-                                Tu cuenta esta conectada con Odoo: pedidos, facturas y favoritos en tiempo real.
+                                Administra tu cuenta conectada con Odoo: pedidos, facturas y favoritos.
                             </p>
                         </div>
                     </div>
                 </section>
 
                 <section class="bader-page-section bader-page-section--white bader-animate">
-                    <div class="bader-page-section__container">
-                        <div class="bader-page-section__grid bader-page-section__grid--4">
+                    <div class="bader-page-section__container bader-account-shell">
+                        <div class="bader-account-heading">
+                            <h2 class="bader-section__title bader-section__title--dark">Panel de cuenta</h2>
+                            <p class="bader-section__subtitle bader-section__subtitle--dark">
+                                Datos personales, actividad comercial y accesos rapidos.
+                            </p>
+                        </div>
+
+                        <div class="bader-account-grid">
+                            <aside class="bader-page-card bader-account-summary">
+                                <div class="bader-account-avatar" t-esc="profile_initial"/>
+                                <h3 class="bader-page-card__title" t-esc="partner.name or 'Cliente'"/>
+                                <p class="bader-page-card__text" t-esc="request.env.user.email or '-'"/>
+                                <span class="bader-account-pill">
+                                    <i class="fa fa-check-circle"/> Cuenta verificada
+                                </span>
+                                <div class="bader-account-summary__meta">
+                                    <p><i class="fa fa-calendar"/> Miembro desde <strong t-esc="member_since or '-'"/></p>
+                                    <p><i class="fa fa-phone"/> <span t-esc="partner.phone or partner.mobile or '-'"/></p>
+                                    <p><i class="fa fa-map-marker"/> <span t-esc="partner.city or '-'"/></p>
+                                </div>
+                            </aside>
+
+                            <div class="bader-page-card bader-account-personal">
+                                <div class="bader-account-card-head">
+                                    <h3 class="bader-page-card__title">Informacion personal</h3>
+                                    <a href="/configuracion" class="btn-bader-sm">Editar</a>
+                                </div>
+                                <div class="bader-account-rows">
+                                    <div class="bader-account-row">
+                                        <span>Nombre</span>
+                                        <strong t-esc="partner.name or '-'"/>
+                                    </div>
+                                    <div class="bader-account-row">
+                                        <span>Email</span>
+                                        <strong t-esc="request.env.user.email or '-'"/>
+                                    </div>
+                                    <div class="bader-account-row">
+                                        <span>Telefono</span>
+                                        <strong t-esc="partner.phone or partner.mobile or '-'"/>
+                                    </div>
+                                    <div class="bader-account-row">
+                                        <span>Documento fiscal</span>
+                                        <strong t-esc="partner.vat or '-'"/>
+                                    </div>
+                                    <div class="bader-account-row">
+                                        <span>Direccion</span>
+                                        <strong t-esc="partner.contact_address or '-'"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bader-account-kpi-grid">
                             <div class="bader-page-card bader-account-kpi">
                                 <div class="bader-page-card__icon"><i class="fa fa-shopping-bag"/></div>
                                 <div class="bader-account-kpi__value" t-esc="order_count"/>
@@ -43,55 +95,40 @@
                             <div class="bader-page-card bader-account-kpi">
                                 <div class="bader-page-card__icon"><i class="fa fa-id-card-o"/></div>
                                 <div class="bader-account-kpi__value" t-esc="partner.vat or '-'"/>
-                                <div class="bader-account-kpi__label">Documento fiscal</div>
+                                <div class="bader-account-kpi__label">CUIT / Documento</div>
                             </div>
                         </div>
-                    </div>
-                </section>
 
-                <section class="bader-page-section bader-page-section--muted bader-animate">
-                    <div class="bader-page-section__container">
-                        <div class="bader-page-section__grid bader-page-section__grid--2">
-                            <div class="bader-page-card">
-                                <h3 class="bader-page-card__title">Datos de la cuenta</h3>
-                                <p class="bader-page-card__text">
-                                    <strong>Nombre:</strong>
-                                    <span t-esc="partner.name or '-'"/>
-                                </p>
-                                <p class="bader-page-card__text">
-                                    <strong>Email:</strong>
-                                    <span t-esc="request.env.user.email or '-'"/>
-                                </p>
-                                <p class="bader-page-card__text">
-                                    <strong>Telefono:</strong>
-                                    <span t-esc="partner.phone or partner.mobile or '-'"/>
-                                </p>
-                                <p class="bader-page-card__text">
-                                    <strong>Direccion:</strong>
-                                    <span t-esc="partner.contact_address or '-'"/>
-                                </p>
-                                <a href="/configuracion" class="btn-bader" style="margin-top: 1rem;">Editar perfil</a>
+                        <div class="bader-page-card bader-account-quick">
+                            <h3 class="bader-page-card__title">Accesos rapidos</h3>
+                            <div class="bader-account-quick-grid">
+                                <a href="/mis-pedidos" class="bader-account-quick-btn">
+                                    <strong>Mis Pedidos</strong>
+                                    <small>Ver historial de compras</small>
+                                </a>
+                                <a href="/mis-favoritos" class="bader-account-quick-btn">
+                                    <strong>Mis Favoritos</strong>
+                                    <small>Productos guardados</small>
+                                </a>
+                                <a href="/mis-facturas" class="bader-account-quick-btn">
+                                    <strong>Mis Facturas</strong>
+                                    <small>Comprobantes y pagos</small>
+                                </a>
+                                <a href="/ayuda" class="bader-account-quick-btn">
+                                    <strong>Ayuda</strong>
+                                    <small>Soporte y consultas</small>
+                                </a>
                             </div>
-
-                            <div class="bader-page-card">
-                                <h3 class="bader-page-card__title">Accesos rapidos</h3>
-                                <ul class="bader-checklist">
-                                    <li><i class="fa fa-check-circle"/> <a href="/mis-pedidos">Ver historial de pedidos</a></li>
-                                    <li><i class="fa fa-check-circle"/> <a href="/mis-facturas">Ver facturas</a></li>
-                                    <li><i class="fa fa-check-circle"/> <a href="/mis-favoritos">Gestionar favoritos</a></li>
-                                    <li><i class="fa fa-check-circle"/> <a href="/ayuda">Ayuda y soporte</a></li>
-                                </ul>
-                                <t t-if="last_order">
-                                    <div class="bader-account-note">
-                                        <strong>Ultimo pedido:</strong>
-                                        <t t-foreach="last_order" t-as="last">
-                                            <span t-esc="last.name"/> -
-                                            <span t-field="last.amount_total"
-                                                  t-options='{"widget": "monetary", "display_currency": last.currency_id}'/>
-                                        </t>
-                                    </div>
-                                </t>
-                            </div>
+                            <t t-if="last_order">
+                                <div class="bader-account-note">
+                                    <strong>Ultimo pedido:</strong>
+                                    <t t-foreach="last_order" t-as="last">
+                                        <span t-esc="last.name"/> -
+                                        <span t-field="last.amount_total"
+                                              t-options='{"widget": "monetary", "display_currency": last.currency_id}'/>
+                                    </t>
+                                </div>
+                            </t>
                         </div>
                     </div>
                 </section>
@@ -110,57 +147,126 @@
                             </span>
                             <h1 class="bader-page-hero__title">Historial de pedidos</h1>
                             <p class="bader-page-hero__subtitle">
-                                Todos tus pedidos sincronizados directamente con Odoo.
+                                Consulta el estado de tus compras, montos y detalle de productos.
                             </p>
                         </div>
                     </div>
                 </section>
 
                 <section class="bader-page-section bader-page-section--white bader-animate">
-                    <div class="bader-page-section__container">
-                        <div class="bader-page-card">
-                            <t t-if="orders">
-                                <div class="table-responsive">
-                                    <table class="table bader-account-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Pedido</th>
-                                                <th>Fecha</th>
-                                                <th>Estado</th>
-                                                <th>Total</th>
-                                                <th/>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr t-foreach="orders" t-as="order">
-                                                <td><strong t-esc="order.name"/></td>
-                                                <td><span t-field="order.date_order" t-options='{"widget": "date"}'/></td>
-                                                <td>
-                                                    <span class="badge bg-light text-dark"
-                                                          t-esc="state_labels.get(order.state, order.state)"/>
-                                                </td>
-                                                <td>
+                    <div class="bader-page-section__container bader-account-shell">
+                        <t t-if="orders">
+                            <div class="bader-account-list">
+                                <details class="bader-page-card bader-account-order"
+                                         t-foreach="orders"
+                                         t-as="order">
+                                    <summary class="bader-account-order__summary">
+                                        <div class="bader-account-order__head">
+                                            <div class="bader-account-order__title">
+                                                <strong>Pedido <t t-esc="order.name"/></strong>
+                                                <small>
+                                                    <i class="fa fa-calendar"/> <span t-field="order.date_order" t-options='{"widget": "datetime"}'/>
+                                                </small>
+                                            </div>
+                                            <div class="bader-account-order__badges">
+                                                <span t-attf-class="bader-status-pill #{state_badges.get(order.state, 'is-gray')}"
+                                                      t-esc="state_labels.get(order.state, order.state)"/>
+                                                <span class="bader-account-order__total">
+                                                    <t t-field="order.amount_total"
+                                                       t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </summary>
+
+                                    <div class="bader-account-order__body">
+                                        <t t-set="invoice" t-value="order.invoice_ids[:1]"/>
+                                        <div class="bader-account-order__cols">
+                                            <div class="bader-account-order__block">
+                                                <h4>Detalles de envio</h4>
+                                                <p>
+                                                    <strong>Destino:</strong>
+                                                    <span t-esc="order.partner_shipping_id.contact_address or order.partner_id.contact_address or '-'"/>
+                                                </p>
+                                                <p t-if="'carrier_id' in order._fields and order.carrier_id">
+                                                    <strong>Metodo:</strong>
+                                                    <span t-esc="order.carrier_id.name"/>
+                                                </p>
+                                                <p t-if="order.note">
+                                                    <strong>Nota:</strong>
+                                                    <span t-esc="order.note"/>
+                                                </p>
+                                            </div>
+
+                                            <div class="bader-account-order__block">
+                                                <h4>Resumen de pago</h4>
+                                                <p>
+                                                    <strong>Subtotal:</strong>
+                                                    <span t-field="order.amount_untaxed"
+                                                          t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
+                                                </p>
+                                                <p>
+                                                    <strong>Impuestos:</strong>
+                                                    <span t-field="order.amount_tax"
+                                                          t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
+                                                </p>
+                                                <p class="bader-account-order__grand">
+                                                    <strong>Total:</strong>
                                                     <span t-field="order.amount_total"
                                                           t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
-                                                </td>
-                                                <td class="text-end">
-                                                    <a t-att-href="'/my/orders/%s' % order.id" class="btn btn-sm btn-outline-secondary">
-                                                        Ver detalle
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </t>
-                            <t t-else="">
-                                <div class="text-center py-4">
-                                    <h3 class="bader-page-card__title">Aun no tienes pedidos</h3>
-                                    <p class="bader-page-card__text">Cuando realices compras apareceran aqui.</p>
-                                    <a href="/productos" class="btn-bader">Ir al catalogo</a>
-                                </div>
-                            </t>
-                        </div>
+                                                </p>
+                                                <p t-if="invoice">
+                                                    <strong>Estado de pago:</strong>
+                                                    <span t-attf-class="bader-status-pill #{payment_state_badges.get(invoice.payment_state, 'is-gray')}"
+                                                          t-esc="payment_state_labels.get(invoice.payment_state, invoice.payment_state)"/>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="bader-account-order__items">
+                                            <h4>Productos</h4>
+                                            <div class="bader-account-order-item"
+                                                 t-foreach="order.order_line[:5]"
+                                                 t-as="line"
+                                                 t-if="not line.display_type">
+                                                <div class="bader-account-order-item__img">
+                                                    <img t-if="line.product_id"
+                                                         t-att-src="'/web/image/product.product/%s/image_128' % line.product_id.id"
+                                                         t-att-alt="line.name"/>
+                                                    <i t-else="" class="fa fa-cube"/>
+                                                </div>
+                                                <div class="bader-account-order-item__desc">
+                                                    <strong t-esc="line.name"/>
+                                                    <small>
+                                                        <span t-esc="line.product_uom_qty"/> x
+                                                        <span t-field="line.price_unit"
+                                                              t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
+                                                    </small>
+                                                </div>
+                                                <div class="bader-account-order-item__total">
+                                                    <span t-field="line.price_subtotal"
+                                                          t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="bader-account-order__actions">
+                                            <a t-att-href="'/my/orders/%s' % order.id" class="btn btn-outline-secondary btn-sm">
+                                                Ver detalle completo
+                                            </a>
+                                        </div>
+                                    </div>
+                                </details>
+                            </div>
+                        </t>
+
+                        <t t-else="">
+                            <div class="bader-page-card text-center">
+                                <h3 class="bader-page-card__title">Aun no tienes pedidos</h3>
+                                <p class="bader-page-card__text">Cuando realices tu primera compra aparecera aqui.</p>
+                                <a href="/productos" class="btn-bader">Ir al catalogo</a>
+                            </div>
+                        </t>
                     </div>
                 </section>
             </div>
@@ -178,69 +284,83 @@
                             </span>
                             <h1 class="bader-page-hero__title">Facturacion</h1>
                             <p class="bader-page-hero__subtitle">
-                                Consulta estado de pago y descarga de comprobantes.
+                                Consulta tus comprobantes y descarga los PDF desde Odoo.
                             </p>
                         </div>
                     </div>
                 </section>
 
                 <section class="bader-page-section bader-page-section--white bader-animate">
-                    <div class="bader-page-section__container">
-                        <div class="bader-page-card">
-                            <t t-if="not invoices_available">
+                    <div class="bader-page-section__container bader-account-shell">
+                        <t t-if="not invoices_available">
+                            <div class="bader-page-card">
                                 <div class="alert alert-warning mb-0">
                                     El modulo de facturacion no esta disponible en esta base Odoo.
                                 </div>
-                            </t>
-                            <t t-elif="invoices">
-                                <div class="table-responsive">
-                                    <table class="table bader-account-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Factura</th>
-                                                <th>Fecha</th>
-                                                <th>Vencimiento</th>
-                                                <th>Estado</th>
-                                                <th>Total</th>
-                                                <th/>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr t-foreach="invoices" t-as="inv">
-                                                <td><strong t-esc="inv.name or inv.ref or '-'"/></td>
-                                                <td><span t-field="inv.invoice_date" t-options='{"widget": "date"}'/></td>
-                                                <td><span t-field="inv.invoice_date_due" t-options='{"widget": "date"}'/></td>
-                                                <td>
-                                                    <span class="badge bg-light text-dark"
-                                                          t-esc="payment_state_labels.get(inv.payment_state, inv.payment_state)"/>
-                                                </td>
-                                                <td>
-                                                    <span t-field="inv.amount_total"
-                                                          t-options='{"widget": "monetary", "display_currency": inv.currency_id}'/>
-                                                </td>
-                                                <td class="text-end">
-                                                    <a t-att-href="'/my/invoices/%s' % inv.id" class="btn btn-sm btn-outline-secondary">
-                                                        Ver
-                                                    </a>
-                                                    <a t-att-href="'/my/invoices/%s?download=1' % inv.id"
-                                                       class="btn btn-sm btn-outline-primary">
-                                                        PDF
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                            </div>
+                        </t>
+
+                        <t t-elif="invoices">
+                            <div class="bader-account-list">
+                                <article class="bader-page-card bader-account-invoice"
+                                         t-foreach="invoices"
+                                         t-as="inv">
+                                    <div class="bader-account-invoice__head">
+                                        <div class="bader-account-invoice__title">
+                                            <span class="bader-account-invoice__icon"><i class="fa fa-file-text-o"/></span>
+                                            <div>
+                                                <strong t-esc="inv.name or inv.ref or '-'"/>
+                                                <small>
+                                                    <i class="fa fa-calendar"/> <span t-field="inv.invoice_date" t-options='{"widget": "date"}'/>
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="bader-account-invoice__side">
+                                            <span t-attf-class="bader-status-pill #{payment_state_badges.get(inv.payment_state, 'is-gray')}"
+                                                  t-esc="payment_state_labels.get(inv.payment_state, inv.payment_state)"/>
+                                            <strong class="bader-account-invoice__amount">
+                                                <span t-field="inv.amount_total"
+                                                      t-options='{"widget": "monetary", "display_currency": inv.currency_id}'/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <div class="bader-account-invoice__meta">
+                                        <span><strong>Vencimiento:</strong> <span t-field="inv.invoice_date_due" t-options='{"widget": "date"}'/></span>
+                                        <span><strong>Cliente:</strong> <span t-esc="inv.partner_id.name or '-'"/></span>
+                                    </div>
+                                    <div class="bader-account-invoice__actions">
+                                        <a t-att-href="'/my/invoices/%s' % inv.id" class="btn btn-outline-secondary btn-sm">
+                                            Ver
+                                        </a>
+                                        <a t-att-href="'/my/invoices/%s?download=1' % inv.id"
+                                           class="btn btn-outline-primary btn-sm">
+                                            PDF
+                                        </a>
+                                    </div>
+                                </article>
+                            </div>
+
+                            <div class="bader-page-card bader-account-help">
+                                <h3 class="bader-page-card__title">Sobre la facturacion</h3>
+                                <p class="bader-page-card__text">
+                                    Si necesitas una factura urgente o modificar datos fiscales, contactanos por email o WhatsApp.
+                                </p>
+                                <div class="bader-account-help__actions">
+                                    <a href="mailto:hola@bader.com.ar" class="btn btn-outline-secondary btn-sm">hola@bader.com.ar</a>
+                                    <a href="https://wa.me/5491124522097" class="btn btn-outline-secondary btn-sm">WhatsApp</a>
                                 </div>
-                            </t>
-                            <t t-else="">
-                                <div class="text-center py-4">
-                                    <h3 class="bader-page-card__title">No hay facturas publicadas</h3>
-                                    <p class="bader-page-card__text">
-                                        Tus comprobantes apareceran aqui cuando sean emitidos.
-                                    </p>
-                                </div>
-                            </t>
-                        </div>
+                            </div>
+                        </t>
+
+                        <t t-else="">
+                            <div class="bader-page-card text-center">
+                                <h3 class="bader-page-card__title">No hay facturas publicadas</h3>
+                                <p class="bader-page-card__text">
+                                    Tus comprobantes apareceran aqui cuando sean emitidos.
+                                </p>
+                                <a href="/mis-pedidos" class="btn-bader-sm">Ver mis pedidos</a>
+                            </div>
+                        </t>
                     </div>
                 </section>
             </div>
@@ -320,90 +440,99 @@
                             </span>
                             <h1 class="bader-page-hero__title">Datos de cuenta</h1>
                             <p class="bader-page-hero__subtitle">
-                                Actualiza la informacion de contacto usada por Odoo en pedidos y facturas.
+                                Actualiza la informacion usada por Odoo para pedidos, envios y facturas.
                             </p>
                         </div>
                     </div>
                 </section>
 
                 <section class="bader-page-section bader-page-section--white bader-animate">
-                    <div class="bader-page-section__container">
-                        <div class="bader-page-card">
-                            <t t-if="updated">
-                                <div class="alert alert-success">
-                                    Tus datos se guardaron correctamente.
-                                </div>
-                            </t>
-                            <t t-if="error">
-                                <div class="alert alert-danger">
-                                    Ocurrio un error al guardar. Intenta nuevamente.
-                                </div>
-                            </t>
+                    <div class="bader-page-section__container bader-account-shell">
+                        <t t-if="updated">
+                            <div class="alert alert-success">
+                                Tus datos se guardaron correctamente.
+                            </div>
+                        </t>
+                        <t t-if="error">
+                            <div class="alert alert-danger">
+                                Ocurrio un error al guardar. Intenta nuevamente.
+                            </div>
+                        </t>
 
-                            <form action="/configuracion/guardar" method="post" class="row g-3">
-                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <form action="/configuracion/guardar" method="post" class="bader-page-card bader-account-form">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
-                                <div class="col-md-6">
-                                    <label class="form-label">Nombre</label>
-                                    <input type="text" name="name" class="form-control"
-                                           t-att-value="partner.name or ''" required="required"/>
+                            <div class="bader-account-form__section">
+                                <h3 class="bader-page-card__title">Informacion personal y fiscal</h3>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Nombre</label>
+                                        <input type="text" name="name" class="form-control"
+                                               t-att-value="partner.name or ''" required="required"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Empresa</label>
+                                        <input type="text" name="company_name" class="form-control"
+                                               t-att-value="partner.company_name or ''"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Email (solo lectura)</label>
+                                        <input type="email" class="form-control"
+                                               t-att-value="request.env.user.email or ''" readonly="readonly"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Documento fiscal</label>
+                                        <input type="text" name="vat" class="form-control"
+                                               t-att-value="partner.vat or ''"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Telefono</label>
+                                        <input type="text" name="phone" class="form-control"
+                                               t-att-value="partner.phone or ''"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Celular</label>
+                                        <input type="text" name="mobile" class="form-control"
+                                               t-att-value="partner.mobile or ''"/>
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Empresa</label>
-                                    <input type="text" name="company_name" class="form-control"
-                                           t-att-value="partner.company_name or ''"/>
-                                </div>
+                            </div>
 
-                                <div class="col-md-6">
-                                    <label class="form-label">Email (solo lectura)</label>
-                                    <input type="email" class="form-control"
-                                           t-att-value="request.env.user.email or ''" readonly="readonly"/>
+                            <div class="bader-account-form__section">
+                                <h3 class="bader-page-card__title">Direccion de envio</h3>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Calle</label>
+                                        <input type="text" name="street" class="form-control"
+                                               t-att-value="partner.street or ''"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Calle 2</label>
+                                        <input type="text" name="street2" class="form-control"
+                                               t-att-value="partner.street2 or ''"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Ciudad</label>
+                                        <input type="text" name="city" class="form-control"
+                                               t-att-value="partner.city or ''"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Codigo postal</label>
+                                        <input type="text" name="zip" class="form-control"
+                                               t-att-value="partner.zip or ''"/>
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Documento fiscal</label>
-                                    <input type="text" name="vat" class="form-control"
-                                           t-att-value="partner.vat or ''"/>
-                                </div>
+                            </div>
 
-                                <div class="col-md-6">
-                                    <label class="form-label">Telefono</label>
-                                    <input type="text" name="phone" class="form-control"
-                                           t-att-value="partner.phone or ''"/>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Celular</label>
-                                    <input type="text" name="mobile" class="form-control"
-                                           t-att-value="partner.mobile or ''"/>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">Calle</label>
-                                    <input type="text" name="street" class="form-control"
-                                           t-att-value="partner.street or ''"/>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Calle 2</label>
-                                    <input type="text" name="street2" class="form-control"
-                                           t-att-value="partner.street2 or ''"/>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">Ciudad</label>
-                                    <input type="text" name="city" class="form-control"
-                                           t-att-value="partner.city or ''"/>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Codigo postal</label>
-                                    <input type="text" name="zip" class="form-control"
-                                           t-att-value="partner.zip or ''"/>
-                                </div>
-
-                                <div class="col-12">
-                                    <button type="submit" class="btn-bader">Guardar cambios</button>
-                                    <a href="/mi-perfil" class="btn btn-outline-secondary ms-2">Volver al perfil</a>
-                                </div>
-                            </form>
-                        </div>
+                            <div class="bader-account-form__actions">
+                                <button type="submit" class="btn-bader">
+                                    <i class="fa fa-save"/> Guardar cambios
+                                </button>
+                                <a href="/mi-perfil" class="btn btn-outline-secondary">
+                                    Volver al perfil
+                                </a>
+                            </div>
+                        </form>
                     </div>
                 </section>
             </div>

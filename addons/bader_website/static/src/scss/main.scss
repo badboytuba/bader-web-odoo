@@ -618,6 +618,132 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
 }
 
 // --- Account Pages ---
+.bader-account-shell {
+    max-width: 72rem;
+}
+
+.bader-account-heading {
+    margin-bottom: 1.3rem;
+}
+
+.bader-account-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    @include tablet-down {
+        grid-template-columns: 1fr;
+    }
+}
+
+.bader-account-summary {
+    text-align: center;
+
+    &__meta {
+        margin-top: 1rem;
+        display: grid;
+        gap: 0.45rem;
+        text-align: left;
+        font-size: 0.9rem;
+        color: $gray-600;
+
+        p {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+    }
+}
+
+.bader-account-avatar {
+    width: 86px;
+    height: 86px;
+    margin: 0 auto 0.8rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: $font-display;
+    font-weight: 800;
+    font-size: 2rem;
+    background: rgba($bader-green, 0.16);
+    color: $bader-dark;
+}
+
+.bader-account-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.2rem;
+    padding: 0.32rem 0.7rem;
+    border-radius: $radius-pill;
+    background: rgba($bader-green, 0.15);
+    color: $bader-dark;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.bader-account-personal {
+    .bader-page-card__title {
+        margin-bottom: 0;
+    }
+}
+
+.bader-account-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    margin-bottom: 0.8rem;
+}
+
+.bader-account-rows {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.bader-account-row {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 0.75rem;
+    align-items: baseline;
+    padding: 0.46rem 0;
+    border-bottom: 1px solid $gray-100;
+
+    span {
+        color: $gray-500;
+        font-size: 0.86rem;
+    }
+
+    strong {
+        color: $bader-dark;
+        font-size: 0.92rem;
+        word-break: break-word;
+    }
+
+    @include mobile {
+        grid-template-columns: 1fr;
+        gap: 0.15rem;
+    }
+}
+
+.bader-account-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.9rem;
+    margin-bottom: 1rem;
+
+    @media (max-width: 992px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include mobile {
+        grid-template-columns: 1fr;
+    }
+}
+
 .bader-account-kpi {
     text-align: center;
 
@@ -638,18 +764,382 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
     }
 }
 
-.bader-account-table {
-    margin-bottom: 0;
+.bader-account-quick {
+    margin-top: 0.8rem;
+}
 
-    th {
-        border-top: 0;
+.bader-account-quick-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.7rem;
+
+    @media (max-width: 992px) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @include mobile {
+        grid-template-columns: 1fr;
+    }
+}
+
+.bader-account-quick-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 0.18rem;
+    padding: 0.85rem 0.9rem;
+    border-radius: $radius-md;
+    border: 1px solid $gray-200;
+    color: $gray-700;
+    text-decoration: none;
+    transition: all $transition-fast;
+
+    strong {
+        font-size: 0.9rem;
         color: $bader-dark;
-        font-weight: 700;
     }
 
-    td {
-        vertical-align: middle;
+    small {
+        font-size: 0.78rem;
+        color: $gray-500;
     }
+
+    &:hover {
+        border-color: $bader-green;
+        background: rgba($bader-green, 0.08);
+        text-decoration: none;
+    }
+}
+
+.bader-account-list {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.bader-status-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.27rem 0.62rem;
+    border-radius: $radius-pill;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    line-height: 1.2;
+
+    &.is-green {
+        background: rgba(16, 185, 129, 0.15);
+        color: #047857;
+    }
+
+    &.is-yellow {
+        background: rgba(245, 158, 11, 0.2);
+        color: #92400e;
+    }
+
+    &.is-blue {
+        background: rgba(59, 130, 246, 0.16);
+        color: #1d4ed8;
+    }
+
+    &.is-orange {
+        background: rgba(249, 115, 22, 0.16);
+        color: #c2410c;
+    }
+
+    &.is-red {
+        background: rgba(239, 68, 68, 0.16);
+        color: #b91c1c;
+    }
+
+    &.is-gray {
+        background: rgba(107, 114, 128, 0.14);
+        color: #374151;
+    }
+}
+
+.bader-account-order {
+    margin: 0;
+
+    &[open] {
+        box-shadow: $shadow-card;
+    }
+}
+
+.bader-account-order__summary {
+    list-style: none;
+    cursor: pointer;
+
+    &::-webkit-details-marker {
+        display: none;
+    }
+}
+
+.bader-account-order__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.bader-account-order__title {
+    strong {
+        display: block;
+        color: $bader-dark;
+        font-size: 1rem;
+    }
+
+    small {
+        margin-top: 0.18rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        color: $gray-500;
+        font-size: 0.8rem;
+    }
+}
+
+.bader-account-order__badges {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.45rem;
+}
+
+.bader-account-order__total {
+    font-weight: 800;
+    color: $bader-dark;
+}
+
+.bader-account-order__body {
+    margin-top: 0.95rem;
+    border-top: 1px solid $gray-100;
+    padding-top: 0.95rem;
+}
+
+.bader-account-order__cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+
+    @include mobile {
+        grid-template-columns: 1fr;
+    }
+}
+
+.bader-account-order__block {
+    h4 {
+        font-size: 0.9rem;
+        margin: 0 0 0.45rem;
+        color: $bader-dark;
+    }
+
+    p {
+        margin: 0 0 0.28rem;
+        font-size: 0.84rem;
+        color: $gray-600;
+    }
+}
+
+.bader-account-order__grand {
+    margin-top: 0.35rem;
+    font-weight: 700;
+    color: $bader-dark;
+}
+
+.bader-account-order__items {
+    margin-top: 0.95rem;
+
+    h4 {
+        font-size: 0.9rem;
+        margin: 0 0 0.45rem;
+        color: $bader-dark;
+    }
+}
+
+.bader-account-order-item {
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 0;
+    border-bottom: 1px solid $gray-100;
+
+    &:last-child {
+        border-bottom: 0;
+    }
+}
+
+.bader-account-order-item__img {
+    width: 44px;
+    height: 44px;
+    border-radius: $radius-sm;
+    background: $gray-50;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    i {
+        color: $gray-400;
+    }
+}
+
+.bader-account-order-item__desc {
+    strong {
+        display: block;
+        color: $bader-dark;
+        font-size: 0.84rem;
+        line-height: 1.3;
+    }
+
+    small {
+        color: $gray-500;
+        font-size: 0.76rem;
+    }
+}
+
+.bader-account-order-item__total {
+    font-weight: 700;
+    color: $bader-dark;
+    font-size: 0.84rem;
+}
+
+.bader-account-order__actions {
+    margin-top: 0.75rem;
+}
+
+.bader-account-invoice {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.bader-account-invoice__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.7rem;
+
+    @include mobile {
+        flex-direction: column;
+    }
+}
+
+.bader-account-invoice__title {
+    display: flex;
+    gap: 0.65rem;
+    align-items: flex-start;
+
+    strong {
+        display: block;
+        color: $bader-dark;
+        font-size: 1rem;
+    }
+
+    small {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.78rem;
+        color: $gray-500;
+        margin-top: 0.2rem;
+    }
+}
+
+.bader-account-invoice__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: $radius-md;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba($bader-green, 0.15);
+    color: $bader-dark;
+}
+
+.bader-account-invoice__side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.35rem;
+}
+
+.bader-account-invoice__amount {
+    color: $bader-dark;
+    font-size: 1rem;
+}
+
+.bader-account-invoice__meta {
+    margin-top: 0.7rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    font-size: 0.82rem;
+    color: $gray-600;
+}
+
+.bader-account-invoice__actions {
+    margin-top: 0.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.bader-account-help {
+    margin-top: 0.9rem;
+    background: rgba(59, 130, 246, 0.06);
+    border-color: rgba(59, 130, 246, 0.24);
+}
+
+.bader-account-help__actions {
+    margin-top: 0.65rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.bader-account-form {
+    .form-label {
+        color: $gray-700;
+        font-size: 0.84rem;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+    }
+
+    .form-control {
+        border: 1px solid $gray-200;
+        border-radius: $radius-sm;
+        color: $gray-700;
+        min-height: 42px;
+
+        &:focus {
+            border-color: $bader-green;
+            box-shadow: 0 0 0 3px rgba($bader-green, 0.18);
+        }
+    }
+}
+
+.bader-account-form__section {
+    padding: 0.2rem 0 0.95rem;
+    border-bottom: 1px solid $gray-100;
+    margin-bottom: 0.95rem;
+
+    &:last-of-type {
+        border-bottom: 0;
+        margin-bottom: 0.4rem;
+    }
+}
+
+.bader-account-form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
 }
 
 .bader-account-note {

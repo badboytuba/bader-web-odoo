@@ -387,6 +387,7 @@ class BaderWebsite(Website):
     def mi_perfil(self, **kw):
         """Customer account dashboard fully backed by Odoo data."""
         partner = self._current_customer_partner()
+        user = request.env.user
         sale_order = request.env['sale.order'].sudo()
         order_domain = self._order_domain_for_partner(partner)
         orders = sale_order.search(order_domain, order='date_order desc', limit=5)
@@ -405,6 +406,9 @@ class BaderWebsite(Website):
                 self._invoice_domain_for_partner(partner)
             )
 
+        member_since = user.create_date.strftime('%d/%m/%Y') if user.create_date else ''
+        profile_initial = ((partner.name or 'U').strip()[:1] or 'U').upper()
+
         return request.render('bader_website.bader_mi_perfil', {
             'partner': partner,
             'orders': orders,
@@ -412,6 +416,8 @@ class BaderWebsite(Website):
             'invoice_count': invoice_count,
             'wishlist_count': len(wishlist),
             'last_order': orders[:1],
+            'member_since': member_since,
+            'profile_initial': profile_initial,
         })
 
     @http.route('/mis-pedidos', type='http', auth='user', website=True, sitemap=False)
@@ -424,9 +430,32 @@ class BaderWebsite(Website):
             limit=100
         )
         state_labels = dict(request.env['sale.order']._fields['state'].selection)
+        state_badges = {
+            'draft': 'is-yellow',
+            'sent': 'is-blue',
+            'sale': 'is-green',
+            'done': 'is-green',
+            'cancel': 'is-red',
+        }
+        payment_state_labels = {}
+        payment_state_badges = {
+            'not_paid': 'is-yellow',
+            'in_payment': 'is-blue',
+            'paid': 'is-green',
+            'partial': 'is-orange',
+            'reversed': 'is-gray',
+            'invoicing_legacy': 'is-gray',
+        }
+        if 'account.move' in request.env:
+            payment_state_labels = dict(
+                request.env['account.move']._fields['payment_state'].selection
+            )
         return request.render('bader_website.bader_mis_pedidos', {
             'orders': orders,
             'state_labels': state_labels,
+            'state_badges': state_badges,
+            'payment_state_labels': payment_state_labels,
+            'payment_state_badges': payment_state_badges,
         })
 
     @http.route('/mis-facturas', type='http', auth='user', website=True, sitemap=False)
@@ -436,6 +465,14 @@ class BaderWebsite(Website):
         invoices_available = 'account.move' in request.env
         invoices = request.env['account.move']
         payment_state_labels = {}
+        payment_state_badges = {
+            'not_paid': 'is-yellow',
+            'in_payment': 'is-blue',
+            'paid': 'is-green',
+            'partial': 'is-orange',
+            'reversed': 'is-gray',
+            'invoicing_legacy': 'is-gray',
+        }
         if invoices_available:
             account_move = request.env['account.move'].sudo()
             invoices = account_move.search(
@@ -450,6 +487,7 @@ class BaderWebsite(Website):
             'invoices_available': invoices_available,
             'invoices': invoices,
             'payment_state_labels': payment_state_labels,
+            'payment_state_badges': payment_state_badges,
         })
 
     @http.route('/mis-favoritos', type='http', auth='user', website=True, sitemap=False)
