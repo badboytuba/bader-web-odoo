@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<odoo>
-    <record id="group_import_pricelist" model="res.groups">
-        <field name="name">User Can Import Prices</field>
-        <field name="category_id" ref="base.module_category_hidden"/>
-    </record>
-</odoo>

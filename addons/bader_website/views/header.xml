@@ -49,7 +49,8 @@
                                 </div>
                             </div>
                             <ul class="bader-mega__list">
-                                <t t-foreach="request.env['product.public.category'].sudo().search([('parent_id','=',2)], order='sequence, id', limit=5)" t-as="cat">
+                                <t t-set="clinica_parent" t-value="request.env['product.public.category'].sudo().search([('name','ilike','Clínica')], limit=1)"/>
+                                <t t-foreach="request.env['product.public.category'].sudo().search([('parent_id','=',clinica_parent.id)], order='sequence, id', limit=5) if clinica_parent else []" t-as="cat">
                                     <li>
                                         <a t-attf-href="/shop/category/#{slug(cat)}">
                                             <i class="fa fa-chevron-right"/>
@@ -58,7 +59,7 @@
                                     </li>
                                 </t>
                             </ul>
-                            <a href="/shop/category/clinica-2" class="bader-mega__more">
+                            <a t-attf-href="/shop/category/#{slug(clinica_parent)}" class="bader-mega__more">
                                 Ver todo <i class="fa fa-plus"/>
                             </a>
                         </div>
@@ -75,7 +76,8 @@
                                 </div>
                             </div>
                             <ul class="bader-mega__list">
-                                <t t-foreach="request.env['product.public.category'].sudo().search([('parent_id','=',4)], order='sequence, id', limit=5)" t-as="cat">
+                                <t t-set="lab_parent" t-value="request.env['product.public.category'].sudo().search([('name','ilike','Laboratorio')], limit=1)"/>
+                                <t t-foreach="request.env['product.public.category'].sudo().search([('parent_id','=',lab_parent.id)], order='sequence, id', limit=5) if lab_parent else []" t-as="cat">
                                     <li>
                                         <a t-attf-href="/shop/category/#{slug(cat)}">
                                             <i class="fa fa-chevron-right"/>
@@ -84,7 +86,7 @@
                                     </li>
                                 </t>
                             </ul>
-                            <a href="/shop/category/laboratorio-4" class="bader-mega__more">
+                            <a t-attf-href="/shop/category/#{slug(lab_parent)}" class="bader-mega__more">
                                 Ver todo <i class="fa fa-plus"/>
                             </a>
                         </div>
@@ -101,7 +103,8 @@
                                 </div>
                             </div>
                             <ul class="bader-mega__list">
-                                <t t-foreach="request.env['product.public.category'].sudo().search([('parent_id','=',53)], order='sequence, id', limit=5)" t-as="cat">
+                                <t t-set="student_parent" t-value="request.env['product.public.category'].sudo().search([('name','ilike','Estudiante')], limit=1)"/>
+                                <t t-foreach="request.env['product.public.category'].sudo().search([('parent_id','=',student_parent.id)], order='sequence, id', limit=5) if student_parent else []" t-as="cat">
                                     <li>
                                         <a t-attf-href="/shop/category/#{slug(cat)}">
                                             <i class="fa fa-chevron-right"/>
@@ -110,7 +113,7 @@
                                     </li>
                                 </t>
                             </ul>
-                            <a href="/shop/category/estudiantes-53" class="bader-mega__more">
+                            <a t-attf-href="/shop/category/#{slug(student_parent)}" class="bader-mega__more">
                                 Ver todo <i class="fa fa-plus"/>
                             </a>
                         </div>

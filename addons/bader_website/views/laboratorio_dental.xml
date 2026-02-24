@@ -14,7 +14,8 @@
                 <meta property="og:description" content="Mesas, cabinas, arenadoras, articuladores y termoformadoras para protésicos dentales. Envíos a todo el país."/>
                 <meta property="og:image" content="/bader_website/static/src/img/hero/hero-laboratorio-dental.png"/>
                 <meta property="og:type" content="website"/>
-                <meta property="og:url" content="https://qas.bader4business.com/laboratorio-dental"/>
+                <meta property="og:url" t-att-content="request.httprequest.url"/>
+                <link rel="canonical" t-att-href="request.httprequest.url"/>
                 <meta name="twitter:card" content="summary_large_image"/>
             </t>
             <div id="wrap" class="oe_structure oe_empty">

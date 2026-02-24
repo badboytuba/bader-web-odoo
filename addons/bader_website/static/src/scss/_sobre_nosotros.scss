@@ -1,50 +1,77 @@
 // ============================================
-// Sobre Nosotros — Page Styles
+// Sobre Nosotros — Page Styles (Premium V3)
 // ============================================
-// Matches Bader-AR SobreNosotros.tsx visual design.
+// Brand-first design: #003841 dark teal backgrounds,
+// #FFFFFF white text, #70D44B green accents.
 
 // --- Hero Stats Grid ---
 .bader-about__hero-stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
+    gap: 1.25rem;
     margin-top: 3rem;
 
     @media (max-width: $bp-tablet) {
         grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
     }
+
+    @media (max-width: $bp-mobile) {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
 }
 
 .bader-about__hero-stat {
     text-align: center;
-    padding: 1.25rem 1rem;
-    background: rgba(white, 0.06);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(white, 0.12);
+    padding: 1.75rem 1rem 1.5rem;
+    background: $bader-dark;
+    border: 1px solid rgba(white, 0.08);
     border-radius: $radius-xl;
+    position: relative;
+    overflow: hidden;
     transition:
-        background $transition-base,
-        transform $transition-base,
-        box-shadow $transition-base;
+        transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        box-shadow 0.35s ease,
+        border-color 0.35s ease;
+
+    // Green accent top line
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #70D44B, rgba(#70D44B, 0.30));
+        border-radius: 3px 3px 0 0;
+    }
 
     &:hover {
-        background: rgba(white, 0.10);
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        transform: translateY(-6px);
+        box-shadow: 0 15px 40px rgba(0, 56, 65, 0.35);
+        border-color: rgba(#70D44B, 0.30);
     }
 
     i {
-        font-size: 1.5rem;
-        color: $bader-green;
-        margin-bottom: 0.5rem;
-        display: block;
-        transition: transform $transition-base;
+        font-size: 1.35rem;
+        color: #70D44B;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        border-radius: $radius-lg;
+        background: rgba(#70D44B, 0.15);
+        margin-left: auto;
+        margin-right: auto;
+        transition: transform 0.35s ease, background 0.35s ease;
     }
 
     &:hover i {
-        transform: scale(1.15);
+        transform: scale(1.12) rotate(-3deg);
+        background: rgba(#70D44B, 0.25);
     }
 
     &-value {
@@ -53,6 +80,8 @@
         font-weight: 800;
         color: $white;
         line-height: 1;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.15rem;
 
         @media (max-width: $bp-mobile) {
             font-size: 1.5rem;
@@ -60,9 +89,12 @@
     }
 
     &-label {
-        font-size: 0.8rem;
-        color: rgba(white, 0.60);
+        font-size: 0.78rem;
+        font-weight: 500;
+        color: rgba(white, 0.65);
         margin-top: 0.25rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
     }
 }
 
@@ -70,7 +102,7 @@
 .bader-about__values-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    gap: 1.25rem;
 
     @media (max-width: $bp-mobile) {
         grid-template-columns: 1fr;
@@ -78,33 +110,63 @@
 }
 
 .bader-about__value-card {
-    background: $white;
-    border: 1px solid $bader-card-border;
+    background: $bader-dark;
+    border: 1px solid rgba(white, 0.08);
     border-radius: $radius-xl;
-    padding: 1.25rem;
+    padding: 1.75rem 1.5rem;
+    position: relative;
+    overflow: hidden;
     transition:
-        box-shadow $transition-base,
-        transform $transition-base,
-        border-color $transition-base;
+        box-shadow 0.35s ease,
+        transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        border-color 0.35s ease;
+
+    // Top accent gradient
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #70D44B, rgba(#70D44B, 0.20));
+    }
 
     &:hover {
-        box-shadow: $shadow-md;
-        transform: translateY(-3px);
-        border-color: rgba($bader-green, 0.25);
+        box-shadow: 0 15px 40px rgba(0, 56, 65, 0.35);
+        transform: translateY(-5px);
+        border-color: rgba(#70D44B, 0.30);
+    }
+
+    .bader-page-card__icon {
+        background: rgba(#70D44B, 0.15);
+        transition: transform 0.35s ease, background 0.35s ease;
+
+        i {
+            color: #70D44B;
+        }
     }
 
     &:hover .bader-page-card__icon {
         transform: scale(1.10);
-        background: linear-gradient(135deg, rgba($bader-green, 0.25), rgba($bader-green, 0.08));
+        background: rgba(#70D44B, 0.25);
+    }
+
+    .bader-page-card__title {
+        color: $white;
+    }
+
+    .bader-page-card__text {
+        color: rgba(white, 0.70);
     }
 }
 
 // --- Timeline ---
 .bader-about__timeline {
     position: relative;
-    max-width: 48rem;
+    max-width: 52rem;
     margin: 0 auto;
-    padding: 2rem 0;
+    padding: 2.5rem 0;
 }
 
 .bader-about__timeline-line {
@@ -113,12 +175,16 @@
     top: 0;
     bottom: 0;
     width: 3px;
-    background: linear-gradient(180deg, $bader-green, rgba($bader-green, 0.20));
+    background: linear-gradient(180deg,
+            rgba(#70D44B, 0.10) 0%,
+            #70D44B 20%,
+            #70D44B 80%,
+            rgba(#70D44B, 0.10) 100%);
     transform: translateX(-50%);
     border-radius: 2px;
 
     @media (max-width: $bp-tablet) {
-        left: 1.25rem;
+        left: 1.5rem;
     }
 }
 
@@ -133,7 +199,7 @@
         text-align: right;
 
         .bader-about__timeline-content {
-            padding-right: 2rem;
+            padding-right: 2.5rem;
         }
     }
 
@@ -141,7 +207,7 @@
         text-align: left;
 
         .bader-about__timeline-content {
-            padding-left: 2rem;
+            padding-left: 2.5rem;
         }
     }
 
@@ -156,28 +222,35 @@
     }
 
     &:hover .bader-about__timeline-dot {
-        box-shadow: 0 0 0 6px rgba($bader-green, 0.25), 0 0 20px rgba($bader-green, 0.20);
-        transform: scale(1.10);
+        box-shadow: 0 0 0 8px rgba(#70D44B, 0.20), 0 0 30px rgba(#70D44B, 0.25);
+        transform: scale(1.15);
     }
 
-    &:hover .bader-about__timeline-content h3 {
-        color: $bader-green;
+    &:hover .bader-about__timeline-card {
+        border-color: rgba(#70D44B, 0.35);
+        box-shadow: 0 15px 40px rgba(0, 56, 65, 0.35);
+        transform: translateY(-3px);
+
+        h3 {
+            color: #70D44B;
+        }
     }
 }
 
 .bader-about__timeline-dot {
     flex-shrink: 0;
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 2.75rem;
+    height: 2.75rem;
     border-radius: 50%;
-    background: $bader-green;
+    background: linear-gradient(135deg, #70D44B, #5AB836);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 0 4px rgba($bader-green, 0.20);
+    box-shadow: 0 0 0 5px rgba(#70D44B, 0.15), 0 4px 15px rgba(#70D44B, 0.25);
     transition:
-        box-shadow $transition-base,
-        transform $transition-base;
+        box-shadow 0.4s ease,
+        transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 2;
 
     i {
         color: $white;
@@ -187,39 +260,53 @@
 
 .bader-about__timeline-content {
     flex: 1;
+}
+
+// Timeline card — dark teal bg
+.bader-about__timeline-card {
+    background: $bader-dark;
+    border: 1px solid rgba(white, 0.08);
+    border-radius: $radius-xl;
+    padding: 1.5rem;
+    transition:
+        border-color 0.35s ease,
+        box-shadow 0.35s ease,
+        transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
     h3 {
         font-family: $font-display;
-        font-size: 1.25rem;
+        font-size: 1.15rem;
         font-weight: 700;
-        color: $bader-dark;
-        margin-bottom: 0.5rem;
-        transition: color $transition-base;
+        color: $white;
+        margin-bottom: 0.4rem;
+        transition: color 0.35s ease;
     }
 
     p {
         font-size: 0.9rem;
-        color: $gray-500;
-        line-height: 1.6;
+        color: rgba(white, 0.70);
+        line-height: 1.65;
+        margin-bottom: 0;
     }
 }
 
 .bader-about__timeline-year {
     display: inline-block;
-    background: $bader-green-bg;
-    color: $bader-green;
-    padding: 0.2rem 0.6rem;
+    background: rgba(#70D44B, 0.18);
+    color: #70D44B;
+    padding: 0.25rem 0.75rem;
     border-radius: $radius-pill;
     font-size: 0.75rem;
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.65rem;
+    letter-spacing: 0.02em;
 }
 
 // --- Benefits Bar ---
 .bader-about__benefits-bar {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
+    gap: 1.25rem;
 
     @media (max-width: $bp-tablet) {
         grid-template-columns: repeat(2, 1fr);
@@ -234,13 +321,20 @@
 .bader-about__benefit-item {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    color: rgba(white, 0.85);
+    gap: 0.85rem;
+    color: $white;
     font-size: 0.9rem;
-    transition: transform $transition-base;
+    font-weight: 500;
+    padding: 1.15rem 1rem;
+    border-radius: $radius-lg;
+    background: $bader-dark;
+    border: 1px solid rgba(white, 0.08);
+    transition: all 0.35s ease;
 
     &:hover {
-        transform: translateX(4px);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(0, 56, 65, 0.35);
+        border-color: rgba(#70D44B, 0.30);
     }
 }
 
@@ -249,23 +343,23 @@
     width: 2.5rem;
     height: 2.5rem;
     border-radius: $radius-lg;
-    background: rgba($bader-green, 0.20);
+    background: rgba(#70D44B, 0.18);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform $transition-base;
+    transition: transform 0.35s ease;
 
     .bader-about__benefit-item:hover & {
-        transform: scale(1.10);
+        transform: scale(1.12);
     }
 
     i {
-        color: $bader-green;
+        color: #70D44B;
         font-size: 1rem;
     }
 }
 
-// --- Stat Row ---
+// --- Stat Row (Distributor section) ---
 .bader-about__stat-row {
     display: flex;
     align-items: center;
@@ -284,34 +378,39 @@
 
 .bader-about__stat-big {
     font-family: $font-display;
-    font-size: 2rem;
+    font-size: 2.25rem;
     font-weight: 800;
     color: $bader-dark;
     line-height: 1;
+    letter-spacing: -0.02em;
 }
 
 .bader-about__stat-desc {
     font-size: 0.8rem;
+    font-weight: 500;
     color: $gray-500;
     margin-top: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .bader-about__stat-divider {
     width: 1px;
     height: 2.5rem;
-    background: $gray-200;
+    background: linear-gradient(180deg, transparent, $gray-200, transparent);
 }
 
 // --- Distributor Card ---
 .bader-about__distributor-card {
     background: $bader-dark;
     border-radius: $radius-2xl;
-    padding: 2rem;
+    padding: 2.25rem;
     color: $white;
-    box-shadow: $shadow-xl;
+    box-shadow: 0 20px 60px rgba(0, 56, 65, 0.30);
     position: relative;
     overflow: hidden;
 
+    // Top gradient accent
     &::before {
         content: '';
         position: absolute;
@@ -319,7 +418,20 @@
         left: 0;
         right: 0;
         height: 3px;
-        background: linear-gradient(90deg, $bader-green, #34D399, $bader-green);
+        background: linear-gradient(90deg, #70D44B, #34D399, #70D44B);
+    }
+
+    // Decorative glow
+    &::after {
+        content: '';
+        position: absolute;
+        top: -40px;
+        right: -40px;
+        width: 120px;
+        height: 120px;
+        background: radial-gradient(circle, rgba(#70D44B, 0.12), transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
     }
 
     h3 {
@@ -328,20 +440,29 @@
         font-weight: 700;
         color: $white;
         margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 1;
     }
 
     .bader-checklist li {
         color: rgba(white, 0.85);
-        padding: 0.65rem 0;
+        padding: 0.75rem 0;
         border-bottom: 1px solid rgba(white, 0.08);
-        transition: padding-left $transition-base;
+        transition: padding-left 0.3s ease, color 0.3s ease;
+        position: relative;
+        z-index: 1;
 
         &:hover {
             padding-left: 0.5rem;
+            color: $white;
         }
 
         &:last-child {
             border-bottom: none;
+        }
+
+        i {
+            color: #70D44B;
         }
     }
 }

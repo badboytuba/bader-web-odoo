@@ -123,12 +123,12 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
 .bader-page-hero {
     position: relative;
     background: $bader-dark;
-    padding: 6rem 0 5rem;
+    padding: 3.5rem 0 3rem;
     overflow: hidden;
     color: $white;
 
     @include mobile {
-        padding: 4rem 0 3rem;
+        padding: 2.5rem 0 2rem;
     }
 
     // Decorative blur circles
@@ -206,7 +206,7 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
 
     &__subtitle {
         font-size: 1.15rem;
-        color: rgba($white, 0.80);
+        color: rgba($white, 0.75);
         max-width: 48rem;
         margin: 0 auto 2rem;
         line-height: 1.7;
@@ -219,10 +219,10 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
 
 // --- Page Section (generic light bg section) ---
 .bader-page-section {
-    padding: 5rem 0;
+    padding: 3rem 0;
 
     @include mobile {
-        padding: 3rem 0;
+        padding: 2rem 0;
     }
 
     &--muted {
@@ -234,8 +234,8 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
     }
 
     &--accent {
-        background: $bader-dark;
-        color: $white;
+        background: $gray-100;
+        color: $bader-dark;
     }
 
     &--green {

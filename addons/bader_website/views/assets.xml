@@ -1,39 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Register SCSS + JS assets via template inherit (reliable in all Odoo 16 builds) -->
+    <!--
+        NOTE: All SCSS + JS assets are registered via __manifest__.py.
+        This template kept empty intentionally to avoid double SCSS compilation.
+        The template ID must remain because it exists in the database from prior installs.
+    -->
     <template id="bader_website_assets_frontend" name="Bader Website Assets"
               inherit_id="web.assets_frontend" priority="30">
         <xpath expr="." position="inside">
-            <!-- 1. Design Tokens -->
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_variables.scss"/>
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_mixins.scss"/>
-            <!-- 2. Base styles -->
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_typography.scss"/>
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_buttons.scss"/>
-            <!-- 3. Layout -->
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_header.scss"/>
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_footer.scss"/>
-            <!-- 4. Homepage Sections -->
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_hero.scss"/>
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_stats.scss"/>
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_testimonials.scss"/>
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_cta.scss"/>
-            <!-- 5. New Pages -->
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_sobre_nosotros.scss"/>
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_servicios.scss"/>
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_ser_distribuidor.scss"/>
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_clinica_dental.scss"/>
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_laboratorio_dental.scss"/>
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_estudiantes.scss"/>
-            <!-- 6. Shop Pages -->
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_shop.scss"/>
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_product_detail.scss"/>
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_checkout.scss"/>
-            <!-- 7. Global overrides -->
-            <link rel="stylesheet" href="/bader_website/static/src/scss/main.scss"/>
-            <!-- 8. JavaScript -->
-            <script type="text/javascript" src="/bader_website/static/src/js/main.js"/>
+            <!-- Assets loaded via __manifest__.py — no duplicates here -->
         </xpath>
     </template>
 

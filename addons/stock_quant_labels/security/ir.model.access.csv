@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_stock_quant_label,stock.quant.lot.label.access,model_stock_quant_label,stock.group_stock_manager,1,1,0,1
-access_quant_print_label,quant.print.label.access,model_quant_print_label,stock.group_stock_manager,1,1,1,1

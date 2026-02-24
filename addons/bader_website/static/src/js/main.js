@@ -10,14 +10,17 @@ odoo.define('bader_website.main', function (require) {
      *  - Header scroll effect
      */
 
-    console.log('[Bader] Module loaded, initializing...');
+    // Module loaded
 
     // Direct execution — by the time a lazy-loaded module runs, the DOM is ready
     function initBader() {
-        console.log('[Bader] initBader() running');
+        // initBader running
 
         // Mark body as JS-ready
         document.body.classList.add('bader-js-ready');
+
+        // Section backgrounds are now handled purely via SCSS —
+        // see _testimonials.scss, _cta.scss, _sobre_nosotros.scss
 
         // ---- 1. MEGA MENU — Products hover toggle ----
         (function initMegaMenu() {
@@ -42,6 +45,7 @@ odoo.define('bader_website.main', function (require) {
             function setupMegaMenu(productLink) {
                 var parentLi = productLink.closest('li');
                 var hideTimeout = null;
+                var isMobile = function () { return window.innerWidth <= 768; };
 
                 function showMega() {
                     clearTimeout(hideTimeout);
@@ -56,24 +60,58 @@ odoo.define('bader_website.main', function (require) {
                     }, 200);
                 }
 
-                // Hover on the nav link
-                productLink.addEventListener('mouseenter', showMega);
-                if (parentLi) {
-                    parentLi.addEventListener('mouseenter', showMega);
-                    parentLi.addEventListener('mouseleave', hideMega);
+                function toggleMega() {
+                    if (megaPanel.classList.contains('bader-mega--open')) {
+                        megaPanel.classList.remove('bader-mega--open');
+                        if (parentLi) parentLi.classList.remove('bader-mega-active');
+                    } else {
+                        showMega();
+                    }
                 }
 
-                // Hover on the mega panel itself
-                megaPanel.addEventListener('mouseenter', function () {
-                    clearTimeout(hideTimeout);
+                // Desktop: hover on the nav link
+                productLink.addEventListener('mouseenter', function () {
+                    if (!isMobile()) showMega();
                 });
-                megaPanel.addEventListener('mouseleave', hideMega);
+                if (parentLi) {
+                    parentLi.addEventListener('mouseenter', function () {
+                        if (!isMobile()) showMega();
+                    });
+                    parentLi.addEventListener('mouseleave', function () {
+                        if (!isMobile()) hideMega();
+                    });
+                }
 
-                // Click navigates to shop
+                // Hover on the mega panel itself (desktop)
+                megaPanel.addEventListener('mouseenter', function () {
+                    if (!isMobile()) clearTimeout(hideTimeout);
+                });
+                megaPanel.addEventListener('mouseleave', function () {
+                    if (!isMobile()) hideMega();
+                });
+
+                // Mobile + Desktop click: toggle or navigate
                 productLink.addEventListener('click', function (e) {
-                    if (megaPanel.classList.contains('bader-mega--open')) {
+                    if (isMobile()) {
+                        // On mobile: first click toggles mega, second navigates
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleMega();
+                    } else if (megaPanel.classList.contains('bader-mega--open')) {
+                        // Desktop: if mega is open, clicking navigates to shop
                         window.location.href = '/shop';
                         e.preventDefault();
+                    }
+                });
+
+                // Close mega menu on tap outside (mobile)
+                document.addEventListener('click', function (e) {
+                    if (isMobile() &&
+                        megaPanel.classList.contains('bader-mega--open') &&
+                        !megaPanel.contains(e.target) &&
+                        !productLink.contains(e.target)) {
+                        megaPanel.classList.remove('bader-mega--open');
+                        if (parentLi) parentLi.classList.remove('bader-mega-active');
                     }
                 });
 
@@ -322,14 +360,24 @@ odoo.define('bader_website.main', function (require) {
             mainImage.addEventListener('click', function () {
                 var src = this.src;
 
-                // Create lightbox
+                // Create lightbox safely (no innerHTML with user data)
                 var lightbox = document.createElement('div');
                 lightbox.className = 'bader-lightbox';
-                lightbox.innerHTML =
-                    '<div class="bader-lightbox__content">' +
-                    '<button class="bader-lightbox__close">&times;</button>' +
-                    '<img src="' + src + '" alt="Zoom"/>' +
-                    '</div>';
+
+                var content = document.createElement('div');
+                content.className = 'bader-lightbox__content';
+
+                var closeBtn = document.createElement('button');
+                closeBtn.className = 'bader-lightbox__close';
+                closeBtn.textContent = '\u00D7';
+
+                var img = document.createElement('img');
+                img.src = src;
+                img.alt = 'Zoom del producto';
+
+                content.appendChild(closeBtn);
+                content.appendChild(img);
+                lightbox.appendChild(content);
 
                 document.body.appendChild(lightbox);
                 document.body.style.overflow = 'hidden';
@@ -810,13 +858,13 @@ odoo.define('bader_website.main', function (require) {
                         '<div class="bader-price-range__inputs">' +
                         '<div class="bader-price-range__input-group">' +
                         '<label>Mínimo</label>' +
-                        '<span class="bader-currency-symbol">€</span>' +
+                        '<span class="bader-currency-symbol">$</span>' +
                         '<input type="number" id="bader_price_min" placeholder="0" min="0">' +
                         '</div>' +
                         '<span class="bader-price-range__separator">—</span>' +
                         '<div class="bader-price-range__input-group">' +
                         '<label>Máximo</label>' +
-                        '<span class="bader-currency-symbol">€</span>' +
+                        '<span class="bader-currency-symbol">$</span>' +
                         '<input type="number" id="bader_price_max" placeholder="5000" min="0">' +
                         '</div>' +
                         '</div>' +

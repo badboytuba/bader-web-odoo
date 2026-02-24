@@ -11,7 +11,8 @@
                 <meta property="og:description" content="Líder en equipamiento odontológico. Sillones, autoclaves, rayos X, compresores e instrumental para clínicas, laboratorios y estudiantes."/>
                 <meta property="og:image" content="/bader_website/static/src/img/bader_logotipo.png"/>
                 <meta property="og:type" content="website"/>
-                <meta property="og:url" content="https://qas.bader4business.com/"/>
+                <meta property="og:url" t-att-content="request.httprequest.url"/>
+                <link rel="canonical" t-att-href="request.httprequest.url"/>
                 <meta name="twitter:card" content="summary_large_image"/>
                 <meta name="twitter:title" content="Bader Argentina — Equipamiento Odontológico"/>
                 <meta name="twitter:description" content="Líder en equipamiento odontológico. +2.800 productos en stock. Envíos a todo el país."/>
@@ -464,6 +465,10 @@
                         <div class="bader-cta__form-card">
                             <form action="/bader/cta-form" method="POST">
                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <!-- Honeypot anti-spam: invisible to humans, bots fill it -->
+                                <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
+                                    <input type="text" name="website_url" tabindex="-1" autocomplete="off"/>
+                                </div>
                                 <div class="bader-cta__form-group">
                                     <label>Nombre completo</label>
                                     <div class="input-wrapper">

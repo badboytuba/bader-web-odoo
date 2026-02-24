@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<odoo>
-    <record id="stock.action_report_picking" model="ir.actions.report">
-        <field name="paperformat_id" ref="bader_custom.bader_picking_a4" />
-    </record>
-    <record id="stock.action_report_delivery" model="ir.actions.report">
-        <field name="paperformat_id" ref="bader_custom.bader_picking_a4" />
-    </record>
-</odoo>

@@ -3,19 +3,19 @@
 // Premium product cards + advanced filtering
 // ============================================
 
-// ─── Hero Section ─────────────────────────
-.bader-hero {
+// ─── Hero Section (Shop page — scoped to avoid overriding homepage hero) ─────
+.oe_website_sale .bader-hero {
     background: linear-gradient(135deg, $bader-dark, $bader-dark-alt);
     padding: 48px 0 56px;
     margin-top: -1px;
 
-    &__container {
+    .bader-hero__container {
         max-width: $container-max;
         margin: 0 auto;
         padding: 0 $container-padding;
     }
 
-    &__breadcrumb {
+    .bader-hero__breadcrumb {
         display: flex;
         align-items: center;
         gap: 8px;
@@ -34,11 +34,11 @@
         }
     }
 
-    &__chevron {
+    .bader-hero__chevron {
         font-size: 12px;
     }
 
-    &__title {
+    .bader-hero__title {
         font-family: $font-display;
         font-size: 36px;
         font-weight: 700;
@@ -51,7 +51,7 @@
         }
     }
 
-    &__subtitle {
+    .bader-hero__subtitle {
         color: rgba(255, 255, 255, 0.8);
         font-size: 16px;
         max-width: 640px;
@@ -59,7 +59,7 @@
         line-height: 1.5;
     }
 
-    &__segments {
+    .bader-hero__segments {
         display: grid;
         grid-template-columns: 1fr;
         gap: 16px;
@@ -1207,14 +1207,14 @@
 // ════════════════════════════════════════════
 
 @media (max-width: $bp-tablet) {
-    .bader-hero {
+    .oe_website_sale .bader-hero {
         padding: 32px 0 40px;
 
-        &__title {
+        .bader-hero__title {
             font-size: 28px;
         }
 
-        &__segments {
+        .bader-hero__segments {
             grid-template-columns: 1fr;
         }
     }

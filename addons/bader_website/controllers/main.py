@@ -1,16 +1,134 @@
 # -*- coding: utf-8 -*-
 import logging
+from datetime import datetime
 from odoo import http
 from odoo.http import request
 from odoo.addons.website.controllers.main import Website
 
 _logger = logging.getLogger(__name__)
 
+# ─── Base URL helper ──────────────────────────────────────────
+PRODUCTION_DOMAIN = 'https://www.bader4business.com'
+
+
+def _base_url():
+    """Return the production base URL (no trailing slash)."""
+    return PRODUCTION_DOMAIN
+
+
+def _is_spam(kw):
+    """Check honeypot field — bots fill hidden 'website_url' field, humans don't."""
+    return bool(kw.get('website_url', '').strip())
+
 
 class BaderWebsite(Website):
     """Override homepage to render Bader custom template.
     Also handles CTA form, page routes, and thank-you pages.
     """
+
+    # ─── robots.txt ────────────────────────────────────────────
+    @http.route('/robots.txt', type='http', auth='public', sitemap=False, csrf=False)
+    def robots_txt(self, **kw):
+        """Serve dynamic robots.txt."""
+        base = _base_url()
+        body = (
+            'User-agent: *\n'
+            'Allow: /\n'
+            'Disallow: /web/\n'
+            'Disallow: /web#\n'
+            'Disallow: /my/\n'
+            'Disallow: /website/\n'
+            'Disallow: /bader/cta-form\n'
+            'Disallow: /bader/distribuidor-form\n'
+            'Disallow: /bader/servicio-form\n'
+            'Disallow: /contacto/gracias\n'
+            'Disallow: /ser-distribuidor/gracias\n'
+            'Disallow: /servicios/gracias\n'
+            '\n'
+            f'Sitemap: {base}/sitemap.xml\n'
+        )
+        return request.make_response(
+            body, [('Content-Type', 'text/plain; charset=utf-8')]
+        )
+
+    # ─── sitemap.xml ───────────────────────────────────────────
+    @http.route('/sitemap.xml', type='http', auth='public', sitemap=False, csrf=False)
+    def sitemap_xml(self, **kw):
+        """Serve dynamic sitemap with static pages, categories, and products."""
+        base = _base_url()
+        today = datetime.now().strftime('%Y-%m-%d')
+
+        # Static pages with priorities
+        static_pages = [
+            ('/', '1.0', 'daily'),
+            ('/shop', '0.9', 'daily'),
+            ('/clinica-dental', '0.8', 'weekly'),
+            ('/laboratorio-dental', '0.8', 'weekly'),
+            ('/estudiantes-odontologia', '0.8', 'weekly'),
+            ('/sobre-nosotros', '0.7', 'monthly'),
+            ('/ser-distribuidor', '0.7', 'monthly'),
+            ('/servicios', '0.7', 'monthly'),
+        ]
+
+        urls = []
+        for path, priority, freq in static_pages:
+            urls.append(
+                f'  <url>\n'
+                f'    <loc>{base}{path}</loc>\n'
+                f'    <lastmod>{today}</lastmod>\n'
+                f'    <changefreq>{freq}</changefreq>\n'
+                f'    <priority>{priority}</priority>\n'
+                f'  </url>'
+            )
+
+        # Dynamic: product public categories
+        try:
+            categories = request.env['product.public.category'].sudo().search(
+                [('website_published', '=', True)], order='id'
+            )
+            for cat in categories:
+                slug_val = '%s-%d' % (
+                    cat.name.lower().replace(' ', '-'), cat.id
+                )
+                urls.append(
+                    f'  <url>\n'
+                    f'    <loc>{base}/shop/category/{slug_val}</loc>\n'
+                    f'    <changefreq>weekly</changefreq>\n'
+                    f'    <priority>0.6</priority>\n'
+                    f'  </url>'
+                )
+        except Exception:
+            pass  # categories might not have website_published field
+
+        # Dynamic: published products
+        try:
+            products = request.env['product.template'].sudo().search(
+                [('website_published', '=', True)], order='id', limit=5000
+            )
+            for prod in products:
+                slug_val = '%s-%d' % (
+                    (prod.name or 'product').lower().replace(' ', '-')[:50],
+                    prod.id
+                )
+                urls.append(
+                    f'  <url>\n'
+                    f'    <loc>{base}/shop/{slug_val}</loc>\n'
+                    f'    <changefreq>weekly</changefreq>\n'
+                    f'    <priority>0.5</priority>\n'
+                    f'  </url>'
+                )
+        except Exception:
+            pass
+
+        xml_body = (
+            '<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+            + '\n'.join(urls) + '\n'
+            '</urlset>\n'
+        )
+        return request.make_response(
+            xml_body, [('Content-Type', 'application/xml; charset=utf-8')]
+        )
 
     # ─── Homepage ──────────────────────────────────────────────
     @http.route('/', type='http', auth='public', website=True, sitemap=True)
@@ -83,6 +201,9 @@ class BaderWebsite(Website):
                 website=True, methods=['POST'], csrf=True)
     def cta_form_submit(self, **kw):
         """Handle the CTA discount form submission -> create CRM lead."""
+        if _is_spam(kw):
+            _logger.warning("CTA form: honeypot triggered, rejecting spam")
+            return request.redirect('/contacto/gracias')
         try:
             values = {
                 'name': '[Web CTA] %s' % kw.get('name', 'Sin nombre'),
@@ -117,6 +238,9 @@ class BaderWebsite(Website):
                 website=True, methods=['POST'], csrf=True)
     def distribuidor_form_submit(self, **kw):
         """Handle distributor form submission -> create CRM lead."""
+        if _is_spam(kw):
+            _logger.warning("Distributor form: honeypot triggered, rejecting spam")
+            return request.redirect('/ser-distribuidor/gracias')
         try:
             values = {
                 'name': '[Web Distribuidor] %s' % kw.get('name', 'Sin nombre'),
@@ -161,6 +285,9 @@ class BaderWebsite(Website):
                 website=True, methods=['POST'], csrf=True)
     def servicio_form_submit(self, **kw):
         """Handle service request form submission -> create CRM lead."""
+        if _is_spam(kw):
+            _logger.warning("Service form: honeypot triggered, rejecting spam")
+            return request.redirect('/servicios/gracias')
         try:
             service_labels = {
                 'instalacion': 'Instalación',

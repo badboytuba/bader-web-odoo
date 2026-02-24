@@ -1,9 +1,0 @@
-<odoo>
-    <record id="lots_xlsx" model="ir.actions.report">
-        <field name="name">Export lots to XLSX</field>
-        <field name="model">product.product</field>
-        <field name="report_type">xlsx</field>
-        <field name="report_name">product_export.lots_xlsx</field>
-        <field name="report_file">lots</field>
-    </record>
-</odoo>

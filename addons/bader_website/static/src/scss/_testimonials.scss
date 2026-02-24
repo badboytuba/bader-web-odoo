@@ -1,9 +1,10 @@
 // ============================================
-// Bader Homepage — Testimonials Carousel (light)
+// Bader Homepage — Testimonials Carousel (dark accent)
 // ============================================
 
 .bader-testimonials {
-    background: $white;
+    background: $bader-dark !important;
+    color: $white !important;
     padding: $space-4xl 0;
 
     &__container {
@@ -54,7 +55,7 @@
     }
 
     &__text {
-        color: $gray-600;
+        color: rgba($white, 0.75);
         font-size: 1.05rem;
         line-height: 1.8;
         font-style: italic;
@@ -80,13 +81,13 @@
     }
 
     &__author-name {
-        color: $bader-dark;
+        color: $white;
         font-weight: 700;
         font-size: 0.95rem;
     }
 
     &__author-role {
-        color: $gray-400;
+        color: rgba($white, 0.7);
         font-size: 0.82rem;
     }
 
