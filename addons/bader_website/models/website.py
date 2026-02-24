@@ -9,7 +9,11 @@ class Website(models.Model):
     def bader_sync_frontend_menus(self):
         """Keep a single Bader-AR style top menu per website."""
         menu_model = self.env["website.menu"].sudo()
-        websites = self.sudo().search([])
+        website_model = self.sudo()
+        websites = website_model.search([])
+        lang_model = self.env["res.lang"].sudo()
+        all_lang_codes = set(lang_model.search([]).mapped("code"))
+        es_lang = lang_model.search([("code", "=", "es_ES")], limit=1)
 
         canonical_items = [
             {"name": "Inicio", "url": "/", "sequence": 10, "aliases": ["/home"]},
@@ -48,6 +52,17 @@ class Website(models.Model):
             if "bader" not in marker.lower():
                 continue
 
+            website_updates = {}
+            if es_lang:
+                if es_lang not in website.language_ids:
+                    website_updates["language_ids"] = [(4, es_lang.id)]
+                if website.default_lang_id != es_lang:
+                    website_updates["default_lang_id"] = es_lang.id
+            if website.auto_redirect_lang:
+                website_updates["auto_redirect_lang"] = False
+            if website_updates:
+                website.write(website_updates)
+
             root_menu = menu_model.search([
                 ("website_id", "=", website.id),
                 ("parent_id", "=", False),
@@ -85,8 +100,12 @@ class Website(models.Model):
                     "sequence": item["sequence"],
                     "new_window": False,
                 })
-                menu.with_context(lang="es_ES").write({"name": item["name"]})
-                menu.with_context(lang="en_US").write({"name": item["name"]})
+
+                translation_langs = set(website.language_ids.mapped("code"))
+                translation_langs |= {"es_ES", "en_US", "pt_PT", "pt_BR", "es_AR"}
+                translation_langs &= all_lang_codes
+                for lang_code in sorted(translation_langs):
+                    menu.with_context(lang=lang_code).write({"name": item["name"]})
 
                 kept |= menu
                 duplicates = matches - menu
