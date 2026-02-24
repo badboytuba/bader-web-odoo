@@ -2,8 +2,7 @@
 <odoo>
 
     <!-- ==============================================
-         Bader Header — Dark theme + Custom Right Side
-         Reference: BADER. | Nav | 🔍 Buscar con IA | 🛒 | 👤▾
+         Bader Header - Dark theme + Custom Right Side
          ============================================== -->
     <template id="bader_header_class" inherit_id="website.layout"
               name="Bader Header Styling" customize_show="True" priority="50">
@@ -16,7 +15,6 @@
         <!-- Inject search pill AFTER the navbar collapse menu (right side) -->
         <xpath expr="//div[@id='top_menu_collapse']" position="after">
             <div class="bader-header-right d-none d-lg-flex align-items-center">
-                <!-- AI Search Pill Button -->
                 <a href="#" class="bader-search-pill" id="baderSearchPill">
                     <i class="fa fa-search"/>
                     <span>Buscar con IA</span>
@@ -37,29 +35,25 @@
                     </div>
 
                     <div class="bader-mega__grid">
-                        <!-- Column 1: Clínica Dental -->
+                        <!-- Column 1: Clinica Dental -->
                         <div class="bader-mega__col">
                             <div class="bader-mega__col-header">
                                 <div class="bader-mega__icon bader-mega__icon--clinica">
                                     <i class="fa fa-medkit"/>
                                 </div>
                                 <div>
-                                    <div class="bader-mega__col-title">Clínica Dental</div>
+                                    <div class="bader-mega__col-title">Clinica Dental</div>
                                     <div class="bader-mega__col-desc">Equipamiento profesional</div>
                                 </div>
                             </div>
                             <ul class="bader-mega__list">
-                                <t t-set="clinica_parent" t-value="request.env['product.public.category'].sudo().search([('name','ilike','Clínica')], limit=1)"/>
-                                <t t-foreach="request.env['product.public.category'].sudo().search([('parent_id','=',clinica_parent.id)], order='sequence, id', limit=5) if clinica_parent else []" t-as="cat">
-                                    <li>
-                                        <a t-attf-href="/shop/category/#{slug(cat)}">
-                                            <i class="fa fa-chevron-right"/>
-                                            <t t-esc="cat.name"/>
-                                        </a>
-                                    </li>
-                                </t>
+                                <li><a href="/productos?niche=clinica-dental&amp;category=sillones"><i class="fa fa-chevron-right"/> Sillones Dentales</a></li>
+                                <li><a href="/productos?niche=clinica-dental&amp;category=cbct"><i class="fa fa-chevron-right"/> CBCT / Radiografia</a></li>
+                                <li><a href="/productos?niche=clinica-dental&amp;category=autoclaves"><i class="fa fa-chevron-right"/> Autoclaves</a></li>
+                                <li><a href="/productos?niche=clinica-dental&amp;category=compresores"><i class="fa fa-chevron-right"/> Compresores</a></li>
+                                <li><a href="/productos?niche=clinica-dental&amp;category=rotatorios"><i class="fa fa-chevron-right"/> Rotatorios</a></li>
                             </ul>
-                            <a t-attf-href="/shop/category/#{slug(clinica_parent)}" class="bader-mega__more">
+                            <a href="/clinica-dental" class="bader-mega__more">
                                 Ver todo <i class="fa fa-plus"/>
                             </a>
                         </div>
@@ -72,21 +66,17 @@
                                 </div>
                                 <div>
                                     <div class="bader-mega__col-title">Laboratorio Dental</div>
-                                    <div class="bader-mega__col-desc">Equipos de precisión</div>
+                                    <div class="bader-mega__col-desc">Equipos de precision</div>
                                 </div>
                             </div>
                             <ul class="bader-mega__list">
-                                <t t-set="lab_parent" t-value="request.env['product.public.category'].sudo().search([('name','ilike','Laboratorio')], limit=1)"/>
-                                <t t-foreach="request.env['product.public.category'].sudo().search([('parent_id','=',lab_parent.id)], order='sequence, id', limit=5) if lab_parent else []" t-as="cat">
-                                    <li>
-                                        <a t-attf-href="/shop/category/#{slug(cat)}">
-                                            <i class="fa fa-chevron-right"/>
-                                            <t t-esc="cat.name"/>
-                                        </a>
-                                    </li>
-                                </t>
+                                <li><a href="/productos?niche=laboratorio-dental&amp;category=mesas"><i class="fa fa-chevron-right"/> Mesas de Trabajo</a></li>
+                                <li><a href="/productos?niche=laboratorio-dental&amp;category=repasado"><i class="fa fa-chevron-right"/> Cabinas de Repasado</a></li>
+                                <li><a href="/productos?niche=laboratorio-dental&amp;category=arenadoras"><i class="fa fa-chevron-right"/> Arenadoras</a></li>
+                                <li><a href="/productos?niche=laboratorio-dental&amp;category=articuladores"><i class="fa fa-chevron-right"/> Articuladores</a></li>
+                                <li><a href="/productos?niche=laboratorio-dental&amp;category=termoformadoras"><i class="fa fa-chevron-right"/> Termoformadoras</a></li>
                             </ul>
-                            <a t-attf-href="/shop/category/#{slug(lab_parent)}" class="bader-mega__more">
+                            <a href="/laboratorio-dental" class="bader-mega__more">
                                 Ver todo <i class="fa fa-plus"/>
                             </a>
                         </div>
@@ -103,17 +93,13 @@
                                 </div>
                             </div>
                             <ul class="bader-mega__list">
-                                <t t-set="student_parent" t-value="request.env['product.public.category'].sudo().search([('name','ilike','Estudiante')], limit=1)"/>
-                                <t t-foreach="request.env['product.public.category'].sudo().search([('parent_id','=',student_parent.id)], order='sequence, id', limit=5) if student_parent else []" t-as="cat">
-                                    <li>
-                                        <a t-attf-href="/shop/category/#{slug(cat)}">
-                                            <i class="fa fa-chevron-right"/>
-                                            <t t-esc="cat.name"/>
-                                        </a>
-                                    </li>
-                                </t>
+                                <li><a href="/productos?niche=estudiantes&amp;category=kits"><i class="fa fa-chevron-right"/> Kits de Rotatorios</a></li>
+                                <li><a href="/productos?niche=estudiantes&amp;category=simuladores"><i class="fa fa-chevron-right"/> Simuladores</a></li>
+                                <li><a href="/productos?niche=estudiantes&amp;category=tipodontos"><i class="fa fa-chevron-right"/> Tipodontos</a></li>
+                                <li><a href="/productos?niche=estudiantes&amp;category=fantomas"><i class="fa fa-chevron-right"/> Fantomas</a></li>
+                                <li><a href="/productos?niche=estudiantes&amp;category=dientes"><i class="fa fa-chevron-right"/> Dientes de Reposicion</a></li>
                             </ul>
-                            <a t-attf-href="/shop/category/#{slug(student_parent)}" class="bader-mega__more">
+                            <a href="/estudiantes-odontologia" class="bader-mega__more">
                                 Ver todo <i class="fa fa-plus"/>
                             </a>
                         </div>

@@ -435,6 +435,123 @@
                     </div>
                 </section>
 
+                <!-- Quiz Section -->
+                <section id="quiz" class="bader-quiz bader-animate">
+                    <div class="bader-quiz__container">
+                        <div class="bader-quiz__heading">
+                            <span class="bader-label"><i class="fa fa-bullseye"/> Quiz Rapido</span>
+                            <h2 class="bader-section__title bader-section__title--dark">
+                                Encuentra Tu Equipo Ideal en 30 Segundos
+                            </h2>
+                            <p class="bader-section__subtitle bader-section__subtitle--dark">
+                                Responde 3 preguntas simples y te recomendaremos los mejores
+                                productos para ti.
+                            </p>
+                        </div>
+
+                        <div class="bader-quiz__card" id="baderQuiz">
+                            <div class="bader-quiz__progress">
+                                <div class="bader-quiz__progress-top">
+                                    <span class="bader-quiz__counter">Pregunta 1 de 3</span>
+                                    <span class="bader-quiz__progress-text">33% completado</span>
+                                </div>
+                                <div class="bader-quiz__progress-bar">
+                                    <span class="bader-quiz__progress-fill" style="width:33%"/>
+                                </div>
+                            </div>
+
+                            <div class="bader-quiz__form">
+                                <div class="bader-quiz__step is-active" data-key="profession">
+                                    <h3>Cual es tu perfil profesional?</h3>
+                                    <button type="button" class="bader-quiz__option" data-value="dentist">
+                                        <span class="bader-quiz__icon"><i class="fa fa-stethoscope"/></span>
+                                        <span class="bader-quiz__text"><strong>Odontologo/a</strong><small>Profesional con consultorio propio o empleado</small></span>
+                                        <i class="fa fa-check-circle bader-quiz__check"/>
+                                    </button>
+                                    <button type="button" class="bader-quiz__option" data-value="clinic">
+                                        <span class="bader-quiz__icon"><i class="fa fa-hospital-o"/></span>
+                                        <span class="bader-quiz__text"><strong>Clinica Dental</strong><small>Propietario o gerente de clinica</small></span>
+                                        <i class="fa fa-check-circle bader-quiz__check"/>
+                                    </button>
+                                    <button type="button" class="bader-quiz__option" data-value="student">
+                                        <span class="bader-quiz__icon"><i class="fa fa-graduation-cap"/></span>
+                                        <span class="bader-quiz__text"><strong>Estudiante</strong><small>Cursando la carrera de odontologia</small></span>
+                                        <i class="fa fa-check-circle bader-quiz__check"/>
+                                    </button>
+                                    <button type="button" class="bader-quiz__option" data-value="other">
+                                        <span class="bader-quiz__icon"><i class="fa fa-star"/></span>
+                                        <span class="bader-quiz__text"><strong>Otro</strong><small>Laboratorio, distribuidor, etc.</small></span>
+                                        <i class="fa fa-check-circle bader-quiz__check"/>
+                                    </button>
+                                </div>
+
+                                <div class="bader-quiz__step" data-key="need">
+                                    <h3>Que tipo de equipamiento necesitas?</h3>
+                                    <button type="button" class="bader-quiz__option" data-value="major">
+                                        <span class="bader-quiz__text"><strong>Equipos Mayores</strong><small>Sillones, autoclaves, rayos X, compresores</small></span>
+                                        <i class="fa fa-check-circle bader-quiz__check"/>
+                                    </button>
+                                    <button type="button" class="bader-quiz__option" data-value="instruments">
+                                        <span class="bader-quiz__text"><strong>Instrumental</strong><small>Lamparas, ultrasonidos, rotatorios</small></span>
+                                        <i class="fa fa-check-circle bader-quiz__check"/>
+                                    </button>
+                                    <button type="button" class="bader-quiz__option" data-value="consumables">
+                                        <span class="bader-quiz__text"><strong>Materiales</strong><small>Resinas, cementos, materiales de impresion</small></span>
+                                        <i class="fa fa-check-circle bader-quiz__check"/>
+                                    </button>
+                                    <button type="button" class="bader-quiz__option" data-value="all">
+                                        <span class="bader-quiz__text"><strong>Equipamiento Completo</strong><small>Necesito montar un consultorio nuevo</small></span>
+                                        <i class="fa fa-check-circle bader-quiz__check"/>
+                                    </button>
+                                </div>
+
+                                <div class="bader-quiz__step" data-key="budget">
+                                    <h3>Cual es tu presupuesto aproximado?</h3>
+                                    <button type="button" class="bader-quiz__option" data-value="low">
+                                        <span class="bader-quiz__text"><strong>Hasta $500,000 ARS</strong><small>Instrumental y equipos basicos</small></span>
+                                        <i class="fa fa-check-circle bader-quiz__check"/>
+                                    </button>
+                                    <button type="button" class="bader-quiz__option" data-value="medium">
+                                        <span class="bader-quiz__text"><strong>$500,000 - $2,000,000 ARS</strong><small>Equipos de gama media</small></span>
+                                        <i class="fa fa-check-circle bader-quiz__check"/>
+                                    </button>
+                                    <button type="button" class="bader-quiz__option" data-value="high">
+                                        <span class="bader-quiz__text"><strong>$2,000,000 - $5,000,000 ARS</strong><small>Equipos premium</small></span>
+                                        <i class="fa fa-check-circle bader-quiz__check"/>
+                                    </button>
+                                    <button type="button" class="bader-quiz__option" data-value="premium">
+                                        <span class="bader-quiz__text"><strong>Mas de $5,000,000 ARS</strong><small>Consultorio completo de alta gama</small></span>
+                                        <i class="fa fa-check-circle bader-quiz__check"/>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="bader-quiz__result" hidden="hidden">
+                                <div class="bader-quiz__result-icon"><i class="fa fa-check-circle"/></div>
+                                <h3>Tenemos las recomendaciones perfectas para ti</h3>
+                                <p>Basado en tus respuestas, preparamos una seleccion personalizada de productos.</p>
+                                <div class="bader-quiz__offer">
+                                    <i class="fa fa-gift"/> Descuento exclusivo del 10% en tu primera compra
+                                </div>
+                                <div class="bader-quiz__actions">
+                                    <button type="button" class="btn-bader bader-quiz__complete">
+                                        Recibir Mi Recomendacion <i class="fa fa-arrow-right"/>
+                                    </button>
+                                    <button type="button" class="btn-bader-outline bader-quiz__reset">
+                                        Hacer Quiz Nuevamente
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="bader-quiz__footer">
+                                <button type="button" class="bader-quiz__back" style="display:none;">
+                                    <i class="fa fa-arrow-left"/> Anterior
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- CTA Section -->
                 <section id="contacto" class="bader-cta bader-animate">
                     <div class="bader-cta__container">
@@ -528,6 +645,40 @@
                         </div>
                     </div>
                 </section>
+
+                <!-- Chat Widget (landing only) -->
+                <div id="baderChatWidget" class="bader-chat">
+                    <div class="bader-chat__bubble" id="baderChatBubble">
+                        <button type="button" class="bader-chat__bubble-close" id="baderChatBubbleClose" aria-label="Cerrar">
+                            <i class="fa fa-times"/>
+                        </button>
+                        <p>Hola! Necesitas ayuda para elegir tu equipo ideal?</p>
+                    </div>
+                    <button type="button" class="bader-chat__toggle" id="baderChatToggle" aria-label="Abrir chat">
+                        <i class="fa fa-comments"/>
+                    </button>
+                    <div class="bader-chat__panel" id="baderChatPanel" hidden="hidden">
+                        <div class="bader-chat__header">
+                            <div class="bader-chat__header-title">
+                                <strong>Nancy AI</strong>
+                                <small>Asistente virtual de Bader</small>
+                            </div>
+                            <div class="bader-chat__header-actions">
+                                <button type="button" id="baderChatMinimize" aria-label="Minimizar"><i class="fa fa-minus"/></button>
+                                <button type="button" id="baderChatClose" aria-label="Cerrar"><i class="fa fa-times"/></button>
+                            </div>
+                        </div>
+                        <div class="bader-chat__messages" id="baderChatMessages"></div>
+                        <form class="bader-chat__input-wrap" id="baderChatForm">
+                            <input type="text" id="baderChatInput" placeholder="Escribe tu mensaje..."/>
+                            <button type="submit" aria-label="Enviar"><i class="fa fa-paper-plane"/></button>
+                        </form>
+                        <div class="bader-chat__quick-actions">
+                            <a href="https://wa.me/5491124522097?text=Hola!%20Necesito%20asesoria%20de%20productos" target="_blank">WhatsApp</a>
+                            <a href="/productos">Ver productos</a>
+                        </div>
+                    </div>
+                </div>
 
             </div>
         </t>

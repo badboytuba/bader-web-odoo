@@ -1220,6 +1220,192 @@ odoo.define('bader_website.main', function (require) {
             })();
         })();
 
+        // ---- 12. Homepage Quiz ----
+        (function initHomepageQuiz() {
+            var quiz = document.getElementById('baderQuiz');
+            if (!quiz) return;
+
+            var steps = Array.prototype.slice.call(
+                quiz.querySelectorAll('.bader-quiz__step')
+            );
+            if (!steps.length) return;
+
+            var progressFill = quiz.querySelector('.bader-quiz__progress-fill');
+            var progressText = quiz.querySelector('.bader-quiz__progress-text');
+            var questionCounter = quiz.querySelector('.bader-quiz__counter');
+            var backBtn = quiz.querySelector('.bader-quiz__back');
+            var form = quiz.querySelector('.bader-quiz__form');
+            var result = quiz.querySelector('.bader-quiz__result');
+            var resetBtn = quiz.querySelector('.bader-quiz__reset');
+            var completeBtn = quiz.querySelector('.bader-quiz__complete');
+
+            var currentStep = 0;
+            var answers = {};
+
+            function updateProgress() {
+                var total = steps.length;
+                var pct = Math.round(((currentStep + 1) / total) * 100);
+
+                if (progressFill) progressFill.style.width = pct + '%';
+                if (progressText) progressText.textContent = pct + '% completado';
+                if (questionCounter) {
+                    questionCounter.textContent = 'Pregunta ' + (currentStep + 1) + ' de ' + total;
+                }
+                if (backBtn) backBtn.style.display = currentStep > 0 ? 'inline-flex' : 'none';
+            }
+
+            function showStep(stepIndex) {
+                currentStep = Math.max(0, Math.min(stepIndex, steps.length - 1));
+                steps.forEach(function (stepEl, index) {
+                    stepEl.classList.toggle('is-active', index === currentStep);
+                });
+                updateProgress();
+            }
+
+            function finishQuiz() {
+                if (form) form.setAttribute('hidden', 'hidden');
+                if (result) result.removeAttribute('hidden');
+            }
+
+            steps.forEach(function (stepEl, stepIndex) {
+                var optionButtons = stepEl.querySelectorAll('.bader-quiz__option');
+                optionButtons.forEach(function (button) {
+                    button.addEventListener('click', function () {
+                        optionButtons.forEach(function (other) {
+                            other.classList.remove('is-selected');
+                        });
+                        button.classList.add('is-selected');
+
+                        var key = stepEl.getAttribute('data-key') || ('step_' + stepIndex);
+                        answers[key] = button.getAttribute('data-value') || '';
+
+                        setTimeout(function () {
+                            if (stepIndex < steps.length - 1) {
+                                showStep(stepIndex + 1);
+                            } else {
+                                finishQuiz();
+                            }
+                        }, 220);
+                    });
+                });
+            });
+
+            if (backBtn) {
+                backBtn.addEventListener('click', function () {
+                    showStep(currentStep - 1);
+                });
+            }
+
+            if (resetBtn) {
+                resetBtn.addEventListener('click', function () {
+                    answers = {};
+                    steps.forEach(function (stepEl) {
+                        stepEl.querySelectorAll('.bader-quiz__option').forEach(function (option) {
+                            option.classList.remove('is-selected');
+                        });
+                    });
+                    if (result) result.setAttribute('hidden', 'hidden');
+                    if (form) form.removeAttribute('hidden');
+                    showStep(0);
+                });
+            }
+
+            if (completeBtn) {
+                completeBtn.addEventListener('click', function () {
+                    var contactSection = document.getElementById('contacto');
+                    if (contactSection) {
+                        contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            }
+
+            showStep(0);
+        })();
+
+        // ---- 13. Homepage Chat Widget ----
+        (function initHomepageChatWidget() {
+            var widget = document.getElementById('baderChatWidget');
+            if (!widget) return;
+
+            var bubble = document.getElementById('baderChatBubble');
+            var bubbleClose = document.getElementById('baderChatBubbleClose');
+            var toggleBtn = document.getElementById('baderChatToggle');
+            var panel = document.getElementById('baderChatPanel');
+            var minimizeBtn = document.getElementById('baderChatMinimize');
+            var closeBtn = document.getElementById('baderChatClose');
+            var messages = document.getElementById('baderChatMessages');
+            var form = document.getElementById('baderChatForm');
+            var input = document.getElementById('baderChatInput');
+
+            if (!toggleBtn || !panel || !messages || !form || !input) return;
+
+            function appendMessage(text, role) {
+                var msg = document.createElement('div');
+                msg.className = 'bader-chat__msg bader-chat__msg--' + role;
+                msg.textContent = text;
+                messages.appendChild(msg);
+                messages.scrollTop = messages.scrollHeight;
+            }
+
+            function buildReply(userText) {
+                var text = (userText || '').toLowerCase();
+                if (text.indexOf('precio') !== -1 || text.indexOf('costo') !== -1 || text.indexOf('cuota') !== -1) {
+                    return 'Trabajamos con financiacion hasta 12 cuotas sin interes. Si queres, te guiamos al producto ideal segun tu presupuesto.';
+                }
+                if (text.indexOf('sillon') !== -1 || text.indexOf('autoclave') !== -1 || text.indexOf('rayos') !== -1) {
+                    return 'Perfecto. En /productos podes filtrar por categoria y nicho para encontrar los equipos que mejor encajan en tu practica.';
+                }
+                if (text.indexOf('garantia') !== -1 || text.indexOf('servicio') !== -1 || text.indexOf('soporte') !== -1) {
+                    return 'Todos los equipos cuentan con garantia oficial y soporte tecnico. Tambien podes solicitar asistencia en /servicios.';
+                }
+                return 'Puedo ayudarte a elegir productos, precios, financiacion y soporte. Si preferis atencion inmediata, escribinos por WhatsApp.';
+            }
+
+            var hasWelcomed = false;
+            function ensureWelcome() {
+                if (hasWelcomed) return;
+                appendMessage('Hola! Soy Nancy AI, tu asistente virtual de Bader Argentina.', 'assistant');
+                appendMessage('Fui creada para ayudarte a encontrar el equipo ideal. Que producto estas buscando?', 'assistant');
+                hasWelcomed = true;
+            }
+
+            function openPanel() {
+                panel.removeAttribute('hidden');
+                toggleBtn.style.display = 'none';
+                if (bubble) bubble.style.display = 'none';
+                ensureWelcome();
+                input.focus();
+            }
+
+            function closePanel() {
+                panel.setAttribute('hidden', 'hidden');
+                toggleBtn.style.display = '';
+            }
+
+            if (bubbleClose && bubble) {
+                bubbleClose.addEventListener('click', function () {
+                    bubble.style.display = 'none';
+                });
+            }
+
+            toggleBtn.addEventListener('click', openPanel);
+            if (minimizeBtn) minimizeBtn.addEventListener('click', closePanel);
+            if (closeBtn) closeBtn.addEventListener('click', closePanel);
+
+            form.addEventListener('submit', function (ev) {
+                ev.preventDefault();
+                var userText = (input.value || '').trim();
+                if (!userText) return;
+
+                appendMessage(userText, 'user');
+                input.value = '';
+
+                setTimeout(function () {
+                    appendMessage(buildReply(userText), 'assistant');
+                }, 300);
+            });
+        })();
+
     } // end initBader
 
     // Execute: by the time a lazy-loaded Odoo module runs, the DOM is always ready
