@@ -33,6 +33,7 @@
         'views/homepage.xml',
         'views/templates.xml',
         'views/frontend_pages.xml',
+        'views/account_pages.xml',
         'views/shop.xml',
         # New pages
         'views/sobre_nosotros.xml',

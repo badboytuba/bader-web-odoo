@@ -27,6 +27,25 @@ class BaderWebsite(Website):
     Also handles CTA form, page routes, and thank-you pages.
     """
 
+    def _current_customer_partner(self):
+        """Commercial partner used as customer scope for portal-like pages."""
+        return request.env.user.partner_id.commercial_partner_id
+
+    def _order_domain_for_partner(self, partner):
+        """Orders linked to the customer and child contacts."""
+        return [
+            ('partner_id', 'child_of', partner.id),
+            ('state', 'not in', ['draft', 'cancel']),
+        ]
+
+    def _invoice_domain_for_partner(self, partner):
+        """Customer invoices linked to the customer and child contacts."""
+        return [
+            ('partner_id', 'child_of', partner.id),
+            ('move_type', 'in', ['out_invoice', 'out_refund']),
+            ('state', '=', 'posted'),
+        ]
+
     # ─── robots.txt ────────────────────────────────────────────
     @http.route('/robots.txt', type='http', auth='public', sitemap=False, csrf=False)
     def robots_txt(self, **kw):
@@ -160,25 +179,116 @@ class BaderWebsite(Website):
         """Frontend alias for checkout flow."""
         return request.redirect('/shop/checkout')
 
-    @http.route('/mi-perfil', type='http', auth='public', website=True, sitemap=False)
+    @http.route('/mi-perfil', type='http', auth='user', website=True, sitemap=False)
     def mi_perfil(self, **kw):
-        return request.redirect('/my/home')
+        """Customer account dashboard fully backed by Odoo data."""
+        partner = self._current_customer_partner()
+        sale_order = request.env['sale.order'].sudo()
+        order_domain = self._order_domain_for_partner(partner)
+        orders = sale_order.search(order_domain, order='date_order desc', limit=5)
+        order_count = sale_order.search_count(order_domain)
 
-    @http.route('/mis-pedidos', type='http', auth='public', website=True, sitemap=False)
+        wishlist = request.env['product.wishlist'].sudo().search([
+            ('partner_id', '=', request.env.user.partner_id.id),
+            ('website_id', '=', request.website.id),
+            ('active', '=', True),
+        ])
+
+        invoice_count = 0
+        if 'account.move' in request.env:
+            account_move = request.env['account.move'].sudo()
+            invoice_count = account_move.search_count(
+                self._invoice_domain_for_partner(partner)
+            )
+
+        return request.render('bader_website.bader_mi_perfil', {
+            'partner': partner,
+            'orders': orders,
+            'order_count': order_count,
+            'invoice_count': invoice_count,
+            'wishlist_count': len(wishlist),
+            'last_order': orders[:1],
+        })
+
+    @http.route('/mis-pedidos', type='http', auth='user', website=True, sitemap=False)
     def mis_pedidos(self, **kw):
-        return request.redirect('/my/orders')
+        """My orders page based on sale.order."""
+        partner = self._current_customer_partner()
+        orders = request.env['sale.order'].sudo().search(
+            self._order_domain_for_partner(partner),
+            order='date_order desc',
+            limit=100
+        )
+        state_labels = dict(request.env['sale.order']._fields['state'].selection)
+        return request.render('bader_website.bader_mis_pedidos', {
+            'orders': orders,
+            'state_labels': state_labels,
+        })
 
-    @http.route('/mis-facturas', type='http', auth='public', website=True, sitemap=False)
+    @http.route('/mis-facturas', type='http', auth='user', website=True, sitemap=False)
     def mis_facturas(self, **kw):
-        return request.redirect('/my/invoices')
+        """My invoices page based on account.move when accounting is available."""
+        partner = self._current_customer_partner()
+        invoices_available = 'account.move' in request.env
+        invoices = request.env['account.move']
+        payment_state_labels = {}
+        if invoices_available:
+            account_move = request.env['account.move'].sudo()
+            invoices = account_move.search(
+                self._invoice_domain_for_partner(partner),
+                order='invoice_date desc, id desc',
+                limit=100
+            )
+            payment_state_labels = dict(
+                request.env['account.move']._fields['payment_state'].selection
+            )
+        return request.render('bader_website.bader_mis_facturas', {
+            'invoices_available': invoices_available,
+            'invoices': invoices,
+            'payment_state_labels': payment_state_labels,
+        })
 
-    @http.route('/mis-favoritos', type='http', auth='public', website=True, sitemap=False)
+    @http.route('/mis-favoritos', type='http', auth='user', website=True, sitemap=False)
     def mis_favoritos(self, **kw):
-        return request.redirect('/shop/wishlist')
+        """My wishlist page based on product.wishlist."""
+        wishes = request.env['product.wishlist'].sudo().search([
+            ('partner_id', '=', request.env.user.partner_id.id),
+            ('website_id', '=', request.website.id),
+            ('active', '=', True),
+        ], order='id desc')
+        return request.render('bader_website.bader_mis_favoritos', {
+            'wishes': wishes,
+        })
 
-    @http.route('/configuracion', type='http', auth='public', website=True, sitemap=False)
+    @http.route('/configuracion', type='http', auth='user', website=True, sitemap=False)
     def configuracion(self, **kw):
-        return request.redirect('/my/account')
+        """Customer profile settings page integrated with res.partner."""
+        return request.render('bader_website.bader_configuracion', {
+            'partner': request.env.user.partner_id,
+            'updated': kw.get('updated') == '1',
+            'error': kw.get('error') == '1',
+        })
+
+    @http.route('/configuracion/guardar', type='http', auth='user', website=True,
+                sitemap=False, methods=['POST'])
+    def configuracion_guardar(self, **post):
+        """Persist customer profile changes on res.partner."""
+        partner = request.env.user.partner_id.sudo()
+        vals = {}
+        allowed_fields = [
+            'name', 'phone', 'mobile', 'vat',
+            'street', 'street2', 'city', 'zip',
+            'company_name',
+        ]
+        for field_name in allowed_fields:
+            if field_name in post:
+                vals[field_name] = (post.get(field_name) or '').strip()
+        try:
+            partner.write(vals)
+            return request.redirect('/configuracion?updated=1')
+        except Exception as exc:
+            _logger.error("Profile update error for partner %s: %s", partner.id, exc)
+            return request.redirect('/configuracion?error=1')
 
     @http.route('/descargas', type='http', auth='public', website=True, sitemap=True)
     def descargas(self, **kw):

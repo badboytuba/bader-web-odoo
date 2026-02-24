@@ -617,6 +617,73 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
     }
 }
 
+// --- Account Pages ---
+.bader-account-kpi {
+    text-align: center;
+
+    &__value {
+        font-family: $font-display;
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: $bader-dark;
+        line-height: 1.2;
+    }
+
+    &__label {
+        font-size: 0.85rem;
+        color: $gray-600;
+        margin-top: 0.25rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+}
+
+.bader-account-table {
+    margin-bottom: 0;
+
+    th {
+        border-top: 0;
+        color: $bader-dark;
+        font-weight: 700;
+    }
+
+    td {
+        vertical-align: middle;
+    }
+}
+
+.bader-account-note {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: $radius-md;
+    background: $gray-50;
+    color: $gray-700;
+    font-size: 0.9rem;
+}
+
+.bader-account-product-card {
+    &__img-wrap {
+        height: 180px;
+        border-radius: $radius-lg;
+        overflow: hidden;
+        background: $gray-50;
+        margin-bottom: 1rem;
+    }
+
+    &__img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 0.75rem;
+    }
+}
+
+.bader-account-price {
+    font-weight: 700;
+    color: $bader-dark;
+    margin: 0;
+}
+
 // --- Blog Posts ---
 .o_wblog_post_page,
 .o_blog_post {

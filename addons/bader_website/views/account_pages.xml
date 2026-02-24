@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="bader_mi_perfil" name="Bader Mi Perfil">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__blur bader-page-hero__blur--1"/>
+                    <div class="bader-page-hero__blur bader-page-hero__blur--2"/>
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <span class="bader-page-hero__badge">
+                                <i class="fa fa-user"/> Mi perfil
+                            </span>
+                            <h1 class="bader-page-hero__title">
+                                Hola, <span class="text-green" t-esc="partner.name or 'Cliente'"/>
+                            </h1>
+                            <p class="bader-page-hero__subtitle">
+                                Tu cuenta esta conectada con Odoo: pedidos, facturas y favoritos en tiempo real.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bader-page-section bader-page-section--white bader-animate">
+                    <div class="bader-page-section__container">
+                        <div class="bader-page-section__grid bader-page-section__grid--4">
+                            <div class="bader-page-card bader-account-kpi">
+                                <div class="bader-page-card__icon"><i class="fa fa-shopping-bag"/></div>
+                                <div class="bader-account-kpi__value" t-esc="order_count"/>
+                                <div class="bader-account-kpi__label">Pedidos</div>
+                            </div>
+                            <div class="bader-page-card bader-account-kpi">
+                                <div class="bader-page-card__icon"><i class="fa fa-file-text-o"/></div>
+                                <div class="bader-account-kpi__value" t-esc="invoice_count"/>
+                                <div class="bader-account-kpi__label">Facturas</div>
+                            </div>
+                            <div class="bader-page-card bader-account-kpi">
+                                <div class="bader-page-card__icon"><i class="fa fa-heart-o"/></div>
+                                <div class="bader-account-kpi__value" t-esc="wishlist_count"/>
+                                <div class="bader-account-kpi__label">Favoritos</div>
+                            </div>
+                            <div class="bader-page-card bader-account-kpi">
+                                <div class="bader-page-card__icon"><i class="fa fa-id-card-o"/></div>
+                                <div class="bader-account-kpi__value" t-esc="partner.vat or '-'"/>
+                                <div class="bader-account-kpi__label">Documento fiscal</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bader-page-section bader-page-section--muted bader-animate">
+                    <div class="bader-page-section__container">
+                        <div class="bader-page-section__grid bader-page-section__grid--2">
+                            <div class="bader-page-card">
+                                <h3 class="bader-page-card__title">Datos de la cuenta</h3>
+                                <p class="bader-page-card__text">
+                                    <strong>Nombre:</strong>
+                                    <span t-esc="partner.name or '-'"/>
+                                </p>
+                                <p class="bader-page-card__text">
+                                    <strong>Email:</strong>
+                                    <span t-esc="request.env.user.email or '-'"/>
+                                </p>
+                                <p class="bader-page-card__text">
+                                    <strong>Telefono:</strong>
+                                    <span t-esc="partner.phone or partner.mobile or '-'"/>
+                                </p>
+                                <p class="bader-page-card__text">
+                                    <strong>Direccion:</strong>
+                                    <span t-esc="partner.contact_address or '-'"/>
+                                </p>
+                                <a href="/configuracion" class="btn-bader" style="margin-top: 1rem;">Editar perfil</a>
+                            </div>
+
+                            <div class="bader-page-card">
+                                <h3 class="bader-page-card__title">Accesos rapidos</h3>
+                                <ul class="bader-checklist">
+                                    <li><i class="fa fa-check-circle"/> <a href="/mis-pedidos">Ver historial de pedidos</a></li>
+                                    <li><i class="fa fa-check-circle"/> <a href="/mis-facturas">Ver facturas</a></li>
+                                    <li><i class="fa fa-check-circle"/> <a href="/mis-favoritos">Gestionar favoritos</a></li>
+                                    <li><i class="fa fa-check-circle"/> <a href="/ayuda">Ayuda y soporte</a></li>
+                                </ul>
+                                <t t-if="last_order">
+                                    <div class="bader-account-note">
+                                        <strong>Ultimo pedido:</strong>
+                                        <t t-foreach="last_order" t-as="last">
+                                            <span t-esc="last.name"/> -
+                                            <span t-field="last.amount_total"
+                                                  t-options='{"widget": "monetary", "display_currency": last.currency_id}'/>
+                                        </t>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="bader_mis_pedidos" name="Bader Mis Pedidos">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <span class="bader-page-hero__badge">
+                                <i class="fa fa-shopping-bag"/> Mis pedidos
+                            </span>
+                            <h1 class="bader-page-hero__title">Historial de pedidos</h1>
+                            <p class="bader-page-hero__subtitle">
+                                Todos tus pedidos sincronizados directamente con Odoo.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bader-page-section bader-page-section--white bader-animate">
+                    <div class="bader-page-section__container">
+                        <div class="bader-page-card">
+                            <t t-if="orders">
+                                <div class="table-responsive">
+                                    <table class="table bader-account-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Pedido</th>
+                                                <th>Fecha</th>
+                                                <th>Estado</th>
+                                                <th>Total</th>
+                                                <th/>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="orders" t-as="order">
+                                                <td><strong t-esc="order.name"/></td>
+                                                <td><span t-field="order.date_order" t-options='{"widget": "date"}'/></td>
+                                                <td>
+                                                    <span class="badge bg-light text-dark"
+                                                          t-esc="state_labels.get(order.state, order.state)"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="order.amount_total"
+                                                          t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
+                                                </td>
+                                                <td class="text-end">
+                                                    <a t-att-href="'/my/orders/%s' % order.id" class="btn btn-sm btn-outline-secondary">
+                                                        Ver detalle
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="text-center py-4">
+                                    <h3 class="bader-page-card__title">Aun no tienes pedidos</h3>
+                                    <p class="bader-page-card__text">Cuando realices compras apareceran aqui.</p>
+                                    <a href="/productos" class="btn-bader">Ir al catalogo</a>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="bader_mis_facturas" name="Bader Mis Facturas">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <span class="bader-page-hero__badge">
+                                <i class="fa fa-file-text-o"/> Mis facturas
+                            </span>
+                            <h1 class="bader-page-hero__title">Facturacion</h1>
+                            <p class="bader-page-hero__subtitle">
+                                Consulta estado de pago y descarga de comprobantes.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bader-page-section bader-page-section--white bader-animate">
+                    <div class="bader-page-section__container">
+                        <div class="bader-page-card">
+                            <t t-if="not invoices_available">
+                                <div class="alert alert-warning mb-0">
+                                    El modulo de facturacion no esta disponible en esta base Odoo.
+                                </div>
+                            </t>
+                            <t t-elif="invoices">
+                                <div class="table-responsive">
+                                    <table class="table bader-account-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Factura</th>
+                                                <th>Fecha</th>
+                                                <th>Vencimiento</th>
+                                                <th>Estado</th>
+                                                <th>Total</th>
+                                                <th/>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="invoices" t-as="inv">
+                                                <td><strong t-esc="inv.name or inv.ref or '-'"/></td>
+                                                <td><span t-field="inv.invoice_date" t-options='{"widget": "date"}'/></td>
+                                                <td><span t-field="inv.invoice_date_due" t-options='{"widget": "date"}'/></td>
+                                                <td>
+                                                    <span class="badge bg-light text-dark"
+                                                          t-esc="payment_state_labels.get(inv.payment_state, inv.payment_state)"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="inv.amount_total"
+                                                          t-options='{"widget": "monetary", "display_currency": inv.currency_id}'/>
+                                                </td>
+                                                <td class="text-end">
+                                                    <a t-att-href="'/my/invoices/%s' % inv.id" class="btn btn-sm btn-outline-secondary">
+                                                        Ver
+                                                    </a>
+                                                    <a t-att-href="'/my/invoices/%s?download=1' % inv.id"
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        PDF
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="text-center py-4">
+                                    <h3 class="bader-page-card__title">No hay facturas publicadas</h3>
+                                    <p class="bader-page-card__text">
+                                        Tus comprobantes apareceran aqui cuando sean emitidos.
+                                    </p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="bader_mis_favoritos" name="Bader Mis Favoritos">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <span class="bader-page-hero__badge">
+                                <i class="fa fa-heart"/> Mis favoritos
+                            </span>
+                            <h1 class="bader-page-hero__title">Lista de productos guardados</h1>
+                            <p class="bader-page-hero__subtitle">
+                                Productos marcados como favoritos en tu cuenta Odoo.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bader-page-section bader-page-section--white bader-animate">
+                    <div class="bader-page-section__container">
+                        <t t-if="wishes">
+                            <div class="bader-page-section__grid bader-page-section__grid--3">
+                                <div class="bader-page-card bader-account-product-card" t-foreach="wishes" t-as="wish">
+                                    <div class="bader-account-product-card__img-wrap">
+                                        <img t-att-src="'/web/image/product.product/%s/image_512' % wish.product_id.id"
+                                             t-att-alt="wish.product_id.display_name"
+                                             class="bader-account-product-card__img"/>
+                                    </div>
+                                    <h3 class="bader-page-card__title" t-esc="wish.product_id.product_tmpl_id.name"/>
+                                    <p class="bader-page-card__text" t-esc="wish.product_id.default_code or 'Sin codigo'"/>
+                                    <p class="bader-account-price">
+                                        <t t-if="wish.currency_id">
+                                            <span t-field="wish.price"
+                                                  t-options='{"widget": "monetary", "display_currency": wish.currency_id}'/>
+                                        </t>
+                                        <t t-else="">Precio disponible en checkout</t>
+                                    </p>
+                                    <a t-att-href="'/shop/product/%s' % slug(wish.product_id.product_tmpl_id)"
+                                       class="btn-bader"
+                                       style="margin-top: 1rem;">
+                                        Ver producto
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="text-center mt-4">
+                                <a href="/shop/wishlist" class="btn btn-outline-secondary">Gestionar favoritos</a>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="bader-page-card text-center">
+                                <h3 class="bader-page-card__title">No tienes favoritos guardados</h3>
+                                <p class="bader-page-card__text">
+                                    Agrega productos a favoritos para encontrarlos rapidamente.
+                                </p>
+                                <a href="/productos" class="btn-bader">Explorar productos</a>
+                            </div>
+                        </t>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="bader_configuracion" name="Bader Configuracion">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <span class="bader-page-hero__badge">
+                                <i class="fa fa-cog"/> Configuracion
+                            </span>
+                            <h1 class="bader-page-hero__title">Datos de cuenta</h1>
+                            <p class="bader-page-hero__subtitle">
+                                Actualiza la informacion de contacto usada por Odoo en pedidos y facturas.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bader-page-section bader-page-section--white bader-animate">
+                    <div class="bader-page-section__container">
+                        <div class="bader-page-card">
+                            <t t-if="updated">
+                                <div class="alert alert-success">
+                                    Tus datos se guardaron correctamente.
+                                </div>
+                            </t>
+                            <t t-if="error">
+                                <div class="alert alert-danger">
+                                    Ocurrio un error al guardar. Intenta nuevamente.
+                                </div>
+                            </t>
+
+                            <form action="/configuracion/guardar" method="post" class="row g-3">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">Nombre</label>
+                                    <input type="text" name="name" class="form-control"
+                                           t-att-value="partner.name or ''" required="required"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Empresa</label>
+                                    <input type="text" name="company_name" class="form-control"
+                                           t-att-value="partner.company_name or ''"/>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">Email (solo lectura)</label>
+                                    <input type="email" class="form-control"
+                                           t-att-value="request.env.user.email or ''" readonly="readonly"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Documento fiscal</label>
+                                    <input type="text" name="vat" class="form-control"
+                                           t-att-value="partner.vat or ''"/>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">Telefono</label>
+                                    <input type="text" name="phone" class="form-control"
+                                           t-att-value="partner.phone or ''"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Celular</label>
+                                    <input type="text" name="mobile" class="form-control"
+                                           t-att-value="partner.mobile or ''"/>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">Calle</label>
+                                    <input type="text" name="street" class="form-control"
+                                           t-att-value="partner.street or ''"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Calle 2</label>
+                                    <input type="text" name="street2" class="form-control"
+                                           t-att-value="partner.street2 or ''"/>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">Ciudad</label>
+                                    <input type="text" name="city" class="form-control"
+                                           t-att-value="partner.city or ''"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Codigo postal</label>
+                                    <input type="text" name="zip" class="form-control"
+                                           t-att-value="partner.zip or ''"/>
+                                </div>
+
+                                <div class="col-12">
+                                    <button type="submit" class="btn-bader">Guardar cambios</button>
+                                    <a href="/mi-perfil" class="btn btn-outline-secondary ms-2">Volver al perfil</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+</odoo>
