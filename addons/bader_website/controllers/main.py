@@ -564,6 +564,12 @@ class BaderWebsite(Website):
         """Services page."""
         return request.render('bader_website.bader_servicios', {})
 
+    @http.route('/servicio-tecnico', type='http', auth='public',
+                website=True, sitemap=False)
+    def servicio_tecnico_alias(self, **kw):
+        """Legacy/public alias used in Bader-AR footer."""
+        return request.redirect('/servicios', code=301)
+
     @http.route('/clinica-dental', type='http', auth='public',
                 website=True, sitemap=True)
     def clinica_dental(self, **kw):
@@ -585,6 +591,12 @@ class BaderWebsite(Website):
         return request.render('bader_website.bader_estudiantes_odontologia', {})
 
     # ─── Thank You Pages ──────────────────────────────────────
+    @http.route('/contacto', type='http', auth='public',
+                website=True, sitemap=False)
+    def contacto_alias(self, **kw):
+        """Public alias used in Bader-AR footer/menu."""
+        return request.redirect('/#contacto', code=301)
+
     @http.route('/contacto/gracias', type='http', auth='public',
                 website=True, sitemap=False)
     def cta_thankyou(self, **kw):

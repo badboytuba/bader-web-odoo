@@ -35,6 +35,11 @@ class Website(models.Model):
             {"name": "Servicios", "url": "/servicios", "sequence": 70, "aliases": []},
         ]
 
+        canonical_urls = set()
+        for item in canonical_items:
+            canonical_urls.add(item["url"])
+            canonical_urls |= set(item.get("aliases", []))
+
         def normalize_url(url):
             if not url:
                 return ""
@@ -47,12 +52,28 @@ class Website(models.Model):
                 cleaned = cleaned.rstrip("/")
             return cleaned
 
+        normalized_canonical_urls = {normalize_url(url) for url in canonical_urls}
+
         for website in websites:
-            marker = "%s %s" % (website.name or "", website.domain or "")
-            if "bader" not in marker.lower():
+            website_updates = {}
+            root_menu = menu_model.search([
+                ("website_id", "=", website.id),
+                ("parent_id", "=", False),
+            ], limit=1)
+            if not root_menu:
                 continue
 
-            website_updates = {}
+            marker = "%s %s" % (website.name or "", website.domain or "")
+            is_bader_marker = "bader" in marker.lower()
+            top_level = menu_model.search([("parent_id", "=", root_menu.id)])
+            has_bader_top_menu = bool(
+                top_level.filtered(
+                    lambda menu: normalize_url(menu.url) in normalized_canonical_urls
+                )
+            )
+            if not is_bader_marker and not has_bader_top_menu:
+                continue
+
             if es_lang:
                 if es_lang not in website.language_ids:
                     website_updates["language_ids"] = [(4, es_lang.id)]
@@ -62,13 +83,6 @@ class Website(models.Model):
                 website_updates["auto_redirect_lang"] = False
             if website_updates:
                 website.write(website_updates)
-
-            root_menu = menu_model.search([
-                ("website_id", "=", website.id),
-                ("parent_id", "=", False),
-            ], limit=1)
-            if not root_menu:
-                continue
 
             kept = menu_model.browse()
 
