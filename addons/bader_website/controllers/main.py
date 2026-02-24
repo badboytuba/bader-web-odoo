@@ -46,6 +46,15 @@ class BaderWebsite(Website):
             ('state', '=', 'posted'),
         ]
 
+    def _find_sale_order_by_token(self, token):
+        """Resolve public sale order token to a sale.order record."""
+        if not token:
+            return request.env['sale.order']
+        return request.env['sale.order'].sudo().search(
+            [('access_token', '=', token)],
+            limit=1
+        )
+
     # ─── robots.txt ────────────────────────────────────────────
     @http.route('/robots.txt', type='http', auth='public', sitemap=False, csrf=False)
     def robots_txt(self, **kw):
@@ -324,23 +333,62 @@ class BaderWebsite(Website):
     @http.route('/presupuesto/<string:token>', type='http', auth='public',
                 website=True, sitemap=False)
     def presupuesto_publico(self, token, **kw):
+        order = self._find_sale_order_by_token(token)
         return request.render('bader_website.bader_presupuesto_publico', {
-            'token': token
+            'token': token,
+            'order': order,
+            'portal_url': '/my/orders/%s?access_token=%s' % (order.id, token) if order else False,
         })
 
     @http.route('/pago/<string:token>', type='http', auth='public',
                 website=True, sitemap=False)
     def pago_publico(self, token, **kw):
+        order = self._find_sale_order_by_token(token)
         return request.render('bader_website.bader_pago_publico', {
-            'token': token
+            'token': token,
+            'order': order,
+            'portal_url': '/my/orders/%s?access_token=%s' % (order.id, token) if order else False,
         })
 
     @http.route('/recuperar-carrito/<string:token>', type='http', auth='public',
                 website=True, sitemap=False)
     def recuperar_carrito(self, token, **kw):
-        return request.render('bader_website.bader_recuperar_carrito', {
-            'token': token
-        })
+        order = self._find_sale_order_by_token(token)
+        if not order:
+            return request.render('bader_website.bader_recuperar_carrito', {
+                'token': token,
+                'order': False,
+                'recovery_ok': False,
+                'portal_url': False,
+            })
+
+        if request.website.is_public_user():
+            return request.redirect('/web/login?redirect=/recuperar-carrito/%s' % token)
+
+        user_partner = request.env.user.partner_id.commercial_partner_id
+        order_partner = order.partner_id.commercial_partner_id
+        if user_partner != order_partner:
+            return request.render('bader_website.bader_recuperar_carrito', {
+                'token': token,
+                'order': order,
+                'recovery_ok': False,
+                'portal_url': '/my/orders/%s?access_token=%s' % (order.id, token),
+            })
+
+        if order.state not in ('draft', 'sent'):
+            return request.render('bader_website.bader_recuperar_carrito', {
+                'token': token,
+                'order': order,
+                'recovery_ok': False,
+                'portal_url': '/my/orders/%s?access_token=%s' % (order.id, token),
+            })
+
+        # Attach this quotation/cart to the current website session.
+        request.session['sale_order_id'] = order.id
+        request.session['website_sale_current_pl'] = order.pricelist_id.id
+        request.session['sale_last_order_id'] = order.id
+        request.session.modified = True
+        return request.redirect('/shop/cart')
 
     # ─── Sobre Nosotros ────────────────────────────────────────
     @http.route(['/sobre-nosotros', '/quienes-somos', '/nosotros'], type='http', auth='public',

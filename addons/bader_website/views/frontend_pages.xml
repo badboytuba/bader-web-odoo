@@ -230,13 +230,27 @@
                         <div class="bader-page-hero__center">
                             <span class="bader-page-hero__badge"><i class="fa fa-file-text-o"/> Presupuesto</span>
                             <h1 class="bader-page-hero__title">Enlace de presupuesto</h1>
-                            <p class="bader-page-hero__subtitle">
-                                Estamos terminando la transferencia de esta pantalla al nuevo frontend.
-                            </p>
-                            <p class="bader-page-hero__subtitle" style="font-size: 0.95rem;">
-                                Token: <strong t-esc="token"/>
-                            </p>
-                            <a href="/" class="btn-bader">Volver al inicio</a>
+                            <t t-if="order">
+                                <p class="bader-page-hero__subtitle">
+                                    Presupuesto encontrado en Odoo para <strong t-esc="order.partner_id.name"/>.
+                                </p>
+                                <p class="bader-page-hero__subtitle" style="font-size: 0.95rem;">
+                                    Nro: <strong t-esc="order.name"/> |
+                                    Total:
+                                    <strong t-field="order.amount_total"
+                                            t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
+                                </p>
+                                <a t-att-href="portal_url" class="btn-bader">Ver presupuesto</a>
+                            </t>
+                            <t t-else="">
+                                <p class="bader-page-hero__subtitle">
+                                    No encontramos un presupuesto valido para este token.
+                                </p>
+                                <p class="bader-page-hero__subtitle" style="font-size: 0.95rem;">
+                                    Token: <strong t-esc="token"/>
+                                </p>
+                                <a href="/" class="btn-bader">Volver al inicio</a>
+                            </t>
                         </div>
                     </div>
                 </section>
@@ -252,13 +266,27 @@
                         <div class="bader-page-hero__center">
                             <span class="bader-page-hero__badge"><i class="fa fa-credit-card"/> Pago</span>
                             <h1 class="bader-page-hero__title">Enlace de pago</h1>
-                            <p class="bader-page-hero__subtitle">
-                                Esta vista publica se esta migrando al frontend Odoo con el mismo diseno del app.
-                            </p>
-                            <p class="bader-page-hero__subtitle" style="font-size: 0.95rem;">
-                                Token: <strong t-esc="token"/>
-                            </p>
-                            <a href="/" class="btn-bader">Volver al inicio</a>
+                            <t t-if="order">
+                                <p class="bader-page-hero__subtitle">
+                                    Pedido encontrado en Odoo. Continua para pagar desde el portal seguro.
+                                </p>
+                                <p class="bader-page-hero__subtitle" style="font-size: 0.95rem;">
+                                    Nro: <strong t-esc="order.name"/> |
+                                    Total:
+                                    <strong t-field="order.amount_total"
+                                            t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
+                                </p>
+                                <a t-att-href="portal_url" class="btn-bader">Ir al pago</a>
+                            </t>
+                            <t t-else="">
+                                <p class="bader-page-hero__subtitle">
+                                    No encontramos un pedido valido para este enlace de pago.
+                                </p>
+                                <p class="bader-page-hero__subtitle" style="font-size: 0.95rem;">
+                                    Token: <strong t-esc="token"/>
+                                </p>
+                                <a href="/" class="btn-bader">Volver al inicio</a>
+                            </t>
                         </div>
                     </div>
                 </section>
@@ -273,10 +301,18 @@
                     <div class="bader-page-hero__container">
                         <div class="bader-page-hero__center">
                             <span class="bader-page-hero__badge"><i class="fa fa-shopping-cart"/> Recuperar carrito</span>
-                            <h1 class="bader-page-hero__title">Carrito en recuperacion</h1>
-                            <p class="bader-page-hero__subtitle">
-                                Estamos terminando la migracion de la recuperacion de carrito a Odoo.
-                            </p>
+                            <h1 class="bader-page-hero__title">No fue posible recuperar el carrito</h1>
+                            <t t-if="order">
+                                <p class="bader-page-hero__subtitle">
+                                    El pedido <strong t-esc="order.name"/> no se puede recuperar con esta cuenta o ya no esta en borrador.
+                                </p>
+                                <a t-if="portal_url" t-att-href="portal_url" class="btn-bader">Ver pedido</a>
+                            </t>
+                            <t t-else="">
+                                <p class="bader-page-hero__subtitle">
+                                    No encontramos un carrito valido para este token.
+                                </p>
+                            </t>
                             <p class="bader-page-hero__subtitle" style="font-size: 0.95rem;">
                                 Token: <strong t-esc="token"/>
                             </p>
