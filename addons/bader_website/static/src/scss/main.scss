@@ -898,6 +898,135 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
     margin-bottom: 1rem;
 }
 
+// --- Blog ---
+.bader-blog-search {
+    max-width: 640px;
+}
+
+.bader-blog-filters {
+    margin-bottom: 1rem;
+}
+
+.bader-blog-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.bader-blog-card__image-link {
+    display: block;
+    border-radius: $radius-lg;
+    overflow: hidden;
+    background: $gray-100;
+}
+
+.bader-blog-card__image {
+    width: 100%;
+    height: 210px;
+    object-fit: cover;
+    transition: transform $transition-base;
+}
+
+.bader-blog-card:hover .bader-blog-card__image {
+    transform: scale(1.03);
+}
+
+.bader-blog-card .bader-page-card__title a {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+        color: $bader-green;
+    }
+}
+
+.bader-blog-card__meta,
+.bader-blog-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.8rem;
+    font-size: 0.78rem;
+    color: $gray-500;
+
+    span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+}
+
+.bader-blog-pagination {
+    margin-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.9rem;
+}
+
+.bader-blog-pagination__status {
+    font-size: 0.85rem;
+    color: $gray-600;
+}
+
+.bader-blog-post__meta {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem 1.4rem;
+    flex-wrap: wrap;
+
+    span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+}
+
+.bader-blog-post__cover {
+    border-radius: $radius-xl;
+    overflow: hidden;
+    box-shadow: $shadow-card;
+    margin-bottom: 1rem;
+
+    img {
+        width: 100%;
+        max-height: 440px;
+        object-fit: cover;
+        display: block;
+    }
+}
+
+.bader-blog-post__content {
+    padding: 1.5rem 1.25rem;
+
+    @media (min-width: 768px) {
+        padding: 1.9rem 2rem;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        color: $bader-dark;
+    }
+
+    p,
+    li {
+        color: $gray-700;
+    }
+
+    img {
+        max-width: 100%;
+        border-radius: $radius-md;
+        height: auto;
+    }
+}
+
+.bader-blog-post__actions {
+    margin-top: 1rem;
+}
+
 // --- Blog Posts ---
 .o_wblog_post_page,
 .o_blog_post {

@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
+import math
+import re
 from datetime import datetime
 from odoo import http
+from odoo.tools import html2plaintext
 from odoo.http import request
 from odoo.addons.website.controllers.main import Website
 from odoo.addons.website_sale.controllers.main import WebsiteSale
@@ -156,6 +159,86 @@ class BaderWebsite(Website):
                 'year': '2024',
             },
         ]
+
+    def _blog_models_available(self):
+        """Check if website_blog models are installed in this database."""
+        return 'blog.post' in request.env and 'blog.blog' in request.env
+
+    def _blog_cover_url(self, post):
+        """Best-effort cover image URL from Odoo blog post."""
+        cover_props = (post.cover_properties or '').strip()
+        if cover_props:
+            match = re.search(r"url\((['\"]?)([^'\")]+)\1\)", cover_props)
+            if match and match.group(2):
+                return match.group(2)
+
+        if 'image_1920' in post._fields:
+            return '/web/image/blog.post/%s/image_1920' % post.id
+
+        return '/bader_website/static/src/img/bader_logotipo.png'
+
+    def _blog_excerpt(self, post, max_chars=180):
+        """Plain-text excerpt from subtitle/content."""
+        raw = post.subtitle or html2plaintext(post.content or '')
+        text = re.sub(r'\s+', ' ', (raw or '')).strip()
+        if len(text) <= max_chars:
+            return text
+        return text[:max_chars].rstrip() + '...'
+
+    def _blog_reading_time(self, post):
+        """Approximate reading time in minutes."""
+        text = html2plaintext(post.content or '')
+        words = len(re.findall(r'\w+', text or '', flags=re.UNICODE))
+        return max(1, int(math.ceil(words / 180.0)))
+
+    def _prepare_blog_cards(self, posts):
+        """Normalize blog.post records for frontend templates."""
+        cards = []
+        for post in posts:
+            date_value = post.post_date or post.create_date
+            cards.append({
+                'id': post.id,
+                'title': post.name or 'Sin titulo',
+                'excerpt': self._blog_excerpt(post),
+                'category': post.blog_id.name if post.blog_id else 'Blog',
+                'date': date_value,
+                'date_label': date_value.strftime('%d/%m/%Y') if date_value else '',
+                'read_minutes': self._blog_reading_time(post),
+                'view_count': getattr(post, 'visits', 0) or 0,
+                'cover_url': self._blog_cover_url(post),
+                'url': '/blog/%s' % slug(post),
+            })
+        return cards
+
+    def _resolve_blog_post(self, post_slug):
+        """Resolve a /blog/<slug> path to a published blog.post record."""
+        if not post_slug or not self._blog_models_available():
+            return False
+
+        post_model = request.env['blog.post'].sudo()
+        domain = [('website_published', '=', True)]
+        post = False
+        post_id = None
+
+        if post_slug.isdigit():
+            post_id = int(post_slug)
+        else:
+            match = re.search(r'-(\d+)$', post_slug)
+            if match:
+                post_id = int(match.group(1))
+
+        if post_id:
+            post = post_model.search(domain + [('id', '=', post_id)], limit=1)
+
+        if not post:
+            name_guess = post_slug.replace('-', ' ')
+            post = post_model.search(
+                domain + [('name', 'ilike', name_guess)],
+                order='post_date desc, id desc',
+                limit=1,
+            )
+
+        return post
 
     # ─── robots.txt ────────────────────────────────────────────
     @http.route('/robots.txt', type='http', auth='public', sitemap=False, csrf=False)
@@ -462,13 +545,124 @@ class BaderWebsite(Website):
 
     @http.route('/blog', type='http', auth='public', website=True, sitemap=True)
     def blog(self, **kw):
-        return request.render('bader_website.bader_blog', {})
+        search_query = (kw.get('q') or '').strip()
+        selected_category = (kw.get('category') or 'all').strip().lower()
+        page_raw = kw.get('page') or 1
+        per_page = 9
+
+        try:
+            page = max(1, int(page_raw))
+        except Exception:
+            page = 1
+
+        blog_enabled = self._blog_models_available()
+        categories = [{'id': 'all', 'label': 'Todos', 'count': 0}]
+        post_cards = []
+        total_posts = 0
+        page_count = 1
+
+        if blog_enabled:
+            post_model = request.env['blog.post'].sudo()
+            blog_model = request.env['blog.blog'].sudo()
+
+            search_domain = []
+            if search_query:
+                search_domain = [
+                    '|', '|',
+                    ('name', 'ilike', search_query),
+                    ('subtitle', 'ilike', search_query),
+                    ('content', 'ilike', search_query),
+                ]
+
+            domain = [('website_published', '=', True)] + search_domain
+            selected_blog_id = False
+
+            if selected_category not in ('all', ''):
+                try:
+                    selected_blog_id = int(selected_category)
+                    domain.append(('blog_id', '=', selected_blog_id))
+                except Exception:
+                    selected_blog_id = False
+                    selected_category = 'all'
+
+            total_posts = post_model.search_count(domain)
+            page_count = max(1, int(math.ceil(total_posts / float(per_page)))) if total_posts else 1
+            page = min(page, page_count)
+
+            posts = post_model.search(
+                domain,
+                order='post_date desc, id desc',
+                limit=per_page,
+                offset=(page - 1) * per_page,
+            )
+            post_cards = self._prepare_blog_cards(posts)
+
+            all_published_domain = [('website_published', '=', True)]
+            categories = [{
+                'id': 'all',
+                'label': 'Todos',
+                'count': post_model.search_count(all_published_domain),
+            }]
+
+            for blog in blog_model.search([], order='name'):
+                categories.append({
+                    'id': str(blog.id),
+                    'label': blog.name,
+                    'count': post_model.search_count(all_published_domain + [('blog_id', '=', blog.id)]),
+                })
+
+            if selected_blog_id and not any(c['id'] == str(selected_blog_id) for c in categories):
+                selected_category = 'all'
+
+        return request.render('bader_website.bader_blog', {
+            'blog_enabled': blog_enabled,
+            'post_cards': post_cards,
+            'categories': categories,
+            'selected_category': selected_category,
+            'search_query': search_query,
+            'total_posts': total_posts,
+            'page': page,
+            'page_count': page_count,
+            'has_prev': page > 1,
+            'has_next': page < page_count,
+            'prev_page': max(1, page - 1),
+            'next_page': min(page_count, page + 1),
+        })
 
     @http.route('/blog/<string:post_slug>', type='http', auth='public',
                 website=True, sitemap=False)
-    def blog_post_placeholder(self, post_slug, **kw):
-        return request.render('bader_website.bader_blog_post_placeholder', {
-            'slug': post_slug
+    def blog_post(self, post_slug, **kw):
+        blog_enabled = self._blog_models_available()
+        post = self._resolve_blog_post(post_slug)
+
+        if post and 'visits' in post._fields:
+            try:
+                post.sudo().write({'visits': (post.visits or 0) + 1})
+            except Exception:
+                pass
+
+        related_cards = []
+        if post:
+            related_posts = request.env['blog.post'].sudo().search(
+                [
+                    ('website_published', '=', True),
+                    ('blog_id', '=', post.blog_id.id),
+                    ('id', '!=', post.id),
+                ],
+                order='post_date desc, id desc',
+                limit=3,
+            )
+            related_cards = self._prepare_blog_cards(related_posts)
+
+        return request.render('bader_website.bader_blog_post', {
+            'blog_enabled': blog_enabled,
+            'post': post,
+            'post_slug': post_slug,
+            'post_cover_url': self._blog_cover_url(post) if post else '',
+            'post_excerpt': self._blog_excerpt(post) if post else '',
+            'post_date_label': (post.post_date or post.create_date).strftime('%d/%m/%Y') if post and (post.post_date or post.create_date) else '',
+            'post_read_minutes': self._blog_reading_time(post) if post else 0,
+            'related_cards': related_cards,
         })
 
     @http.route('/payment/success', type='http', auth='public', website=True, sitemap=False)

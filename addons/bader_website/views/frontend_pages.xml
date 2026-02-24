@@ -207,7 +207,7 @@
         <t t-call="website.layout">
             <t t-set="head">
                 <title>Blog - Bader Argentina</title>
-                <meta name="description" content="Novedades de productos, recomendaciones y contenidos para profesionales odontologicos."/>
+                <meta name="description" content="Articulos, guias y contenido profesional para clinicas, laboratorios y estudiantes."/>
             </t>
             <div id="wrap" class="oe_structure oe_empty">
                 <section class="bader-page-hero bader-animate">
@@ -216,23 +216,103 @@
                     <div class="bader-page-hero__container">
                         <div class="bader-page-hero__center">
                             <span class="bader-page-hero__badge">
-                                <i class="fa fa-rss"/> Blog
+                                <i class="fa fa-rss"/> Blog Bader
                             </span>
                             <h1 class="bader-page-hero__title">
                                 Contenido para <span class="text-green">profesionales</span>
                             </h1>
                             <p class="bader-page-hero__subtitle">
-                                Estamos terminando la migracion del blog para que conserve el mismo diseno del app.
+                                Novedades de productos, recomendaciones tecnicas y guias para potenciar tu practica.
                             </p>
+                            <form action="/blog" method="get" class="bader-downloads-search bader-blog-search">
+                                <input type="hidden" name="category" t-att-value="selected_category"/>
+                                <i class="fa fa-search"/>
+                                <input type="text" name="q" placeholder="Buscar articulos..." t-att-value="search_query"/>
+                                <button type="submit" class="btn-bader-sm">Buscar</button>
+                            </form>
                         </div>
                     </div>
                 </section>
+
                 <section class="bader-page-section bader-page-section--white bader-animate">
                     <div class="bader-page-section__container">
-                        <div class="bader-page-card" style="text-align: center;">
-                            <h3 class="bader-page-card__title">Blog en transferencia</h3>
-                            <p class="bader-page-card__text">En breve publicaremos articulos con el mismo layout del app Bader-AR.</p>
-                            <a href="/" class="btn-bader" style="margin-top: 1rem;">Volver al inicio</a>
+                        <div class="bader-downloads-filters bader-blog-filters">
+                            <span class="bader-downloads-filters__label">
+                                <i class="fa fa-filter"/> Categorias:
+                            </span>
+                            <a t-foreach="categories"
+                               t-as="category"
+                               t-attf-href="/blog?category=#{category['id']}&amp;q=#{search_query}"
+                               t-attf-class="bader-downloads-filter #{'is-active' if selected_category == category['id'] else ''}">
+                                <t t-esc="category['label']"/>
+                                <span class="bader-downloads-filter__count" t-esc="category['count']"/>
+                            </a>
+                        </div>
+
+                        <p class="bader-downloads-results" t-if="blog_enabled">
+                            Mostrando <strong t-esc="len(post_cards)"/> de <strong t-esc="total_posts"/> articulos
+                        </p>
+
+                        <div class="bader-page-section__grid bader-page-section__grid--3" t-if="blog_enabled and post_cards">
+                            <article class="bader-page-card bader-blog-card"
+                                     t-foreach="post_cards"
+                                     t-as="card">
+                                <a t-att-href="card['url']" class="bader-blog-card__image-link">
+                                    <img t-att-src="card['cover_url']"
+                                         t-att-alt="card['title']"
+                                         class="bader-blog-card__image"/>
+                                </a>
+
+                                <div class="bader-blog-card__meta">
+                                    <span><i class="fa fa-tag"/> <t t-esc="card['category']"/></span>
+                                    <span><i class="fa fa-clock-o"/> <t t-esc="card['read_minutes']"/> min</span>
+                                </div>
+
+                                <h3 class="bader-page-card__title">
+                                    <a t-att-href="card['url']"><t t-esc="card['title']"/></a>
+                                </h3>
+                                <p class="bader-page-card__text" t-esc="card['excerpt']"/>
+
+                                <div class="bader-blog-card__footer">
+                                    <span class="bader-blog-card__date">
+                                        <i class="fa fa-calendar"/> <t t-esc="card['date_label']"/>
+                                    </span>
+                                    <span class="bader-blog-card__views">
+                                        <i class="fa fa-eye"/> <t t-esc="card['view_count']"/>
+                                    </span>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="bader-page-card text-center" t-elif="blog_enabled">
+                            <h3 class="bader-page-card__title">No se encontraron articulos</h3>
+                            <p class="bader-page-card__text">
+                                Prueba otro termino de busqueda o cambia la categoria seleccionada.
+                            </p>
+                            <a href="/blog" class="btn-bader">Limpiar filtros</a>
+                        </div>
+
+                        <div class="bader-page-card text-center" t-else="">
+                            <h3 class="bader-page-card__title">Modulo de blog no disponible</h3>
+                            <p class="bader-page-card__text">
+                                Activa el modulo de blog en Odoo para publicar articulos en esta seccion.
+                            </p>
+                        </div>
+
+                        <div class="bader-blog-pagination" t-if="blog_enabled and page_count &gt; 1">
+                            <a t-if="has_prev"
+                               t-attf-href="/blog?page=#{prev_page}&amp;category=#{selected_category}&amp;q=#{search_query}"
+                               class="btn btn-outline-secondary btn-sm">
+                                <i class="fa fa-chevron-left"/> Anterior
+                            </a>
+                            <span class="bader-blog-pagination__status">
+                                Pagina <strong t-esc="page"/> de <strong t-esc="page_count"/>
+                            </span>
+                            <a t-if="has_next"
+                               t-attf-href="/blog?page=#{next_page}&amp;category=#{selected_category}&amp;q=#{search_query}"
+                               class="btn btn-outline-secondary btn-sm">
+                                Siguiente <i class="fa fa-chevron-right"/>
+                            </a>
                         </div>
                     </div>
                 </section>
@@ -240,21 +320,79 @@
         </t>
     </template>
 
-    <template id="bader_blog_post_placeholder" name="Bader Blog Post Placeholder">
+    <template id="bader_blog_post" name="Bader Blog Post">
         <t t-call="website.layout">
             <div id="wrap" class="oe_structure oe_empty">
-                <section class="bader-page-hero bader-animate">
+                <section class="bader-page-hero bader-animate" t-if="post">
+                    <div class="bader-page-hero__blur bader-page-hero__blur--1"/>
+                    <div class="bader-page-hero__blur bader-page-hero__blur--2"/>
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <span class="bader-page-hero__badge">
+                                <i class="fa fa-file-text-o"/> <t t-esc="post.blog_id.name or 'Blog'"/>
+                            </span>
+                            <h1 class="bader-page-hero__title" t-esc="post.name"/>
+                            <p class="bader-page-hero__subtitle" t-esc="post_excerpt"/>
+                            <p class="bader-page-hero__subtitle bader-blog-post__meta">
+                                <span><i class="fa fa-calendar"/> <t t-esc="post_date_label"/></span>
+                                <span><i class="fa fa-clock-o"/> <t t-esc="post_read_minutes"/> min</span>
+                                <span><i class="fa fa-eye"/> <t t-esc="post.visits or 0"/> vistas</span>
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bader-page-section bader-page-section--white bader-animate" t-if="post">
+                    <div class="bader-page-section__container">
+                        <div class="bader-blog-post__cover" t-if="post_cover_url">
+                            <img t-att-src="post_cover_url" t-att-alt="post.name"/>
+                        </div>
+                        <article class="bader-page-card bader-blog-post__content">
+                            <div t-raw="post.content"/>
+                        </article>
+
+                        <div class="bader-blog-post__actions">
+                            <a href="/blog" class="btn btn-outline-secondary">
+                                <i class="fa fa-chevron-left"/> Volver al blog
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bader-page-section bader-page-section--muted bader-animate"
+                         t-if="post and related_cards">
+                    <div class="bader-page-section__container">
+                        <h2 class="bader-section__title bader-section__title--dark">Articulos relacionados</h2>
+                        <div class="bader-page-section__grid bader-page-section__grid--3">
+                            <article class="bader-page-card bader-blog-card"
+                                     t-foreach="related_cards"
+                                     t-as="card">
+                                <a t-att-href="card['url']" class="bader-blog-card__image-link">
+                                    <img t-att-src="card['cover_url']"
+                                         t-att-alt="card['title']"
+                                         class="bader-blog-card__image"/>
+                                </a>
+                                <h3 class="bader-page-card__title">
+                                    <a t-att-href="card['url']"><t t-esc="card['title']"/></a>
+                                </h3>
+                                <p class="bader-page-card__text" t-esc="card['excerpt']"/>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bader-page-hero bader-animate" t-if="not post">
                     <div class="bader-page-hero__container">
                         <div class="bader-page-hero__center">
                             <span class="bader-page-hero__badge">
                                 <i class="fa fa-file-text-o"/> Blog
                             </span>
-                            <h1 class="bader-page-hero__title">Articulo en transferencia</h1>
+                            <h1 class="bader-page-hero__title">Articulo no encontrado</h1>
                             <p class="bader-page-hero__subtitle">
-                                Este articulo se esta migrando al nuevo frontend Odoo.
+                                No encontramos un articulo publicado para este enlace.
                             </p>
                             <p class="bader-page-hero__subtitle" style="font-size: 0.95rem;">
-                                Slug: <strong t-esc="slug"/>
+                                Slug: <strong t-esc="post_slug"/>
                             </p>
                             <a href="/blog" class="btn-bader">Volver al blog</a>
                         </div>
