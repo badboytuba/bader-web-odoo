@@ -13,12 +13,4 @@
         </xpath>
     </template>
 
-    <!-- Primary Variables (prepend) -->
-    <template id="bader_website_primary_variables" name="Bader Primary Variables"
-              inherit_id="web._assets_primary_variables" priority="10">
-        <xpath expr="." position="inside">
-            <link rel="stylesheet" href="/bader_website/static/src/scss/_primary_variables.scss"/>
-        </xpath>
-    </template>
-
 </odoo>
