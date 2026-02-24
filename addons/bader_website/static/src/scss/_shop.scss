@@ -1079,9 +1079,9 @@
 }
 
 
-// ─── Category Filmstrip ──────────────────
+// ─── Category Filmstrip (HIDDEN per user request) ──
 .o_wsale_filmstip_container {
-    margin-bottom: 16px;
+    display: none !important;
 
     .o_filmstrip_wrapper {
         gap: 8px;
