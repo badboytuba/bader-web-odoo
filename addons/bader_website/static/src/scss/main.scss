@@ -1142,6 +1142,10 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
     &__heading {
         text-align: center;
         margin-bottom: 2rem;
+
+        @include mobile {
+            margin-bottom: 1.2rem;
+        }
     }
 
     &__card {
@@ -1150,6 +1154,11 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
         border-radius: $radius-xl;
         box-shadow: $shadow-card;
         padding: 1.5rem;
+
+        @include mobile {
+            padding: 1rem 0.85rem;
+            border-radius: $radius-lg;
+        }
     }
 
     &__progress {
@@ -1197,6 +1206,10 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
             font-family: $font-display;
             font-size: 1.3rem;
             color: $bader-dark;
+
+            @include mobile {
+                font-size: 1.1rem;
+            }
         }
     }
 
@@ -1228,6 +1241,12 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
                 opacity: 1;
             }
         }
+
+        @include mobile {
+            padding: 0.66rem 0.72rem;
+            gap: 0.6rem;
+            margin-bottom: 0.5rem;
+        }
     }
 
     &__icon {
@@ -1240,6 +1259,11 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+
+        @include mobile {
+            width: 2rem;
+            height: 2rem;
+        }
     }
 
     &__text {
@@ -1253,12 +1277,20 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
             color: $bader-dark;
             font-weight: 700;
             font-size: 0.95rem;
+
+            @include mobile {
+                font-size: 0.9rem;
+            }
         }
 
         small {
             color: $gray-600;
             font-size: 0.82rem;
             line-height: 1.3;
+
+            @include mobile {
+                font-size: 0.76rem;
+            }
         }
     }
 
@@ -1415,6 +1447,9 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
         @include mobile {
             width: calc(100vw - 1.7rem);
             right: -0.05rem;
+            max-height: 78vh;
+            display: flex;
+            flex-direction: column;
         }
     }
 
@@ -1470,6 +1505,13 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
         display: flex;
         flex-direction: column;
         gap: 0.55rem;
+
+        @include mobile {
+            flex: 1 1 auto;
+            height: auto;
+            min-height: 170px;
+            max-height: 44vh;
+        }
     }
 
     &__msg {

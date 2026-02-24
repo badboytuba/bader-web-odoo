@@ -11,11 +11,11 @@
     align-items: center;
     background: linear-gradient(180deg, $white 0%, $gray-50 60%, rgba(132, 204, 22, 0.03) 100%);
     overflow: hidden;
-    padding: 20px 0 $space-3xl;
+    padding: 28px 0 $space-3xl;
 
     @include mobile {
         min-height: auto;
-        padding: $space-xl 0 $space-2xl;
+        padding: 86px 0 $space-2xl;
     }
 
     &__container {
@@ -44,6 +44,12 @@
             display: flex;
             justify-content: center;
             margin-bottom: $space-3xl;
+        }
+
+        @include mobile {
+            width: 100%;
+            padding: 4px;
+            margin-bottom: 0;
         }
     }
 
@@ -79,6 +85,22 @@
             font-weight: 600;
             box-shadow: 0 2px 8px rgba(132, 204, 22, 0.3);
         }
+
+        @include mobile {
+            flex: 1;
+            justify-content: center;
+            padding: 11px 10px;
+            font-size: 0.82rem;
+            gap: 4px;
+        }
+    }
+
+    &__tab-text {
+        display: inline-block;
+
+        @include mobile {
+            display: none;
+        }
     }
 
     // Split layout — text left, image right
@@ -90,7 +112,7 @@
 
         @include tablet-down {
             grid-template-columns: 1fr;
-            gap: $space-xl;
+            gap: $space-lg;
         }
     }
 
@@ -126,7 +148,7 @@
         }
 
         @include mobile {
-            font-size: 2.2rem;
+            font-size: 2.35rem;
         }
     }
 
@@ -139,6 +161,7 @@
 
         @include mobile {
             font-size: 0.95rem;
+            max-width: 100%;
         }
     }
 
@@ -149,8 +172,8 @@
         margin-bottom: $space-xl;
 
         @include mobile {
-            gap: $space-lg;
-            flex-wrap: wrap;
+            gap: $space-md;
+            justify-content: space-between;
         }
     }
 
@@ -164,6 +187,10 @@
         font-size: 1.6rem;
         font-weight: 800;
         color: $bader-dark;
+
+        @include mobile {
+            font-size: 1.35rem;
+        }
     }
 
     &__stat-label {
@@ -180,8 +207,17 @@
         margin-bottom: $space-xl;
 
         @include mobile {
-            flex-direction: column;
-            align-items: stretch;
+            flex-direction: row;
+            gap: 10px;
+            align-items: center;
+
+            .btn-bader,
+            .btn-bader-outline {
+                flex: 1 1 145px;
+                justify-content: center;
+                padding-left: 14px;
+                padding-right: 14px;
+            }
         }
     }
 
@@ -246,7 +282,8 @@
         overflow: visible;
 
         @include tablet-down {
-            display: none;
+            display: block;
+            margin-top: $space-sm;
         }
 
         img {
@@ -255,6 +292,14 @@
             object-fit: cover;
             border-radius: $radius-xl;
             box-shadow: 0 8px 40px rgba(0, 0, 0, 0.10);
+
+            @include tablet-down {
+                height: 400px;
+            }
+
+            @include mobile {
+                height: 320px;
+            }
         }
     }
 
@@ -288,6 +333,25 @@
                 background: $bader-green;
                 border-color: $bader-green;
                 color: $white;
+            }
+        }
+
+        @include tablet-down {
+            right: 12px;
+            top: 12px;
+            padding: 6px 10px;
+            gap: 5px;
+
+            .dot {
+                width: 24px;
+                height: 24px;
+                font-size: 0.62rem;
+            }
+        }
+
+        @include mobile {
+            .bader-hero__image-count {
+                display: none;
             }
         }
     }
@@ -337,6 +401,21 @@
             font-weight: 800;
             color: $bader-green;
         }
+
+        @include tablet-down {
+            bottom: 10px;
+            left: 10px;
+            padding: 8px 12px;
+            gap: 8px;
+
+            .fa-check-circle {
+                font-size: 1rem;
+            }
+
+            strong {
+                font-size: 0.95rem;
+            }
+        }
     }
 
     // Persona switching transitions
@@ -363,6 +442,14 @@
         &--active {
             position: relative;
             opacity: 1;
+        }
+
+        @include tablet-down {
+            height: 400px;
+        }
+
+        @include mobile {
+            height: 320px;
         }
     }
 }

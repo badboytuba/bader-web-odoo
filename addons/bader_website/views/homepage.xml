@@ -28,13 +28,13 @@
                         <div class="bader-hero__tabs-wrapper">
                             <div class="bader-hero__tabs">
                                 <a href="#" class="bader-hero__tab bader-hero__tab--active" data-persona="clinica">
-                                    <i class="fa fa-medkit"/> Clínica Dental
+                                    <i class="fa fa-medkit"/> <span class="bader-hero__tab-text">Clínica Dental</span>
                                 </a>
                                 <a href="#" class="bader-hero__tab" data-persona="laboratorio">
-                                    <i class="fa fa-flask"/> Laboratorio
+                                    <i class="fa fa-flask"/> <span class="bader-hero__tab-text">Laboratorio</span>
                                 </a>
                                 <a href="#" class="bader-hero__tab" data-persona="estudiantes">
-                                    <i class="fa fa-graduation-cap"/> Estudiantes
+                                    <i class="fa fa-graduation-cap"/> <span class="bader-hero__tab-text">Estudiantes</span>
                                 </a>
                             </div>
                         </div>
