@@ -55,13 +55,13 @@ class Website(models.Model):
             if not root_menu:
                 continue
 
-            top_level = menu_model.search(
-                [("parent_id", "=", root_menu.id)],
-                order="sequence, id",
-            )
             kept = menu_model.browse()
 
             for item in canonical_items:
+                top_level = menu_model.search(
+                    [("parent_id", "=", root_menu.id)],
+                    order="sequence, id",
+                )
                 target_urls = {normalize_url(item["url"])}
                 target_urls |= {normalize_url(alias) for alias in item.get("aliases", [])}
 
@@ -93,7 +93,8 @@ class Website(models.Model):
                 if duplicates:
                     duplicates.unlink()
 
-            stale_menus = top_level - kept
+            final_top_level = menu_model.search([("parent_id", "=", root_menu.id)])
+            stale_menus = final_top_level.filtered(lambda menu: menu.id not in kept.ids)
             if stale_menus:
                 stale_menus.unlink()
 
