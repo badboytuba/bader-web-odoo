@@ -14,6 +14,10 @@ FILES = [
     ("views/shop.xml", "shop.xml (QWeb template)"),
     ("static/src/js/main.js", "main.js"),
     ("static/src/scss/_shop.scss", "_shop.scss"),
+    ("static/src/scss/_cta.scss", "_cta.scss"),
+    ("static/src/scss/_stats.scss", "_stats.scss"),
+    ("static/src/scss/_hero.scss", "_hero.scss"),
+    ("static/src/scss/_variables.scss", "_variables.scss"),
 ]
 
 print("📦 Deploying files...")

@@ -31,7 +31,7 @@ node_modules/
 # ─── Large folders (not part of the addon) ───
 odoo_core_modules/
 Bader-AR/
-static/
+/static/
 
 # ─── Utility/debug scripts (keep only deploy scripts) ───
 scripts/analyze_*.py
