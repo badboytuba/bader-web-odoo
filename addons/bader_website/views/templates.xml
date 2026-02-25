@@ -304,4 +304,52 @@
         </xpath>
     </template>
 
+    <template id="bader_sale_confirmation_page" inherit_id="website_sale.confirmation"
+              name="Bader Sale Confirmation Page" priority="30">
+        <xpath expr="//div[@id='wrap']/div[hasclass('container') and hasclass('oe_website_sale')]" position="attributes">
+            <attribute name="class" add="bader-confirmation-page" separator=" "/>
+        </xpath>
+        <xpath expr="//div[@id='wrap']/div[hasclass('container') and hasclass('oe_website_sale')]/h1" position="replace">
+            <h1 class="bader-confirmation-page__title">
+                Pedido <em t-field="order.name"/> confirmado
+            </h1>
+        </xpath>
+
+        <xpath expr="//div[hasclass('thanks_msg')]/h2" position="replace">
+            <h2 class="bader-confirmation-page__subtitle">
+                Gracias por tu compra.
+                <a role="button"
+                   class="btn btn-primary d-none d-md-inline-block"
+                   href="/shop/print"
+                   target="_blank"
+                   aria-label="Imprimir"
+                   title="Imprimir">
+                    <i class="fa fa-print"/> Imprimir
+                </a>
+            </h2>
+        </xpath>
+
+        <xpath expr="//p[hasclass('alert-info') and @role='status']" position="replace">
+            <p t-if="request.env['res.users']._get_signup_invitation_scope() == 'b2c' and request.website.is_public_user()"
+               class="alert alert-info mt-3"
+               role="status">
+                <a role="button"
+                   t-att-href="order.partner_id.signup_prepare() and order.partner_id.with_context(relative_url=True).signup_url"
+                   class="btn btn-primary">Crear cuenta</a>
+                para seguir el estado de tu pedido.
+            </p>
+        </xpath>
+
+        <xpath expr="//h3[hasclass('text-start') and hasclass('mt-3')]/strong" position="replace">
+            <strong>Informacion de pago:</strong>
+        </xpath>
+
+        <xpath expr="//table[hasclass('table')]" position="after">
+            <div class="bader-confirmation-page__actions">
+                <a href="/" class="btn-bader-outline">Volver al inicio</a>
+                <a href="/productos" class="btn-bader">Seguir comprando</a>
+            </div>
+        </xpath>
+    </template>
+
 </odoo>

@@ -405,13 +405,20 @@
     <template id="bader_payment_success" name="Bader Payment Success">
         <t t-call="website.layout">
             <div id="wrap" class="oe_structure oe_empty">
-                <section class="bader-page-hero bader-animate">
-                    <div class="bader-page-hero__container">
-                        <div class="bader-page-hero__center">
-                            <div style="font-size: 4rem; margin-bottom: 1rem;"><i class="fa fa-check-circle text-green"/></div>
-                            <h1 class="bader-page-hero__title">Pago aprobado</h1>
-                            <p class="bader-page-hero__subtitle">Tu operacion fue confirmada correctamente.</p>
-                            <a href="/mis-pedidos" class="btn-bader">Ver mis pedidos</a>
+                <section class="bader-page-section bader-page-section--muted bader-payment-state bader-payment-state--success bader-animate">
+                    <div class="bader-page-section__container">
+                        <div class="bader-payment-state__card">
+                            <div class="bader-payment-state__icon">
+                                <i class="fa fa-check-circle"/>
+                            </div>
+                            <h1 class="bader-payment-state__title">Pago exitoso</h1>
+                            <p class="bader-payment-state__text">
+                                Tu pago fue procesado correctamente. Recibiras un email con los detalles de tu compra.
+                            </p>
+                            <div class="bader-payment-state__actions">
+                                <a href="/" class="btn-bader-outline">Volver al inicio</a>
+                                <a href="/productos" class="btn-bader">Ver mas productos</a>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -422,13 +429,23 @@
     <template id="bader_payment_failure" name="Bader Payment Failure">
         <t t-call="website.layout">
             <div id="wrap" class="oe_structure oe_empty">
-                <section class="bader-page-hero bader-animate">
-                    <div class="bader-page-hero__container">
-                        <div class="bader-page-hero__center">
-                            <div style="font-size: 4rem; margin-bottom: 1rem;"><i class="fa fa-times-circle" style="color:#EF4444;"/></div>
-                            <h1 class="bader-page-hero__title">Pago rechazado</h1>
-                            <p class="bader-page-hero__subtitle">No se pudo completar el pago. Puedes intentar nuevamente.</p>
-                            <a href="/checkout" class="btn-bader">Volver al checkout</a>
+                <section class="bader-page-section bader-page-section--muted bader-payment-state bader-payment-state--failure bader-animate">
+                    <div class="bader-page-section__container">
+                        <div class="bader-payment-state__card">
+                            <div class="bader-payment-state__icon">
+                                <i class="fa fa-times-circle"/>
+                            </div>
+                            <h1 class="bader-payment-state__title">Pago no procesado</h1>
+                            <p class="bader-payment-state__text">
+                                Ocurrio un problema al procesar tu pago. Puedes intentarlo nuevamente o contactar a nuestro equipo.
+                            </p>
+                            <div class="bader-payment-state__actions">
+                                <a href="/productos" class="btn-bader">Intentar nuevamente</a>
+                                <a href="https://wa.me/5491124522097" target="_blank" class="btn-bader-outline">
+                                    WhatsApp
+                                </a>
+                                <a href="/" class="btn-bader-ghost">Volver al inicio</a>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -439,13 +456,23 @@
     <template id="bader_payment_pending" name="Bader Payment Pending">
         <t t-call="website.layout">
             <div id="wrap" class="oe_structure oe_empty">
-                <section class="bader-page-hero bader-animate">
-                    <div class="bader-page-hero__container">
-                        <div class="bader-page-hero__center">
-                            <div style="font-size: 4rem; margin-bottom: 1rem;"><i class="fa fa-clock-o" style="color:#F59E0B;"/></div>
-                            <h1 class="bader-page-hero__title">Pago pendiente</h1>
-                            <p class="bader-page-hero__subtitle">Estamos esperando la confirmacion del medio de pago.</p>
-                            <a href="/mis-pedidos" class="btn-bader">Ver estado del pedido</a>
+                <section class="bader-page-section bader-page-section--muted bader-payment-state bader-payment-state--pending bader-animate">
+                    <div class="bader-page-section__container">
+                        <div class="bader-payment-state__card">
+                            <div class="bader-payment-state__icon">
+                                <i class="fa fa-clock-o"/>
+                            </div>
+                            <h1 class="bader-payment-state__title">Pago pendiente</h1>
+                            <p class="bader-payment-state__text">
+                                Tu pago esta siendo procesado. Te notificaremos por email cuando se confirme.
+                            </p>
+                            <p class="bader-payment-state__hint">
+                                Los pagos por transferencia o efectivo pueden tardar hasta 48 horas en acreditarse.
+                            </p>
+                            <div class="bader-payment-state__actions">
+                                <a href="/" class="btn-bader">Volver al inicio</a>
+                                <a href="mailto:hola@bader.com.ar" class="btn-bader-outline">Contactar por email</a>
+                            </div>
                         </div>
                     </div>
                 </section>

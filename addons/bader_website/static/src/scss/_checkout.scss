@@ -495,6 +495,149 @@
 }
 
 // --------------------------------------------
+// Payment states (/payment/success|pending|failure)
+// --------------------------------------------
+
+.bader-payment-state {
+    min-height: calc(100vh - 90px);
+    display: flex;
+    align-items: center;
+
+    .bader-page-section__container {
+        width: 100%;
+    }
+
+    &__card {
+        max-width: 560px;
+        margin: 0 auto;
+        text-align: center;
+        background: $white;
+        border: 1px solid $bader-card-border;
+        border-radius: 18px;
+        box-shadow: $shadow-card;
+        padding: 2rem 1.4rem;
+    }
+
+    &__icon {
+        width: 86px;
+        height: 86px;
+        margin: 0 auto 1rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.6rem;
+    }
+
+    &__title {
+        font-family: $font-display;
+        font-size: 1.95rem;
+        font-weight: 800;
+        color: $bader-dark;
+        margin-bottom: 0.45rem;
+    }
+
+    &__text {
+        color: $gray-600;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin: 0 auto 1rem;
+        max-width: 460px;
+    }
+
+    &__hint {
+        display: inline-block;
+        margin: 0 auto 1rem;
+        background: $gray-50;
+        border: 1px solid $bader-card-border;
+        border-radius: 12px;
+        padding: 0.7rem 0.9rem;
+        color: $gray-600;
+        font-size: 0.84rem;
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+    }
+
+    &--success .bader-payment-state__icon {
+        background: rgba(112, 212, 75, 0.16);
+        color: $bader-green;
+    }
+
+    &--pending .bader-payment-state__icon {
+        background: rgba(245, 158, 11, 0.16);
+        color: #d97706;
+    }
+
+    &--failure .bader-payment-state__icon {
+        background: rgba(239, 68, 68, 0.16);
+        color: #dc2626;
+    }
+}
+
+// --------------------------------------------
+// Shop confirmation
+// --------------------------------------------
+
+.bader-confirmation-page {
+    max-width: 980px;
+    padding-top: 1.3rem;
+    padding-bottom: 3rem;
+
+    &__title {
+        margin-bottom: 1rem;
+        font-family: $font-display;
+        font-size: 2rem;
+        font-weight: 800;
+        color: $bader-dark;
+
+        em {
+            font-style: normal;
+            color: $bader-green;
+        }
+    }
+
+    &__subtitle {
+        color: $gray-700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+    }
+
+    .oe_cart {
+        background: $white;
+        border: 1px solid $bader-card-border;
+        border-radius: 16px;
+        padding: 1rem 1.1rem;
+    }
+
+    .card {
+        border: 1px solid $bader-card-border;
+        border-radius: 12px;
+    }
+
+    .table td,
+    .table th {
+        border-color: $gray-100;
+    }
+
+    &__actions {
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+    }
+}
+
+// --------------------------------------------
 // Mobile
 // --------------------------------------------
 
@@ -510,6 +653,41 @@
         #o_cart_summary .card,
         .js_cart_summary {
             position: static;
+        }
+    }
+
+    .bader-payment-state {
+        min-height: auto;
+        padding: 1rem 0;
+
+        &__card {
+            padding: 1.4rem 1rem;
+        }
+
+        &__title {
+            font-size: 1.55rem;
+        }
+
+        &__actions {
+            .btn-bader,
+            .btn-bader-outline,
+            .btn-bader-ghost {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    }
+
+    .bader-confirmation-page {
+        padding-top: 0.8rem;
+        padding-bottom: 2rem;
+
+        &__title {
+            font-size: 1.55rem;
+        }
+
+        .oe_cart {
+            padding: 0.8rem;
         }
     }
 
