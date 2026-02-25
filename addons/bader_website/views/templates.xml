@@ -250,6 +250,9 @@
         <xpath expr="//t[@t-if=&quot;mode == ('new', 'billing')&quot;]/h2[hasclass('o_page_header')]/span[@t-if=&quot;account_on_checkout != 'mandatory'&quot;]" position="replace">
             <span t-if="account_on_checkout != 'mandatory'">Completa tus datos</span>
         </xpath>
+        <xpath expr="//t[@t-if=&quot;mode == ('new', 'billing')&quot;]/h2[hasclass('o_page_header')]/small[@t-if=&quot;account_on_checkout == 'optional'&quot;]" position="replace">
+            <small class="text-muted" t-if="account_on_checkout == 'optional'"> o </small>
+        </xpath>
         <xpath expr="//t[@t-if=&quot;mode == ('new', 'billing')&quot;]/h2[hasclass('o_page_header')]/a[@t-if=&quot;account_on_checkout != 'disabled'&quot;]" position="replace">
             <a t-if="account_on_checkout != 'disabled'" role="button" href="/web/login?redirect=/shop/checkout" style="margin-top: -11px"> Iniciar sesion</a>
         </xpath>
@@ -268,6 +271,12 @@
         </xpath>
         <xpath expr="//label[@for='phone']" position="replace">
             <label class="col-form-label" for="phone">Telefono</label>
+        </xpath>
+        <xpath expr="//label[@for='company_name']" position="replace">
+            <label class="col-form-label fw-normal label-optional" for="company_name">Empresa</label>
+        </xpath>
+        <xpath expr="//label[@for='vat']" position="replace">
+            <label class="col-form-label fw-normal label-optional" for="vat">CUIT / NIF</label>
         </xpath>
         <xpath expr="//label[@for='street']" position="replace">
             <label class="col-form-label" for="street">Direccion</label>

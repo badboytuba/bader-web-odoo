@@ -530,6 +530,91 @@ odoo.define('bader_website.main', function (require) {
             });
         })();
 
+        // ---- 9b. Header Cart Badge Sync ----
+        (function syncHeaderCartBadge() {
+            var badgeSelector = '.my_cart_quantity, .o_wsale_my_cart .my_cart_quantity';
+            var maxBadgeQty = 99;
+
+            function parseQty(raw) {
+                var cleaned = (raw || '').replace(/[^\d]/g, '');
+                var qty = parseInt(cleaned, 10);
+                return isNaN(qty) ? null : qty;
+            }
+
+            function qtyFromPopover() {
+                if (document.querySelector('.bader-cart-popover--empty')) {
+                    return 0;
+                }
+                var rows = document.querySelectorAll('.bader-cart-popover__item');
+                if (!rows.length) return null;
+
+                var total = 0;
+                rows.forEach(function (row) {
+                    var qtyEl = row.querySelector('.bader-cart-popover__meta span');
+                    var qty = parseQty(qtyEl ? qtyEl.textContent : '');
+                    total += qty === null ? 1 : qty;
+                });
+                return total;
+            }
+
+            function qtyFromCartLines() {
+                if (document.querySelector('.js_cart_lines.bader-empty-cart')) {
+                    return 0;
+                }
+                var qtyInputs = document.querySelectorAll('.js_cart_lines .js_quantity');
+                if (!qtyInputs.length) return null;
+
+                var total = 0;
+                qtyInputs.forEach(function (input) {
+                    var qty = parseQty(input.value);
+                    if (qty !== null) total += qty;
+                });
+                return total;
+            }
+
+            function computeQty() {
+                var fromPopover = qtyFromPopover();
+                if (fromPopover !== null) return fromPopover;
+                return qtyFromCartLines();
+            }
+
+            function renderQty(totalQty) {
+                if (totalQty === null) return;
+                var badgeText = totalQty > maxBadgeQty ? String(maxBadgeQty) + '+' : String(totalQty);
+                document.querySelectorAll(badgeSelector).forEach(function (badge) {
+                    badge.textContent = badgeText;
+                    badge.classList.remove('d-none');
+                });
+            }
+
+            function syncQty() {
+                renderQty(computeQty());
+            }
+
+            syncQty();
+            setTimeout(syncQty, 350);
+            setTimeout(syncQty, 1200);
+
+            if ('MutationObserver' in window) {
+                var observer = new MutationObserver(syncQty);
+                [
+                    document.querySelector('.bader-cart-popover'),
+                    document.querySelector('.js_cart_lines'),
+                    document.querySelector('.o_wsale_my_cart'),
+                ].forEach(function (root) {
+                    if (root) {
+                        observer.observe(root, { childList: true, subtree: true, characterData: true });
+                    }
+                });
+            }
+
+            document.addEventListener('change', function (ev) {
+                if (ev.target && ev.target.matches('.js_cart_lines .js_quantity')) {
+                    syncQty();
+                }
+            });
+        })();
+
         // ---- 10. SHOP GRID — Bader AR Style Enhancements ----
         (function initShopEnhancements() {
             var shopPage = document.querySelector('.oe_website_sale');
@@ -591,7 +676,7 @@ odoo.define('bader_website.main', function (require) {
                     heroHtml += '<div class="bader-hero__segments">' +
 
                         // Clínica Dental
-                        '<a href="/shop/category/clinica-dental" class="bader-segment-card">' +
+                        '<a href="/productos?search=clinica%20dental" class="bader-segment-card">' +
                         '<div class="bader-segment-card__icon"><i class="fa fa-hospital-o"></i></div>' +
                         '<div class="bader-segment-card__content">' +
                         '<h3>Clínica Dental</h3>' +
@@ -603,7 +688,7 @@ odoo.define('bader_website.main', function (require) {
                         '</div></a>' +
 
                         // Laboratorio Dental
-                        '<a href="/shop/category/laboratorio-dental" class="bader-segment-card">' +
+                        '<a href="/productos?search=laboratorio%20dental" class="bader-segment-card">' +
                         '<div class="bader-segment-card__icon"><i class="fa fa-flask"></i></div>' +
                         '<div class="bader-segment-card__content">' +
                         '<h3>Laboratorio Dental</h3>' +
@@ -615,7 +700,7 @@ odoo.define('bader_website.main', function (require) {
                         '</div></a>' +
 
                         // Estudiantes
-                        '<a href="/shop/category/estudiantes" class="bader-segment-card">' +
+                        '<a href="/productos?search=estudiantes" class="bader-segment-card">' +
                         '<div class="bader-segment-card__icon"><i class="fa fa-graduation-cap"></i></div>' +
                         '<div class="bader-segment-card__content">' +
                         '<h3>Estudiantes</h3>' +
@@ -860,16 +945,47 @@ odoo.define('bader_website.main', function (require) {
                 var existingFilters = rail.querySelector('.products_attributes_filters');
                 if (!rail.querySelector('.bader-filter-section--segmento')) {
                     var currentPath = window.location.pathname.toLowerCase();
+                    var currentSearch = window.location.search.toLowerCase();
+                    var activeSearch = '';
+                    try {
+                        activeSearch = (new URLSearchParams(window.location.search).get('search') || '').toLowerCase();
+                    } catch (e) {
+                        activeSearch = '';
+                    }
                     var segmentos = [
-                        { name: 'Clínica Dental', icon: 'fa-hospital-o', url: '/shop/category/clinica-dental', count: '7' },
-                        { name: 'Laboratorio Dental', icon: 'fa-flask', url: '/shop/category/laboratorio-dental', count: '6' },
-                        { name: 'Estudiantes', icon: 'fa-graduation-cap', url: '/shop/category/estudiantes', count: '6' }
+                        {
+                            name: 'Clínica Dental',
+                            icon: 'fa-hospital-o',
+                            url: '/productos?search=clinica',
+                            legacy: '/shop/category/clinica-dental',
+                            keys: ['clinica', 'sillones', 'autoclaves', 'rayos', 'compresores', 'materiales'],
+                            count: '7'
+                        },
+                        {
+                            name: 'Laboratorio Dental',
+                            icon: 'fa-flask',
+                            url: '/productos?search=laboratorio',
+                            legacy: '/shop/category/laboratorio-dental',
+                            keys: ['laboratorio', 'mesas', 'cabinas', 'arenadoras', 'articuladores', 'termoformadoras'],
+                            count: '6'
+                        },
+                        {
+                            name: 'Estudiantes',
+                            icon: 'fa-graduation-cap',
+                            url: '/productos?search=estudiantes',
+                            legacy: '/shop/category/estudiantes',
+                            keys: ['estudiantes', 'kit', 'simuladores', 'tipodontos', 'fantomas', 'dientes', 'accesorios'],
+                            count: '6'
+                        }
                     ];
                     var segHtml = '<div class="bader-filter-section bader-filter-section--segmento">' +
                         '<div class="bader-filter-section__title">Segmento <span class="bader-chevron is-open">▾</span></div>' +
                         '<div class="bader-filter-section__body"><div class="bader-segmento-list">';
                     segmentos.forEach(function (s) {
-                        var isActive = currentPath.indexOf(s.url) !== -1;
+                        var queryPart = (s.url.split('?')[1] || '').toLowerCase();
+                        var isActive = currentPath.indexOf(s.legacy) !== -1 ||
+                            currentSearch.indexOf(queryPart) !== -1 ||
+                            s.keys.some(function (k) { return activeSearch.indexOf(k) !== -1; });
                         segHtml += '<a href="' + s.url + '" class="bader-segmento-item' + (isActive ? ' bader-segmento-item--active' : '') + '">' +
                             '<i class="fa ' + s.icon + '"></i> ' + s.name +
                             '<span class="bader-segmento-count">' + s.count + '</span></a>';

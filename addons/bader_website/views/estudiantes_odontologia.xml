@@ -98,28 +98,28 @@
                                 <div style="font-size:2.5rem; color:#10B981; margin-bottom:1rem;"><i class="fa fa-cogs"/></div>
                                 <h3 style="color:#003841; font-weight:800; font-size:1.1rem; margin-bottom:0.5rem;">Kit 4matic</h3>
                                 <p style="color:#64748B; font-size:0.85rem;">Kit completo con turbina, contra-ángulo, micromotor y pieza recta</p>
-                                <a href="/shop?category=kits" class="btn-bader btn-bader--sm" style="margin-top:1rem; background:#10B981;">Ver Kit</a>
+                                <a href="/productos?search=kit" class="btn-bader btn-bader--sm" style="margin-top:1rem; background:#10B981;">Ver Kit</a>
                             </div>
                             <!-- Kit Smart -->
                             <div class="bader-page-card bader-animate" style="border:2px solid transparent; text-align:center;">
                                 <div style="font-size:2.5rem; color:#10B981; margin-bottom:1rem;"><i class="fa fa-lightbulb-o"/></div>
                                 <h3 style="color:#003841; font-weight:800; font-size:1.1rem; margin-bottom:0.5rem;">Kit Smart</h3>
                                 <p style="color:#64748B; font-size:0.85rem;">Kit esencial con turbina y contra-ángulo smart</p>
-                                <a href="/shop?category=kits" class="btn-bader btn-bader--sm" style="margin-top:1rem; background:#10B981;">Ver Kit</a>
+                                <a href="/productos?search=kit" class="btn-bader btn-bader--sm" style="margin-top:1rem; background:#10B981;">Ver Kit</a>
                             </div>
                             <!-- Kit Uptrend -->
                             <div class="bader-page-card bader-animate" style="border:2px solid transparent; text-align:center;">
                                 <div style="font-size:2.5rem; color:#10B981; margin-bottom:1rem;"><i class="fa fa-rocket"/></div>
                                 <h3 style="color:#003841; font-weight:800; font-size:1.1rem; margin-bottom:0.5rem;">Kit Uptrend</h3>
                                 <p style="color:#64748B; font-size:0.85rem;">Kit avanzado con generador LED y acabados premium</p>
-                                <a href="/shop?category=kits" class="btn-bader btn-bader--sm" style="margin-top:1rem; background:#10B981;">Ver Kit</a>
+                                <a href="/productos?search=kit" class="btn-bader btn-bader--sm" style="margin-top:1rem; background:#10B981;">Ver Kit</a>
                             </div>
                             <!-- Kit Neo -->
                             <div class="bader-page-card bader-animate" style="border:2px solid transparent; text-align:center;">
                                 <div style="font-size:2.5rem; color:#10B981; margin-bottom:1rem;"><i class="fa fa-flash"/></div>
                                 <h3 style="color:#003841; font-weight:800; font-size:1.1rem; margin-bottom:0.5rem;">Kit Neo</h3>
                                 <p style="color:#64748B; font-size:0.85rem;">Kit económico ideal para iniciar tu práctica profesional</p>
-                                <a href="/shop?category=kits" class="btn-bader btn-bader--sm" style="margin-top:1rem; background:#10B981;">Ver Kit</a>
+                                <a href="/productos?search=kit" class="btn-bader btn-bader--sm" style="margin-top:1rem; background:#10B981;">Ver Kit</a>
                             </div>
                         </div>
                     </div>
@@ -140,7 +140,7 @@
                         </div>
 
                         <div class="bader-page-section__grid bader-page-section__grid--3">
-                            <a href="/shop?category=kits-rotatorio" class="bader-category-card bader-animate">
+                            <a href="/productos?search=kit%20rotatorio" class="bader-category-card bader-animate">
                                 <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=600&amp;q=80');"/>
                                 <div class="bader-category-card__overlay"/>
                                 <div class="bader-category-card__badge" style="background:rgba(16,185,129,0.90);"><i class="fa fa-cogs"/></div>
@@ -150,7 +150,7 @@
                                     <span class="bader-category-card__link" style="color:#34D399;"><i class="fa fa-arrow-right"/> Ver kits</span>
                                 </div>
                             </a>
-                            <a href="/shop?category=simuladores" class="bader-category-card bader-animate">
+                            <a href="/productos?search=simuladores" class="bader-category-card bader-animate">
                                 <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&amp;q=80');"/>
                                 <div class="bader-category-card__overlay"/>
                                 <div class="bader-category-card__badge" style="background:rgba(16,185,129,0.90);"><i class="fa fa-desktop"/></div>
@@ -160,7 +160,7 @@
                                     <span class="bader-category-card__link" style="color:#34D399;"><i class="fa fa-arrow-right"/> Ver simuladores</span>
                                 </div>
                             </a>
-                            <a href="/shop?category=tipodontos" class="bader-category-card bader-animate">
+                            <a href="/productos?search=tipodontos" class="bader-category-card bader-animate">
                                 <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&amp;q=80');"/>
                                 <div class="bader-category-card__overlay"/>
                                 <div class="bader-category-card__badge" style="background:rgba(16,185,129,0.90);"><i class="fa fa-magic"/></div>
@@ -170,7 +170,7 @@
                                     <span class="bader-category-card__link" style="color:#34D399;"><i class="fa fa-arrow-right"/> Ver tipodontos</span>
                                 </div>
                             </a>
-                            <a href="/shop?category=fantomas" class="bader-category-card bader-animate">
+                            <a href="/productos?search=fantomas" class="bader-category-card bader-animate">
                                 <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=600&amp;q=80');"/>
                                 <div class="bader-category-card__overlay"/>
                                 <div class="bader-category-card__badge" style="background:rgba(16,185,129,0.90);"><i class="fa fa-user"/></div>
@@ -180,7 +180,7 @@
                                     <span class="bader-category-card__link" style="color:#34D399;"><i class="fa fa-arrow-right"/> Ver fantomas</span>
                                 </div>
                             </a>
-                            <a href="/shop?category=dientes" class="bader-category-card bader-animate">
+                            <a href="/productos?search=dientes" class="bader-category-card bader-animate">
                                 <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=600&amp;q=80');"/>
                                 <div class="bader-category-card__overlay"/>
                                 <div class="bader-category-card__badge" style="background:rgba(16,185,129,0.90);"><i class="fa fa-heart"/></div>
@@ -190,7 +190,7 @@
                                     <span class="bader-category-card__link" style="color:#34D399;"><i class="fa fa-arrow-right"/> Ver dientes</span>
                                 </div>
                             </a>
-                            <a href="/shop?category=accesorios" class="bader-category-card bader-animate">
+                            <a href="/productos?search=accesorios" class="bader-category-card bader-animate">
                                 <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1581594693702-fbdc51b2763b?w=600&amp;q=80');"/>
                                 <div class="bader-category-card__overlay"/>
                                 <div class="bader-category-card__badge" style="background:rgba(16,185,129,0.90);"><i class="fa fa-puzzle-piece"/></div>

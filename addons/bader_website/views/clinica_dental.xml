@@ -85,7 +85,7 @@
                         </div>
 
                         <div class="bader-page-section__grid bader-page-section__grid--3">
-                            <a href="/shop?category=sillones" class="bader-category-card bader-animate">
+                            <a href="/productos?search=sillones" class="bader-category-card bader-animate">
                                 <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&amp;q=80');"/>
                                 <div class="bader-category-card__overlay"/>
                                 <div class="bader-category-card__badge"><i class="fa fa-bed"/></div>
@@ -96,7 +96,7 @@
                                 </div>
                             </a>
 
-                            <a href="/shop?category=autoclaves" class="bader-category-card bader-animate">
+                            <a href="/productos?search=autoclaves" class="bader-category-card bader-animate">
                                 <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1581594693702-fbdc51b2763b?w=600&amp;q=80');"/>
                                 <div class="bader-category-card__overlay"/>
                                 <div class="bader-category-card__badge"><i class="fa fa-fire"/></div>
@@ -107,7 +107,7 @@
                                 </div>
                             </a>
 
-                            <a href="/shop?category=rayos" class="bader-category-card bader-animate">
+                            <a href="/productos?search=rayos" class="bader-category-card bader-animate">
                                 <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=600&amp;q=80');"/>
                                 <div class="bader-category-card__overlay"/>
                                 <div class="bader-category-card__badge"><i class="fa fa-bolt"/></div>
@@ -118,7 +118,7 @@
                                 </div>
                             </a>
 
-                            <a href="/shop?category=compresores" class="bader-category-card bader-animate">
+                            <a href="/productos?search=compresores" class="bader-category-card bader-animate">
                                 <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&amp;q=80');"/>
                                 <div class="bader-category-card__overlay"/>
                                 <div class="bader-category-card__badge"><i class="fa fa-cog"/></div>
@@ -129,7 +129,7 @@
                                 </div>
                             </a>
 
-                            <a href="/shop?category=instrumental" class="bader-category-card bader-animate">
+                            <a href="/productos?search=instrumental" class="bader-category-card bader-animate">
                                 <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=600&amp;q=80');"/>
                                 <div class="bader-category-card__overlay"/>
                                 <div class="bader-category-card__badge"><i class="fa fa-wrench"/></div>
@@ -140,7 +140,7 @@
                                 </div>
                             </a>
 
-                            <a href="/shop?category=materiales" class="bader-category-card bader-animate">
+                            <a href="/productos?search=materiales" class="bader-category-card bader-animate">
                                 <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=600&amp;q=80');"/>
                                 <div class="bader-category-card__overlay"/>
                                 <div class="bader-category-card__badge"><i class="fa fa-flask"/></div>
