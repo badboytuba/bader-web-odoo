@@ -368,6 +368,35 @@
     .one_kanban .card-footer {
         background: $gray-50;
         border-top: 1px solid $bader-card-border;
+
+        .btn {
+            border-radius: 10px;
+            font-size: 0.84rem;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: $bader-dark;
+            border-color: $bader-dark;
+
+            &:hover,
+            &:focus {
+                background: #004b59;
+                border-color: #004b59;
+            }
+        }
+
+        .btn-secondary {
+            background: $white;
+            border-color: $bader-border;
+            color: $gray-700;
+
+            &:hover,
+            &:focus {
+                border-color: $bader-green;
+                color: $bader-dark;
+            }
+        }
     }
 
     .checkout_autoformat {
@@ -408,6 +437,51 @@
         color: $gray-800;
         font-size: 1.1rem;
         font-weight: 700;
+    }
+
+    .bader-payment-trust {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.45rem 0.6rem;
+        margin-bottom: 0.95rem;
+
+        span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: $gray-50;
+            border: 1px solid $bader-card-border;
+            border-radius: $radius-pill;
+            padding: 0.28rem 0.65rem;
+            color: $gray-600;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        i {
+            color: $bader-green;
+        }
+    }
+
+    .bader-payment-methods {
+        .o_payment_option,
+        .list-group-item {
+            border: 1px solid $bader-card-border;
+            border-radius: 10px;
+            margin-bottom: 0.65rem;
+            padding: 0.75rem 0.85rem;
+            background: $white;
+        }
+
+        .o_payment_option:hover,
+        .list-group-item:hover {
+            border-color: rgba($bader-green, 0.55);
+        }
+
+        input[type='radio'] {
+            accent-color: $bader-green;
+        }
     }
 
     #address_on_payment .card-body {

@@ -149,6 +149,12 @@
         <xpath expr="//h3[hasclass('o_page_header')][1]" position="replace">
             <h3 class="o_page_header mt8">Direccion de facturacion</h3>
         </xpath>
+        <xpath expr="//h3[hasclass('o_page_header') and contains(., 'Shipping Address')]" position="replace">
+            <h3 class="o_page_header mt16 mb4">Direccion de envio</h3>
+        </xpath>
+        <xpath expr="//a[hasclass('a-submit') and hasclass('btn-secondary') and .//span[contains(., 'Add an address')]]/span[last()]" position="replace">
+            <span>Agregar direccion</span>
+        </xpath>
         <xpath expr="//a[@href='/shop/cart' and hasclass('btn-secondary')]/span" position="replace">
             <span>Volver al carrito</span>
         </xpath>
@@ -160,14 +166,44 @@
         </xpath>
     </template>
 
+    <template id="bader_address_kanban" inherit_id="website_sale.address_kanban"
+              name="Bader Address Kanban" priority="30">
+        <xpath expr="//a[hasclass('btn') and hasclass('btn-block') and hasclass('btn-primary')]" position="replace">
+            <a role="button" href="#" class="btn btn-block btn-primary">
+                <i class="fa fa-check"/> Enviar a esta direccion
+            </a>
+        </xpath>
+        <xpath expr="//a[hasclass('btn') and hasclass('btn-block') and hasclass('btn-secondary')]" position="replace">
+            <a role="button" href="#" class="btn btn-block btn-secondary">
+                Seleccionar direccion
+            </a>
+        </xpath>
+    </template>
+
     <template id="bader_address_page" inherit_id="website_sale.address"
               name="Bader Address Page" priority="30">
         <xpath expr="//div[@id='wrap']/div[hasclass('container') and hasclass('oe_website_sale')]" position="attributes">
             <attribute name="class" add="bader-address-page" separator=" "/>
         </xpath>
 
+        <xpath expr="//span[contains(., 'Fill in your address')]" position="replace">
+            <span t-if="account_on_checkout != 'mandatory'">Completa tus datos</span>
+        </xpath>
+        <xpath expr="//a[contains(@href, '/web/login?redirect=/shop/checkout') and contains(., 'Sign in')]" position="replace">
+            <a t-if="account_on_checkout != 'disabled'" role="button" href="/web/login?redirect=/shop/checkout" style="margin-top: -11px"> Iniciar sesion</a>
+        </xpath>
+        <xpath expr="//h2[contains(., 'Your Address')]" position="replace">
+            <h2 class="o_page_header mt8">Tus datos</h2>
+        </xpath>
+        <xpath expr="//h2[contains(., 'Shipping Address')]" position="replace">
+            <h2 class="o_page_header mt8">Direccion de envio</h2>
+        </xpath>
+
         <xpath expr="//label[@for='name']" position="replace">
             <label class="col-form-label" for="name">Nombre y apellido</label>
+        </xpath>
+        <xpath expr="//label[@for='email']" position="replace">
+            <label t-attf-class="col-form-label #{mode[1] == 'shipping' and 'label-optional' or ''}" for="email">Email</label>
         </xpath>
         <xpath expr="//label[@for='phone']" position="replace">
             <label class="col-form-label" for="phone">Telefono</label>
@@ -189,6 +225,18 @@
         </xpath>
         <xpath expr="//label[@for='state_id']" position="replace">
             <label class="col-form-label" for="state_id">Provincia</label>
+        </xpath>
+        <xpath expr="//option[contains(., 'Country...')]" position="replace">
+            <option value="">Pais...</option>
+        </xpath>
+        <xpath expr="//option[contains(., 'State / Province...')]" position="replace">
+            <option value="">Provincia...</option>
+        </xpath>
+        <xpath expr="//label[input[@id='shipping_use_same']]" position="replace">
+            <label>
+                <input type="checkbox" id="shipping_use_same" class="mr8" name="use_same" value="1" checked="checked"/>Enviar a la misma direccion
+                <span class="ship_to_other text-muted" style="display: none">&amp;nbsp;(<i>Solicitaremos la direccion de envio mas adelante</i>) </span>
+            </label>
         </xpath>
         <xpath expr="//a[hasclass('btn-secondary') and hasclass('mb32')]/span" position="replace">
             <span>Volver</span>
@@ -221,14 +269,26 @@
         <xpath expr="//h3[hasclass('mb24')]" position="replace">
             <h3 class="mb24">Selecciona metodo de pago</h3>
         </xpath>
+        <xpath expr="//div[@id='payment_method' and not(@name)]" position="attributes">
+            <attribute name="class" add="bader-payment-methods" separator=" "/>
+        </xpath>
+        <xpath expr="//div[@id='payment_method' and not(@name)]/h3" position="after">
+            <div class="bader-payment-trust">
+                <span><i class="fa fa-lock"/> Pago seguro</span>
+                <span><i class="fa fa-shield"/> Datos protegidos</span>
+            </div>
+        </xpath>
         <xpath expr="//t[@t-call='payment.checkout']/t[@t-set='submit_button_label']" position="replace">
             <t t-set="submit_button_label">Pagar ahora</t>
         </xpath>
         <xpath expr="//div[@id='payment_method' and @name='o_website_sale_free_cart']//t[@t-set='submit_button_label']" position="replace">
             <t t-set="submit_button_label">Confirmar pedido</t>
         </xpath>
-        <xpath expr="//div[hasclass('alert-warning')]/strong" position="replace">
-            <strong>No encontramos un metodo de pago disponible.</strong>
+        <xpath expr="//div[hasclass('alert-warning') and strong]" position="replace">
+            <div class="alert alert-warning">
+                <strong>No encontramos un metodo de pago disponible.</strong><br/>
+                Si crees que es un error, contacta al equipo de Bader.
+            </div>
         </xpath>
     </template>
 
