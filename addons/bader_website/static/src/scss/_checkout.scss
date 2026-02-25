@@ -341,6 +341,152 @@
 }
 
 // --------------------------------------------
+// Header cart popover (CartDrawer-like)
+// --------------------------------------------
+
+.popover {
+    max-width: 380px;
+    border-radius: 14px;
+    border: 1px solid $bader-card-border;
+    box-shadow: $shadow-lg;
+}
+
+.bader-cart-popover {
+    width: 330px;
+    max-width: 100%;
+    display: grid;
+    gap: 0.8rem;
+
+    &--empty {
+        width: 280px;
+        text-align: center;
+        padding: 0.5rem 0.2rem;
+
+        i {
+            font-size: 2rem;
+            color: $gray-400;
+            margin-bottom: 0.3rem;
+        }
+
+        h4 {
+            margin: 0 0 0.2rem;
+            font-size: 1rem;
+            color: $gray-800;
+        }
+
+        p {
+            margin: 0 0 0.6rem;
+            font-size: 0.82rem;
+            color: $gray-500;
+        }
+    }
+
+    &__list {
+        max-height: 260px;
+        overflow-y: auto;
+        display: grid;
+        gap: 0.45rem;
+        padding-right: 0.15rem;
+    }
+
+    &__item {
+        display: grid;
+        grid-template-columns: 48px 1fr auto;
+        gap: 0.55rem;
+        align-items: center;
+        padding-bottom: 0.45rem;
+        border-bottom: 1px solid $gray-100;
+
+        &:last-child {
+            border-bottom: 0;
+            padding-bottom: 0;
+        }
+    }
+
+    &__thumb {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        overflow: hidden;
+        background: $gray-50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        img,
+        span {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__meta {
+        min-width: 0;
+
+        strong {
+            display: block;
+            font-size: 0.81rem;
+            color: $gray-800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        span {
+            display: block;
+            font-size: 0.75rem;
+            color: $gray-500;
+        }
+    }
+
+    &__price {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: $bader-dark;
+        white-space: nowrap;
+    }
+
+    &__totals {
+        border-top: 1px solid $bader-card-border;
+        padding-top: 0.65rem;
+        display: grid;
+        gap: 0.35rem;
+    }
+
+    &__row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.82rem;
+        color: $gray-600;
+
+        strong {
+            color: $gray-800;
+            font-weight: 700;
+        }
+
+        .is-free {
+            color: $bader-green;
+        }
+    }
+
+    &__actions {
+        display: grid;
+        gap: 0.4rem;
+
+        .btn-bader,
+        .btn-bader-outline {
+            font-size: 0.82rem;
+            padding: 0.55rem 0.85rem;
+            border-radius: 9px;
+            text-align: center;
+            justify-content: center;
+        }
+    }
+}
+
+// --------------------------------------------
 // Checkout/address cards and forms
 // --------------------------------------------
 

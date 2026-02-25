@@ -53,6 +53,67 @@
         </xpath>
     </template>
 
+    <template id="bader_cart_popover" inherit_id="website_sale.cart_popover"
+              name="Bader Cart Popover" priority="30">
+        <xpath expr="//div[hasclass('alert-info')]" position="replace">
+            <div t-if="not website_sale_order or not website_sale_order.website_order_line"
+                 class="bader-cart-popover bader-cart-popover--empty">
+                <i class="fa fa-shopping-bag"/>
+                <h4>Tu carrito esta vacio</h4>
+                <p>Explora nuestros productos y agrega lo que necesites.</p>
+                <a href="/productos" class="btn-bader-sm">Ver productos</a>
+            </div>
+        </xpath>
+
+        <xpath expr="//t[@t-if='website_sale_order and website_sale_order.website_order_line']" position="replace">
+            <t t-if="website_sale_order and website_sale_order.website_order_line">
+                <div class="bader-cart-popover">
+                    <div class="bader-cart-popover__list">
+                        <div class="bader-cart-popover__item"
+                             t-foreach="website_sale_order.website_order_line"
+                             t-as="line">
+                            <div class="bader-cart-popover__thumb">
+                                <span t-if="line._is_not_sellable_line() and line.product_id.image_128">
+                                    <img t-att-src="image_data_uri(line.product_id.image_128)"
+                                         class="img rounded"
+                                         t-att-alt="line.name_short"/>
+                                </span>
+                                <span t-else=""
+                                      t-field="line.product_id.image_128"
+                                      t-options="{'widget': 'image', 'qweb_img_responsive': False, 'class': 'rounded'}"/>
+                            </div>
+                            <div class="bader-cart-popover__meta">
+                                <strong t-esc="line.name_short"/>
+                                <span>
+                                    x<t t-esc="int(line.product_uom_qty) == line.product_uom_qty and int(line.product_uom_qty) or line.product_uom_qty"/>
+                                </span>
+                            </div>
+                            <div class="bader-cart-popover__price">
+                                <span t-field="line.price_reduce_taxinc"
+                                      t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bader-cart-popover__totals">
+                        <div class="bader-cart-popover__row">
+                            <span>Subtotal</span>
+                            <strong t-field="website_sale_order.amount_total"
+                                    t-options='{"widget": "monetary", "display_currency": website_sale_order.pricelist_id.currency_id}'/>
+                        </div>
+                        <div class="bader-cart-popover__row">
+                            <span>Envio</span>
+                            <strong class="is-free">Gratis</strong>
+                        </div>
+                    </div>
+                    <div class="bader-cart-popover__actions">
+                        <a role="button" class="btn-bader w-100" href="/shop/cart">Finalizar compra</a>
+                        <a role="button" class="btn-bader-outline w-100" href="/productos">Seguir comprando</a>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
     <template id="bader_cart_page" inherit_id="website_sale.cart"
               name="Bader Cart Page" priority="30">
         <xpath expr="//div[@id='wrap']/div[hasclass('container') and hasclass('oe_website_sale')]" position="attributes">
