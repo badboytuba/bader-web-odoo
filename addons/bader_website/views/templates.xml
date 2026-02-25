@@ -210,10 +210,10 @@
         <xpath expr="//h3[hasclass('o_page_header')][1]" position="replace">
             <h3 class="o_page_header mt8">Direccion de facturacion</h3>
         </xpath>
-        <xpath expr="//h3[hasclass('o_page_header') and contains(., 'Shipping Address')]" position="replace">
+        <xpath expr="//t[@t-if='not only_services' and @groups='account.group_delivery_invoice_address']//h3[hasclass('o_page_header') and hasclass('mt16') and hasclass('mb4')]" position="replace">
             <h3 class="o_page_header mt16 mb4">Direccion de envio</h3>
         </xpath>
-        <xpath expr="//a[hasclass('a-submit') and hasclass('btn-secondary') and .//span[contains(., 'Add an address')]]/span[last()]" position="replace">
+        <xpath expr="//form[@action='/shop/address']//a[hasclass('a-submit') and hasclass('btn-secondary')]/span[last()]" position="replace">
             <span>Agregar direccion</span>
         </xpath>
         <xpath expr="//a[@href='/shop/cart' and hasclass('btn-secondary')]/span" position="replace">
@@ -247,16 +247,16 @@
             <attribute name="class" add="bader-address-page" separator=" "/>
         </xpath>
 
-        <xpath expr="//span[contains(., 'Fill in your address')]" position="replace">
+        <xpath expr="//t[@t-if=&quot;mode == ('new', 'billing')&quot;]/h2[hasclass('o_page_header')]/span[@t-if=&quot;account_on_checkout != 'mandatory'&quot;]" position="replace">
             <span t-if="account_on_checkout != 'mandatory'">Completa tus datos</span>
         </xpath>
-        <xpath expr="//a[contains(@href, '/web/login?redirect=/shop/checkout') and contains(., 'Sign in')]" position="replace">
+        <xpath expr="//t[@t-if=&quot;mode == ('new', 'billing')&quot;]/h2[hasclass('o_page_header')]/a[@t-if=&quot;account_on_checkout != 'disabled'&quot;]" position="replace">
             <a t-if="account_on_checkout != 'disabled'" role="button" href="/web/login?redirect=/shop/checkout" style="margin-top: -11px"> Iniciar sesion</a>
         </xpath>
-        <xpath expr="//h2[contains(., 'Your Address')]" position="replace">
+        <xpath expr="//t[@t-if=&quot;mode == ('edit', 'billing')&quot;]/h2[hasclass('o_page_header')]" position="replace">
             <h2 class="o_page_header mt8">Tus datos</h2>
         </xpath>
-        <xpath expr="//h2[contains(., 'Shipping Address')]" position="replace">
+        <xpath expr="//t[@t-if=&quot;mode[1] == 'shipping'&quot;]/h2[hasclass('o_page_header')]" position="replace">
             <h2 class="o_page_header mt8">Direccion de envio</h2>
         </xpath>
 
@@ -287,11 +287,8 @@
         <xpath expr="//label[@for='state_id']" position="replace">
             <label class="col-form-label" for="state_id">Provincia</label>
         </xpath>
-        <xpath expr="//option[contains(., 'Country...')]" position="replace">
+        <xpath expr="//select[@id='country_id']/option[1]" position="replace">
             <option value="">Pais...</option>
-        </xpath>
-        <xpath expr="//option[contains(., 'State / Province...')]" position="replace">
-            <option value="">Provincia...</option>
         </xpath>
         <xpath expr="//label[input[@id='shipping_use_same']]" position="replace">
             <label>
@@ -314,10 +311,10 @@
                 <i class="fa fa-edit"/> Editar
             </a>
         </xpath>
-        <xpath expr="//b[contains(., 'Billing')]" position="replace">
+        <xpath expr="//div[@id='shipping_and_billing']/div[1]/b" position="replace">
             <b>Facturacion<t t-if="same_shipping and not only_services"> y envio</t>: </b>
         </xpath>
-        <xpath expr="//b[contains(., 'Shipping:')]" position="replace">
+        <xpath expr="//div[@id='shipping_and_billing']/div[@groups='account.group_delivery_invoice_address']/b" position="replace">
             <b>Envio: </b>
         </xpath>
     </template>
