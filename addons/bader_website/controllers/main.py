@@ -5,7 +5,6 @@ import re
 from datetime import datetime
 from odoo import http
 from odoo.tools import html2plaintext
-from odoo.tools.misc import formatLang
 from odoo.http import request
 from odoo.addons.website.controllers.main import Website
 from odoo.addons.website_sale.controllers.main import WebsiteSale
@@ -349,80 +348,10 @@ class BaderWebsite(Website):
         )
 
     # ─── Homepage ──────────────────────────────────────────────
-    def _homepage_featured_products(self, limit=6):
-        """Return featured products formatted for homepage cards."""
-        website = request.website
-        pricelist = website.get_current_pricelist()
-        currency = pricelist.currency_id if pricelist else website.currency_id
-        partner = request.env.user.partner_id
-        lang = request.context.get('lang')
-
-        product_model = request.env['product.template'].sudo().with_context(
-            website_id=website.id,
-            pricelist=pricelist.id if pricelist else False,
-            partner=partner.id,
-            lang=lang,
-        )
-        products = product_model.search(
-            [('website_published', '=', True), ('sale_ok', '=', True)],
-            order='website_sequence asc, id desc',
-            limit=limit,
-        )
-
-        cards = []
-        for product in products:
-            price = float(getattr(product, 'website_price', product.list_price) or 0.0)
-            compare_price = float(getattr(product, 'compare_list_price', 0.0) or 0.0)
-            has_offer = compare_price > price > 0
-            discount_pct = 0
-            if has_offer:
-                discount_pct = int(round(((compare_price - price) / compare_price) * 100))
-
-            category_path = 'Productos'
-            if 'public_categ_ids' in product._fields and product.public_categ_ids:
-                category_path = ' / '.join(product.public_categ_ids[:3].mapped('name'))
-
-            description = product.description_sale or html2plaintext(product.website_description or '')
-            description = re.sub(r'\s+', ' ', (description or '')).strip()
-            if len(description) > 120:
-                description = description[:117].rstrip() + '...'
-            if not description:
-                description = 'Producto de alta calidad con garantia europea.'
-
-            in_stock = True
-            if 'qty_available' in product._fields and product.type != 'service':
-                in_stock = bool(product.qty_available > 0)
-
-            cards.append({
-                'id': product.id,
-                'name': product.name,
-                'url': '/producto/%s' % product.id,
-                'image_url': '/web/image/product.template/%s/image_512' % product.id,
-                'category_path': category_path,
-                'description': description,
-                'price_label': formatLang(request.env, price, currency_obj=currency),
-                'compare_price_label': (
-                    formatLang(request.env, compare_price, currency_obj=currency)
-                    if has_offer else ''
-                ),
-                'installment_label': formatLang(
-                    request.env, (price / 12.0), currency_obj=currency
-                ),
-                'has_offer': has_offer,
-                'discount_pct': discount_pct,
-                'in_stock': in_stock,
-            })
-
-        return cards
-
     @http.route('/', type='http', auth='public', website=True, sitemap=True)
     def index(self, **kw):
         """Override the main homepage to render Bader template."""
-        featured_products = self._homepage_featured_products(limit=6)
-        return request.render('bader_website.bader_homepage', {
-            'featured_products': featured_products,
-            'has_home_offers': any(p.get('has_offer') for p in featured_products),
-        })
+        return request.render('bader_website.bader_homepage', {})
 
     @http.route([
         '/productos',

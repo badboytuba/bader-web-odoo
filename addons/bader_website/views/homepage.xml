@@ -17,6 +17,20 @@
                 <meta name="twitter:title" content="Bader Argentina — Equipamiento Odontológico"/>
                 <meta name="twitter:description" content="Líder en equipamiento odontológico. +2.800 productos en stock. Envíos a todo el país."/>
             </t>
+            <t t-set="home_pricelist" t-value="request.website.get_current_pricelist()"/>
+            <t t-set="home_currency" t-value="home_pricelist.currency_id"/>
+            <t t-set="home_products" t-value="
+                request.env['product.template'].sudo().with_context(
+                    website_id=request.website.id,
+                    pricelist=home_pricelist.id,
+                    partner=request.env.user.partner_id.id,
+                    lang=request.context.get('lang')
+                ).search(
+                    [('website_published', '=', True), ('sale_ok', '=', True)],
+                    order='website_sequence asc, id desc',
+                    limit=6
+                )
+            "/>
             <div id="wrap" class="oe_structure oe_empty">
 
                 <!-- ==========================================
@@ -300,7 +314,7 @@
                             consultorio ofrezca la mejor experiencia a tus pacientes
                         </p>
 
-                        <div class="bader-products__offer" t-if="has_home_offers">
+                        <div class="bader-products__offer" t-if="home_products.filtered('compare_list_price')">
                             <i class="fa fa-bolt"/>
                             <div>
                                 <strong>OFERTAS ESPECIALES</strong>
@@ -309,43 +323,53 @@
                             <span class="bader-products__offer-tag">HOT SALE</span>
                         </div>
 
-                        <div class="bader-products__grid" t-if="featured_products">
-                            <article class="bader-home-product" t-foreach="featured_products" t-as="prod" t-key="prod['id']">
-                                <a t-att-href="prod['url']" class="bader-home-product__image-wrap">
-                                    <img t-att-src="prod['image_url']" t-att-alt="prod['name']" loading="lazy"/>
+                        <div class="bader-products__grid" t-if="home_products">
+                            <article class="bader-home-product" t-foreach="home_products" t-as="prod">
+                                <a t-att-href="'/producto/%s' % prod.id" class="bader-home-product__image-wrap">
+                                    <img t-att-src="'/web/image/product.template/%s/image_512' % prod.id"
+                                         t-att-alt="prod.name"
+                                         loading="lazy"/>
                                     <span class="bader-home-product__badge bader-home-product__badge--offer"
-                                          t-if="prod['has_offer']">
-                                        <i class="fa fa-bolt"/> <t t-esc="prod['discount_pct']"/>% DESCUENTO
+                                          t-if="prod.compare_list_price and prod.compare_list_price > prod.list_price">
+                                        <i class="fa fa-bolt"/>
+                                        <t t-esc="int(round(((prod.compare_list_price - prod.list_price) / prod.compare_list_price) * 100))"/>% DESCUENTO
                                     </span>
-                                    <span class="bader-home-product__stock" t-if="prod['in_stock']">
+                                    <span class="bader-home-product__stock" t-if="not ('qty_available' in prod._fields) or prod.type == 'service' or prod.qty_available > 0">
                                         <i class="fa fa-check-circle"/> En stock
                                     </span>
                                 </a>
 
                                 <div class="bader-home-product__body">
                                     <div class="bader-home-product__meta">
-                                        <span t-esc="prod['category_path']"/>
+                                        <span t-esc="' / '.join(prod.public_categ_ids[:3].mapped('name')) or 'Productos'"/>
                                     </div>
-                                    <a t-att-href="prod['url']" class="bader-home-product__name-link">
-                                        <h3 class="bader-home-product__name" t-esc="prod['name']"/>
+                                    <a t-att-href="'/producto/%s' % prod.id" class="bader-home-product__name-link">
+                                        <h3 class="bader-home-product__name" t-esc="prod.name"/>
                                     </a>
-                                    <p class="bader-home-product__description" t-esc="prod['description']"/>
+                                    <p class="bader-home-product__description"
+                                       t-esc="prod.description_sale or 'Producto de alta calidad con garantia europea.'"/>
 
                                     <div class="bader-home-product__prices">
                                         <span class="bader-home-product__compare"
-                                              t-if="prod['has_offer']"
-                                              t-esc="prod['compare_price_label']"/>
-                                        <strong class="bader-home-product__price" t-esc="prod['price_label']"/>
+                                              t-if="prod.compare_list_price and prod.compare_list_price > prod.list_price"
+                                              t-esc="prod.compare_list_price"
+                                              t-options="{'widget': 'monetary', 'display_currency': home_currency}"/>
+                                        <strong class="bader-home-product__price"
+                                                t-esc="prod.list_price"
+                                                t-options="{'widget': 'monetary', 'display_currency': home_currency}"/>
                                         <div class="bader-home-product__installments">
-                                            o <strong>12x <t t-esc="prod['installment_label']"/></strong> sin interes
+                                            o <strong>12x
+                                                <t t-esc="prod.list_price / 12.0"
+                                                   t-options="{'widget': 'monetary', 'display_currency': home_currency}"/>
+                                            </strong> sin interes
                                         </div>
                                     </div>
 
                                     <div class="bader-home-product__actions">
-                                        <a t-att-href="prod['url']" class="btn-bader-outline bader-home-product__details">
+                                        <a t-att-href="'/producto/%s' % prod.id" class="btn-bader-outline bader-home-product__details">
                                             <i class="fa fa-eye"/> Ver Detalles
                                         </a>
-                                        <a t-att-href="'/shop/cart/update?product_id=%s&amp;add_qty=1' % prod['id']"
+                                        <a t-att-href="'/shop/cart/update?product_id=%s&amp;add_qty=1' % prod.id"
                                            class="bader-home-product__add"
                                            title="Agregar al carrito">
                                             <i class="fa fa-shopping-cart"/>
@@ -355,7 +379,7 @@
                             </article>
                         </div>
 
-                        <div class="bader-products__empty" t-if="not featured_products">
+                        <div class="bader-products__empty" t-if="not home_products">
                             <div class="bader-products__empty-icon">
                                 <i class="fa fa-cube"/>
                             </div>
