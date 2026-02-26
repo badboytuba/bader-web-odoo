@@ -300,7 +300,7 @@ odoo.define('bader_website.main', function (require) {
                         { value: '1,300+', label: 'Productos' },
                         { value: '24/7', label: 'Soporte tecnico' },
                     ],
-                    cta: { label: 'Ver equipos para laboratorio', href: '/laboratorio-dental' },
+                    cta: { label: 'Ver equipos para lab', href: '/laboratorio-dental' },
                     testimonial: {
                         text: 'La calidad de nuestras piezas mejoro un 40% desde que usamos equipos Bader.',
                         author: 'Tec. Carlos Rodriguez',

@@ -299,7 +299,70 @@
                             Seleccionamos los mejores equipos odontologicos de Europa para que tu
                             consultorio ofrezca la mejor experiencia a tus pacientes
                         </p>
-                        <!-- Products loaded dynamically from Odoo shop -->
+
+                        <div class="bader-products__offer" t-if="has_home_offers">
+                            <i class="fa fa-bolt"/>
+                            <div>
+                                <strong>OFERTAS ESPECIALES</strong>
+                                <span>Aprovecha los descuentos exclusivos por tiempo limitado</span>
+                            </div>
+                            <span class="bader-products__offer-tag">HOT SALE</span>
+                        </div>
+
+                        <div class="bader-products__grid" t-if="featured_products">
+                            <article class="bader-home-product" t-foreach="featured_products" t-as="prod" t-key="prod['id']">
+                                <a t-att-href="prod['url']" class="bader-home-product__image-wrap">
+                                    <img t-att-src="prod['image_url']" t-att-alt="prod['name']" loading="lazy"/>
+                                    <span class="bader-home-product__badge bader-home-product__badge--offer"
+                                          t-if="prod['has_offer']">
+                                        <i class="fa fa-bolt"/> <t t-esc="prod['discount_pct']"/>% DESCUENTO
+                                    </span>
+                                    <span class="bader-home-product__stock" t-if="prod['in_stock']">
+                                        <i class="fa fa-check-circle"/> En stock
+                                    </span>
+                                </a>
+
+                                <div class="bader-home-product__body">
+                                    <div class="bader-home-product__meta">
+                                        <span t-esc="prod['category_path']"/>
+                                    </div>
+                                    <a t-att-href="prod['url']" class="bader-home-product__name-link">
+                                        <h3 class="bader-home-product__name" t-esc="prod['name']"/>
+                                    </a>
+                                    <p class="bader-home-product__description" t-esc="prod['description']"/>
+
+                                    <div class="bader-home-product__prices">
+                                        <span class="bader-home-product__compare"
+                                              t-if="prod['has_offer']"
+                                              t-esc="prod['compare_price_label']"/>
+                                        <strong class="bader-home-product__price" t-esc="prod['price_label']"/>
+                                        <div class="bader-home-product__installments">
+                                            o <strong>12x <t t-esc="prod['installment_label']"/></strong> sin interes
+                                        </div>
+                                    </div>
+
+                                    <div class="bader-home-product__actions">
+                                        <a t-att-href="prod['url']" class="btn-bader-outline bader-home-product__details">
+                                            <i class="fa fa-eye"/> Ver Detalles
+                                        </a>
+                                        <a t-att-href="'/shop/cart/update?product_id=%s&amp;add_qty=1' % prod['id']"
+                                           class="bader-home-product__add"
+                                           title="Agregar al carrito">
+                                            <i class="fa fa-shopping-cart"/>
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="bader-products__empty" t-if="not featured_products">
+                            <div class="bader-products__empty-icon">
+                                <i class="fa fa-cube"/>
+                            </div>
+                            <h3>Productos en camino</h3>
+                            <p>Estamos preparando el catalogo. Pronto veras aqui los mejores equipos.</p>
+                        </div>
+
                         <div class="bader-products__cta">
                             <a href="/productos" class="btn-bader btn-bader--lg">
                                 Ver Catalogo Completo <i class="fa fa-arrow-right"/>
