@@ -29,6 +29,7 @@
     'data': [
         'views/assets.xml',
         'views/header.xml',
+        'views/header_overrides.xml',
         'views/footer.xml',
         'views/homepage.xml',
         'views/templates.xml',

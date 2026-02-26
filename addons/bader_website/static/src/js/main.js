@@ -165,38 +165,6 @@ odoo.define('bader_website.main', function (require) {
             });
         })();
 
-        // ---- 1c. Header Label Normalization ----
-        (function normalizeHeaderLabels() {
-            function normalize() {
-                document.querySelectorAll('header#top a[href*="/web/login"]').forEach(function (link) {
-                    link.textContent = 'Iniciar sesion';
-                    link.setAttribute('href', '/web/login');
-                });
-
-                document.querySelectorAll('header#top #top_menu a, header#top a.nav-link').forEach(function (link) {
-                    var text = (link.textContent || '').trim().toLowerCase();
-                    if (text === 'servicios') {
-                        var li = link.closest('li');
-                        if (li) li.remove();
-                    }
-                });
-            }
-
-            normalize();
-            setTimeout(normalize, 400);
-            setTimeout(normalize, 1200);
-            setTimeout(normalize, 2500);
-            setTimeout(normalize, 5000);
-
-            if ('MutationObserver' in window) {
-                var header = document.querySelector('header#top');
-                if (header) {
-                    var observer = new MutationObserver(normalize);
-                    observer.observe(header, { childList: true, subtree: true, characterData: true });
-                }
-            }
-        })();
-
         // ---- 2. Fade-in on Scroll (IntersectionObserver) ----
         var animatedEls = document.querySelectorAll('.bader-animate');
         if (animatedEls.length > 0 && 'IntersectionObserver' in window) {

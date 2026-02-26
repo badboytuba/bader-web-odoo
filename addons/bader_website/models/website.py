@@ -32,6 +32,7 @@ class Website(models.Model):
             {"name": "Ser Distribuidor", "url": "/ser-distribuidor", "sequence": 40, "aliases": []},
             {"name": "Descargas", "url": "/descargas", "sequence": 50, "aliases": []},
             {"name": "Blog", "url": "/blog", "sequence": 60, "aliases": []},
+            {"name": "Servicios", "url": "/servicios", "sequence": 70, "aliases": []},
         ]
 
         canonical_urls = set()
