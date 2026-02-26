@@ -51,6 +51,27 @@
         <xpath expr="//a[hasclass('js_delete_product')]" position="attributes">
             <attribute name="class" add="bader-remove-line" separator=" "/>
         </xpath>
+        <xpath expr="//table[@id='cart_products']/thead/tr/th[hasclass('td-img')]" position="replace">
+            <th class="td-img">Producto</th>
+        </xpath>
+        <xpath expr="//table[@id='cart_products']/thead/tr/th[hasclass('td-qty')]/t/span" position="replace">
+            <span>Cantidad</span>
+        </xpath>
+        <xpath expr="//table[@id='cart_products']/thead/tr/th[hasclass('td-price')]" position="replace">
+            <th class="text-center td-price">Precio</th>
+        </xpath>
+        <xpath expr="//a[hasclass('js_add_cart_json') and .//i[hasclass('fa-minus')]]" position="attributes">
+            <attribute name="aria-label">Quitar uno</attribute>
+            <attribute name="title">Quitar uno</attribute>
+        </xpath>
+        <xpath expr="//a[hasclass('js_add_cart_json') and .//i[hasclass('fa-plus')]]" position="attributes">
+            <attribute name="aria-label">Agregar uno</attribute>
+            <attribute name="title">Agregar uno</attribute>
+        </xpath>
+        <xpath expr="//a[hasclass('js_delete_product')]" position="attributes">
+            <attribute name="aria-label">Quitar del carrito</attribute>
+            <attribute name="title">Quitar del carrito</attribute>
+        </xpath>
     </template>
 
     <template id="bader_cart_popover" inherit_id="website_sale.cart_popover"
@@ -368,6 +389,26 @@
         </xpath>
         <xpath expr="//button[@name='o_payment_submit_button']" position="attributes">
             <attribute name="class" add="bader-cart-cta" separator=" "/>
+        </xpath>
+    </template>
+
+    <template id="bader_total_labels" inherit_id="website_sale.total"
+              name="Bader Total Labels" priority="40">
+        <xpath expr="//tr[@id='order_total_untaxed']/td[1]" position="replace">
+            <td class="text-end border-0">Subtotal:</td>
+        </xpath>
+        <xpath expr="//tr[@id='order_total_taxes']/td[1]" position="replace">
+            <td class="text-end border-0">Impuestos:</td>
+        </xpath>
+        <xpath expr="//tr[@id='order_total']/td[1]/strong" position="replace">
+            <strong>Total:</strong>
+        </xpath>
+    </template>
+
+    <template id="bader_reduction_code" inherit_id="website_sale.reduction_code"
+              name="Bader Reduction Code" priority="40">
+        <xpath expr="//a[hasclass('show_coupon')]" position="replace">
+            <a href="#" class="show_coupon">Tengo un codigo de descuento</a>
         </xpath>
     </template>
 
