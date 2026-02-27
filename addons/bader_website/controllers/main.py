@@ -164,6 +164,111 @@ class BaderWebsite(Website):
         """Check if website_blog models are installed in this database."""
         return 'blog.post' in request.env and 'blog.blog' in request.env
 
+    def _build_intelligent_shop_tree(self):
+        """Return niche > type > subcategory tree based on Odoo public categories."""
+        category_model = request.env['product.public.category'].sudo().with_context(lang='es_ES')
+        product_model = request.env['product.template'].sudo()
+
+        roots = category_model.search([
+            ('parent_id', '=', False),
+        ], order='sequence, id')
+
+        niche_specs = [
+            {
+                'key': 'clinica',
+                'display_name': 'Clinica Dental',
+                'icon': 'fa-hospital-o',
+                'color': '#70D44B',
+                'keywords': ['clinica', 'clínica'],
+            },
+            {
+                'key': 'laboratorio',
+                'display_name': 'Laboratorio Dental',
+                'icon': 'fa-flask',
+                'color': '#8B5CF6',
+                'keywords': ['laboratorio'],
+            },
+            {
+                'key': 'estudiantes',
+                'display_name': 'Estudiantes',
+                'icon': 'fa-graduation-cap',
+                'color': '#F59E0B',
+                'keywords': ['estudiantes', 'estudiante'],
+            },
+        ]
+
+        def _normalize(text):
+            return (text or '').strip().lower()
+
+        def _product_count(cat_id):
+            return product_model.search_count([
+                ('website_published', '=', True),
+                ('public_categ_ids', 'child_of', cat_id),
+            ])
+
+        def _pick_root(spec):
+            for cat in roots:
+                cat_name = _normalize(cat.name)
+                if any(keyword in cat_name for keyword in spec['keywords']):
+                    return cat
+            return category_model.browse()
+
+        def _build_node(cat):
+            descendants = category_model.search([('id', 'child_of', cat.id)], order='id')
+            children = category_model.search([
+                ('parent_id', '=', cat.id),
+            ], order='sequence, id')
+            node = {
+                'category_id': cat.id,
+                'display_name': cat.name,
+                'url': '/productos/category/%s' % slug(cat),
+                'product_count': _product_count(cat.id),
+                'descendant_ids': descendants.ids,
+                'subcategories': [],
+            }
+            for child in children:
+                child_desc = category_model.search([('id', 'child_of', child.id)], order='id')
+                subchildren = category_model.search([
+                    ('parent_id', '=', child.id),
+                ], order='sequence, id')
+                child_node = {
+                    'category_id': child.id,
+                    'display_name': child.name,
+                    'url': '/productos/category/%s' % slug(child),
+                    'product_count': _product_count(child.id),
+                    'descendant_ids': child_desc.ids,
+                    'subcategories': [],
+                }
+                for sub in subchildren:
+                    child_node['subcategories'].append({
+                        'category_id': sub.id,
+                        'display_name': sub.name,
+                        'url': '/productos/category/%s' % slug(sub),
+                        'product_count': _product_count(sub.id),
+                    })
+                node['subcategories'].append(child_node)
+            return node
+
+        niches = []
+        for spec in niche_specs:
+            root = _pick_root(spec)
+            if not root:
+                continue
+            root_node = _build_node(root)
+            niches.append({
+                'id': spec['key'],
+                'display_name': spec['display_name'],
+                'icon': spec['icon'],
+                'color': spec['color'],
+                'category_id': root_node['category_id'],
+                'url': root_node['url'],
+                'product_count': root_node['product_count'],
+                'descendant_ids': root_node['descendant_ids'],
+                'types': root_node['subcategories'],
+            })
+
+        return {'niches': niches}
+
     def _blog_cover_url(self, post):
         """Best-effort cover image URL from Odoo blog post."""
         cover_props = (post.cover_properties or '').strip()
@@ -580,6 +685,10 @@ class BaderWebsite(Website):
     @http.route('/ayuda', type='http', auth='public', website=True, sitemap=True)
     def ayuda(self, **kw):
         return request.render('bader_website.bader_ayuda', {})
+
+    @http.route('/bader/shop/intelligent_categories', type='json', auth='public', csrf=False)
+    def intelligent_shop_categories(self, **kw):
+        return self._build_intelligent_shop_tree()
 
     @http.route('/terminos', type='http', auth='public', website=True, sitemap=True)
     def terminos(self, **kw):

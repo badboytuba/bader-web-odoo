@@ -987,62 +987,164 @@ odoo.define('bader_website.main', function (require) {
                 // ── (B) Inject Segmento filter section ──
                 var existingFilters = rail.querySelector('.products_attributes_filters');
                 if (!rail.querySelector('.bader-filter-section--segmento')) {
-                    var currentPath = window.location.pathname.toLowerCase();
-                    var currentSearch = window.location.search.toLowerCase();
-                    var activeSearch = '';
-                    try {
-                        activeSearch = (new URLSearchParams(window.location.search).get('search') || '').toLowerCase();
-                    } catch (e) {
-                        activeSearch = '';
+                    function parseCurrentCategoryId() {
+                        var path = (window.location.pathname || '').toLowerCase();
+                        var match = path.match(/\/productos\/category\/[^/?#]*-(\d+)/) ||
+                            path.match(/\/shop\/category\/[^/?#]*-(\d+)/);
+                        if (!match || !match[1]) return null;
+                        var id = parseInt(match[1], 10);
+                        return isNaN(id) ? null : id;
                     }
-                    var segmentos = [
-                        {
-                            name: 'Clínica Dental',
-                            icon: 'fa-hospital-o',
-                            url: '/productos?search=clinica',
-                            legacy: '/shop/category/clinica-dental',
-                            keys: ['clinica', 'sillones', 'autoclaves', 'rayos', 'compresores', 'materiales'],
-                            count: '7'
-                        },
-                        {
-                            name: 'Laboratorio Dental',
-                            icon: 'fa-flask',
-                            url: '/productos?search=laboratorio',
-                            legacy: '/shop/category/laboratorio-dental',
-                            keys: ['laboratorio', 'mesas', 'cabinas', 'arenadoras', 'articuladores', 'termoformadoras'],
-                            count: '6'
-                        },
-                        {
-                            name: 'Estudiantes',
-                            icon: 'fa-graduation-cap',
-                            url: '/productos?search=estudiantes',
-                            legacy: '/shop/category/estudiantes',
-                            keys: ['estudiantes', 'kit', 'simuladores', 'tipodontos', 'fantomas', 'dientes', 'accesorios'],
-                            count: '6'
+
+                    function hasId(idList, targetId) {
+                        var i = 0;
+                        if (!targetId || !idList || !idList.length) return false;
+                        for (i = 0; i < idList.length; i++) {
+                            if (parseInt(idList[i], 10) === parseInt(targetId, 10)) return true;
                         }
-                    ];
-                    var segHtml = '<div class="bader-filter-section bader-filter-section--segmento">' +
-                        '<div class="bader-filter-section__title">Segmento <span class="bader-chevron is-open">▾</span></div>' +
-                        '<div class="bader-filter-section__body"><div class="bader-segmento-list">';
-                    segmentos.forEach(function (s) {
-                        var queryPart = (s.url.split('?')[1] || '').toLowerCase();
-                        var isActive = currentPath.indexOf(s.legacy) !== -1 ||
-                            currentSearch.indexOf(queryPart) !== -1 ||
-                            s.keys.some(function (k) { return activeSearch.indexOf(k) !== -1; });
-                        segHtml += '<a href="' + s.url + '" class="bader-segmento-item' + (isActive ? ' bader-segmento-item--active' : '') + '">' +
-                            '<i class="fa ' + s.icon + '"></i> ' + s.name +
-                            '<span class="bader-segmento-count">' + s.count + '</span></a>';
-                    });
-                    segHtml += '</div></div></div>';
+                        return false;
+                    }
 
-                    var segEl = document.createElement('div');
-                    segEl.innerHTML = segHtml;
-                    var segSection = segEl.firstChild;
+                    function htmlEscape(value) {
+                        return (value || '').toString()
+                            .replace(/&/g, '&amp;')
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;')
+                            .replace(/"/g, '&quot;')
+                            .replace(/'/g, '&#39;');
+                    }
 
-                    if (existingFilters) {
-                        rail.insertBefore(segSection, existingFilters);
+                    function toggleSection(titleBtn, bodyEl) {
+                        if (!titleBtn || !bodyEl) return;
+                        titleBtn.addEventListener('click', function () {
+                            var chevron = titleBtn.querySelector('.bader-chevron');
+                            var isOpen = chevron && chevron.classList.contains('is-open');
+                            if (isOpen) {
+                                bodyEl.style.maxHeight = '0';
+                                bodyEl.style.overflow = 'hidden';
+                                if (chevron) chevron.classList.remove('is-open');
+                            } else {
+                                bodyEl.style.maxHeight = bodyEl.scrollHeight + 'px';
+                                bodyEl.style.overflow = 'visible';
+                                if (chevron) chevron.classList.add('is-open');
+                            }
+                        });
+                    }
+
+                    function buildFallbackSection() {
+                        var fallback = document.createElement('div');
+                        fallback.className = 'bader-filter-section bader-filter-section--segmento';
+                        fallback.innerHTML =
+                            '<div class="bader-filter-section__title">Segmento <span class="bader-chevron is-open">▾</span></div>' +
+                            '<div class="bader-filter-section__body"><div class="bader-segmento-list">' +
+                            '<a href="/productos?search=clinica" class="bader-segmento-item"><i class="fa fa-hospital-o"></i> Clinica Dental</a>' +
+                            '<a href="/productos?search=laboratorio" class="bader-segmento-item"><i class="fa fa-flask"></i> Laboratorio Dental</a>' +
+                            '<a href="/productos?search=estudiantes" class="bader-segmento-item"><i class="fa fa-graduation-cap"></i> Estudiantes</a>' +
+                            '</div></div>';
+                        return fallback;
+                    }
+
+                    function buildIntelligentSection(payload) {
+                        var niches = (payload && payload.niches) ? payload.niches : [];
+                        var currentCategoryId = parseCurrentCategoryId();
+                        var html = '';
+
+                        if (!niches.length) return null;
+
+                        html += '<div class="bader-filter-section bader-filter-section--segmento">';
+                        html += '<div class="bader-filter-section__title">Segmento <span class="bader-chevron is-open">▾</span></div>';
+                        html += '<div class="bader-filter-section__body"><div class="bader-segmento-list">';
+
+                        niches.forEach(function (niche) {
+                            var nicheActive = hasId(niche.descendant_ids, currentCategoryId);
+                            var nicheName = htmlEscape(niche.display_name);
+                            var nicheUrl = niche.url || '/productos';
+                            var nicheCount = niche.product_count || 0;
+                            var types = niche.types || [];
+
+                            html += '<a href="' + nicheUrl + '" class="bader-segmento-item' + (nicheActive ? ' bader-segmento-item--active' : '') + '">' +
+                                '<i class="fa ' + (niche.icon || 'fa-folder-open') + '"></i>' +
+                                nicheName +
+                                '<span class="bader-segmento-count">' + nicheCount + '</span></a>';
+
+                            if (nicheActive && types.length) {
+                                html += '<div class="bader-category-tree">';
+                                html += '<a href="' + nicheUrl + '" class="bader-cat-item' +
+                                    (parseInt(niche.category_id, 10) === parseInt(currentCategoryId, 10) ? ' bader-cat-item--active' : '') +
+                                    '"><span>Todas las categorias</span><span class="bader-cat-count">' + nicheCount + '</span></a>';
+
+                                types.forEach(function (typeNode) {
+                                    var typeActive = hasId(typeNode.descendant_ids, currentCategoryId);
+                                    var typeName = htmlEscape(typeNode.display_name);
+                                    var typeUrl = typeNode.url || nicheUrl;
+                                    var typeCount = typeNode.product_count || 0;
+                                    var subcategories = typeNode.subcategories || [];
+
+                                    html += '<a href="' + typeUrl + '" class="bader-cat-item' + (typeActive ? ' bader-cat-item--active' : '') + '">' +
+                                        '<span>' + typeName + '</span>' +
+                                        '<span class="bader-cat-count">' + typeCount + '</span></a>';
+
+                                    subcategories.forEach(function (subNode) {
+                                        var subActive = parseInt(subNode.category_id, 10) === parseInt(currentCategoryId, 10);
+                                        var subName = htmlEscape(subNode.display_name);
+                                        var subUrl = subNode.url || typeUrl;
+                                        var subCount = subNode.product_count || 0;
+
+                                        html += '<a href="' + subUrl + '" class="bader-cat-item bader-cat-item--child' + (subActive ? ' bader-cat-item--active' : '') + '">' +
+                                            '<span>' + subName + '</span>' +
+                                            '<span class="bader-cat-count">' + subCount + '</span></a>';
+                                    });
+                                });
+                                html += '</div>';
+                            }
+                        });
+
+                        html += '</div></div></div>';
+                        var container = document.createElement('div');
+                        container.innerHTML = html;
+                        return container.firstChild;
+                    }
+
+                    function insertSegmentSection(sectionNode) {
+                        if (!sectionNode) return;
+                        if (existingFilters) {
+                            rail.insertBefore(sectionNode, existingFilters);
+                        } else {
+                            rail.appendChild(sectionNode);
+                        }
+                        toggleSection(
+                            sectionNode.querySelector('.bader-filter-section__title'),
+                            sectionNode.querySelector('.bader-filter-section__body')
+                        );
+                    }
+
+                    if (window.fetch) {
+                        fetch('/bader/shop/intelligent_categories', {
+                            method: 'POST',
+                            credentials: 'same-origin',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                jsonrpc: '2.0',
+                                method: 'call',
+                                params: {}
+                            })
+                        })
+                            .then(function (response) {
+                                if (!response.ok) throw new Error('invalid response');
+                                return response.json();
+                            })
+                            .then(function (payload) {
+                                var data = payload && payload.result ? payload.result : payload;
+                                var section = buildIntelligentSection(data) || buildFallbackSection();
+                                insertSegmentSection(section);
+                            })
+                            .catch(function () {
+                                insertSegmentSection(buildFallbackSection());
+                            });
                     } else {
-                        rail.appendChild(segSection);
+                        insertSegmentSection(buildFallbackSection());
                     }
                 }
 
