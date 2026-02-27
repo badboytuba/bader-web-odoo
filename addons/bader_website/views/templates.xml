@@ -91,6 +91,9 @@
                 <div class="bader-cart-popover">
                     <div class="bader-cart-popover__list">
                         <div class="bader-cart-popover__item"
+                             t-att-data-line-id="line.id"
+                             t-att-data-product-id="line.product_id.id"
+                             t-att-data-product-url="line.product_id.website_url"
                              t-foreach="website_sale_order.website_order_line"
                              t-as="line">
                             <div class="bader-cart-popover__thumb">
@@ -105,7 +108,7 @@
                             </div>
                             <div class="bader-cart-popover__meta">
                                 <strong t-esc="line.name_short"/>
-                                <span>
+                                <span class="bader-cart-popover__qty">
                                     x<t t-esc="int(line.product_uom_qty) == line.product_uom_qty and int(line.product_uom_qty) or line.product_uom_qty"/>
                                 </span>
                             </div>

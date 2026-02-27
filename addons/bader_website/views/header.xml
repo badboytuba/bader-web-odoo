@@ -199,6 +199,69 @@
                     </div>
                 </div>
             </div>
+
+            <div id="baderCartDrawer" class="bader-cart-drawer" aria-hidden="true">
+                <button type="button"
+                        class="bader-cart-drawer__backdrop"
+                        data-bader-cart-close="1"
+                        aria-label="Cerrar carrito"/>
+
+                <aside class="bader-cart-drawer__panel"
+                       role="dialog"
+                       aria-modal="true"
+                       aria-labelledby="baderCartDrawerTitle">
+                    <header class="bader-cart-drawer__header">
+                        <h3 id="baderCartDrawerTitle">
+                            Carrito (<span data-bader-cart-count="1">0</span>)
+                        </h3>
+                        <button type="button"
+                                class="bader-cart-drawer__close"
+                                data-bader-cart-close="1"
+                                aria-label="Cerrar carrito">
+                            <i class="fa fa-times"/>
+                        </button>
+                    </header>
+
+                    <div class="bader-cart-drawer__body" data-bader-cart-body="1">
+                        <div class="bader-cart-drawer__loading">Cargando carrito...</div>
+                    </div>
+
+                    <footer class="bader-cart-drawer__footer">
+                        <div class="bader-cart-drawer__totals">
+                            <div class="bader-cart-drawer__total-row">
+                                <span>Subtotal</span>
+                                <strong data-bader-cart-subtotal="1">-</strong>
+                            </div>
+                            <div class="bader-cart-drawer__total-row">
+                                <span>Envio</span>
+                                <strong class="is-free">Gratis</strong>
+                            </div>
+                            <div class="bader-cart-drawer__total-row bader-cart-drawer__total-row--final">
+                                <span>Total</span>
+                                <strong data-bader-cart-total="1">-</strong>
+                            </div>
+                        </div>
+
+                        <div class="bader-cart-drawer__actions">
+                            <a href="/shop/cart" class="btn-bader w-100">Finalizar compra</a>
+                            <div class="bader-cart-drawer__secondary">
+                                <button type="button"
+                                        class="btn-bader-outline w-100"
+                                        data-bader-cart-close="1">
+                                    Seguir comprando
+                                </button>
+                                <button type="button"
+                                        class="bader-cart-drawer__clear"
+                                        data-bader-cart-clear="1"
+                                        title="Vaciar carrito"
+                                        aria-label="Vaciar carrito">
+                                    <i class="fa fa-trash"/>
+                                </button>
+                            </div>
+                        </div>
+                    </footer>
+                </aside>
+            </div>
         </xpath>
 
     </template>
