@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="bader_product_detail_page"
+              inherit_id="website_sale.product"
+              name="Bader Product Detail Page"
+              priority="30">
+        <xpath expr="//section[@id='product_detail']" position="attributes">
+            <attribute name="class" add="bader-product-detail" separator=" "/>
+        </xpath>
+
+        <xpath expr="//div[@id='product_details']/h1[@itemprop='name']" position="before">
+            <div class="bader-product-meta">
+                <span class="bader-product-sku" t-if="product_variant and product_variant.default_code">
+                    SKU: <t t-esc="product_variant.default_code"/>
+                </span>
+                <span class="bader-product-category" t-if="product.public_categ_ids">
+                    <t t-esc="product.public_categ_ids[0].name"/>
+                </span>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[@id='product_details']//t[@t-call='website_sale.product_price']" position="after">
+            <div class="bader-price-note">IVA incluido</div>
+            <div class="bader-stock-status bader-stock-status--in">
+                <span class="bader-stock-dot"/>
+                <span>En stock</span>
+            </div>
+        </xpath>
+
+        <xpath expr="//a[@id='add_to_cart']/span" position="replace">
+            <span style="font-weight: bold">Agregar al carrito</span>
+        </xpath>
+
+        <xpath expr="//div[@id='o_product_terms_and_share']" position="before">
+            <div class="bader-product-benefits">
+                <div class="bader-benefit">
+                    <i class="fa fa-truck"/>
+                    <span>Envio gratis a todo el pais</span>
+                </div>
+                <div class="bader-benefit">
+                    <i class="fa fa-shield"/>
+                    <span>Garantia europea oficial</span>
+                </div>
+                <div class="bader-benefit">
+                    <i class="fa fa-credit-card"/>
+                    <span>Hasta 12 cuotas sin interes</span>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>

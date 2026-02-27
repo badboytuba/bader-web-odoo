@@ -36,6 +36,7 @@
         'views/frontend_pages.xml',
         'views/account_pages.xml',
         'views/shop.xml',
+        'views/product_detail.xml',
         # New pages
         'views/sobre_nosotros.xml',
         'views/ser_distribuidor.xml',

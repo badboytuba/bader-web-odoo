@@ -1310,6 +1310,7 @@ odoo.define('bader_website.main', function (require) {
             if (!productPage) return;
 
             productPage.classList.add('bader-product-detail');
+            if (productPage.querySelector('.bader-product-meta')) return;
 
             // ── 11a. Floating Stock Badge on Gallery ──
             (function injectStockBadge() {
