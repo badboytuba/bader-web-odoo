@@ -12,6 +12,7 @@ Atualizacao 2026-02-27:
 - [~] Busca no catalogo ajustada para maior relevancia (sem fuzzy e sem match por descricao em `/productos`).
 - [x] `/producto/<id>` migrado para QWeb com tabs, FAQ, relacionados e CTA (sem injecao pesada em JS).
 - [x] Header mobile no estilo app (drawer com busca, nichos, links principais e conta).
+- [x] Drawer lateral de carrinho integrado com Odoo (`/shop/cart?type=popover` + `/shop/cart/update_json`).
 
 ## Prioridade Alta
 
@@ -37,11 +38,11 @@ Atualizacao 2026-02-27:
   - [x] CTA e acoes de compra com mesma hierarquia visual.
 
 3. Header mobile + experiencia de carrinho
-- Estado atual: desktop e menu mobile proximos da referencia; carrinho lateral ainda pendente.
+- Estado atual: desktop, menu mobile e carrinho lateral no frontend ja implementados; faltam refinamentos de microinteracao.
 - Paridade faltando vs app: [Header.tsx](../Bader-AR/client/src/components/landing/Header.tsx) e [CartDrawer.tsx](../Bader-AR/client/src/components/landing/CartDrawer.tsx)
 - Itens pendentes:
   - [x] Menu mobile estilo app (com blocos por nicho e links de conta).
-  - [ ] Drawer de carrinho lateral (hoje e popover/default Odoo).
+  - [x] Drawer de carrinho lateral.
   - [~] Mesma ordem e comportamento das acoes mobile (falta refinamento final do fechamento/animacoes).
 
 ## Prioridade Media

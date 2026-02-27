@@ -783,6 +783,75 @@ body.bader-cart-drawer-open {
 
 .bader-checkout-page,
 .bader-address-page {
+    .bader-checkout-heading {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+
+        &__icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: $bader-green-bg;
+            border: 1px solid rgba($bader-green, 0.25);
+            color: $bader-dark;
+            font-size: 0.95rem;
+        }
+
+        &__text {
+            display: inline-flex;
+            flex-direction: column;
+            line-height: 1.15;
+
+            small {
+                color: $gray-500;
+                font-size: 0.72rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 0.1rem;
+            }
+        }
+    }
+
+    .bader-checkout-trust {
+        margin-top: 0.8rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem 0.55rem;
+
+        span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: $gray-50;
+            border: 1px solid $bader-card-border;
+            border-radius: $radius-pill;
+            padding: 0.28rem 0.62rem;
+            color: $gray-600;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        i {
+            color: $bader-green;
+        }
+    }
+
+    .bader-checkout-actions {
+        align-items: center;
+    }
+
+    .bader-back-btn {
+        border-color: $bader-border;
+    }
+
+    .bader-add-address-btn {
+        border-style: dashed;
+    }
+
     .o_page_header {
         margin-top: 0.3rem;
         margin-bottom: 0.9rem;
@@ -791,7 +860,8 @@ body.bader-cart-drawer-open {
         font-weight: 700;
     }
 
-    .one_kanban .card {
+    .one_kanban .card,
+    .bader-address-card {
         border-radius: 14px;
         border: 1px solid $bader-card-border;
         transition: border-color $transition-fast, box-shadow $transition-fast;
@@ -799,6 +869,23 @@ body.bader-cart-drawer-open {
         &:hover {
             border-color: rgba($bader-green, 0.55);
             box-shadow: 0 6px 18px rgba(0, 56, 65, 0.08);
+        }
+    }
+
+    .bader-address-card.border-primary {
+        border-color: rgba($bader-green, 0.8) !important;
+        box-shadow: 0 8px 20px rgba(0, 56, 65, 0.12);
+    }
+
+    .bader-address-card__body {
+        min-height: 130px;
+    }
+
+    .bader-address-card__edit {
+        color: $gray-500;
+
+        &:hover {
+            color: $bader-dark;
         }
     }
 
@@ -861,6 +948,26 @@ body.bader-cart-drawer-open {
 // --------------------------------------------
 
 .bader-payment-page {
+    .bader-payment-title {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        color: $gray-800;
+
+        i {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: $bader-green-bg;
+            border: 1px solid rgba($bader-green, 0.25);
+            color: $bader-dark;
+            font-size: 0.85rem;
+        }
+    }
+
     #payment_method {
         margin-top: 1rem;
         padding: 1rem;
@@ -899,6 +1006,12 @@ body.bader-cart-drawer-open {
         i {
             color: $bader-green;
         }
+    }
+
+    .bader-payment-note {
+        margin: -0.2rem 0 0.9rem;
+        color: $gray-500;
+        font-size: 0.82rem;
     }
 
     .bader-payment-methods {

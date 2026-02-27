@@ -232,16 +232,47 @@
             <attribute name="class" add="bader-checkout-page" separator=" "/>
         </xpath>
         <xpath expr="//h3[hasclass('o_page_header')][1]" position="replace">
-            <h3 class="o_page_header mt8">Direccion de facturacion</h3>
+            <h3 class="o_page_header mt8 bader-checkout-heading">
+                <span class="bader-checkout-heading__icon"><i class="fa fa-id-card"/></span>
+                <span class="bader-checkout-heading__text">
+                    <small>Paso 1</small>
+                    Direccion de facturacion
+                </span>
+            </h3>
         </xpath>
         <xpath expr="//t[@t-if='not only_services' and @groups='account.group_delivery_invoice_address']//h3[hasclass('o_page_header') and hasclass('mt16') and hasclass('mb4')]" position="replace">
-            <h3 class="o_page_header mt16 mb4">Direccion de envio</h3>
+            <h3 class="o_page_header mt16 mb4 bader-checkout-heading">
+                <span class="bader-checkout-heading__icon"><i class="fa fa-truck"/></span>
+                <span class="bader-checkout-heading__text">
+                    <small>Paso 2</small>
+                    Direccion de envio
+                </span>
+            </h3>
+        </xpath>
+        <xpath expr="//div[hasclass('one_kanban')]" position="attributes">
+            <attribute name="class" add="bader-address-choice" separator=" "/>
+        </xpath>
+        <xpath expr="//form[@action='/shop/address']//a[hasclass('a-submit') and hasclass('btn-secondary')]" position="attributes">
+            <attribute name="class" add="bader-add-address-btn" separator=" "/>
         </xpath>
         <xpath expr="//form[@action='/shop/address']//a[hasclass('a-submit') and hasclass('btn-secondary')]/span[last()]" position="replace">
             <span>Agregar direccion</span>
         </xpath>
+        <xpath expr="//a[@href='/shop/cart' and hasclass('btn-secondary')]" position="attributes">
+            <attribute name="class" add="bader-back-btn" separator=" "/>
+        </xpath>
         <xpath expr="//a[@href='/shop/cart' and hasclass('btn-secondary')]/span" position="replace">
             <span>Volver al carrito</span>
+        </xpath>
+        <xpath expr="//div[hasclass('d-flex') and hasclass('justify-content-between') and hasclass('mt-3')]" position="before">
+            <div class="bader-checkout-trust">
+                <span><i class="fa fa-shield"/> Garantia europea oficial</span>
+                <span><i class="fa fa-truck"/> Envio a todo el pais</span>
+                <span><i class="fa fa-lock"/> Pago 100% seguro</span>
+            </div>
+        </xpath>
+        <xpath expr="//div[hasclass('d-flex') and hasclass('justify-content-between') and hasclass('mt-3')]" position="attributes">
+            <attribute name="class" add="bader-checkout-actions" separator=" "/>
         </xpath>
         <xpath expr="//a[@href='/shop/confirm_order' and hasclass('btn-primary')]" position="attributes">
             <attribute name="class" add="bader-cart-cta" separator=" "/>
@@ -253,13 +284,22 @@
 
     <template id="bader_address_kanban" inherit_id="website_sale.address_kanban"
               name="Bader Address Kanban" priority="30">
+        <xpath expr="//div[contains(@t-attf-class, 'card ')]" position="attributes">
+            <attribute name="class" add="bader-address-card" separator=" "/>
+        </xpath>
+        <xpath expr="//div[hasclass('card-body')]" position="attributes">
+            <attribute name="class" add="bader-address-card__body" separator=" "/>
+        </xpath>
+        <xpath expr="//a[hasclass('js_edit_address')]" position="attributes">
+            <attribute name="class" add="bader-address-card__edit" separator=" "/>
+        </xpath>
         <xpath expr="//a[hasclass('btn') and hasclass('btn-block') and hasclass('btn-primary')]" position="replace">
-            <a role="button" href="#" class="btn btn-block btn-primary">
+            <a role="button" href="#" class="btn btn-block btn-primary bader-address-card__primary">
                 <i class="fa fa-check"/> Enviar a esta direccion
             </a>
         </xpath>
         <xpath expr="//a[hasclass('btn') and hasclass('btn-block') and hasclass('btn-secondary')]" position="replace">
-            <a role="button" href="#" class="btn btn-block btn-secondary">
+            <a role="button" href="#" class="btn btn-block btn-secondary bader-address-card__secondary">
                 Seleccionar direccion
             </a>
         </xpath>
@@ -358,7 +398,10 @@
             <attribute name="class" add="bader-payment-page" separator=" "/>
         </xpath>
         <xpath expr="//h3[hasclass('mb24')]" position="replace">
-            <h3 class="mb24">Selecciona metodo de pago</h3>
+            <h3 class="mb24 bader-payment-title">
+                <i class="fa fa-credit-card"/>
+                <span>Selecciona metodo de pago</span>
+            </h3>
         </xpath>
         <xpath expr="//div[@id='payment_method' and not(@name)]" position="attributes">
             <attribute name="class" add="bader-payment-methods" separator=" "/>
@@ -368,6 +411,11 @@
                 <span><i class="fa fa-lock"/> Pago seguro</span>
                 <span><i class="fa fa-shield"/> Datos protegidos</span>
             </div>
+        </xpath>
+        <xpath expr="//div[@id='payment_method' and not(@name)]/div[hasclass('bader-payment-trust')]" position="after">
+            <p class="bader-payment-note">
+                Elige la opcion que prefieras. Confirmaremos tu pedido inmediatamente despues del pago.
+            </p>
         </xpath>
         <xpath expr="//t[@t-call='payment.checkout']/t[@t-set='submit_button_label']" position="replace">
             <t t-set="submit_button_label">Pagar ahora</t>
