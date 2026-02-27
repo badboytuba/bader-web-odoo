@@ -757,59 +757,102 @@ odoo.define('bader_website.main', function (require) {
             // ── 10c. Active Filter Chips + Quick Filters ──
             (function injectFilterChips() {
                 var toolbar = document.querySelector('.products_header, #products_grid');
-                if (!toolbar || document.querySelector('.bader-active-filters')) return;
+                if (!toolbar) return;
 
-                // Parse current URL for active filters
                 var params = new URLSearchParams(window.location.search);
+                var quickFilterKey = params.get('bader_qf') || '';
                 var activeFilters = [];
-                params.forEach(function (val, key) {
-                    if (key === 'attrib') {
-                        activeFilters.push({ key: key, val: val, label: 'Filtro: ' + val });
-                    } else if (key === 'order') {
-                        var orderLabels = { 'website_sequence asc': 'Destacados', 'create_date desc': 'Nuevos', 'price asc': 'Menor precio', 'price desc': 'Mayor precio', 'name asc': 'A-Z' };
-                        activeFilters.push({ key: key, val: val, label: orderLabels[val] || val });
-                    } else if (key === 'search') {
-                        activeFilters.push({ key: key, val: val, label: '"' + val + '"' });
+                var quickFilterLabels = {
+                    'ofertas': 'Ofertas',
+                    'mas-vendidos': 'Mas vendidos',
+                    'nuevos': 'Nuevos',
+                    'envio-gratis': 'Envio gratis',
+                    'destacados': 'Destacados',
+                };
+                var orderLabels = {
+                    'website_sequence asc': 'Destacados',
+                    'create_date desc': 'Nuevos',
+                    'price asc': 'Menor precio',
+                    'price desc': 'Mayor precio',
+                    'name asc': 'A-Z',
+                };
+
+                // Sync quick filter links and active states
+                var quickChips = document.querySelectorAll('.bader-filter-chips .bader-chip[data-bader-qf]');
+                quickChips.forEach(function (chip) {
+                    var qf = chip.getAttribute('data-bader-qf') || '';
+                    var sortOrder = chip.getAttribute('data-bader-order') || '';
+                    var chipUrl = new URL(window.location.href);
+
+                    chipUrl.searchParams.set('bader_qf', qf);
+                    chipUrl.searchParams.delete('page');
+                    if (sortOrder) {
+                        chipUrl.searchParams.set('order', sortOrder);
+                    }
+
+                    chip.setAttribute('href', chipUrl.pathname + chipUrl.search);
+                    chip.classList.toggle('bader-chip--active', quickFilterKey === qf);
+
+                    if (quickFilterKey === qf) {
+                        chip.addEventListener('click', function (ev) {
+                            ev.preventDefault();
+                            var clearUrl = new URL(window.location.href);
+                            clearUrl.searchParams.delete('bader_qf');
+                            if (sortOrder && clearUrl.searchParams.get('order') === sortOrder) {
+                                clearUrl.searchParams.delete('order');
+                            }
+                            clearUrl.searchParams.delete('page');
+                            window.location.href = clearUrl.pathname + clearUrl.search;
+                        });
                     }
                 });
 
-                // Build active filter chips if any
-                if (activeFilters.length > 0) {
-                    var chipsEl = document.createElement('div');
-                    chipsEl.className = 'bader-active-filters';
-                    var chipHtml = '';
-                    activeFilters.forEach(function (f) {
-                        var removeUrl = new URL(window.location.href);
-                        removeUrl.searchParams.delete(f.key);
-                        chipHtml += '<a href="' + removeUrl.pathname + removeUrl.search + '" class="bader-active-chip">' +
-                            f.label + ' <span class="bader-chip-x">✕</span></a>';
-                    });
-                    chipHtml += '<a href="' + window.location.pathname + '" class="bader-clear-all">Limpiar todo</a>';
-                    chipsEl.innerHTML = chipHtml;
-
-                    var insertTarget = document.querySelector('.products_header') || document.querySelector('#products_grid');
-                    if (insertTarget) {
-                        insertTarget.parentElement.insertBefore(chipsEl, insertTarget.nextSibling);
+                // Build active filters based on URL params
+                params.forEach(function (value, key) {
+                    if (key === 'search' && value) {
+                        activeFilters.push({ key: key, label: '"' + value + '"' });
+                        return;
                     }
+                    if (key === 'attrib' && value) {
+                        activeFilters.push({ key: key, label: 'Filtro: ' + value });
+                        return;
+                    }
+                    if (key === 'bader_qf' && value) {
+                        activeFilters.push({ key: key, label: quickFilterLabels[value] || value });
+                        return;
+                    }
+                    if (key === 'order' && value && !quickFilterKey) {
+                        activeFilters.push({ key: key, label: orderLabels[value] || value });
+                        return;
+                    }
+                    if ((key === 'min_price' || key === 'max_price') && value) {
+                        activeFilters.push({
+                            key: key,
+                            label: key === 'min_price' ? ('Min: ' + value) : ('Max: ' + value),
+                        });
+                    }
+                });
+
+                var activeContainer = document.querySelector('.bader-active-filters[data-bader-active-filters], .bader-active-filters');
+                if (!activeContainer) return;
+
+                if (activeFilters.length === 0) {
+                    activeContainer.innerHTML = '';
+                    activeContainer.style.display = 'none';
+                    return;
                 }
 
-                // Quick filter chips
-                var gridArea = document.querySelector('#products_grid');
-                if (!gridArea || document.querySelector('.bader-filter-chips')) return;
-                var chips = document.createElement('div');
-                chips.className = 'bader-filter-chips';
-                chips.innerHTML =
-                    '<span class="bader-filter-chips__label">Filtros rápidos:</span>' +
-                    '<a href="/productos?order=website_sequence+asc" class="bader-chip"><i class="fa fa-tag"></i> Ofertas</a>' +
-                    '<a href="/productos?order=create_date+desc" class="bader-chip"><i class="fa fa-star"></i> Nuevos</a>' +
-                    '<a href="/productos?order=price+asc" class="bader-chip"><i class="fa fa-sort-amount-asc"></i> Menor precio</a>' +
-                    '<a href="/productos?order=price+desc" class="bader-chip"><i class="fa fa-sort-amount-desc"></i> Mayor precio</a>';
-                var headerEl = gridArea.querySelector('.products_header');
-                if (headerEl) {
-                    headerEl.parentElement.insertBefore(chips, headerEl.nextSibling);
-                } else {
-                    gridArea.insertBefore(chips, gridArea.querySelector('.o_wsale_products_grid_table_wrapper'));
-                }
+                var html = '';
+                activeFilters.forEach(function (filterItem) {
+                    var removeUrl = new URL(window.location.href);
+                    removeUrl.searchParams.delete(filterItem.key);
+                    removeUrl.searchParams.delete('page');
+                    html += '<a href="' + removeUrl.pathname + removeUrl.search + '" class="bader-active-chip">' +
+                        filterItem.label + ' <span class="bader-chip-x">×</span></a>';
+                });
+                html += '<a href="' + window.location.pathname + '" class="bader-clear-all">Limpiar todo</a>';
+                activeContainer.innerHTML = html;
+                activeContainer.style.display = '';
             })();
 
             // ── 10d. Premium Product Card Enhancements ──

@@ -2,13 +2,18 @@
 <odoo>
 
     <!-- =============================================
-         Bader Shop — Template Overrides
-         Only uses confirmed Odoo 16 xpath targets
+         Bader Shop - Template Overrides
+         Front parity aligned to Bader-AR catalog layout
          ============================================= -->
 
-    <!-- Add Bader class to main shop grid container -->
     <template id="bader_shop_style" inherit_id="website_sale.products"
               name="Bader Shop Styling" priority="20">
+        <xpath expr="//div[@id='wrap']" position="attributes">
+            <attribute name="class" add="bader-shop-wrap" separator=" "/>
+        </xpath>
+        <xpath expr="//div[hasclass('container') and hasclass('oe_website_sale')]" position="attributes">
+            <attribute name="class" add="bader-shop-container" separator=" "/>
+        </xpath>
         <xpath expr="//div[@id='products_grid']" position="attributes">
             <attribute name="class" add="bader-shop-grid" separator=" "/>
         </xpath>
@@ -18,6 +23,150 @@
               name="Bader Shop Title" priority="21">
         <xpath expr="//t[@t-set='additional_title']" position="replace">
             <t t-set="additional_title">Productos</t>
+        </xpath>
+    </template>
+
+    <template id="bader_shop_hero" inherit_id="website_sale.products"
+              name="Bader Shop Hero" priority="22">
+        <xpath expr="//div[hasclass('o_wsale_products_main_row')]" position="before">
+            <section class="bader-hero" id="bader_catalog_hero">
+                <div class="bader-hero__container">
+                    <nav class="bader-hero__breadcrumb">
+                        <a href="/">Inicio</a>
+                        <span class="bader-hero__chevron">&#8250;</span>
+                        <t t-if="category">
+                            <a href="/productos">Productos</a>
+                            <span class="bader-hero__chevron">&#8250;</span>
+                            <span t-esc="category.name"/>
+                        </t>
+                        <t t-else="">
+                            <span>Productos</span>
+                        </t>
+                    </nav>
+
+                    <h1 class="bader-hero__title">
+                        <t t-if="category">
+                            <t t-esc="category.name"/>
+                        </t>
+                        <t t-else="">Nuestro Catalogo</t>
+                    </h1>
+                    <p class="bader-hero__subtitle">
+                        <t t-if="category">
+                            Equipamiento odontologico profesional para potenciar tu practica.
+                        </t>
+                        <t t-else="">
+                            Mas de 3.000 productos de equipamiento odontologico con garantia europea.
+                            Elegi tu segmento para encontrar lo que necesitas.
+                        </t>
+                    </p>
+
+                    <div t-if="not category" class="bader-hero__segments">
+                        <a href="/productos?search=clinica" class="bader-segment-card">
+                            <div class="bader-segment-card__icon">
+                                <i class="fa fa-hospital-o"/>
+                            </div>
+                            <div class="bader-segment-card__content">
+                                <h3>Clinica Dental</h3>
+                                <p>Equipos e instrumental para consultorios y clinicas dentales.</p>
+                                <span class="bader-segment-card__badge">
+                                    <span class="bader-segment-card__count">Ver productos</span>
+                                    <span class="bader-segment-card__arrow">&#8250;</span>
+                                </span>
+                            </div>
+                        </a>
+
+                        <a href="/productos?search=laboratorio" class="bader-segment-card">
+                            <div class="bader-segment-card__icon">
+                                <i class="fa fa-flask"/>
+                            </div>
+                            <div class="bader-segment-card__content">
+                                <h3>Laboratorio Dental</h3>
+                                <p>Equipos de fabricacion, CAD/CAM y flujo digital para laboratorio.</p>
+                                <span class="bader-segment-card__badge">
+                                    <span class="bader-segment-card__count">Ver productos</span>
+                                    <span class="bader-segment-card__arrow">&#8250;</span>
+                                </span>
+                            </div>
+                        </a>
+
+                        <a href="/productos?search=estudiantes" class="bader-segment-card">
+                            <div class="bader-segment-card__icon">
+                                <i class="fa fa-graduation-cap"/>
+                            </div>
+                            <div class="bader-segment-card__content">
+                                <h3>Estudiantes</h3>
+                                <p>Kits, simuladores y material de practica para formacion odontologica.</p>
+                                <span class="bader-segment-card__badge">
+                                    <span class="bader-segment-card__count">Ver productos</span>
+                                    <span class="bader-segment-card__arrow">&#8250;</span>
+                                </span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+
+    <template id="bader_shop_toolbar_filters" inherit_id="website_sale.products"
+              name="Bader Shop Quick Filters" priority="23">
+        <xpath expr="//div[hasclass('products_header')]" position="after">
+            <div class="bader-filter-chips" data-bader-quick-filters="1">
+                <span class="bader-filter-chips__label">Filtros rapidos:</span>
+                <a href="/productos?bader_qf=ofertas" class="bader-chip" data-bader-qf="ofertas">
+                    <i class="fa fa-tag"/> Ofertas
+                </a>
+                <a href="/productos?bader_qf=mas-vendidos&amp;order=website_sequence+asc"
+                   class="bader-chip"
+                   data-bader-qf="mas-vendidos"
+                   data-bader-order="website_sequence asc">
+                    <i class="fa fa-fire"/> Mas vendidos
+                </a>
+                <a href="/productos?bader_qf=nuevos&amp;order=create_date+desc"
+                   class="bader-chip"
+                   data-bader-qf="nuevos"
+                   data-bader-order="create_date desc">
+                    <i class="fa fa-star"/> Nuevos
+                </a>
+                <a href="/productos?bader_qf=envio-gratis" class="bader-chip" data-bader-qf="envio-gratis">
+                    <i class="fa fa-truck"/> Envio gratis
+                </a>
+                <a href="/productos?bader_qf=destacados&amp;order=website_sequence+asc"
+                   class="bader-chip"
+                   data-bader-qf="destacados"
+                   data-bader-order="website_sequence asc">
+                    <i class="fa fa-certificate"/> Destacados
+                </a>
+            </div>
+            <div class="bader-active-filters" data-bader-active-filters="1"/>
+        </xpath>
+    </template>
+
+    <template id="bader_shop_product_count" inherit_id="website_sale.products"
+              name="Bader Shop Product Count" priority="24">
+        <xpath expr="//div[hasclass('o_wsale_products_grid_table_wrapper')]" position="before">
+            <div class="bader-product-count" t-if="products">
+                <span><t t-esc="len(products)"/> productos encontrados</span>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="bader_shop_empty_state" inherit_id="website_sale.products"
+              name="Bader Shop Empty State" priority="25">
+        <xpath expr="//div[hasclass('text-center') and hasclass('text-muted') and hasclass('mt128') and hasclass('mb256')]" position="replace">
+            <div t-nocache="get the actual search" class="text-center text-muted mt128 mb256">
+                <h3 class="mt8">No se encontraron productos</h3>
+                <p t-if="search">
+                    No hay resultados para "<strong t-esc="search"/>".
+                </p>
+                <p t-elif="category">
+                    No hay productos publicados en esta categoria.
+                </p>
+                <p t-else="">
+                    Aun no hay productos publicados en el catalogo.
+                </p>
+                <a href="/productos" class="btn btn-outline-secondary mt-3">Limpiar filtros</a>
+            </div>
         </xpath>
     </template>
 

@@ -581,6 +581,18 @@ class BaderWebsite(Website):
     def ayuda(self, **kw):
         return request.render('bader_website.bader_ayuda', {})
 
+    @http.route('/terminos', type='http', auth='public', website=True, sitemap=True)
+    def terminos(self, **kw):
+        return request.render('bader_website.bader_terminos', {})
+
+    @http.route('/privacidad', type='http', auth='public', website=True, sitemap=True)
+    def privacidad(self, **kw):
+        return request.render('bader_website.bader_privacidad', {})
+
+    @http.route('/cookies', type='http', auth='public', website=True, sitemap=True)
+    def cookies(self, **kw):
+        return request.render('bader_website.bader_cookies', {})
+
     @http.route('/blog', type='http', auth='public', website=True, sitemap=True)
     def blog(self, **kw):
         search_query = (kw.get('q') or '').strip()

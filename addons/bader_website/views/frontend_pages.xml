@@ -203,6 +203,171 @@
         </t>
     </template>
 
+    <template id="bader_terminos" name="Bader Terminos">
+        <t t-call="website.layout">
+            <t t-set="head">
+                <title>Terminos y Condiciones - Bader Argentina</title>
+                <meta name="description" content="Terminos y condiciones de uso y compra en Bader Argentina."/>
+            </t>
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__blur bader-page-hero__blur--1"/>
+                    <div class="bader-page-hero__blur bader-page-hero__blur--2"/>
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <span class="bader-page-hero__badge">
+                                <i class="fa fa-gavel"/> Legal
+                            </span>
+                            <h1 class="bader-page-hero__title">
+                                Terminos y <span class="text-green">condiciones</span>
+                            </h1>
+                            <p class="bader-page-hero__subtitle">
+                                Condiciones generales de uso del sitio, catalogo y proceso de compra.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bader-page-section bader-page-section--white bader-animate">
+                    <div class="bader-page-section__container">
+                        <article class="bader-page-card">
+                            <h2 class="bader-page-card__title">1. Uso del sitio</h2>
+                            <p class="bader-page-card__text">
+                                El uso de este sitio implica la aceptacion de estas condiciones.
+                                Bader puede actualizar contenidos, precios y disponibilidad sin aviso previo.
+                            </p>
+                            <h2 class="bader-page-card__title">2. Productos y precios</h2>
+                            <p class="bader-page-card__text">
+                                Las imagenes y descripciones son referenciales. Los precios y promociones
+                                pueden variar segun lista vigente, medios de pago y condiciones comerciales.
+                            </p>
+                            <h2 class="bader-page-card__title">3. Pedidos y facturacion</h2>
+                            <p class="bader-page-card__text">
+                                La confirmacion de un pedido queda sujeta a validacion de stock, datos
+                                de cliente y aprobacion de pago. La facturacion se emite con datos cargados
+                                por el comprador en el checkout.
+                            </p>
+                            <h2 class="bader-page-card__title">4. Garantias y soporte</h2>
+                            <p class="bader-page-card__text">
+                                Las garantias aplican segun fabricante y tipo de equipo. Para soporte
+                                tecnico y postventa, el cliente puede usar la pagina de servicios o
+                                canales de contacto oficiales.
+                            </p>
+                        </article>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="bader_privacidad" name="Bader Privacidad">
+        <t t-call="website.layout">
+            <t t-set="head">
+                <title>Politica de Privacidad - Bader Argentina</title>
+                <meta name="description" content="Politica de privacidad y tratamiento de datos personales de Bader Argentina."/>
+            </t>
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__blur bader-page-hero__blur--1"/>
+                    <div class="bader-page-hero__blur bader-page-hero__blur--2"/>
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <span class="bader-page-hero__badge">
+                                <i class="fa fa-user-secret"/> Privacidad
+                            </span>
+                            <h1 class="bader-page-hero__title">
+                                Politica de <span class="text-green">privacidad</span>
+                            </h1>
+                            <p class="bader-page-hero__subtitle">
+                                Informacion sobre como recopilamos, usamos y protegemos tus datos.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bader-page-section bader-page-section--white bader-animate">
+                    <div class="bader-page-section__container">
+                        <article class="bader-page-card">
+                            <h2 class="bader-page-card__title">Datos que recopilamos</h2>
+                            <p class="bader-page-card__text">
+                                Podemos recopilar datos de contacto, identificacion fiscal y datos
+                                de compra para procesar pedidos, facturas y soporte al cliente.
+                            </p>
+                            <h2 class="bader-page-card__title">Finalidad del tratamiento</h2>
+                            <p class="bader-page-card__text">
+                                Usamos la informacion para gestionar operaciones comerciales, mejorar
+                                el servicio, responder consultas y enviar comunicaciones relacionadas
+                                con productos o servicios de Bader.
+                            </p>
+                            <h2 class="bader-page-card__title">Proteccion y conservacion</h2>
+                            <p class="bader-page-card__text">
+                                Aplicamos medidas tecnicas y organizativas para proteger los datos
+                                personales y los conservamos el tiempo necesario para cumplir
+                                obligaciones legales y contractuales.
+                            </p>
+                            <h2 class="bader-page-card__title">Derechos del usuario</h2>
+                            <p class="bader-page-card__text">
+                                El usuario puede solicitar acceso, rectificacion o actualizacion
+                                de sus datos a traves de los canales oficiales de contacto.
+                            </p>
+                        </article>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="bader_cookies" name="Bader Cookies">
+        <t t-call="website.layout">
+            <t t-set="head">
+                <title>Politica de Cookies - Bader Argentina</title>
+                <meta name="description" content="Informacion sobre el uso de cookies en el sitio web de Bader Argentina."/>
+            </t>
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__blur bader-page-hero__blur--1"/>
+                    <div class="bader-page-hero__blur bader-page-hero__blur--2"/>
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <span class="bader-page-hero__badge">
+                                <i class="fa fa-circle-o-notch"/> Cookies
+                            </span>
+                            <h1 class="bader-page-hero__title">
+                                Politica de <span class="text-green">cookies</span>
+                            </h1>
+                            <p class="bader-page-hero__subtitle">
+                                Uso de cookies para navegacion, seguridad y mejora de experiencia.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bader-page-section bader-page-section--white bader-animate">
+                    <div class="bader-page-section__container">
+                        <article class="bader-page-card">
+                            <h2 class="bader-page-card__title">Que son las cookies</h2>
+                            <p class="bader-page-card__text">
+                                Las cookies son pequenos archivos de texto que se guardan en el navegador
+                                para recordar preferencias, mantener sesiones y analizar uso del sitio.
+                            </p>
+                            <h2 class="bader-page-card__title">Tipos de cookies utilizadas</h2>
+                            <p class="bader-page-card__text">
+                                Utilizamos cookies tecnicas para funcionamiento del sitio,
+                                cookies de rendimiento para analitica y cookies funcionales
+                                para recordar configuraciones de usuario.
+                            </p>
+                            <h2 class="bader-page-card__title">Gestion de cookies</h2>
+                            <p class="bader-page-card__text">
+                                Puedes configurar o eliminar cookies desde tu navegador.
+                                Algunas funciones pueden verse afectadas si desactivas cookies esenciales.
+                            </p>
+                        </article>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
     <template id="bader_blog" name="Bader Blog">
         <t t-call="website.layout">
             <t t-set="head">
