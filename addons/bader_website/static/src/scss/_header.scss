@@ -538,6 +538,232 @@ html.o_connected_user #wrapwrap>header#top {
 // 4. Responsive — Mobile
 // -----------------------------------------------
 @include mobile {
+    body.bader-mobile-menu-open {
+        overflow: hidden;
+    }
+
+    body.bader-mobile-menu-open::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: rgba(2, 6, 23, 0.58);
+        z-index: $z-header + 8;
+        pointer-events: none;
+    }
+
+    #wrapwrap>header#top {
+        #top_menu_collapse.collapse {
+            display: block !important;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 360px;
+            max-width: 86vw;
+            margin: 0;
+            padding: 78px 16px 24px;
+            background: $bader-dark;
+            border-left: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: -18px 0 40px rgba(0, 0, 0, 0.35);
+            overflow-y: auto;
+            visibility: hidden;
+            transform: translateX(104%);
+            transition: transform 0.28s ease, visibility 0.28s ease;
+            z-index: $z-header + 10;
+        }
+
+        #top_menu_collapse.collapse.show {
+            visibility: visible;
+            transform: translateX(0);
+        }
+
+        #top_menu_collapse>#top_menu {
+            display: none !important;
+        }
+    }
+
+    .bader-mobile-drawer {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .bader-mobile-search {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.08);
+        color: $white;
+        border-radius: 12px;
+        min-height: 48px;
+        padding: 0 14px;
+        font-size: 0.92rem;
+        font-weight: 500;
+    }
+
+    .bader-mobile-search__left {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .bader-mobile-block {
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        padding-top: 12px;
+    }
+
+    .bader-mobile-label {
+        margin: 0 0 8px;
+        color: rgba(255, 255, 255, 0.55);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0 6px;
+    }
+
+    .bader-mobile-niche {
+        margin-bottom: 6px;
+    }
+
+    .bader-mobile-niche__toggle {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-align: left;
+        border: 0;
+        background: transparent;
+        color: $white;
+        border-radius: 10px;
+        min-height: 44px;
+        padding: 8px 8px;
+
+        .fa-chevron-down {
+            margin-left: auto;
+            font-size: 0.72rem;
+            opacity: 0.72;
+            transition: transform 0.2s ease;
+        }
+    }
+
+    .bader-mobile-niche.is-open .bader-mobile-niche__toggle {
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .bader-mobile-niche.is-open .fa-chevron-down {
+        transform: rotate(180deg);
+    }
+
+    .bader-mobile-niche__icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: $white;
+        flex: 0 0 auto;
+        font-size: 0.8rem;
+    }
+
+    .bader-mobile-niche__icon--clinica {
+        background: linear-gradient(135deg, #1a8f6e, #14b88e);
+    }
+
+    .bader-mobile-niche__icon--lab {
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+    }
+
+    .bader-mobile-niche__icon--student {
+        background: linear-gradient(135deg, #059669, #10b981);
+    }
+
+    .bader-mobile-niche__title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: $white;
+    }
+
+    .bader-mobile-niche__body {
+        display: none;
+        padding: 4px 0 6px 40px;
+    }
+
+    .bader-mobile-niche.is-open .bader-mobile-niche__body {
+        display: block;
+    }
+
+    .bader-mobile-niche__body a {
+        display: block;
+        color: rgba(255, 255, 255, 0.84);
+        text-decoration: none;
+        font-size: 0.84rem;
+        padding: 7px 10px;
+        border-radius: 8px;
+    }
+
+    .bader-mobile-niche__body a:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: $white;
+    }
+
+    .bader-mobile-niche__body .bader-mobile-niche__all {
+        color: $bader-green;
+        font-weight: 600;
+    }
+
+    .bader-mobile-all-products {
+        margin-top: 2px;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 8px;
+        color: $bader-green;
+        text-decoration: none;
+        font-size: 0.84rem;
+        font-weight: 600;
+    }
+
+    .bader-mobile-links {
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        padding-top: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .bader-mobile-links a,
+    .bader-mobile-account a {
+        display: block;
+        color: rgba(255, 255, 255, 0.92);
+        text-decoration: none;
+        font-size: 0.9rem;
+        border-radius: 8px;
+        padding: 10px 8px;
+    }
+
+    .bader-mobile-links a:hover,
+    .bader-mobile-account a:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: $white;
+    }
+
+    .bader-mobile-account {
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        padding-top: 10px;
+    }
+
+    .bader-mobile-account__login {
+        color: $bader-green !important;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 0.76rem !important;
+    }
+
     .bader-mega {
         position: fixed;
         top: 56px;

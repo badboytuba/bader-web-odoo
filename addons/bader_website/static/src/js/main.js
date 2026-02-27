@@ -139,10 +139,10 @@ odoo.define('bader_website.main', function (require) {
 
         // ---- 1b. SEARCH PILL — "Buscar con IA" click handler ----
         (function initSearchPill() {
-            var pill = document.getElementById('baderSearchPill');
-            if (!pill) return;
+            var desktopPill = document.getElementById('baderSearchPill');
+            var mobilePill = document.getElementById('baderSearchPillMobile');
 
-            pill.addEventListener('click', function (e) {
+            function openSearch(e) {
                 e.preventDefault();
                 // Try Odoo's built-in search toggle
                 var searchToggle = document.querySelector('.o_searchbar_form input[type="search"], .o_searchbar_form input[type="text"]');
@@ -152,7 +152,10 @@ odoo.define('bader_website.main', function (require) {
                 }
                 // Fallback: navigate to shop search
                 window.location.href = '/productos';
-            });
+            }
+
+            if (desktopPill) desktopPill.addEventListener('click', openSearch);
+            if (mobilePill) mobilePill.addEventListener('click', openSearch);
 
             // Keyboard shortcut: press Q to open search
             document.addEventListener('keydown', function (e) {
@@ -160,8 +163,58 @@ odoo.define('bader_website.main', function (require) {
                     var tag = (e.target.tagName || '').toLowerCase();
                     if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
                     e.preventDefault();
-                    pill.click();
+                    openSearch(e);
                 }
+            });
+        })();
+
+        (function initMobileDrawer() {
+            var collapse = document.getElementById('top_menu_collapse');
+            var toggler = document.querySelector('header#top .navbar-toggler');
+            if (!collapse || !toggler) return;
+
+            function setDrawerBodyState() {
+                var shouldLock = window.innerWidth < 992 && collapse.classList.contains('show');
+                document.body.classList.toggle('bader-mobile-menu-open', shouldLock);
+            }
+
+            function closeDrawer() {
+                if (window.innerWidth >= 992 || !collapse.classList.contains('show')) return;
+                collapse.classList.remove('show');
+                collapse.style.height = '';
+                toggler.classList.add('collapsed');
+                toggler.setAttribute('aria-expanded', 'false');
+                setDrawerBodyState();
+            }
+
+            collapse.addEventListener('shown.bs.collapse', setDrawerBodyState);
+            collapse.addEventListener('hidden.bs.collapse', setDrawerBodyState);
+            window.addEventListener('resize', setDrawerBodyState);
+            setDrawerBodyState();
+
+            collapse.querySelectorAll('.bader-mobile-drawer a').forEach(function (link) {
+                link.addEventListener('click', closeDrawer);
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeDrawer();
+            });
+
+            document.addEventListener('click', function (e) {
+                if (window.innerWidth >= 992 || !collapse.classList.contains('show')) return;
+                if (collapse.contains(e.target) || toggler.contains(e.target)) return;
+                closeDrawer();
+            });
+
+            var nicheToggles = collapse.querySelectorAll('[data-bader-niche-toggle]');
+            nicheToggles.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var key = btn.getAttribute('data-bader-niche-toggle');
+                    collapse.querySelectorAll('.bader-mobile-niche').forEach(function (card) {
+                        var sameCard = card.getAttribute('data-bader-niche') === key;
+                        card.classList.toggle('is-open', sameCard ? !card.classList.contains('is-open') : false);
+                    });
+                });
             });
         })();
 

@@ -10,6 +10,8 @@ Atualizacao 2026-02-27:
 - [x] `/productos` fase 1 aplicada em QWeb (hero, quick filters, chips ativos, contador e empty state).
 - [x] `/productos` filtros inteligentes por nicho -> tipo -> subcategoria (endpoint JSON + sidebar dinamica).
 - [~] Busca no catalogo ajustada para maior relevancia (sem fuzzy e sem match por descricao em `/productos`).
+- [x] `/producto/<id>` migrado para QWeb com tabs, FAQ, relacionados e CTA (sem injecao pesada em JS).
+- [x] Header mobile no estilo app (drawer com busca, nichos, links principais e conta).
 
 ## Prioridade Alta
 
@@ -26,21 +28,21 @@ Atualizacao 2026-02-27:
   - [~] Empty state melhorado; skeletons ainda nao aplicados.
 
 2. Produto detalhado `/producto/<id>`
-- Estado atual: customizacoes concentradas em JS/CSS (injecao em runtime).
+- Estado atual: base consolidada em [product_detail.xml](../addons/bader_website/views/product_detail.xml) com suporte SCSS dedicado.
 - Paridade faltando vs app: [product.tsx](../Bader-AR/client/src/pages/product.tsx)
 - Itens pendentes:
-  - Estrutura completa em template QWeb (menos dependencia de JS injetando blocos).
-  - FAQ e blocos ricos de conteudo.
-  - Bloco de produtos relacionados com layout igual ao app.
-  - CTA e acoes de compra com mesma hierarquia visual.
+  - [x] Estrutura completa em template QWeb (menos dependencia de JS injetando blocos).
+  - [x] FAQ e blocos ricos de conteudo.
+  - [x] Bloco de produtos relacionados com layout igual ao app.
+  - [x] CTA e acoes de compra com mesma hierarquia visual.
 
 3. Header mobile + experiencia de carrinho
-- Estado atual: desktop proximo da referencia; mobile ainda segue mais o padrao Odoo.
+- Estado atual: desktop e menu mobile proximos da referencia; carrinho lateral ainda pendente.
 - Paridade faltando vs app: [Header.tsx](../Bader-AR/client/src/components/landing/Header.tsx) e [CartDrawer.tsx](../Bader-AR/client/src/components/landing/CartDrawer.tsx)
 - Itens pendentes:
-  - Menu mobile estilo app (com blocos por nicho e links de conta).
-  - Drawer de carrinho lateral (hoje e popover/default Odoo).
-  - Mesma ordem e comportamento das acoes mobile.
+  - [x] Menu mobile estilo app (com blocos por nicho e links de conta).
+  - [ ] Drawer de carrinho lateral (hoje e popover/default Odoo).
+  - [~] Mesma ordem e comportamento das acoes mobile (falta refinamento final do fechamento/animacoes).
 
 ## Prioridade Media
 
@@ -79,9 +81,8 @@ Atualizacao 2026-02-27:
 
 ## Ordem de execucao recomendada
 
-1. `/producto/<id>` (template robusto + relacionados + FAQ).
-2. Header mobile + cart drawer.
-3. Checkout (paridade visual fina).
-4. Conta (interacoes e estados).
-5. Blog post (produtos relacionados).
-6. Ajustes finais e QA visual completo.
+1. Header mobile + cart drawer (fechar parte do drawer de carrinho).
+2. Checkout (paridade visual fina).
+3. Conta (interacoes e estados).
+4. Blog post (produtos relacionados).
+5. Ajustes finais e QA visual completo.

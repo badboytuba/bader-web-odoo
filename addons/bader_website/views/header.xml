@@ -23,6 +23,99 @@
             </div>
         </xpath>
 
+        <!-- Mobile drawer: app-style menu blocks -->
+        <xpath expr="//div[@id='top_menu_collapse']" position="inside">
+            <div class="bader-mobile-drawer d-lg-none">
+                <button type="button" class="bader-mobile-search" id="baderSearchPillMobile">
+                    <span class="bader-mobile-search__left">
+                        <i class="fa fa-magic"/>
+                        <span>Buscar con IA</span>
+                    </span>
+                    <i class="fa fa-search"/>
+                </button>
+
+                <section class="bader-mobile-block">
+                    <p class="bader-mobile-label">Productos</p>
+
+                    <article class="bader-mobile-niche" data-bader-niche="clinica">
+                        <button type="button" class="bader-mobile-niche__toggle" data-bader-niche-toggle="clinica">
+                            <span class="bader-mobile-niche__icon bader-mobile-niche__icon--clinica"><i class="fa fa-medkit"/></span>
+                            <span class="bader-mobile-niche__title">Clinica Dental</span>
+                            <i class="fa fa-chevron-down"/>
+                        </button>
+                        <div class="bader-mobile-niche__body" data-bader-niche-body="clinica">
+                            <a href="/clinica-dental" class="bader-mobile-niche__all">Ver todo Clinica Dental</a>
+                            <a href="/productos?niche=clinica-dental&amp;category=sillones">Sillones Dentales</a>
+                            <a href="/productos?niche=clinica-dental&amp;category=cbct">CBCT / Radiografia</a>
+                            <a href="/productos?niche=clinica-dental&amp;category=autoclaves">Autoclaves</a>
+                            <a href="/productos?niche=clinica-dental&amp;category=compresores">Compresores</a>
+                            <a href="/productos?niche=clinica-dental&amp;category=rotatorios">Rotatorios</a>
+                            <a href="/productos?niche=clinica-dental&amp;category=mobiliario">Mobiliario</a>
+                        </div>
+                    </article>
+
+                    <article class="bader-mobile-niche" data-bader-niche="laboratorio">
+                        <button type="button" class="bader-mobile-niche__toggle" data-bader-niche-toggle="laboratorio">
+                            <span class="bader-mobile-niche__icon bader-mobile-niche__icon--lab"><i class="fa fa-flask"/></span>
+                            <span class="bader-mobile-niche__title">Laboratorio Dental</span>
+                            <i class="fa fa-chevron-down"/>
+                        </button>
+                        <div class="bader-mobile-niche__body" data-bader-niche-body="laboratorio">
+                            <a href="/laboratorio-dental" class="bader-mobile-niche__all">Ver todo Laboratorio Dental</a>
+                            <a href="/productos?niche=laboratorio-dental&amp;category=mesas">Mesas de Trabajo</a>
+                            <a href="/productos?niche=laboratorio-dental&amp;category=repasado">Cabinas de Repasado</a>
+                            <a href="/productos?niche=laboratorio-dental&amp;category=arenadoras">Arenadoras</a>
+                            <a href="/productos?niche=laboratorio-dental&amp;category=articuladores">Articuladores</a>
+                            <a href="/productos?niche=laboratorio-dental&amp;category=termoformadoras">Termoformadoras</a>
+                            <a href="/productos?niche=laboratorio-dental&amp;category=instrumental">Instrumental</a>
+                        </div>
+                    </article>
+
+                    <article class="bader-mobile-niche" data-bader-niche="estudiantes">
+                        <button type="button" class="bader-mobile-niche__toggle" data-bader-niche-toggle="estudiantes">
+                            <span class="bader-mobile-niche__icon bader-mobile-niche__icon--student"><i class="fa fa-graduation-cap"/></span>
+                            <span class="bader-mobile-niche__title">Estudiantes</span>
+                            <i class="fa fa-chevron-down"/>
+                        </button>
+                        <div class="bader-mobile-niche__body" data-bader-niche-body="estudiantes">
+                            <a href="/estudiantes-odontologia" class="bader-mobile-niche__all">Ver todo Estudiantes</a>
+                            <a href="/productos?niche=estudiantes&amp;category=kits">Kits de Rotatorios</a>
+                            <a href="/productos?niche=estudiantes&amp;category=simuladores">Simuladores</a>
+                            <a href="/productos?niche=estudiantes&amp;category=tipodontos">Tipodontos</a>
+                            <a href="/productos?niche=estudiantes&amp;category=fantomas">Fantomas</a>
+                            <a href="/productos?niche=estudiantes&amp;category=dientes">Dientes de Reposicion</a>
+                            <a href="/productos?niche=estudiantes&amp;category=accesorios">Accesorios</a>
+                        </div>
+                    </article>
+
+                    <a href="/productos" class="bader-mobile-all-products">
+                        <i class="fa fa-arrow-right"/> Ver todos los productos
+                    </a>
+                </section>
+
+                <nav class="bader-mobile-links">
+                    <a href="/">Inicio</a>
+                    <a href="/sobre-nosotros">Nosotros</a>
+                    <a href="/ser-distribuidor">Ser Distribuidor</a>
+                    <a href="/descargas">Descargas</a>
+                    <a href="/blog">Blog</a>
+                    <a href="/servicios">Servicios</a>
+                </nav>
+
+                <section class="bader-mobile-account" t-if="request.env.user._is_public()">
+                    <a href="/web/login" class="bader-mobile-account__login">Tu Cuenta</a>
+                </section>
+
+                <section class="bader-mobile-account" t-else="">
+                    <a href="/mi-perfil">Mi Perfil</a>
+                    <a href="/mis-pedidos">Mis Pedidos</a>
+                    <a href="/mis-facturas">Mis Facturas</a>
+                    <a href="/mis-favoritos">Mis Favoritos</a>
+                    <a href="/configuracion">Configuracion</a>
+                </section>
+            </div>
+        </xpath>
+
         <!-- Inject mega menu panel after header (inside wrapwrap) -->
         <xpath expr="//header[@id='top']" position="after">
             <div id="baderMegaMenu" class="bader-mega">
