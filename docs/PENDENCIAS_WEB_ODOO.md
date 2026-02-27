@@ -58,7 +58,7 @@ Atualizacao 2026-02-27:
 - Estado atual: [frontend_pages.xml](../addons/bader_website/views/frontend_pages.xml) implementa lista e post.
 - Paridade faltando vs app: [BlogPost.tsx](../Bader-AR/client/src/pages/BlogPost.tsx)
 - Item pendente:
-  - Bloco de produtos relacionados no post (alem de artigos relacionados).
+  - [x] Bloco de produtos relacionados no post (alem de artigos relacionados).
 
 6. Area logada (conta)
 - Estado atual: [account_pages.xml](../addons/bader_website/views/account_pages.xml) cobre perfil, pedidos, faturas, favoritos e configuracao.

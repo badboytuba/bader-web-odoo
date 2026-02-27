@@ -525,6 +525,62 @@
                 </section>
 
                 <section class="bader-page-section bader-page-section--muted bader-animate"
+                         t-if="post and related_product_cards">
+                    <div class="bader-page-section__container">
+                        <h2 class="bader-section__title bader-section__title--dark">Productos relacionados</h2>
+                        <p class="bader-section__subtitle bader-section__subtitle--dark">
+                            Equipos y productos recomendados segun el contenido de este articulo.
+                        </p>
+
+                        <div class="bader-page-section__grid bader-page-section__grid--4 bader-blog-product-grid">
+                            <article class="bader-page-card bader-blog-product-card"
+                                     t-foreach="related_product_cards"
+                                     t-as="product">
+                                <a t-att-href="product['url']" class="bader-blog-product-card__image-link">
+                                    <img t-att-src="product['image_url']"
+                                         t-att-alt="product['name']"
+                                         class="bader-blog-product-card__image"/>
+                                </a>
+
+                                <p class="bader-blog-product-card__category"
+                                   t-if="product['category']"
+                                   t-esc="product['category']"/>
+
+                                <h3 class="bader-page-card__title">
+                                    <a t-att-href="product['url']"><t t-esc="product['name']"/></a>
+                                </h3>
+
+                                <div class="bader-blog-product-card__price-row">
+                                    <strong class="bader-blog-product-card__price">
+                                        <span t-esc="product['price']"
+                                              t-options='{"widget": "monetary", "display_currency": product_currency}'/>
+                                    </strong>
+                                    <span t-attf-class="bader-status-pill #{product['in_stock'] and 'is-green' or 'is-red'}">
+                                        <t t-esc="product['in_stock'] and 'En stock' or 'Sin stock'"/>
+                                    </span>
+                                </div>
+
+                                <div class="bader-blog-product-card__actions">
+                                    <a t-att-href="product['url']" class="btn btn-outline-secondary btn-sm">
+                                        Ver producto
+                                    </a>
+                                    <form action="/shop/cart/update" method="post" class="bader-blog-product-card__form">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <input type="hidden" name="product_id" t-att-value="product['product_id']"/>
+                                        <input type="hidden" name="add_qty" value="1"/>
+                                        <button type="submit"
+                                                class="btn-bader-sm w-100"
+                                                t-att-disabled="(not product['product_id'] or not product['in_stock']) and 'disabled' or None">
+                                            <i class="fa fa-shopping-cart"/> Agregar al carrito
+                                        </button>
+                                    </form>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bader-page-section bader-page-section--muted bader-animate"
                          t-if="post and related_cards">
                     <div class="bader-page-section__container">
                         <h2 class="bader-section__title bader-section__title--dark">Articulos relacionados</h2>

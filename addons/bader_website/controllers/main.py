@@ -364,6 +364,109 @@ class BaderWebsite(Website):
             })
         return cards
 
+    def _blog_product_keywords(self, post, max_terms=10):
+        """Extract lightweight keywords from blog post content."""
+        if not post:
+            return []
+
+        source = ' '.join(filter(None, [
+            post.name or '',
+            post.subtitle or '',
+            html2plaintext(post.content or '')[:1500],
+        ]))
+
+        tokens = re.findall(
+            r"[A-Za-z0-9ÁÉÍÓÚÜÑáéíóúüñ]{4,}",
+            source or '',
+            flags=re.UNICODE,
+        )
+        stopwords = {
+            'para', 'este', 'esta', 'estas', 'estos', 'sobre', 'desde', 'como',
+            'donde', 'cuando', 'entre', 'todos', 'todas', 'nuestro', 'nuestra',
+            'nuestras', 'nuestros', 'blog', 'bader', 'dental', 'dentales',
+            'producto', 'productos', 'equipo', 'equipos', 'guia', 'guias',
+            'articulo', 'articulos', 'profesional', 'profesionales', 'clinica',
+            'clinicas', 'laboratorio', 'laboratorios', 'estudiante', 'estudiantes',
+        }
+
+        keywords = []
+        for token in tokens:
+            key = token.lower().strip()
+            if not key or key in stopwords or key.isdigit():
+                continue
+            if key not in keywords:
+                keywords.append(key)
+            if len(keywords) >= max_terms:
+                break
+        return keywords
+
+    def _prepare_related_blog_products(self, post, limit=4):
+        """Pick related published products from blog content keywords."""
+        if not post:
+            return []
+
+        product_tmpl_model = request.env['product.template'].sudo().with_context(
+            website_id=request.website.id
+        )
+        base_domain = [
+            ('website_published', '=', True),
+            ('sale_ok', '=', True),
+        ]
+        keywords = self._blog_product_keywords(post, max_terms=12)
+
+        candidate_ids = []
+        for term in keywords:
+            matched = product_tmpl_model.search(
+                base_domain + ['|', '|',
+                               ('name', 'ilike', term),
+                               ('default_code', 'ilike', term),
+                               ('description_sale', 'ilike', term)],
+                limit=max(limit * 2, 6),
+            )
+            for tmpl in matched:
+                if tmpl.id not in candidate_ids:
+                    candidate_ids.append(tmpl.id)
+            if len(candidate_ids) >= limit * 3:
+                break
+
+        if not candidate_ids:
+            fallback = product_tmpl_model.search(
+                base_domain,
+                order='website_sequence asc, id desc',
+                limit=limit,
+            )
+            candidate_ids = fallback.ids
+
+        pricelist = request.website.get_current_pricelist()
+        cards = []
+        for tmpl in product_tmpl_model.browse(candidate_ids[:limit]):
+            variant = tmpl.product_variant_id or tmpl.product_variant_ids[:1]
+            price = tmpl.list_price
+            try:
+                if variant:
+                    combination = variant._get_combination_info_variant(
+                        pricelist=pricelist,
+                    )
+                    price = combination.get('price', price)
+            except Exception:
+                price = tmpl.list_price
+
+            in_stock = True
+            if 'qty_available' in tmpl._fields and tmpl.type != 'service':
+                in_stock = (tmpl.qty_available or 0) > 0
+
+            cards.append({
+                'product_tmpl_id': tmpl.id,
+                'product_id': variant.id if variant else False,
+                'name': tmpl.name,
+                'category': tmpl.public_categ_ids[:1].name if tmpl.public_categ_ids else '',
+                'price': price,
+                'in_stock': in_stock,
+                'image_url': '/web/image/product.template/%s/image_512' % tmpl.id,
+                'url': '/producto/%s' % tmpl.id,
+            })
+        return cards
+
     def _resolve_blog_post(self, post_slug):
         """Resolve a /blog/<slug> path to a published blog.post record."""
         if not post_slug or not self._blog_models_available():
@@ -943,6 +1046,8 @@ class BaderWebsite(Website):
                 pass
 
         related_cards = []
+        related_product_cards = []
+        product_currency = request.website.get_current_pricelist().currency_id
         if post:
             related_posts = request.env['blog.post'].sudo().search(
                 [
@@ -954,6 +1059,7 @@ class BaderWebsite(Website):
                 limit=3,
             )
             related_cards = self._prepare_blog_cards(related_posts)
+            related_product_cards = self._prepare_related_blog_products(post, limit=4)
 
         return request.render('bader_website.bader_blog_post', {
             'blog_enabled': blog_enabled,
@@ -964,6 +1070,8 @@ class BaderWebsite(Website):
             'post_date_label': (post.post_date or post.create_date).strftime('%d/%m/%Y') if post and (post.post_date or post.create_date) else '',
             'post_read_minutes': self._blog_reading_time(post) if post else 0,
             'related_cards': related_cards,
+            'related_product_cards': related_product_cards,
+            'product_currency': product_currency,
         })
 
     @http.route('/payment/success', type='http', auth='public', website=True, sitemap=False)
