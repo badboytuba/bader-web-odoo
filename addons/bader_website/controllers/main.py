@@ -26,6 +26,43 @@ def _is_spam(kw):
     return bool(kw.get('website_url', '').strip())
 
 
+class BaderWebsiteSale(WebsiteSale):
+    """WebsiteSale behavior tuned for /productos public catalog UX."""
+
+    def _get_search_domain(self, search, category, attrib_values, search_in_description=True):
+        # Keep search relevance strict on catalog pages: match by product identity fields.
+        return super(BaderWebsiteSale, self)._get_search_domain(
+            search,
+            category,
+            attrib_values,
+            search_in_description=False,
+        )
+
+    def _get_search_options(
+        self,
+        category=None,
+        attrib_values=None,
+        pricelist=None,
+        min_price=0.0,
+        max_price=0.0,
+        conversion_rate=1,
+        **post
+    ):
+        options = super(BaderWebsiteSale, self)._get_search_options(
+            category=category,
+            attrib_values=attrib_values,
+            pricelist=pricelist,
+            min_price=min_price,
+            max_price=max_price,
+            conversion_rate=conversion_rate,
+            **post
+        )
+        # Disable fuzzy + description matching to avoid unrelated results.
+        options['allowFuzzy'] = False
+        options['displayDescription'] = False
+        return options
+
+
 class BaderWebsite(Website):
     """Override homepage to render Bader custom template.
     Also handles CTA form, page routes, and thank-you pages.
@@ -466,7 +503,7 @@ class BaderWebsite(Website):
     ], type='http', auth='public', website=True, sitemap=True)
     def productos(self, page=0, category=None, search='', ppg=False, **post):
         """Serve product catalog on /productos to match Bader-AR public URLs."""
-        return WebsiteSale().shop(
+        return BaderWebsiteSale().shop(
             page=page,
             category=category,
             search=search,
