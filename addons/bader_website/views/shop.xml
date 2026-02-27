@@ -154,7 +154,7 @@
     <template id="bader_shop_empty_state" inherit_id="website_sale.products"
               name="Bader Shop Empty State" priority="25">
         <xpath expr="//div[hasclass('text-center') and hasclass('text-muted') and hasclass('mt128') and hasclass('mb256')]" position="replace">
-            <div t-nocache="get the actual search" class="text-center text-muted mt128 mb256">
+            <div t-nocache="get the actual search" t-else="" class="text-center text-muted mt128 mb256">
                 <h3 class="mt8">No se encontraron productos</h3>
                 <p t-if="search">
                     No hay resultados para "<strong t-esc="search"/>".

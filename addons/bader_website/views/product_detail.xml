@@ -48,6 +48,137 @@
                 </div>
             </div>
         </xpath>
+
+        <xpath expr="//div[@id='product_full_description']" position="replace">
+            <section id="product_full_description" class="bader-detail-tabs mt-5">
+                <ul class="nav nav-tabs bader-tab-headers" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="bader_tab_desc_btn" data-bs-toggle="tab" href="#bader_tab_desc" role="tab">Descripcion</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="bader_tab_specs_btn" data-bs-toggle="tab" href="#bader_tab_specs" role="tab">Especificaciones</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="bader_tab_ship_btn" data-bs-toggle="tab" href="#bader_tab_ship" role="tab">Envio</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="bader_tab_warranty_btn" data-bs-toggle="tab" href="#bader_tab_warranty" role="tab">Garantia</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content bader-tab-content">
+                    <div class="tab-pane fade show active bader-tab-description" id="bader_tab_desc" role="tabpanel" aria-labelledby="bader_tab_desc_btn">
+                        <div class="bader-tab-description-body" t-if="product.website_description" t-field="product.website_description"/>
+                        <p t-elif="product.description_sale" t-field="product.description_sale"/>
+                        <p t-else="">Producto profesional Bader con calidad europea y soporte tecnico especializado.</p>
+                    </div>
+
+                    <div class="tab-pane fade bader-tab-specs" id="bader_tab_specs" role="tabpanel" aria-labelledby="bader_tab_specs_btn">
+                        <table class="table table-sm">
+                            <tbody>
+                                <tr>
+                                    <th>Categoria</th>
+                                    <td>
+                                        <span t-if="product.public_categ_ids" t-esc="product.public_categ_ids[0].name"/>
+                                        <span t-else="">General</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Codigo</th>
+                                    <td>
+                                        <span t-if="product_variant and product_variant.default_code" t-esc="product_variant.default_code"/>
+                                        <span t-else="">BAD-<t t-esc="product.id"/></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Marca</th>
+                                    <td>BADER</td>
+                                </tr>
+                                <tr>
+                                    <th>Origen</th>
+                                    <td>Europa</td>
+                                </tr>
+                                <tr>
+                                    <th>Garantia</th>
+                                    <td>12 meses oficial</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="tab-pane fade bader-tab-shipping" id="bader_tab_ship" role="tabpanel" aria-labelledby="bader_tab_ship_btn">
+                        <h3>Envio nacional</h3>
+                        <ul>
+                            <li>Envio gratis a todo el pais.</li>
+                            <li>Entrega estimada de 3 a 10 dias habiles segun zona.</li>
+                            <li>Seguimiento de envio con soporte comercial.</li>
+                        </ul>
+                    </div>
+
+                    <div class="tab-pane fade bader-tab-shipping" id="bader_tab_warranty" role="tabpanel" aria-labelledby="bader_tab_warranty_btn">
+                        <h3>Garantia y soporte</h3>
+                        <ul>
+                            <li>Garantia oficial europea por 12 meses.</li>
+                            <li>Asistencia tecnica para instalacion y uso.</li>
+                            <li>Repuestos y mantenimiento con red Bader.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+
+        <xpath expr="//section[@id='product_full_description']" position="after">
+            <section class="bader-faq-section mt-5">
+                <h2>Preguntas Frecuentes</h2>
+                <div class="bader-faq-list">
+                    <article class="bader-faq-item">
+                        <h3>1. Este producto tiene garantia oficial?</h3>
+                        <p>Si. Todos los equipos Bader cuentan con garantia oficial y soporte tecnico especializado.</p>
+                    </article>
+                    <article class="bader-faq-item">
+                        <h3>2. El envio esta incluido?</h3>
+                        <p>Si. Ofrecemos envio sin cargo a todo el pais en compras desde la tienda web.</p>
+                    </article>
+                    <article class="bader-faq-item">
+                        <h3>3. Se puede financiar en cuotas?</h3>
+                        <p>Si. Dispones de financiacion hasta 12 cuotas segun el medio de pago habilitado.</p>
+                    </article>
+                    <article class="bader-faq-item">
+                        <h3>4. Puedo recibir asesoria antes de comprar?</h3>
+                        <p>Si. Nuestro equipo comercial y tecnico puede ayudarte a elegir la mejor opcion para tu caso.</p>
+                    </article>
+                </div>
+            </section>
+
+            <t t-set="related_products" t-value="request.env['product.template'].sudo().search([('website_published', '=', True), ('id', '!=', product.id), ('public_categ_ids', 'in', product.public_categ_ids.ids)], limit=8)"/>
+            <t t-set="display_currency" t-value="request.website.get_current_pricelist().currency_id"/>
+            <section class="bader-related-products" t-if="related_products">
+                <h2>Tambien te puede interesar</h2>
+                <div class="row g-3">
+                    <t t-foreach="related_products" t-as="rel">
+                        <div class="col-6 col-lg-3">
+                            <a t-att-href="rel.website_url" class="bader-related-card">
+                                <span class="bader-related-card__image">
+                                    <img t-att-src="website.image_url(rel, 'image_512')" t-att-alt="rel.name"/>
+                                </span>
+                                <span class="bader-related-card__name" t-esc="rel.name"/>
+                                <span class="bader-related-card__price" t-field="rel.list_price" t-options='{"widget": "monetary", "display_currency": display_currency}'/>
+                            </a>
+                        </div>
+                    </t>
+                </div>
+            </section>
+
+            <section class="bader-help-cta">
+                <div class="bader-help-cta__content">
+                    <h3>Tenes dudas sobre este producto?</h3>
+                    <p>Nuestros especialistas estan listos para ayudarte.</p>
+                </div>
+                <a class="bader-help-cta__button" href="https://wa.me/5491124522097?text=Hola!%20Necesito%20asesoria%20sobre%20este%20producto" target="_blank" rel="noopener">
+                    Contactar por WhatsApp
+                </a>
+            </section>
+        </xpath>
     </template>
 
 </odoo>
