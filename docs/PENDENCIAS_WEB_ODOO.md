@@ -64,8 +64,8 @@ Atualizacao 2026-02-27:
 - Estado atual: [account_pages.xml](../addons/bader_website/views/account_pages.xml) cobre perfil, pedidos, faturas, favoritos e configuracao.
 - Paridade faltando vs app: [mi-perfil.tsx](../Bader-AR/client/src/pages/mi-perfil.tsx), [my-orders.tsx](../Bader-AR/client/src/pages/my-orders.tsx), [mis-favoritos.tsx](../Bader-AR/client/src/pages/mis-favoritos.tsx), [mis-facturas.tsx](../Bader-AR/client/src/pages/mis-facturas.tsx)
 - Itens pendentes:
-  - Ajustes de interacoes e estados (vazio/erro/login) para ficar identico.
-  - Revisar acao direta em favoritos (hoje muito redirecionada ao `/shop/wishlist`).
+  - [~] Ajustes de interacoes e estados (vazio/erro/login) aplicados nas paginas principais; falta refinamento visual final.
+  - [x] Acao direta em favoritos (adicionar ao carrinho + remover sem depender de `/shop/wishlist`).
 
 7. Home personalizada por perfil (pos-login)
 - Estado atual: homepage unica em [homepage.xml](../addons/bader_website/views/homepage.xml).

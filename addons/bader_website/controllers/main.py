@@ -3,6 +3,7 @@ import logging
 import math
 import re
 from datetime import datetime
+from urllib.parse import quote
 from odoo import http
 from odoo.tools import html2plaintext
 from odoo.http import request
@@ -71,6 +72,17 @@ class BaderWebsite(Website):
     def _current_customer_partner(self):
         """Commercial partner used as customer scope for portal-like pages."""
         return request.env.user.partner_id.commercial_partner_id
+
+    def _render_account_login_required(self, page_title):
+        """Render app-like login-required state for account pages."""
+        redirect_path = request.httprequest.full_path or request.httprequest.path or '/mi-perfil'
+        if redirect_path.endswith('?'):
+            redirect_path = redirect_path[:-1]
+        login_url = '/web/login?redirect=%s' % quote(redirect_path, safe='/?=&')
+        return request.render('bader_website.bader_account_login_required', {
+            'page_title': page_title,
+            'login_url': login_url,
+        })
 
     def _order_domain_for_partner(self, partner):
         """Orders linked to the customer and child contacts."""
@@ -525,28 +537,39 @@ class BaderWebsite(Website):
         """Frontend alias for checkout flow."""
         return request.redirect('/shop/checkout')
 
-    @http.route('/mi-perfil', type='http', auth='user', website=True, sitemap=False)
+    @http.route('/mi-perfil', type='http', auth='public', website=True, sitemap=False)
     def mi_perfil(self, **kw):
         """Customer account dashboard fully backed by Odoo data."""
+        if request.website.is_public_user():
+            return self._render_account_login_required('Mi perfil')
+
         partner = self._current_customer_partner()
         user = request.env.user
-        sale_order = request.env['sale.order'].sudo()
-        order_domain = self._order_domain_for_partner(partner)
-        orders = sale_order.search(order_domain, order='date_order desc', limit=5)
-        order_count = sale_order.search_count(order_domain)
-
-        wishlist = request.env['product.wishlist'].sudo().search([
-            ('partner_id', '=', request.env.user.partner_id.id),
-            ('website_id', '=', request.website.id),
-            ('active', '=', True),
-        ])
-
+        orders = request.env['sale.order']
+        order_count = 0
+        wishlist_count = 0
         invoice_count = 0
-        if 'account.move' in request.env:
-            account_move = request.env['account.move'].sudo()
-            invoice_count = account_move.search_count(
-                self._invoice_domain_for_partner(partner)
-            )
+        load_error = False
+        try:
+            sale_order = request.env['sale.order'].sudo()
+            order_domain = self._order_domain_for_partner(partner)
+            orders = sale_order.search(order_domain, order='date_order desc', limit=5)
+            order_count = sale_order.search_count(order_domain)
+
+            wishlist_count = request.env['product.wishlist'].sudo().search_count([
+                ('partner_id', '=', request.env.user.partner_id.id),
+                ('website_id', '=', request.website.id),
+                ('active', '=', True),
+            ])
+
+            if 'account.move' in request.env:
+                account_move = request.env['account.move'].sudo()
+                invoice_count = account_move.search_count(
+                    self._invoice_domain_for_partner(partner)
+                )
+        except Exception as exc:
+            load_error = True
+            _logger.error("Mi perfil load error for partner %s: %s", partner.id, exc)
 
         member_since = user.create_date.strftime('%d/%m/%Y') if user.create_date else ''
         profile_initial = ((partner.name or 'U').strip()[:1] or 'U').upper()
@@ -556,21 +579,31 @@ class BaderWebsite(Website):
             'orders': orders,
             'order_count': order_count,
             'invoice_count': invoice_count,
-            'wishlist_count': len(wishlist),
+            'wishlist_count': wishlist_count,
             'last_order': orders[:1],
             'member_since': member_since,
             'profile_initial': profile_initial,
+            'load_error': load_error,
         })
 
-    @http.route('/mis-pedidos', type='http', auth='user', website=True, sitemap=False)
+    @http.route('/mis-pedidos', type='http', auth='public', website=True, sitemap=False)
     def mis_pedidos(self, **kw):
         """My orders page based on sale.order."""
+        if request.website.is_public_user():
+            return self._render_account_login_required('Mis pedidos')
+
         partner = self._current_customer_partner()
-        orders = request.env['sale.order'].sudo().search(
-            self._order_domain_for_partner(partner),
-            order='date_order desc',
-            limit=100
-        )
+        orders = request.env['sale.order']
+        load_error = False
+        try:
+            orders = request.env['sale.order'].sudo().search(
+                self._order_domain_for_partner(partner),
+                order='date_order desc',
+                limit=100
+            )
+        except Exception as exc:
+            load_error = True
+            _logger.error("Mis pedidos load error for partner %s: %s", partner.id, exc)
         state_labels = dict(request.env['sale.order']._fields['state'].selection)
         state_badges = {
             'draft': 'is-yellow',
@@ -598,14 +631,19 @@ class BaderWebsite(Website):
             'state_badges': state_badges,
             'payment_state_labels': payment_state_labels,
             'payment_state_badges': payment_state_badges,
+            'load_error': load_error,
         })
 
-    @http.route('/mis-facturas', type='http', auth='user', website=True, sitemap=False)
+    @http.route('/mis-facturas', type='http', auth='public', website=True, sitemap=False)
     def mis_facturas(self, **kw):
         """My invoices page based on account.move when accounting is available."""
+        if request.website.is_public_user():
+            return self._render_account_login_required('Mis facturas')
+
         partner = self._current_customer_partner()
         invoices_available = 'account.move' in request.env
         invoices = request.env['account.move']
+        load_error = False
         payment_state_labels = {}
         payment_state_badges = {
             'not_paid': 'is-yellow',
@@ -616,37 +654,104 @@ class BaderWebsite(Website):
             'invoicing_legacy': 'is-gray',
         }
         if invoices_available:
-            account_move = request.env['account.move'].sudo()
-            invoices = account_move.search(
-                self._invoice_domain_for_partner(partner),
-                order='invoice_date desc, id desc',
-                limit=100
-            )
-            payment_state_labels = dict(
-                request.env['account.move']._fields['payment_state'].selection
-            )
+            try:
+                account_move = request.env['account.move'].sudo()
+                invoices = account_move.search(
+                    self._invoice_domain_for_partner(partner),
+                    order='invoice_date desc, id desc',
+                    limit=100
+                )
+                payment_state_labels = dict(
+                    request.env['account.move']._fields['payment_state'].selection
+                )
+            except Exception as exc:
+                load_error = True
+                _logger.error("Mis facturas load error for partner %s: %s", partner.id, exc)
         return request.render('bader_website.bader_mis_facturas', {
             'invoices_available': invoices_available,
             'invoices': invoices,
             'payment_state_labels': payment_state_labels,
             'payment_state_badges': payment_state_badges,
+            'load_error': load_error,
         })
 
-    @http.route('/mis-favoritos', type='http', auth='user', website=True, sitemap=False)
+    @http.route('/mis-favoritos', type='http', auth='public', website=True, sitemap=False)
     def mis_favoritos(self, **kw):
         """My wishlist page based on product.wishlist."""
-        wishes = request.env['product.wishlist'].sudo().search([
-            ('partner_id', '=', request.env.user.partner_id.id),
-            ('website_id', '=', request.website.id),
-            ('active', '=', True),
-        ], order='id desc')
+        if request.website.is_public_user():
+            return self._render_account_login_required('Mis favoritos')
+
+        wishes = request.env['product.wishlist']
+        load_error = False
+        try:
+            wishes = request.env['product.wishlist'].sudo().search([
+                ('partner_id', '=', request.env.user.partner_id.id),
+                ('website_id', '=', request.website.id),
+                ('active', '=', True),
+            ], order='id desc')
+        except Exception as exc:
+            load_error = True
+            _logger.error("Mis favoritos load error for user %s: %s", request.env.user.id, exc)
+
         return request.render('bader_website.bader_mis_favoritos', {
             'wishes': wishes,
+            'load_error': load_error,
+            'added': kw.get('added') == '1',
+            'removed': kw.get('removed') == '1',
+            'action_error': kw.get('error') == '1',
         })
 
-    @http.route('/configuracion', type='http', auth='user', website=True, sitemap=False)
+    @http.route('/mis-favoritos/remove', type='http', auth='user', website=True,
+                sitemap=False, methods=['POST'])
+    def mis_favoritos_remove(self, wish_id=None, **post):
+        """Remove one wishlist item from account favorites view."""
+        if not wish_id or not str(wish_id).isdigit():
+            return request.redirect('/mis-favoritos?error=1')
+        wish = request.env['product.wishlist'].sudo().browse(int(wish_id))
+        if not wish.exists():
+            return request.redirect('/mis-favoritos?error=1')
+        if wish.partner_id.id != request.env.user.partner_id.id or wish.website_id.id != request.website.id:
+            return request.redirect('/mis-favoritos?error=1')
+        try:
+            wish.unlink()
+            return request.redirect('/mis-favoritos?removed=1')
+        except Exception as exc:
+            _logger.error("Favorite remove error (wish=%s user=%s): %s", wish_id, request.env.user.id, exc)
+            return request.redirect('/mis-favoritos?error=1')
+
+    @http.route('/mis-favoritos/add-to-cart', type='http', auth='user', website=True,
+                sitemap=False, methods=['POST'])
+    def mis_favoritos_add_to_cart(self, wish_id=None, product_id=None, **post):
+        """Add wishlist product to current website cart."""
+        if not wish_id or not str(wish_id).isdigit():
+            return request.redirect('/mis-favoritos?error=1')
+        wish = request.env['product.wishlist'].sudo().browse(int(wish_id))
+        if not wish.exists():
+            return request.redirect('/mis-favoritos?error=1')
+        if wish.partner_id.id != request.env.user.partner_id.id or wish.website_id.id != request.website.id:
+            return request.redirect('/mis-favoritos?error=1')
+
+        resolved_product_id = wish.product_id.id
+        if product_id and str(product_id).isdigit():
+            resolved_product_id = int(product_id)
+        if not resolved_product_id:
+            return request.redirect('/mis-favoritos?error=1')
+
+        try:
+            order = request.website.sale_get_order(force_create=True)
+            order._cart_update(product_id=resolved_product_id, add_qty=1)
+            return request.redirect('/mis-favoritos?added=1')
+        except Exception as exc:
+            _logger.error("Favorite add-to-cart error (wish=%s product=%s user=%s): %s",
+                          wish_id, resolved_product_id, request.env.user.id, exc)
+            return request.redirect('/mis-favoritos?error=1')
+
+    @http.route('/configuracion', type='http', auth='public', website=True, sitemap=False)
     def configuracion(self, **kw):
         """Customer profile settings page integrated with res.partner."""
+        if request.website.is_public_user():
+            return self._render_account_login_required('Configuracion')
+
         return request.render('bader_website.bader_configuracion', {
             'partner': request.env.user.partner_id,
             'updated': kw.get('updated') == '1',

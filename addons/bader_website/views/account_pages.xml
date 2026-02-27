@@ -1,6 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <template id="bader_account_login_required" name="Bader Account Login Required">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="bader-page-hero bader-animate">
+                    <div class="bader-page-hero__container">
+                        <div class="bader-page-hero__center">
+                            <span class="bader-page-hero__badge">
+                                <i class="fa fa-user-circle-o"/> Cuenta
+                            </span>
+                            <h1 class="bader-page-hero__title">
+                                Inicia sesion para continuar
+                            </h1>
+                            <p class="bader-page-hero__subtitle">
+                                Debes iniciar sesion para acceder a <span class="text-green" t-esc="page_title or 'tu cuenta'"/>.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bader-page-section bader-page-section--white bader-animate">
+                    <div class="bader-page-section__container bader-account-shell">
+                        <div class="bader-page-card text-center bader-account-state">
+                            <h3 class="bader-page-card__title">Acceso requerido</h3>
+                            <p class="bader-page-card__text">
+                                Usa tu cuenta para ver pedidos, facturas y favoritos sincronizados con Odoo.
+                            </p>
+                            <div class="bader-account-state__actions">
+                                <a t-att-href="login_url or '/web/login'" class="btn-bader">
+                                    Iniciar sesion
+                                </a>
+                                <a href="/productos" class="btn btn-outline-secondary">
+                                    Ver productos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
     <template id="bader_mi_perfil" name="Bader Mi Perfil">
         <t t-call="website.layout">
             <div id="wrap" class="oe_structure oe_empty">
@@ -24,6 +65,12 @@
 
                 <section class="bader-page-section bader-page-section--white bader-animate">
                     <div class="bader-page-section__container bader-account-shell">
+                        <t t-if="load_error">
+                            <div class="alert alert-danger">
+                                No pudimos cargar toda la informacion del perfil. Vuelve a intentarlo en unos minutos.
+                            </div>
+                        </t>
+
                         <div class="bader-account-heading">
                             <h2 class="bader-section__title bader-section__title--dark">Panel de cuenta</h2>
                             <p class="bader-section__subtitle bader-section__subtitle--dark">
@@ -155,7 +202,20 @@
 
                 <section class="bader-page-section bader-page-section--white bader-animate">
                     <div class="bader-page-section__container bader-account-shell">
-                        <t t-if="orders">
+                        <t t-if="load_error">
+                            <div class="bader-page-card text-center bader-account-state">
+                                <h3 class="bader-page-card__title">Error al cargar pedidos</h3>
+                                <p class="bader-page-card__text">
+                                    No pudimos recuperar tu historial en este momento.
+                                </p>
+                                <div class="bader-account-state__actions">
+                                    <a href="/mis-pedidos" class="btn-bader-sm">Reintentar</a>
+                                    <a href="/ayuda" class="btn btn-outline-secondary btn-sm">Contactar soporte</a>
+                                </div>
+                            </div>
+                        </t>
+
+                        <t t-if="not load_error and orders">
                             <div class="bader-account-list">
                                 <details class="bader-page-card bader-account-order"
                                          t-foreach="orders"
@@ -260,7 +320,7 @@
                             </div>
                         </t>
 
-                        <t t-else="">
+                        <t t-if="not load_error and not orders">
                             <div class="bader-page-card text-center">
                                 <h3 class="bader-page-card__title">Aun no tienes pedidos</h3>
                                 <p class="bader-page-card__text">Cuando realices tu primera compra aparecera aqui.</p>
@@ -292,7 +352,20 @@
 
                 <section class="bader-page-section bader-page-section--white bader-animate">
                     <div class="bader-page-section__container bader-account-shell">
-                        <t t-if="not invoices_available">
+                        <t t-if="load_error">
+                            <div class="bader-page-card text-center bader-account-state">
+                                <h3 class="bader-page-card__title">Error al cargar facturas</h3>
+                                <p class="bader-page-card__text">
+                                    No pudimos recuperar tus comprobantes ahora mismo.
+                                </p>
+                                <div class="bader-account-state__actions">
+                                    <a href="/mis-facturas" class="btn-bader-sm">Reintentar</a>
+                                    <a href="/ayuda" class="btn btn-outline-secondary btn-sm">Ayuda</a>
+                                </div>
+                            </div>
+                        </t>
+
+                        <t t-if="not load_error and not invoices_available">
                             <div class="bader-page-card">
                                 <div class="alert alert-warning mb-0">
                                     El modulo de facturacion no esta disponible en esta base Odoo.
@@ -300,7 +373,7 @@
                             </div>
                         </t>
 
-                        <t t-elif="invoices">
+                        <t t-elif="not load_error and invoices">
                             <div class="bader-account-list">
                                 <article class="bader-page-card bader-account-invoice"
                                          t-foreach="invoices"
@@ -352,7 +425,7 @@
                             </div>
                         </t>
 
-                        <t t-else="">
+                        <t t-elif="not load_error">
                             <div class="bader-page-card text-center">
                                 <h3 class="bader-page-card__title">No hay facturas publicadas</h3>
                                 <p class="bader-page-card__text">
@@ -386,7 +459,23 @@
 
                 <section class="bader-page-section bader-page-section--white bader-animate">
                     <div class="bader-page-section__container">
-                        <t t-if="wishes">
+                        <t t-if="added">
+                            <div class="alert alert-success">
+                                Producto agregado al carrito correctamente.
+                            </div>
+                        </t>
+                        <t t-if="removed">
+                            <div class="alert alert-success">
+                                Producto eliminado de tus favoritos.
+                            </div>
+                        </t>
+                        <t t-if="action_error or load_error">
+                            <div class="alert alert-danger">
+                                No pudimos procesar la accion solicitada. Intenta nuevamente.
+                            </div>
+                        </t>
+
+                        <t t-if="not load_error and wishes">
                             <div class="bader-page-section__grid bader-page-section__grid--3">
                                 <div class="bader-page-card bader-account-product-card" t-foreach="wishes" t-as="wish">
                                     <div class="bader-account-product-card__img-wrap">
@@ -403,18 +492,33 @@
                                         </t>
                                         <t t-else="">Precio disponible en checkout</t>
                                     </p>
-                                    <a t-att-href="'/shop/product/%s' % slug(wish.product_id.product_tmpl_id)"
-                                       class="btn-bader"
-                                       style="margin-top: 1rem;">
-                                        Ver producto
-                                    </a>
+                                    <div class="bader-account-product-card__actions">
+                                        <a t-att-href="'/producto/%s' % wish.product_id.product_tmpl_id.id"
+                                           class="btn btn-outline-secondary btn-sm">
+                                            Ver producto
+                                        </a>
+
+                                        <form action="/mis-favoritos/add-to-cart" method="post">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" name="wish_id" t-att-value="wish.id"/>
+                                            <input type="hidden" name="product_id" t-att-value="wish.product_id.id"/>
+                                            <button type="submit" class="btn-bader-sm w-100">
+                                                <i class="fa fa-shopping-cart"/> Agregar al carrito
+                                            </button>
+                                        </form>
+
+                                        <form action="/mis-favoritos/remove" method="post">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" name="wish_id" t-att-value="wish.id"/>
+                                            <button type="submit" class="btn btn-link btn-sm text-danger p-0 bader-account-product-card__remove">
+                                                Quitar de favoritos
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="text-center mt-4">
-                                <a href="/shop/wishlist" class="btn btn-outline-secondary">Gestionar favoritos</a>
-                            </div>
                         </t>
-                        <t t-else="">
+                        <t t-elif="not load_error">
                             <div class="bader-page-card text-center">
                                 <h3 class="bader-page-card__title">No tienes favoritos guardados</h3>
                                 <p class="bader-page-card__text">

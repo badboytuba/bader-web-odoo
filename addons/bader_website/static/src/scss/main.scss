@@ -622,6 +622,19 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
     max-width: 72rem;
 }
 
+.bader-account-state {
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+.bader-account-state__actions {
+    margin-top: 0.9rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
 .bader-account-heading {
     margin-bottom: 1.3rem;
 }
@@ -1165,6 +1178,21 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
         height: 100%;
         object-fit: contain;
         padding: 0.75rem;
+    }
+
+    &__actions {
+        margin-top: 0.8rem;
+        display: grid;
+        gap: 0.4rem;
+    }
+
+    &__remove {
+        text-decoration: none;
+
+        &:hover {
+            color: #b91c1c !important;
+            text-decoration: none;
+        }
     }
 }
 
