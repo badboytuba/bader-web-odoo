@@ -42,6 +42,36 @@
         </t>
     </template>
 
+    <template id="bader_account_subnav" name="Bader Account Subnav">
+        <nav class="bader-account-subnav" aria-label="Navegacion de cuenta">
+            <a href="/mi-perfil"
+               t-attf-class="bader-account-subnav__link #{account_active == 'perfil' and 'is-active' or ''}">
+                <i class="fa fa-user"/>
+                <span>Mi perfil</span>
+            </a>
+            <a href="/mis-pedidos"
+               t-attf-class="bader-account-subnav__link #{account_active == 'pedidos' and 'is-active' or ''}">
+                <i class="fa fa-shopping-bag"/>
+                <span>Mis pedidos</span>
+            </a>
+            <a href="/mis-facturas"
+               t-attf-class="bader-account-subnav__link #{account_active == 'facturas' and 'is-active' or ''}">
+                <i class="fa fa-file-text-o"/>
+                <span>Mis facturas</span>
+            </a>
+            <a href="/mis-favoritos"
+               t-attf-class="bader-account-subnav__link #{account_active == 'favoritos' and 'is-active' or ''}">
+                <i class="fa fa-heart-o"/>
+                <span>Mis favoritos</span>
+            </a>
+            <a href="/configuracion"
+               t-attf-class="bader-account-subnav__link #{account_active == 'configuracion' and 'is-active' or ''}">
+                <i class="fa fa-cog"/>
+                <span>Configuracion</span>
+            </a>
+        </nav>
+    </template>
+
     <template id="bader_mi_perfil" name="Bader Mi Perfil">
         <t t-call="website.layout">
             <div id="wrap" class="oe_structure oe_empty">
@@ -65,9 +95,17 @@
 
                 <section class="bader-page-section bader-page-section--white bader-animate">
                     <div class="bader-page-section__container bader-account-shell">
+                        <t t-call="bader_website.bader_account_subnav">
+                            <t t-set="account_active" t-value="'perfil'"/>
+                        </t>
+
                         <t t-if="load_error">
-                            <div class="alert alert-danger">
-                                No pudimos cargar toda la informacion del perfil. Vuelve a intentarlo en unos minutos.
+                            <div class="bader-account-flash is-danger">
+                                <span class="bader-account-flash__icon"><i class="fa fa-exclamation-circle"/></span>
+                                <div class="bader-account-flash__copy">
+                                    <strong>Error al cargar el perfil.</strong>
+                                    <p>No pudimos recuperar toda la informacion en este momento. Intenta nuevamente en unos minutos.</p>
+                                </div>
                             </div>
                         </t>
 
@@ -202,6 +240,10 @@
 
                 <section class="bader-page-section bader-page-section--white bader-animate">
                     <div class="bader-page-section__container bader-account-shell">
+                        <t t-call="bader_website.bader_account_subnav">
+                            <t t-set="account_active" t-value="'pedidos'"/>
+                        </t>
+
                         <t t-if="load_error">
                             <div class="bader-page-card text-center bader-account-state">
                                 <h3 class="bader-page-card__title">Error al cargar pedidos</h3>
@@ -321,7 +363,8 @@
                         </t>
 
                         <t t-if="not load_error and not orders">
-                            <div class="bader-page-card text-center">
+                            <div class="bader-page-card text-center bader-account-empty">
+                                <div class="bader-account-empty__icon"><i class="fa fa-shopping-bag"/></div>
                                 <h3 class="bader-page-card__title">Aun no tienes pedidos</h3>
                                 <p class="bader-page-card__text">Cuando realices tu primera compra aparecera aqui.</p>
                                 <a href="/productos" class="btn-bader">Ir al catalogo</a>
@@ -352,6 +395,10 @@
 
                 <section class="bader-page-section bader-page-section--white bader-animate">
                     <div class="bader-page-section__container bader-account-shell">
+                        <t t-call="bader_website.bader_account_subnav">
+                            <t t-set="account_active" t-value="'facturas'"/>
+                        </t>
+
                         <t t-if="load_error">
                             <div class="bader-page-card text-center bader-account-state">
                                 <h3 class="bader-page-card__title">Error al cargar facturas</h3>
@@ -366,9 +413,11 @@
                         </t>
 
                         <t t-if="not load_error and not invoices_available">
-                            <div class="bader-page-card">
-                                <div class="alert alert-warning mb-0">
-                                    El modulo de facturacion no esta disponible en esta base Odoo.
+                            <div class="bader-account-flash is-warning">
+                                <span class="bader-account-flash__icon"><i class="fa fa-exclamation-triangle"/></span>
+                                <div class="bader-account-flash__copy">
+                                    <strong>Facturacion no disponible.</strong>
+                                    <p>El modulo de facturacion no esta activo en esta base Odoo.</p>
                                 </div>
                             </div>
                         </t>
@@ -426,7 +475,8 @@
                         </t>
 
                         <t t-elif="not load_error">
-                            <div class="bader-page-card text-center">
+                            <div class="bader-page-card text-center bader-account-empty">
+                                <div class="bader-account-empty__icon"><i class="fa fa-file-text-o"/></div>
                                 <h3 class="bader-page-card__title">No hay facturas publicadas</h3>
                                 <p class="bader-page-card__text">
                                     Tus comprobantes apareceran aqui cuando sean emitidos.
@@ -458,20 +508,36 @@
                 </section>
 
                 <section class="bader-page-section bader-page-section--white bader-animate">
-                    <div class="bader-page-section__container">
+                    <div class="bader-page-section__container bader-account-shell">
+                        <t t-call="bader_website.bader_account_subnav">
+                            <t t-set="account_active" t-value="'favoritos'"/>
+                        </t>
+
                         <t t-if="added">
-                            <div class="alert alert-success">
-                                Producto agregado al carrito correctamente.
+                            <div class="bader-account-flash is-success">
+                                <span class="bader-account-flash__icon"><i class="fa fa-check-circle"/></span>
+                                <div class="bader-account-flash__copy">
+                                    <strong>Producto agregado al carrito.</strong>
+                                    <p>Tu favorito ya esta listo para finalizar la compra.</p>
+                                </div>
                             </div>
                         </t>
                         <t t-if="removed">
-                            <div class="alert alert-success">
-                                Producto eliminado de tus favoritos.
+                            <div class="bader-account-flash is-success">
+                                <span class="bader-account-flash__icon"><i class="fa fa-check-circle"/></span>
+                                <div class="bader-account-flash__copy">
+                                    <strong>Favorito eliminado.</strong>
+                                    <p>El producto fue quitado de tu lista guardada.</p>
+                                </div>
                             </div>
                         </t>
                         <t t-if="action_error or load_error">
-                            <div class="alert alert-danger">
-                                No pudimos procesar la accion solicitada. Intenta nuevamente.
+                            <div class="bader-account-flash is-danger">
+                                <span class="bader-account-flash__icon"><i class="fa fa-exclamation-circle"/></span>
+                                <div class="bader-account-flash__copy">
+                                    <strong>No pudimos procesar la accion.</strong>
+                                    <p>Intenta nuevamente en unos segundos.</p>
+                                </div>
                             </div>
                         </t>
 
@@ -519,7 +585,8 @@
                             </div>
                         </t>
                         <t t-elif="not load_error">
-                            <div class="bader-page-card text-center">
+                            <div class="bader-page-card text-center bader-account-empty">
+                                <div class="bader-account-empty__icon"><i class="fa fa-heart-o"/></div>
                                 <h3 class="bader-page-card__title">No tienes favoritos guardados</h3>
                                 <p class="bader-page-card__text">
                                     Agrega productos a favoritos para encontrarlos rapidamente.
@@ -552,14 +619,26 @@
 
                 <section class="bader-page-section bader-page-section--white bader-animate">
                     <div class="bader-page-section__container bader-account-shell">
+                        <t t-call="bader_website.bader_account_subnav">
+                            <t t-set="account_active" t-value="'configuracion'"/>
+                        </t>
+
                         <t t-if="updated">
-                            <div class="alert alert-success">
-                                Tus datos se guardaron correctamente.
+                            <div class="bader-account-flash is-success">
+                                <span class="bader-account-flash__icon"><i class="fa fa-check-circle"/></span>
+                                <div class="bader-account-flash__copy">
+                                    <strong>Datos actualizados correctamente.</strong>
+                                    <p>Tus cambios ya estan sincronizados con Odoo.</p>
+                                </div>
                             </div>
                         </t>
                         <t t-if="error">
-                            <div class="alert alert-danger">
-                                Ocurrio un error al guardar. Intenta nuevamente.
+                            <div class="bader-account-flash is-danger">
+                                <span class="bader-account-flash__icon"><i class="fa fa-exclamation-circle"/></span>
+                                <div class="bader-account-flash__copy">
+                                    <strong>No se pudieron guardar los datos.</strong>
+                                    <p>Intenta nuevamente o contacta soporte si el problema persiste.</p>
+                                </div>
                             </div>
                         </t>
 
