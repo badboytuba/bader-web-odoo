@@ -1051,6 +1051,8 @@ odoo.define('bader_website.main', function (require) {
         (function syncHeaderCartBadge() {
             var badgeSelector = '.my_cart_quantity, .o_wsale_my_cart .my_cart_quantity';
             var maxBadgeQty = 99;
+            var lastRenderedQty = null;
+            var syncScheduled = false;
 
             function parseQty(raw) {
                 var cleaned = (raw || '').replace(/[^\d]/g, '');
@@ -1097,27 +1099,44 @@ odoo.define('bader_website.main', function (require) {
 
             function renderQty(totalQty) {
                 if (totalQty === null) return;
+                if (lastRenderedQty === totalQty) return;
+
                 var badgeText = totalQty > maxBadgeQty ? String(maxBadgeQty) + '+' : String(totalQty);
                 document.querySelectorAll(badgeSelector).forEach(function (badge) {
-                    badge.textContent = badgeText;
-                    badge.classList.remove('d-none');
+                    if (badge.textContent !== badgeText) {
+                        badge.textContent = badgeText;
+                    }
+                    if (badge.classList.contains('d-none')) {
+                        badge.classList.remove('d-none');
+                    }
                 });
+                lastRenderedQty = totalQty;
             }
 
             function syncQty() {
                 renderQty(computeQty());
             }
 
+            function scheduleSync() {
+                if (syncScheduled) return;
+                syncScheduled = true;
+                window.requestAnimationFrame(function () {
+                    syncScheduled = false;
+                    syncQty();
+                });
+            }
+
             syncQty();
-            setTimeout(syncQty, 350);
-            setTimeout(syncQty, 1200);
+            setTimeout(scheduleSync, 350);
+            setTimeout(scheduleSync, 1200);
 
             if ('MutationObserver' in window) {
-                var observer = new MutationObserver(syncQty);
+                // Observe cart content changes only; observing the cart badge container itself
+                // can create recursive mutation loops and freeze the UI.
+                var observer = new MutationObserver(scheduleSync);
                 [
                     document.querySelector('.bader-cart-popover'),
                     document.querySelector('.js_cart_lines'),
-                    document.querySelector('.o_wsale_my_cart'),
                 ].forEach(function (root) {
                     if (root) {
                         observer.observe(root, { childList: true, subtree: true, characterData: true });
@@ -1127,7 +1146,7 @@ odoo.define('bader_website.main', function (require) {
 
             document.addEventListener('change', function (ev) {
                 if (ev.target && ev.target.matches('.js_cart_lines .js_quantity')) {
-                    syncQty();
+                    scheduleSync();
                 }
             });
         })();
