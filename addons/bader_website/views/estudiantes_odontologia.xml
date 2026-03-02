@@ -54,7 +54,7 @@
                                     </span>
                                 </div>
                                 <div style="display:flex; flex-wrap:wrap; gap:1rem; margin-top:1rem;">
-                                    <a href="/shop" class="btn-bader" style="background:#10B981;">
+                                    <a href="/productos" class="btn-bader" style="background:#10B981;">
                                         Ver Kits <i class="fa fa-arrow-right"/>
                                     </a>
                                     <a href="#categorias" class="btn-bader-outline" style="border-color:rgba(255,255,255,0.3); color:white;">
@@ -255,7 +255,7 @@
                             Calidad europea a precio de estudiante.
                         </p>
                         <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1rem;">
-                            <a href="/shop" class="btn-bader" style="background:white; color:#065F46;">
+                            <a href="/productos" class="btn-bader" style="background:white; color:#065F46;">
                                 <i class="fa fa-shopping-bag"/> Ver todos los Kits
                             </a>
                             <a href="https://wa.me/5491124522097" target="_blank" rel="noopener noreferrer"

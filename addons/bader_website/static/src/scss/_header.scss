@@ -770,57 +770,7 @@ html.o_connected_user #wrapwrap>header#top {
     }
 
     .bader-mega {
-        position: fixed;
-        top: 56px;
-        left: 0;
-        right: 0;
-        max-height: 0;
-        overflow: hidden;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        border-top: 2px solid $bader-green;
-        transition: max-height 0.35s ease, opacity 0.25s ease;
-        opacity: 0;
-
-        &--open {
-            display: block;
-            max-height: 80vh;
-            overflow-y: auto;
-            opacity: 1;
-            animation: none;
-        }
-
-        &__header {
-            padding: 16px 20px 12px;
-        }
-
-        &__grid {
-            grid-template-columns: 1fr;
-            gap: 0;
-            padding: 8px 0 16px;
-        }
-
-        &__col {
-            padding: 0 20px;
-            border-right: none !important;
-            border-bottom: 1px solid $gray-100;
-            padding-bottom: 12px;
-            margin-bottom: 4px;
-
-            &:last-child {
-                border-bottom: none;
-            }
-        }
-
-        &__list a {
-            padding: 12px 8px;
-            min-height: 44px; // Touch-friendly target
-            font-size: 0.9rem;
-        }
-
-        &__more {
-            padding: 12px 8px;
-            font-size: 0.85rem;
-        }
+        display: none !important;
     }
 
     // Hide search pill on mobile

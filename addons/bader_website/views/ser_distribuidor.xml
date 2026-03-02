@@ -413,7 +413,7 @@
                                 Un asesor comercial se pondrá en contacto contigo dentro de las próximas 48 horas hábiles.
                             </p>
                             <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 2rem;">
-                                <a href="/shop" class="btn-bader">
+                                <a href="/productos" class="btn-bader">
                                     <i class="fa fa-shopping-bag"/> Ver catálogo
                                 </a>
                                 <a href="/" class="btn-bader-outline" style="border-color: rgba(255,255,255,0.3); color: white;">

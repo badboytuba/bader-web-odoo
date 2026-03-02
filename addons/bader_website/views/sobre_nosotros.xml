@@ -92,7 +92,7 @@
                                     y un soporte especializado.
                                 </p>
                                 <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
-                                    <a href="/shop" class="btn-bader">Ver productos</a>
+                                    <a href="/productos" class="btn-bader">Ver productos</a>
                                     <a href="#contacto" class="btn-bader-outline">Contactarnos</a>
                                 </div>
                             </div>
@@ -395,7 +395,7 @@
                             <a href="/#bader-cta" class="btn-bader" style="background: white; color: #70D44B;">
                                 Contactar ahora
                             </a>
-                            <a href="/shop" class="btn-bader-outline" style="border-color: white; color: white;">
+                            <a href="/productos" class="btn-bader-outline" style="border-color: white; color: white;">
                                 Ver catálogos
                             </a>
                         </div>

@@ -6,11 +6,12 @@
 
 .bader-hero {
     position: relative;
-    min-height: 700px;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     background: linear-gradient(180deg, $white 0%, $gray-50 60%, rgba(132, 204, 22, 0.03) 100%);
     overflow: hidden;
+    isolation: isolate;
     padding: 28px 0 $space-3xl;
 
     @include mobile {
@@ -21,7 +22,44 @@
     &__container {
         @include section-container;
         position: relative;
+        z-index: 2;
+    }
+
+    &__decor {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
         z-index: 1;
+    }
+
+    &__blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(44px);
+
+        &--1 {
+            width: 320px;
+            height: 320px;
+            top: -140px;
+            right: -140px;
+            background: rgba($bader-green, 0.14);
+        }
+
+        &--2 {
+            width: 240px;
+            height: 240px;
+            top: 44%;
+            left: -110px;
+            background: rgba(0, 56, 65, 0.09);
+        }
+
+        &--3 {
+            width: 170px;
+            height: 170px;
+            bottom: 82px;
+            right: 24%;
+            background: rgba($bader-green, 0.09);
+        }
     }
 
     // Category Tabs — centered above content
@@ -131,16 +169,14 @@
     &__title {
         font-family: $font-display;
         font-size: 3.5rem;
-        font-weight: 800;
+        font-weight: 700;
         color: $bader-dark;
         line-height: 1.05;
         margin-bottom: $space-lg;
         letter-spacing: -0.03em;
-        text-transform: uppercase;
 
         .text-green {
             color: $bader-green;
-            font-style: italic;
         }
 
         @include tablet-down {
@@ -180,6 +216,7 @@
     &__stat {
         display: flex;
         flex-direction: column;
+        text-align: center;
     }
 
     &__stat-num {
@@ -303,61 +340,52 @@
         }
     }
 
-    &__image-dots {
+    &__floating-stats {
         position: absolute;
-        top: 16px;
-        right: -20px;
+        top: -16px;
+        right: -22px;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 10px;
         background: $white;
-        border-radius: $radius-pill;
-        padding: 8px 16px;
+        border-radius: $radius-lg;
+        padding: 12px 14px;
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-
-        .dot {
-            width: 28px;
-            height: 28px;
-            border-radius: $radius-full;
-            background: $gray-100;
-            border: 2px solid $gray-200;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.65rem;
-            font-weight: 700;
-            color: $gray-500;
-            cursor: pointer;
-
-            &.active {
-                background: $bader-green;
-                border-color: $bader-green;
-                color: $white;
-            }
-        }
+        border: 1px solid $gray-100;
+        z-index: 3;
 
         @include tablet-down {
-            right: 12px;
-            top: 12px;
-            padding: 6px 10px;
-            gap: 5px;
-
-            .dot {
-                width: 24px;
-                height: 24px;
-                font-size: 0.62rem;
-            }
-        }
-
-        @include mobile {
-            .bader-hero__image-count {
-                display: none;
-            }
+            right: 10px;
+            top: 10px;
+            padding: 8px 10px;
+            gap: 8px;
         }
     }
 
+    &__avatars {
+        display: inline-flex;
+        align-items: center;
+
+        .bader-hero__avatar+.bader-hero__avatar {
+            margin-left: -8px;
+        }
+    }
+
+    &__avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid $white;
+        background: rgba($bader-green, 0.18);
+        color: $bader-green;
+        font-size: 0.66rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     &__image-count {
-        margin-left: 8px;
         color: $bader-dark;
         font-size: 0.82rem;
         font-weight: 800;
@@ -368,6 +396,51 @@
             font-size: 0.65rem;
             color: $gray-400;
             display: block;
+        }
+    }
+
+    &__progress {
+        margin-top: $space-xl;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    &__progress-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        border: 0;
+        background: #d1d5db;
+        transition: width $transition-fast, background $transition-fast;
+        padding: 0;
+        cursor: pointer;
+
+        &:hover {
+            background: #9ca3af;
+        }
+
+        &.is-active {
+            width: 30px;
+            background: $bader-green;
+        }
+    }
+
+    @include mobile {
+        &__floating-stats {
+            top: 8px;
+            right: 8px;
+            padding: 6px 8px;
+        }
+
+        &__avatar {
+            width: 24px;
+            height: 24px;
+            font-size: 0.6rem;
+        }
+
+        &__image-count {
+            display: none;
         }
     }
 

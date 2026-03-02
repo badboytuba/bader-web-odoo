@@ -73,6 +73,11 @@
                      HERO SECTION — Split layout like reference
                      ========================================== -->
                 <section class="bader-hero bader-animate">
+                    <div class="bader-hero__decor" aria-hidden="true">
+                        <span class="bader-hero__blob bader-hero__blob--1"/>
+                        <span class="bader-hero__blob bader-hero__blob--2"/>
+                        <span class="bader-hero__blob bader-hero__blob--3"/>
+                    </div>
                     <div class="bader-hero__container">
                         <!-- Category Tabs (centered above hero) -->
                         <div class="bader-hero__tabs-wrapper">
@@ -221,11 +226,12 @@
                                      data-persona-img="estudiantes"
                                      t-att-style="home_persona == 'estudiantes' and '' or 'display:none;'"
                                      loading="lazy"/>
-                                <!-- Carousel dots overlay -->
-                                <div class="bader-hero__image-dots">
-                                    <span t-attf-class="dot #{home_persona == 'clinica' and 'active' or ''}" data-persona="clinica">1</span>
-                                    <span t-attf-class="dot #{home_persona == 'laboratorio' and 'active' or ''}" data-persona="laboratorio">2</span>
-                                    <span t-attf-class="dot #{home_persona == 'estudiantes' and 'active' or ''}" data-persona="estudiantes">3</span>
+                                <div class="bader-hero__floating-stats">
+                                    <div class="bader-hero__avatars">
+                                        <span class="bader-hero__avatar">1</span>
+                                        <span class="bader-hero__avatar">2</span>
+                                        <span class="bader-hero__avatar">3</span>
+                                    </div>
                                     <span class="bader-hero__image-count">+10,000<br/><small>Clientes felices</small></span>
                                 </div>
                                 <!-- Guarantee Badge -->
@@ -237,6 +243,21 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="bader-hero__progress">
+                            <button type="button"
+                                    t-attf-class="bader-hero__progress-dot #{home_persona == 'clinica' and 'is-active' or ''}"
+                                    data-persona-indicator="clinica"
+                                    aria-label="Mostrar Clinica Dental"/>
+                            <button type="button"
+                                    t-attf-class="bader-hero__progress-dot #{home_persona == 'laboratorio' and 'is-active' or ''}"
+                                    data-persona-indicator="laboratorio"
+                                    aria-label="Mostrar Laboratorio"/>
+                            <button type="button"
+                                    t-attf-class="bader-hero__progress-dot #{home_persona == 'estudiantes' and 'is-active' or ''}"
+                                    data-persona-indicator="estudiantes"
+                                    aria-label="Mostrar Estudiantes"/>
                         </div>
                     </div>
                 </section>

@@ -28,24 +28,36 @@ odoo.define('bader_website.main', function (require) {
             if (!megaPanel) return;
 
             function findProductLink() {
-                var productLink = null;
-                // Strategy 1: check by href containing /shop
-                var allLinks = document.querySelectorAll('header#top a.nav-link, header#top #top_menu a');
-                allLinks.forEach(function (link) {
+                var desktopSelectors = [
+                    'header#top #top_menu > li > a.nav-link[href=\"/productos\"]',
+                    'header#top #top_menu > li > a[href=\"/productos\"]',
+                    'header#top #top_menu > li > a.nav-link[href=\"/shop\"]',
+                    'header#top #top_menu > li > a[href=\"/shop\"]',
+                ];
+                var i = 0;
+                for (i = 0; i < desktopSelectors.length; i++) {
+                    var directMatch = document.querySelector(desktopSelectors[i]);
+                    if (directMatch) return directMatch;
+                }
+
+                // Conservative fallback: only links inside canonical top menu, never drawer links.
+                var allLinks = document.querySelectorAll('header#top #top_menu > li > a');
+                for (i = 0; i < allLinks.length; i++) {
+                    var link = allLinks[i];
                     var href = (link.getAttribute('href') || '').toLowerCase();
                     var text = (link.textContent || '').trim().toLowerCase();
                     if (text === 'productos' || text === 'shop' || text.indexOf('producto') !== -1 ||
-                        href.indexOf('/shop') !== -1 || href.indexOf('/productos') !== -1) {
-                        productLink = link;
+                        href === '/shop' || href === '/productos') {
+                        return link;
                     }
-                });
-                return productLink;
+                }
+                return null;
             }
 
             function setupMegaMenu(productLink) {
                 var parentLi = productLink.closest('li');
                 var hideTimeout = null;
-                var isMobile = function () { return window.innerWidth <= 768; };
+                var isMobile = function () { return window.innerWidth < 992; };
 
                 function showMega() {
                     clearTimeout(hideTimeout);
@@ -58,15 +70,6 @@ odoo.define('bader_website.main', function (require) {
                         megaPanel.classList.remove('bader-mega--open');
                         if (parentLi) parentLi.classList.remove('bader-mega-active');
                     }, 200);
-                }
-
-                function toggleMega() {
-                    if (megaPanel.classList.contains('bader-mega--open')) {
-                        megaPanel.classList.remove('bader-mega--open');
-                        if (parentLi) parentLi.classList.remove('bader-mega-active');
-                    } else {
-                        showMega();
-                    }
                 }
 
                 // Desktop: hover on the nav link
@@ -90,29 +93,23 @@ odoo.define('bader_website.main', function (require) {
                     if (!isMobile()) hideMega();
                 });
 
-                // Mobile + Desktop click: toggle or navigate
+                // Click behavior on desktop only.
                 productLink.addEventListener('click', function (e) {
                     if (isMobile()) {
-                        // On mobile: first click toggles mega, second navigates
-                        e.preventDefault();
-                        e.stopPropagation();
-                        toggleMega();
+                        megaPanel.classList.remove('bader-mega--open');
+                        if (parentLi) parentLi.classList.remove('bader-mega-active');
+                        return;
                     } else if (megaPanel.classList.contains('bader-mega--open')) {
-                        // Desktop: if mega is open, clicking navigates to shop
                         window.location.href = '/productos';
                         e.preventDefault();
                     }
                 });
 
-                // Close mega menu on tap outside (mobile)
-                document.addEventListener('click', function (e) {
-                    if (isMobile() &&
-                        megaPanel.classList.contains('bader-mega--open') &&
-                        !megaPanel.contains(e.target) &&
-                        !productLink.contains(e.target)) {
-                        megaPanel.classList.remove('bader-mega--open');
-                        if (parentLi) parentLi.classList.remove('bader-mega-active');
-                    }
+                // Ensure mobile never keeps mega open.
+                window.addEventListener('resize', function () {
+                    if (!isMobile()) return;
+                    megaPanel.classList.remove('bader-mega--open');
+                    if (parentLi) parentLi.classList.remove('bader-mega-active');
                 });
 
                 // Close mega menu on Escape
@@ -840,9 +837,9 @@ odoo.define('bader_website.main', function (require) {
                     img.style.display = isMatch ? '' : 'none';
                     img.classList.toggle('bader-hero__persona-img--active', isMatch);
                 });
-                // Dots
-                document.querySelectorAll('.bader-hero__image-dots .dot[data-persona]').forEach(function (dot) {
-                    dot.classList.toggle('active', dot.getAttribute('data-persona') === persona);
+                // Bottom progress indicators
+                document.querySelectorAll('[data-persona-indicator]').forEach(function (dot) {
+                    dot.classList.toggle('is-active', dot.getAttribute('data-persona-indicator') === persona);
                 });
 
                 applyPersonaMeta(persona);
@@ -881,10 +878,10 @@ odoo.define('bader_website.main', function (require) {
                 });
             });
 
-            // Also clicking dots switches persona
-            document.querySelectorAll('.bader-hero__image-dots .dot[data-persona]').forEach(function (dot) {
+            // Also clicking progress indicators switches persona
+            document.querySelectorAll('[data-persona-indicator]').forEach(function (dot) {
                 dot.addEventListener('click', function () {
-                    var persona = this.getAttribute('data-persona');
+                    var persona = this.getAttribute('data-persona-indicator');
                     currentIdx = personaIndex(persona);
                     switchPersona(persona);
                     persistPersona(persona);

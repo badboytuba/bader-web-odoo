@@ -40,7 +40,7 @@
                     <i class="fa fa-shopping-bag bader-empty-cart__icon"/>
                     <h1>Tu carrito esta vacio</h1>
                     <p>Agrega productos para continuar con tu compra.</p>
-                    <a href="/productos" class="bader-continue-btn">Volver a la tienda</a>
+                    <a href="/productos" class="bader-continue-btn">Volver al catalogo</a>
                 </div>
             </div>
         </xpath>

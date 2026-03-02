@@ -42,7 +42,7 @@
                                     y garantizando una inversión segura.
                                 </p>
                                 <div style="display:flex; flex-wrap:wrap; gap:1rem; margin-top:2rem;">
-                                    <a href="/shop" class="btn-bader" style="background:#8B5CF6;">
+                                    <a href="/productos" class="btn-bader" style="background:#8B5CF6;">
                                         Ver Productos <i class="fa fa-arrow-right"/>
                                     </a>
                                     <a href="#categorias" class="btn-bader-outline" style="border-color:rgba(255,255,255,0.3); color:white;">
@@ -204,7 +204,7 @@
                             para largas jornadas de trabajo ofreciendo el mejor rendimiento.
                         </p>
                         <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1rem;">
-                            <a href="/shop" class="btn-bader" style="background:white; color:#6D28D9;">
+                            <a href="/productos" class="btn-bader" style="background:white; color:#6D28D9;">
                                 <i class="fa fa-shopping-bag"/> Ver Catálogo Completo
                             </a>
                             <a href="https://wa.me/5491124522097" target="_blank" rel="noopener noreferrer"
