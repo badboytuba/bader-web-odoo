@@ -51,8 +51,8 @@ Atualizacao 2026-02-27:
 - Estado atual: [templates.xml](../addons/bader_website/views/templates.xml) com bom override, mas nao reproduz 100% o UX do app.
 - Paridade faltando vs app: [checkout.tsx](../Bader-AR/client/src/pages/checkout.tsx)
 - Itens pendentes:
-  - Revisar fluxo visual dos passos, estados vazios e mensagens.
-  - Ajustar spacing/hierarquia para igualar composicao do app.
+  - [x] Revisar fluxo visual dos passos, estados vazios e mensagens.
+  - [x] Ajustar spacing/hierarquia para igualar composicao do app.
 
 5. Blog post (conteudo relacionado)
 - Estado atual: [frontend_pages.xml](../addons/bader_website/views/frontend_pages.xml) implementa lista e post.

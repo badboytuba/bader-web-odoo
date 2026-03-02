@@ -12,13 +12,22 @@
             <attribute name="class" add="bader-checkout-wizard" separator=" "/>
         </xpath>
         <xpath expr="//div[@id='wizard-step10']/div[hasclass('progress-wizard-steplabel')]" position="replace">
-            <div class="text-center progress-wizard-steplabel">Carrito</div>
+            <div class="text-center progress-wizard-steplabel">
+                <span class="bader-wizard-label__step">Paso 1</span>
+                <span class="bader-wizard-label__title">Carrito</span>
+            </div>
         </xpath>
         <xpath expr="//div[@id='wizard-step20']/div[hasclass('progress-wizard-steplabel')]" position="replace">
-            <div class="text-center progress-wizard-steplabel">Envio y datos</div>
+            <div class="text-center progress-wizard-steplabel">
+                <span class="bader-wizard-label__step">Paso 2</span>
+                <span class="bader-wizard-label__title">Envio y datos</span>
+            </div>
         </xpath>
         <xpath expr="//div[@id='wizard-step40']/div[hasclass('progress-wizard-steplabel')]" position="replace">
-            <div class="text-center progress-wizard-steplabel">Pago</div>
+            <div class="text-center progress-wizard-steplabel">
+                <span class="bader-wizard-label__step">Paso 3</span>
+                <span class="bader-wizard-label__title">Pago</span>
+            </div>
         </xpath>
     </template>
 
@@ -220,8 +229,13 @@
         </xpath>
         <xpath expr="//div[hasclass('alert-info')]" position="replace">
             <div t-if="not website_sale_order or not website_sale_order.website_order_line"
-                 class="alert alert-info">
-                Tu carrito esta vacio.
+                 class="bader-inline-empty">
+                <i class="fa fa-shopping-bag"/>
+                <div class="bader-inline-empty__copy">
+                    <strong>Tu carrito esta vacio.</strong>
+                    <p>Agrega productos para poder continuar el checkout.</p>
+                </div>
+                <a href="/productos" class="btn-bader-sm">Ver productos</a>
             </div>
         </xpath>
     </template>
@@ -230,6 +244,12 @@
               name="Bader Checkout Page" priority="30">
         <xpath expr="//div[@id='wrap']/div[hasclass('container') and hasclass('oe_website_sale')]" position="attributes">
             <attribute name="class" add="bader-checkout-page" separator=" "/>
+        </xpath>
+        <xpath expr="//h3[hasclass('o_page_header')][1]" position="before">
+            <div class="bader-checkout-intro">
+                <h2>Completa tu compra</h2>
+                <p>Revisa tus datos de facturacion y envio para pasar al pago en un solo paso.</p>
+            </div>
         </xpath>
         <xpath expr="//h3[hasclass('o_page_header')][1]" position="replace">
             <h3 class="o_page_header mt8 bader-checkout-heading">
@@ -424,9 +444,14 @@
             <t t-set="submit_button_label">Confirmar pedido</t>
         </xpath>
         <xpath expr="//div[hasclass('alert-warning') and strong]" position="replace">
-            <div class="alert alert-warning">
-                <strong>No encontramos un metodo de pago disponible.</strong><br/>
-                Si crees que es un error, contacta al equipo de Bader.
+            <div class="bader-payment-warning">
+                <div class="bader-payment-warning__icon">
+                    <i class="fa fa-exclamation-triangle"/>
+                </div>
+                <div class="bader-payment-warning__copy">
+                    <strong>No encontramos un metodo de pago disponible.</strong>
+                    <p>Si crees que es un error, contacta al equipo de Bader para habilitar una opcion de pago.</p>
+                </div>
             </div>
         </xpath>
     </template>
@@ -434,8 +459,8 @@
     <template id="bader_payment_footer" inherit_id="website_sale.payment_footer"
               name="Bader Payment Footer" priority="30">
         <xpath expr="//a[@href='/shop/cart' and hasclass('btn-secondary')]" position="replace">
-            <a role="button" href="/shop/cart" class="btn btn-secondary bader-payment-back">
-                <i class="fa fa-chevron-left"/> Volver al carrito
+            <a role="button" href="/shop/checkout" class="btn btn-secondary bader-payment-back">
+                <i class="fa fa-chevron-left"/> Volver a datos de envio
             </a>
         </xpath>
         <xpath expr="//button[@name='o_payment_submit_button']" position="attributes">
