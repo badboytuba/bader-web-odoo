@@ -183,6 +183,249 @@ class BaderWebsite(Website):
 
         return 'clinica', 'default'
 
+    def _first_partner_field(self, partner, field_candidates):
+        """Return first existing partner field name from candidates."""
+        for field_name in field_candidates or []:
+            if field_name in partner._fields:
+                return field_name
+        return ''
+
+    def _read_partner_field_as_text(self, partner, field_name):
+        """Read partner field and convert value to plain text for UI usage."""
+        if not field_name or field_name not in partner._fields:
+            return ''
+        value = partner[field_name]
+        if not value:
+            return ''
+        if hasattr(value, 'name'):
+            return (value.name or '').strip()
+        if isinstance(value, (list, tuple)):
+            return ', '.join(str(v).strip() for v in value if v)
+        if isinstance(value, bool):
+            return 'Si' if value else 'No'
+        return str(value).strip()
+
+    def _professional_profile_specs(self):
+        """Candidate field map for optional professional profile values."""
+        return {
+            'persona': [
+                'x_niche',
+                'x_studio_niche',
+                'x_profile_niche',
+                'x_perfil',
+                'x_studio_perfil',
+            ],
+            'clinic_name': [
+                'x_clinic_name',
+                'x_studio_clinic_name',
+                'x_nombre_clinica',
+                'x_studio_nombre_clinica',
+            ],
+            'clinic_role': [
+                'x_clinic_role',
+                'x_studio_clinic_role',
+                'x_rol_clinica',
+                'x_studio_rol_clinica',
+                'function',
+            ],
+            'clinic_specialties': [
+                'x_clinic_specialties',
+                'x_studio_clinic_specialties',
+                'x_especialidades_clinica',
+                'x_studio_especialidades_clinica',
+            ],
+            'lab_name': [
+                'x_lab_name',
+                'x_studio_lab_name',
+                'x_nombre_laboratorio',
+                'x_studio_nombre_laboratorio',
+            ],
+            'lab_type': [
+                'x_lab_type',
+                'x_studio_lab_type',
+                'x_tipo_laboratorio',
+                'x_studio_tipo_laboratorio',
+            ],
+            'lab_specialization': [
+                'x_lab_specialization',
+                'x_studio_lab_specialization',
+                'x_especializacion_laboratorio',
+                'x_studio_especializacion_laboratorio',
+            ],
+            'university': [
+                'x_university',
+                'x_studio_university',
+                'x_universidad',
+                'x_studio_universidad',
+            ],
+            'study_year': [
+                'x_study_year',
+                'x_studio_study_year',
+                'x_ano_estudio',
+                'x_studio_ano_estudio',
+                'x_anio_estudio',
+            ],
+            'career': [
+                'x_career',
+                'x_studio_career',
+                'x_carrera',
+                'x_studio_carrera',
+            ],
+            'student_city': [
+                'x_student_city',
+                'x_studio_student_city',
+                'x_ciudad_estudiante',
+                'x_studio_ciudad_estudiante',
+            ],
+        }
+
+    def _professional_profile_data(self, partner, fallback_persona=''):
+        """Build normalized professional profile payload for account pages."""
+        specs = self._professional_profile_specs()
+        field_map = {}
+        values = {}
+        for key, candidates in specs.items():
+            field_name = self._first_partner_field(partner, candidates)
+            field_map[key] = field_name
+            values[key] = self._read_partner_field_as_text(partner, field_name)
+
+        resolved_persona = self._normalize_home_persona(
+            values.get('persona') or fallback_persona or request.session.get('bader_home_persona')
+        ) or 'clinica'
+        values['persona'] = resolved_persona
+        persona_label = self._persona_dashboard_config(resolved_persona).get('label')
+
+        if not values.get('clinic_name'):
+            values['clinic_name'] = (partner.company_name or '').strip()
+        if not values.get('lab_name'):
+            values['lab_name'] = (partner.company_name or '').strip()
+        if not values.get('clinic_role'):
+            values['clinic_role'] = (partner.function or '').strip()
+
+        row_specs = {
+            'clinica': [
+                {'key': 'clinic_name', 'label': 'Nombre de la clinica', 'icon': 'fa-building-o'},
+                {'key': 'clinic_role', 'label': 'Rol en la clinica', 'icon': 'fa-user-md'},
+                {'key': 'clinic_specialties', 'label': 'Especialidades', 'icon': 'fa-stethoscope'},
+            ],
+            'laboratorio': [
+                {'key': 'lab_name', 'label': 'Nombre del laboratorio', 'icon': 'fa-flask'},
+                {'key': 'lab_type', 'label': 'Tipo de laboratorio', 'icon': 'fa-cogs'},
+                {'key': 'lab_specialization', 'label': 'Especializacion', 'icon': 'fa-magic'},
+            ],
+            'estudiantes': [
+                {'key': 'university', 'label': 'Universidad', 'icon': 'fa-university'},
+                {'key': 'study_year', 'label': 'Ano de estudio', 'icon': 'fa-calendar'},
+                {'key': 'career', 'label': 'Carrera', 'icon': 'fa-book'},
+                {'key': 'student_city', 'label': 'Ciudad', 'icon': 'fa-map-marker'},
+            ],
+        }
+
+        rows = []
+        for spec in row_specs.get(resolved_persona, []):
+            value = (values.get(spec['key']) or '').strip()
+            if value:
+                rows.append({
+                    'key': spec['key'],
+                    'label': spec['label'],
+                    'icon': spec['icon'],
+                    'value': value,
+                })
+
+        has_data = bool(rows)
+        if not rows:
+            rows = [{
+                'key': 'empty',
+                'label': 'Perfil profesional',
+                'icon': 'fa-info-circle',
+                'value': 'Completa tus datos en Configuracion para mejorar recomendaciones.',
+                'empty': True,
+            }]
+
+        available_keys = {
+            key: bool(field_map.get(key))
+            for key in specs.keys()
+        }
+
+        return {
+            'persona': resolved_persona,
+            'persona_label': persona_label,
+            'field_map': field_map,
+            'values': values,
+            'rows': rows,
+            'has_data': has_data,
+            'available_keys': available_keys,
+        }
+
+    def _coerce_partner_field_value(self, partner, field_name, raw_value):
+        """Convert input text to a writable value based on partner field type."""
+        if not field_name or field_name not in partner._fields:
+            return False, None
+
+        field = partner._fields[field_name]
+        text_value = (raw_value or '').strip()
+        if field.type in ('char', 'text', 'html'):
+            return True, text_value
+
+        if field.type == 'selection':
+            selection = field.selection(partner.env) if callable(field.selection) else field.selection
+            selection = selection or []
+            if not selection:
+                return True, text_value
+            if text_value in dict(selection):
+                return True, text_value
+
+            normalized_input = self._normalize_search_text(text_value)
+            for key, label in selection:
+                if normalized_input and normalized_input == self._normalize_search_text(key):
+                    return True, key
+                if normalized_input and normalized_input == self._normalize_search_text(label):
+                    return True, key
+            return False, None
+
+        return False, None
+
+    def _professional_profile_write_vals(self, partner, post):
+        """Build writable partner values from professional profile form inputs."""
+        profile_data = self._professional_profile_data(partner)
+        field_map = profile_data.get('field_map', {})
+        input_map = {
+            'profile_clinic_name': 'clinic_name',
+            'profile_clinic_role': 'clinic_role',
+            'profile_clinic_specialties': 'clinic_specialties',
+            'profile_lab_name': 'lab_name',
+            'profile_lab_type': 'lab_type',
+            'profile_lab_specialization': 'lab_specialization',
+            'profile_university': 'university',
+            'profile_study_year': 'study_year',
+            'profile_career': 'career',
+            'profile_student_city': 'student_city',
+        }
+
+        vals = {}
+        for post_key, profile_key in input_map.items():
+            field_name = field_map.get(profile_key)
+            if not field_name:
+                continue
+            write_ok, value = self._coerce_partner_field_value(
+                partner, field_name, post.get(post_key)
+            )
+            if write_ok:
+                vals[field_name] = value
+
+        selected_persona = self._normalize_home_persona(post.get('persona_preference'))
+        if selected_persona:
+            request.session['bader_home_persona'] = selected_persona
+            request.session.modified = True
+            persona_field = field_map.get('persona')
+            write_ok, value = self._coerce_partner_field_value(
+                partner, persona_field, selected_persona
+            )
+            if write_ok:
+                vals[persona_field] = value
+
+        return vals
+
     def _normalize_search_text(self, raw_text):
         """Lowercase + strip accents to support tolerant keyword matching."""
         text = (raw_text or '').strip().lower()
@@ -932,15 +1175,26 @@ class BaderWebsite(Website):
         persona_config = self._persona_dashboard_config(persona)
         persona_products = self._build_persona_dashboard_products(persona)
         orders = request.env['sale.order']
+        recent_orders = request.env['sale.order']
+        recent_invoices = []
         order_count = 0
         wishlist_count = 0
         invoice_count = 0
+        invoices_available = 'account.move' in request.env
+        order_state_labels = dict(request.env['sale.order']._fields['state'].selection)
+        invoice_payment_labels = {}
+        account_sales_total = 0.0
+        account_open_invoice_total = 0.0
+        account_open_invoice_count = 0
         load_error = False
         try:
             sale_order = request.env['sale.order'].sudo()
             order_domain = self._order_domain_for_partner(partner)
             orders = sale_order.search(order_domain, order='date_order desc', limit=5)
+            recent_orders = orders[:3]
             order_count = sale_order.search_count(order_domain)
+            summary_orders = sale_order.search(order_domain, order='date_order desc', limit=80)
+            account_sales_total = sum(summary_orders.mapped('amount_total'))
 
             wishlist_count = request.env['product.wishlist'].sudo().search_count([
                 ('partner_id', '=', request.env.user.partner_id.id),
@@ -948,10 +1202,27 @@ class BaderWebsite(Website):
                 ('active', '=', True),
             ])
 
-            if 'account.move' in request.env:
+            if invoices_available:
                 account_move = request.env['account.move'].sudo()
-                invoice_count = account_move.search_count(
-                    self._invoice_domain_for_partner(partner)
+                invoice_domain = self._invoice_domain_for_partner(partner)
+                invoice_count = account_move.search_count(invoice_domain)
+                recent_invoices = account_move.search(
+                    invoice_domain,
+                    order='invoice_date desc, id desc',
+                    limit=3
+                )
+                open_invoice_domain = invoice_domain + [
+                    ('payment_state', 'in', ['not_paid', 'partial']),
+                ]
+                account_open_invoice_count = account_move.search_count(open_invoice_domain)
+                open_invoices = account_move.search(
+                    open_invoice_domain,
+                    order='invoice_date desc, id desc',
+                    limit=80
+                )
+                account_open_invoice_total = sum(open_invoices.mapped('amount_residual'))
+                invoice_payment_labels = dict(
+                    request.env['account.move']._fields['payment_state'].selection
                 )
         except Exception as exc:
             load_error = True
@@ -963,10 +1234,15 @@ class BaderWebsite(Website):
             persona_config.get('whatsapp_message', 'Hola, necesito ayuda.'),
             safe=''
         )
+        professional_profile = self._professional_profile_data(
+            partner, fallback_persona=persona
+        )
 
         return request.render('bader_website.bader_mi_perfil', {
             'partner': partner,
             'orders': orders,
+            'recent_orders': recent_orders,
+            'recent_invoices': recent_invoices,
             'order_count': order_count,
             'invoice_count': invoice_count,
             'wishlist_count': wishlist_count,
@@ -974,6 +1250,12 @@ class BaderWebsite(Website):
             'member_since': member_since,
             'profile_initial': profile_initial,
             'load_error': load_error,
+            'account_sales_total': account_sales_total,
+            'account_open_invoice_total': account_open_invoice_total,
+            'account_open_invoice_count': account_open_invoice_count,
+            'account_invoices_available': invoices_available,
+            'account_order_state_labels': order_state_labels,
+            'account_invoice_payment_labels': invoice_payment_labels,
             'dashboard_persona': persona,
             'dashboard_persona_label': persona_config.get('label'),
             'dashboard_persona_badge_icon': persona_config.get('badge_icon'),
@@ -991,6 +1273,9 @@ class BaderWebsite(Website):
             'dashboard_offer_products': persona_products.get('offers'),
             'dashboard_recommended_products': persona_products.get('recommended'),
             'dashboard_currency': persona_products.get('currency'),
+            'dashboard_professional_rows': professional_profile.get('rows', []),
+            'dashboard_professional_has_data': professional_profile.get('has_data'),
+            'dashboard_professional_persona_label': professional_profile.get('persona_label'),
         })
 
     @http.route('/mis-pedidos', type='http', auth='public', website=True, sitemap=False)
@@ -1159,10 +1444,20 @@ class BaderWebsite(Website):
         if request.website.is_public_user():
             return self._render_account_login_required('Configuracion')
 
+        partner = request.env.user.partner_id
+        current_persona, _source = self._resolve_home_persona(kw)
+        profile_data = self._professional_profile_data(
+            partner, fallback_persona=current_persona
+        )
+
         return request.render('bader_website.bader_configuracion', {
-            'partner': request.env.user.partner_id,
+            'partner': partner,
             'updated': kw.get('updated') == '1',
             'error': kw.get('error') == '1',
+            'profile_values': profile_data.get('values', {}),
+            'profile_field_map': profile_data.get('field_map', {}),
+            'profile_available_keys': profile_data.get('available_keys', {}),
+            'profile_persona': profile_data.get('persona', 'clinica'),
         })
 
     @http.route('/configuracion/guardar', type='http', auth='user', website=True,
@@ -1179,6 +1474,9 @@ class BaderWebsite(Website):
         for field_name in allowed_fields:
             if field_name in post:
                 vals[field_name] = (post.get(field_name) or '').strip()
+
+        vals.update(self._professional_profile_write_vals(partner, post))
+
         try:
             partner.write(vals)
             return request.redirect('/configuracion?updated=1')

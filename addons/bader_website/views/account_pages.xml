@@ -254,6 +254,112 @@
                             </div>
                         </div>
 
+                        <div class="bader-account-snapshot">
+                            <div class="bader-page-card bader-account-professional">
+                                <div class="bader-account-card-head">
+                                    <h3 class="bader-page-card__title">Preferencias profesionales</h3>
+                                    <a href="/configuracion" class="btn-bader-sm">Editar</a>
+                                </div>
+                                <p class="bader-page-card__text">
+                                    Perfil activo: <strong t-esc="dashboard_professional_persona_label or dashboard_persona_label or 'No definido'"/>.
+                                </p>
+                                <div class="bader-account-professional__rows">
+                                    <article class="bader-account-professional__row"
+                                             t-foreach="dashboard_professional_rows or []"
+                                             t-as="item">
+                                        <span class="bader-account-professional__icon">
+                                            <i t-attf-class="fa #{item.get('icon', 'fa-info-circle')}"/>
+                                        </span>
+                                        <div>
+                                            <small t-esc="item.get('label', '')"/>
+                                            <strong t-esc="item.get('value', '')"/>
+                                        </div>
+                                    </article>
+                                </div>
+                                <t t-if="not dashboard_professional_has_data">
+                                    <p class="bader-account-professional__hint">
+                                        Completa estos datos en Configuracion para mejorar recomendaciones y soporte.
+                                    </p>
+                                </t>
+                            </div>
+
+                            <div class="bader-page-card bader-account-activity">
+                                <div class="bader-account-card-head">
+                                    <h3 class="bader-page-card__title">Actividad comercial</h3>
+                                    <a href="/mis-pedidos" class="btn btn-outline-secondary btn-sm">Ver detalle</a>
+                                </div>
+                                <div class="bader-account-activity__metrics">
+                                    <article>
+                                        <span>Total comprado</span>
+                                        <strong t-esc="account_sales_total"
+                                                t-options='{"widget": "monetary", "display_currency": dashboard_currency}'/>
+                                    </article>
+                                    <article>
+                                        <span>Saldo pendiente</span>
+                                        <strong t-esc="account_open_invoice_total"
+                                                t-options='{"widget": "monetary", "display_currency": dashboard_currency}'/>
+                                    </article>
+                                    <article>
+                                        <span>Facturas pendientes</span>
+                                        <strong t-esc="account_open_invoice_count"/>
+                                    </article>
+                                </div>
+
+                                <div class="bader-account-activity__lists">
+                                    <div class="bader-account-activity__list">
+                                        <h4>Pedidos recientes</h4>
+                                        <t t-if="recent_orders">
+                                            <a href="/mis-pedidos"
+                                               class="bader-account-activity__item"
+                                               t-foreach="recent_orders"
+                                               t-as="order">
+                                                <div>
+                                                    <strong t-esc="order.name"/>
+                                                    <small><i class="fa fa-calendar"/> <span t-field="order.date_order" t-options='{"widget": "date"}'/></small>
+                                                </div>
+                                                <div class="bader-account-activity__item-side">
+                                                    <span class="bader-status-pill is-blue"
+                                                          t-esc="account_order_state_labels.get(order.state, order.state)"/>
+                                                    <span t-field="order.amount_total"
+                                                          t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
+                                                </div>
+                                            </a>
+                                        </t>
+                                        <t t-else="">
+                                            <p class="bader-account-activity__empty">Aun no tienes pedidos registrados.</p>
+                                        </t>
+                                    </div>
+
+                                    <div class="bader-account-activity__list">
+                                        <h4>Facturas recientes</h4>
+                                        <t t-if="account_invoices_available and recent_invoices">
+                                            <a href="/mis-facturas"
+                                               class="bader-account-activity__item"
+                                               t-foreach="recent_invoices"
+                                               t-as="invoice">
+                                                <div>
+                                                    <strong t-esc="invoice.name or invoice.ref or '-'"/>
+                                                    <small><i class="fa fa-calendar"/> <span t-field="invoice.invoice_date" t-options='{"widget": "date"}'/></small>
+                                                </div>
+                                                <div class="bader-account-activity__item-side">
+                                                    <span class="bader-status-pill is-gray"
+                                                          t-esc="account_invoice_payment_labels.get(invoice.payment_state, invoice.payment_state)"/>
+                                                    <span t-field="invoice.amount_total"
+                                                          t-options='{"widget": "monetary", "display_currency": invoice.currency_id}'/>
+                                                </div>
+                                            </a>
+                                        </t>
+                                        <t t-elif="account_invoices_available">
+                                            <p class="bader-account-activity__empty">Todavia no tienes facturas publicadas.</p>
+                                        </t>
+                                        <t t-else="">
+                                            <p class="bader-account-activity__empty">Facturacion no disponible en esta base Odoo.</p>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="bader-account-grid">
                             <aside class="bader-page-card bader-account-summary">
                                 <div class="bader-account-avatar" t-esc="profile_initial"/>
@@ -782,6 +888,17 @@
 
                         <form action="/configuracion/guardar" method="post" class="bader-page-card bader-account-form">
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <t t-set="has_professional_fields"
+                               t-value="profile_available_keys.get('clinic_name')
+                                        or profile_available_keys.get('clinic_role')
+                                        or profile_available_keys.get('clinic_specialties')
+                                        or profile_available_keys.get('lab_name')
+                                        or profile_available_keys.get('lab_type')
+                                        or profile_available_keys.get('lab_specialization')
+                                        or profile_available_keys.get('university')
+                                        or profile_available_keys.get('study_year')
+                                        or profile_available_keys.get('career')
+                                        or profile_available_keys.get('student_city')"/>
 
                             <div class="bader-account-form__section">
                                 <h3 class="bader-page-card__title">Informacion personal y fiscal</h3>
@@ -820,6 +937,129 @@
                             </div>
 
                             <div class="bader-account-form__section">
+                                <h3 class="bader-page-card__title">Preferencias profesionales</h3>
+                                <p class="bader-page-card__text">
+                                    Este perfil se usa para personalizar recomendaciones en toda la web.
+                                </p>
+                                <div class="row g-3 bader-account-professional-form">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Tipo de profesional</label>
+                                        <select name="persona_preference"
+                                                class="form-select"
+                                                data-bader-persona-select="1">
+                                            <option value="clinica" t-att-selected="profile_persona == 'clinica' and 'selected' or None">Clinica Dental</option>
+                                            <option value="laboratorio" t-att-selected="profile_persona == 'laboratorio' and 'selected' or None">Laboratorio Dental</option>
+                                            <option value="estudiantes" t-att-selected="profile_persona == 'estudiantes' and 'selected' or None">Estudiantes</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <p class="bader-account-form__hint mb-0">
+                                            Si tu base tiene campos avanzados en <code>res.partner</code>, se guardan desde este formulario.
+                                        </p>
+                                    </div>
+
+                                    <div class="col-md-6 js-bader-profile-group"
+                                         data-persona-group="clinica"
+                                         t-if="profile_available_keys.get('clinic_name')">
+                                        <label class="form-label">Nombre de la clinica</label>
+                                        <input type="text"
+                                               name="profile_clinic_name"
+                                               class="form-control"
+                                               t-att-value="profile_values.get('clinic_name') or ''"/>
+                                    </div>
+                                    <div class="col-md-6 js-bader-profile-group"
+                                         data-persona-group="clinica"
+                                         t-if="profile_available_keys.get('clinic_role')">
+                                        <label class="form-label">Rol en la clinica</label>
+                                        <input type="text"
+                                               name="profile_clinic_role"
+                                               class="form-control"
+                                               t-att-value="profile_values.get('clinic_role') or ''"/>
+                                    </div>
+                                    <div class="col-12 js-bader-profile-group"
+                                         data-persona-group="clinica"
+                                         t-if="profile_available_keys.get('clinic_specialties')">
+                                        <label class="form-label">Especialidades (separadas por coma)</label>
+                                        <input type="text"
+                                               name="profile_clinic_specialties"
+                                               class="form-control"
+                                               t-att-value="profile_values.get('clinic_specialties') or ''"/>
+                                    </div>
+
+                                    <div class="col-md-6 js-bader-profile-group"
+                                         data-persona-group="laboratorio"
+                                         t-if="profile_available_keys.get('lab_name')">
+                                        <label class="form-label">Nombre del laboratorio</label>
+                                        <input type="text"
+                                               name="profile_lab_name"
+                                               class="form-control"
+                                               t-att-value="profile_values.get('lab_name') or ''"/>
+                                    </div>
+                                    <div class="col-md-6 js-bader-profile-group"
+                                         data-persona-group="laboratorio"
+                                         t-if="profile_available_keys.get('lab_type')">
+                                        <label class="form-label">Tipo de laboratorio</label>
+                                        <input type="text"
+                                               name="profile_lab_type"
+                                               class="form-control"
+                                               t-att-value="profile_values.get('lab_type') or ''"/>
+                                    </div>
+                                    <div class="col-12 js-bader-profile-group"
+                                         data-persona-group="laboratorio"
+                                         t-if="profile_available_keys.get('lab_specialization')">
+                                        <label class="form-label">Especializacion</label>
+                                        <input type="text"
+                                               name="profile_lab_specialization"
+                                               class="form-control"
+                                               t-att-value="profile_values.get('lab_specialization') or ''"/>
+                                    </div>
+
+                                    <div class="col-md-6 js-bader-profile-group"
+                                         data-persona-group="estudiantes"
+                                         t-if="profile_available_keys.get('university')">
+                                        <label class="form-label">Universidad</label>
+                                        <input type="text"
+                                               name="profile_university"
+                                               class="form-control"
+                                               t-att-value="profile_values.get('university') or ''"/>
+                                    </div>
+                                    <div class="col-md-6 js-bader-profile-group"
+                                         data-persona-group="estudiantes"
+                                         t-if="profile_available_keys.get('study_year')">
+                                        <label class="form-label">Ano de estudio</label>
+                                        <input type="text"
+                                               name="profile_study_year"
+                                               class="form-control"
+                                               t-att-value="profile_values.get('study_year') or ''"/>
+                                    </div>
+                                    <div class="col-md-6 js-bader-profile-group"
+                                         data-persona-group="estudiantes"
+                                         t-if="profile_available_keys.get('career')">
+                                        <label class="form-label">Carrera</label>
+                                        <input type="text"
+                                               name="profile_career"
+                                               class="form-control"
+                                               t-att-value="profile_values.get('career') or ''"/>
+                                    </div>
+                                    <div class="col-md-6 js-bader-profile-group"
+                                         data-persona-group="estudiantes"
+                                         t-if="profile_available_keys.get('student_city')">
+                                        <label class="form-label">Ciudad</label>
+                                        <input type="text"
+                                               name="profile_student_city"
+                                               class="form-control"
+                                               t-att-value="profile_values.get('student_city') or ''"/>
+                                    </div>
+                                </div>
+                                <t t-if="not has_professional_fields">
+                                    <p class="bader-account-form__hint mb-0">
+                                        Esta base no tiene campos profesionales personalizados en <code>res.partner</code>.
+                                        La seleccion de perfil igualmente se aplica para personalizar la web.
+                                    </p>
+                                </t>
+                            </div>
+
+                            <div class="bader-account-form__section">
                                 <h3 class="bader-page-card__title">Direccion de envio</h3>
                                 <div class="row g-3">
                                     <div class="col-md-6">
@@ -854,6 +1094,32 @@
                                 </a>
                             </div>
                         </form>
+
+                        <script type="text/javascript">
+                            (function () {
+                                function toggleGroups(selectEl) {
+                                    var persona = (selectEl &amp;&amp; selectEl.value) || 'clinica';
+                                    var groups = document.querySelectorAll('.js-bader-profile-group');
+                                    for (var i = 0; i &lt; groups.length; i += 1) {
+                                        var node = groups[i];
+                                        var target = (node.getAttribute('data-persona-group') || '').split(',');
+                                        var visible = target.indexOf(persona) !== -1;
+                                        node.style.display = visible ? '' : 'none';
+                                    }
+                                }
+
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    var selectEl = document.querySelector('[data-bader-persona-select="1"]');
+                                    if (!selectEl) {
+                                        return;
+                                    }
+                                    toggleGroups(selectEl);
+                                    selectEl.addEventListener('change', function () {
+                                        toggleGroups(selectEl);
+                                    });
+                                });
+                            })();
+                        </script>
                     </div>
                 </section>
             </div>

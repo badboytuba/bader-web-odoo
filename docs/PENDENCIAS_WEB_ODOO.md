@@ -85,6 +85,8 @@ Atualizacao 2026-03-02:
 - [x] Links legados `/shop` removidos das paginas de marketing/nicho (padrao `/productos`).
 - [x] Menu mobile reforcado para evitar duplicidade de navegacao canônica no drawer.
 - [x] Dashboard por perfil (fase 1) aplicado em `/mi-perfil` com blocos personalizados por persona e dados reais de Odoo.
+- [x] Dashboard por perfil (fase 2) em `/mi-perfil`: bloco de preferencias profissionais + atividade comercial recente com pedidos/faturas e metricas monetarias.
+- [x] `/configuracion` atualizado para ajustar perfil profissional por persona (com persistencia em campos existentes do `res.partner` e fallback por sessao).
 
 ## Ordem de execucao recomendada
 

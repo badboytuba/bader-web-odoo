@@ -1073,6 +1073,181 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
     }
 }
 
+.bader-account-snapshot {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem;
+    margin-bottom: 1rem;
+
+    @media (max-width: 992px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.bader-account-professional {
+    .bader-page-card__text {
+        margin-bottom: 0.75rem;
+    }
+}
+
+.bader-account-professional__rows {
+    display: grid;
+    gap: 0.48rem;
+}
+
+.bader-account-professional__row {
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    gap: 0.6rem;
+    align-items: center;
+    padding: 0.45rem 0.5rem;
+    border: 1px solid $gray-100;
+    border-radius: $radius-md;
+    background: $gray-50;
+
+    small {
+        display: block;
+        color: $gray-500;
+        font-size: 0.75rem;
+    }
+
+    strong {
+        display: block;
+        color: $bader-dark;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+}
+
+.bader-account-professional__icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba($bader-green, 0.14);
+    color: $bader-dark;
+    font-size: 0.9rem;
+}
+
+.bader-account-professional__hint {
+    margin: 0.7rem 0 0;
+    color: $gray-500;
+    font-size: 0.8rem;
+}
+
+.bader-account-activity__metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+    margin-bottom: 0.7rem;
+
+    article {
+        border: 1px solid $gray-100;
+        border-radius: $radius-md;
+        background: $gray-50;
+        padding: 0.48rem 0.56rem;
+    }
+
+    span {
+        display: block;
+        color: $gray-500;
+        font-size: 0.72rem;
+        margin-bottom: 0.15rem;
+    }
+
+    strong {
+        color: $bader-dark;
+        font-family: $font-display;
+        font-size: 1rem;
+        line-height: 1.3;
+    }
+
+    @include mobile {
+        grid-template-columns: 1fr;
+    }
+}
+
+.bader-account-activity__lists {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+
+    @include mobile {
+        grid-template-columns: 1fr;
+    }
+}
+
+.bader-account-activity__list {
+    h4 {
+        margin: 0 0 0.5rem;
+        color: $bader-dark;
+        font-size: 0.9rem;
+        font-weight: 700;
+    }
+}
+
+.bader-account-activity__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    border: 1px solid $gray-100;
+    border-radius: $radius-md;
+    background: $white;
+    padding: 0.42rem 0.52rem;
+    margin-bottom: 0.45rem;
+    color: inherit;
+    text-decoration: none;
+    transition: border-color $transition-fast, box-shadow $transition-fast, transform $transition-fast;
+
+    strong {
+        display: block;
+        color: $bader-dark;
+        font-size: 0.82rem;
+        line-height: 1.35;
+    }
+
+    small {
+        display: block;
+        color: $gray-500;
+        font-size: 0.72rem;
+    }
+
+    &:hover {
+        border-color: rgba($bader-green, 0.45);
+        box-shadow: 0 7px 18px rgba(0, 56, 65, 0.08);
+        transform: translateY(-1px);
+        text-decoration: none;
+    }
+}
+
+.bader-account-activity__item-side {
+    text-align: right;
+    display: grid;
+    gap: 0.2rem;
+    justify-items: end;
+    color: $bader-dark;
+    font-size: 0.8rem;
+    font-weight: 600;
+
+    .bader-status-pill {
+        text-transform: none;
+    }
+}
+
+.bader-account-activity__empty {
+    margin: 0;
+    border: 1px dashed $gray-200;
+    border-radius: $radius-md;
+    background: $gray-50;
+    color: $gray-500;
+    font-size: 0.8rem;
+    padding: 0.55rem 0.6rem;
+    line-height: 1.45;
+}
+
 .bader-account-persona-list {
     margin-top: 0.75rem;
     display: grid;
@@ -1127,6 +1302,12 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
     @include mobile {
         grid-template-columns: 1fr;
     }
+}
+
+.bader-account-form__hint {
+    color: $gray-500;
+    font-size: 0.82rem;
+    line-height: 1.5;
 }
 
 .bader-account-quick-btn {
