@@ -1223,6 +1223,57 @@ odoo.define('bader_website.main', function (require) {
             })();
 
             // ── 10c. Active Filter Chips + Quick Filters ──
+            // -- 10c. Grid/List View Toggle --
+            (function initCatalogViewToggle() {
+                var toggleRoot = document.querySelector('[data-bader-view-toggle]');
+                var gridArea = document.getElementById('products_grid');
+                if (!toggleRoot || !gridArea) return;
+
+                var buttons = toggleRoot.querySelectorAll('.bader-view-btn[data-bader-view]');
+                if (!buttons.length) return;
+
+                var storageKey = 'bader_catalog_view';
+                var params = new URLSearchParams(window.location.search);
+                var view = params.get('view') || '';
+
+                if (view !== 'grid' && view !== 'list') {
+                    try {
+                        view = window.localStorage.getItem(storageKey) || '';
+                    } catch (err) {
+                        view = '';
+                    }
+                }
+                if (view !== 'list') view = 'grid';
+
+                function applyView(nextView, persist) {
+                    var isList = nextView === 'list';
+                    gridArea.classList.toggle('bader-view-list', isList);
+                    gridArea.classList.toggle('bader-view-grid', !isList);
+                    buttons.forEach(function (btn) {
+                        var btnView = btn.getAttribute('data-bader-view');
+                        var isActive = btnView === nextView;
+                        btn.classList.toggle('is-active', isActive);
+                        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+                    });
+                    if (persist) {
+                        try {
+                            window.localStorage.setItem(storageKey, nextView);
+                        } catch (err) {
+                            // Ignore localStorage failures
+                        }
+                    }
+                }
+
+                buttons.forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        var nextView = btn.getAttribute('data-bader-view') || 'grid';
+                        applyView(nextView === 'list' ? 'list' : 'grid', true);
+                    });
+                });
+
+                applyView(view, false);
+            })();
+
             (function injectFilterChips() {
                 var toolbar = document.querySelector('.products_header, #products_grid');
                 if (!toolbar) return;
@@ -1324,6 +1375,82 @@ odoo.define('bader_website.main', function (require) {
             })();
 
             // ── 10d. Premium Product Card Enhancements ──
+            // -- 10d. Search Feedback --
+            (function injectSearchFeedback() {
+                var feedback = document.querySelector('[data-bader-search-feedback]');
+                if (!feedback) return;
+
+                var params = new URLSearchParams(window.location.search);
+                var term = (params.get('search') || '').trim();
+                var safeTerm = '';
+                var productCount = document.querySelectorAll('.oe_product').length;
+                var hasExtraFilters = false;
+
+                function escapeHtml(value) {
+                    return String(value || '')
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#39;');
+                }
+                safeTerm = escapeHtml(term);
+
+                params.forEach(function (value, key) {
+                    if (!value) return;
+                    if (key === 'search' || key === 'page') return;
+                    hasExtraFilters = true;
+                });
+
+                function buildUrl(nextSearch) {
+                    var targetUrl = new URL(window.location.href);
+                    if (nextSearch) {
+                        targetUrl.searchParams.set('search', nextSearch);
+                    } else {
+                        targetUrl.searchParams.delete('search');
+                    }
+                    targetUrl.searchParams.delete('page');
+                    return targetUrl.pathname + targetUrl.search;
+                }
+
+                if (!term && !hasExtraFilters) {
+                    feedback.hidden = true;
+                    feedback.innerHTML = '';
+                    return;
+                }
+
+                var html = '';
+                if (term) {
+                    if (productCount > 0) {
+                        html += '<div class="bader-search-feedback__row">' +
+                            '<i class="fa fa-search"></i>' +
+                            '<span>Resultados para <strong>"' + safeTerm + '"</strong> (' + productCount + ')</span>' +
+                            '</div>';
+                    } else {
+                        var firstToken = term.split(/\s+/).filter(Boolean)[0] || '';
+                        var safeFirstToken = escapeHtml(firstToken);
+                        html += '<div class="bader-search-feedback__row bader-search-feedback__row--empty">' +
+                            '<i class="fa fa-info-circle"></i>' +
+                            '<span>Sin resultados para <strong>"' + safeTerm + '"</strong>. Proba otro termino.</span>' +
+                            '</div>' +
+                            '<div class="bader-search-feedback__actions">' +
+                            '<a class="bader-search-feedback__link" href="' + buildUrl('') + '">Ver todo</a>';
+                        if (firstToken && firstToken !== term) {
+                            html += '<a class="bader-search-feedback__link" href="' + buildUrl(firstToken) + '">Buscar "' + safeFirstToken + '"</a>';
+                        }
+                        html += '</div>';
+                    }
+                } else if (hasExtraFilters) {
+                    html += '<div class="bader-search-feedback__row">' +
+                        '<i class="fa fa-sliders"></i>' +
+                        '<span>Filtros activos en el catalogo.</span>' +
+                        '</div>';
+                }
+
+                feedback.innerHTML = html;
+                feedback.hidden = !html;
+            })();
+
             (function enhanceProductCards() {
                 var cards = document.querySelectorAll('.oe_product_cart');
                 if (cards.length === 0) return;
@@ -1432,6 +1559,45 @@ odoo.define('bader_website.main', function (require) {
             })();
 
             // ── 10e. Advanced Sidebar ──
+            // -- 10f. Skeleton Loading --
+            (function initShopSkeletons() {
+                var gridArea = document.getElementById('products_grid');
+                if (!gridArea || gridArea.classList.contains('bader-skeleton-ready')) return;
+                gridArea.classList.add('bader-skeleton-ready');
+
+                var tableWrapper = gridArea.querySelector('.o_wsale_products_grid_table_wrapper');
+                var cards = gridArea.querySelectorAll('.oe_product');
+                if (!tableWrapper || !cards.length) return;
+
+                var skeleton = document.createElement('div');
+                skeleton.className = 'bader-shop-skeleton';
+                skeleton.setAttribute('aria-hidden', 'true');
+
+                var html = '';
+                var skeletonCount = Math.max(4, Math.min(cards.length, 8));
+                for (var i = 0; i < skeletonCount; i++) {
+                    html += '<div class="bader-skeleton-card">' +
+                        '<div class="bader-skeleton-card__image"></div>' +
+                        '<div class="bader-skeleton-card__line bader-skeleton-card__line--sm"></div>' +
+                        '<div class="bader-skeleton-card__line"></div>' +
+                        '<div class="bader-skeleton-card__line bader-skeleton-card__line--xs"></div>' +
+                        '</div>';
+                }
+                skeleton.innerHTML = html;
+                tableWrapper.parentElement.insertBefore(skeleton, tableWrapper);
+                gridArea.classList.add('bader-shop-loading');
+
+                window.requestAnimationFrame(function () {
+                    window.setTimeout(function () {
+                        gridArea.classList.remove('bader-shop-loading');
+                        skeleton.classList.add('is-leaving');
+                        window.setTimeout(function () {
+                            if (skeleton.parentElement) skeleton.parentElement.removeChild(skeleton);
+                        }, 220);
+                    }, 180);
+                });
+            })();
+
             (function enhanceSidebar() {
                 // The sidebar element can be: #products_grid_before itself (which is the col-lg-3),
                 // OR a .col-lg-3 inside .o_wsale_products_main_row

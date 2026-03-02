@@ -139,6 +139,24 @@
                 </a>
             </div>
             <div class="bader-active-filters" data-bader-active-filters="1"/>
+            <div class="bader-shop-toolbar-extras">
+                <div class="bader-view-toggle" data-bader-view-toggle="1">
+                    <span class="bader-view-toggle__label">Vista:</span>
+                    <button type="button"
+                            class="bader-view-btn is-active"
+                            data-bader-view="grid"
+                            aria-pressed="true">
+                        <i class="fa fa-th-large"/> Grid
+                    </button>
+                    <button type="button"
+                            class="bader-view-btn"
+                            data-bader-view="list"
+                            aria-pressed="false">
+                        <i class="fa fa-list"/> Lista
+                    </button>
+                </div>
+            </div>
+            <div class="bader-search-feedback" data-bader-search-feedback="1" hidden="hidden"/>
         </xpath>
     </template>
 

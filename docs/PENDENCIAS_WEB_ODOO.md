@@ -9,7 +9,7 @@ Atualizacao 2026-02-27:
 - [x] `/terminos`, `/privacidad`, `/cookies` implementadas (rotas + templates).
 - [x] `/productos` fase 1 aplicada em QWeb (hero, quick filters, chips ativos, contador e empty state).
 - [x] `/productos` filtros inteligentes por nicho -> tipo -> subcategoria (endpoint JSON + sidebar dinamica).
-- [~] Busca no catalogo ajustada para maior relevancia (sem fuzzy e sem match por descricao em `/productos`).
+- [x] Busca no catalogo ajustada para maior relevancia (sem fuzzy e sem match por descricao em `/productos` + feedback dedicado no front).
 - [x] `/producto/<id>` migrado para QWeb com tabs, FAQ, relacionados e CTA (sem injecao pesada em JS).
 - [x] Header mobile no estilo app (drawer com busca, nichos, links principais e conta).
 - [x] Drawer lateral de carrinho integrado com Odoo (`/shop/cart?type=popover` + `/shop/cart/update_json`).
@@ -22,11 +22,11 @@ Atualizacao 2026-02-27:
 - Itens pendentes:
   - [x] Hero com breadcrumb contextual por categoria.
   - [x] Filtros inteligentes (nicho -> tipo -> subcategoria).
-  - [~] Busca no catalogo com UX dedicada (backend mais estrito aplicado; falta UX de sugestao/feedback no front).
+  - [x] Busca no catalogo com UX dedicada (backend mais estrito + feedback/sugestoes no front).
   - [x] Quick filters (`Ofertas`, `Mas vendidos`, `Nuevos`, `Envio gratis`, `Destacados`) com estado ativo.
-  - [~] Alternancia `grid/list` (depende de controles nativos Odoo; sem replica total do app).
+  - [x] Alternancia `grid/list` com persistencia local e layout dedicado.
   - [x] Chips de filtros ativos + limpar filtros.
-  - [~] Empty state melhorado; skeletons ainda nao aplicados.
+  - [x] Empty state melhorado + skeleton loading aplicado no grid.
 
 2. Produto detalhado `/producto/<id>`
 - Estado atual: base consolidada em [product_detail.xml](../addons/bader_website/views/product_detail.xml) com suporte SCSS dedicado.
