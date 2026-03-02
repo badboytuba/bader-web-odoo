@@ -84,6 +84,104 @@ class BaderWebsite(Website):
             'login_url': login_url,
         })
 
+    def _normalize_home_persona(self, raw_value):
+        """Normalize a free-text persona value to clinica/laboratorio/estudiantes."""
+        token = (raw_value or '').strip().lower()
+        if not token:
+            return ''
+
+        aliases = {
+            'clinica': 'clinica',
+            'clinica-dental': 'clinica',
+            'clinic': 'clinica',
+            'odontologo': 'clinica',
+            'odontologa': 'clinica',
+            'laboratorio': 'laboratorio',
+            'lab': 'laboratorio',
+            'laboratorio-dental': 'laboratorio',
+            'estudiantes': 'estudiantes',
+            'estudiante': 'estudiantes',
+            'student': 'estudiantes',
+            'students': 'estudiantes',
+        }
+        if token in aliases:
+            return aliases[token]
+
+        if 'laborat' in token:
+            return 'laboratorio'
+        if 'estudian' in token:
+            return 'estudiantes'
+        if 'clinic' in token or 'odont' in token:
+            return 'clinica'
+        return ''
+
+    def _persona_from_partner(self, partner):
+        """Infer homepage persona from partner fields/tags without custom model changes."""
+        if not partner:
+            return ''
+
+        candidates = []
+        candidate_fields = [
+            'x_niche',
+            'x_studio_niche',
+            'x_profile_niche',
+            'x_perfil',
+            'x_studio_perfil',
+            'x_profesion',
+            'x_studio_profesion',
+            'x_profession',
+            'function',
+            'title',
+            'comment',
+        ]
+        for field_name in candidate_fields:
+            if field_name not in partner._fields:
+                continue
+            value = partner[field_name]
+            if hasattr(value, 'name'):
+                value = value.name
+            if value:
+                candidates.append(value)
+
+        if 'category_id' in partner._fields:
+            for tag in partner.category_id:
+                candidates.append(tag.name)
+
+        if 'company_name' in partner._fields:
+            candidates.append(partner.company_name or '')
+        candidates.append(partner.name or '')
+
+        for value in candidates:
+            persona = self._normalize_home_persona(value)
+            if persona:
+                return persona
+        return ''
+
+    def _resolve_home_persona(self, kw):
+        """Resolve current homepage persona from query, session, or logged user profile."""
+        query_persona = self._normalize_home_persona(
+            kw.get('persona') or kw.get('perfil') or kw.get('niche')
+        )
+        if query_persona:
+            request.session['bader_home_persona'] = query_persona
+            request.session.modified = True
+            return query_persona, 'query'
+
+        session_persona = self._normalize_home_persona(
+            request.session.get('bader_home_persona')
+        )
+        if session_persona:
+            return session_persona, 'session'
+
+        if not request.website.is_public_user():
+            partner_persona = self._persona_from_partner(self._current_customer_partner())
+            if partner_persona:
+                request.session['bader_home_persona'] = partner_persona
+                request.session.modified = True
+                return partner_persona, 'profile'
+
+        return 'clinica', 'default'
+
     def _order_domain_for_partner(self, partner):
         """Orders linked to the customer and child contacts."""
         return [
@@ -608,7 +706,34 @@ class BaderWebsite(Website):
     @http.route('/', type='http', auth='public', website=True, sitemap=True)
     def index(self, **kw):
         """Override the main homepage to render Bader template."""
-        return request.render('bader_website.bader_homepage', {})
+        persona, source = self._resolve_home_persona(kw)
+        persona_map = {
+            'clinica': {
+                'label': 'Clinica Dental',
+                'cta_label': 'Equipar mi clinica',
+                'cta_href': '/clinica-dental',
+            },
+            'laboratorio': {
+                'label': 'Laboratorio Dental',
+                'cta_label': 'Ver equipos para lab',
+                'cta_href': '/laboratorio-dental',
+            },
+            'estudiantes': {
+                'label': 'Estudiantes',
+                'cta_label': 'Plan estudiantes',
+                'cta_href': '/estudiantes-odontologia',
+            },
+        }
+        persona_meta = persona_map.get(persona, persona_map['clinica'])
+        return request.render('bader_website.bader_homepage', {
+            'homepage_persona': persona,
+            'homepage_persona_label': persona_meta['label'],
+            'homepage_persona_cta_label': persona_meta['cta_label'],
+            'homepage_persona_cta_href': persona_meta['cta_href'],
+            'homepage_persona_locked': source == 'profile',
+            'homepage_persona_autorotate': source == 'default',
+            'home_is_logged': not request.website.is_public_user(),
+        })
 
     @http.route([
         '/productos',
@@ -930,6 +1055,15 @@ class BaderWebsite(Website):
     @http.route('/ayuda', type='http', auth='public', website=True, sitemap=True)
     def ayuda(self, **kw):
         return request.render('bader_website.bader_ayuda', {})
+
+    @http.route('/bader/home/set_persona', type='json', auth='public', website=True, csrf=False)
+    def set_home_persona(self, persona=None, **kw):
+        normalized = self._normalize_home_persona(persona or kw.get('persona'))
+        if not normalized:
+            return {'ok': False, 'error': 'invalid_persona'}
+        request.session['bader_home_persona'] = normalized
+        request.session.modified = True
+        return {'ok': True, 'persona': normalized}
 
     @http.route('/bader/shop/intelligent_categories', type='json', auth='public', csrf=False)
     def intelligent_shop_categories(self, **kw):

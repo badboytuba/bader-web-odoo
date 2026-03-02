@@ -715,6 +715,28 @@ odoo.define('bader_website.main', function (require) {
             var tabs = document.querySelectorAll('.bader-hero__tab[data-persona]');
             if (tabs.length === 0) return;
             var personas = ['clinica', 'laboratorio', 'estudiantes'];
+            var wrap = document.getElementById('wrap');
+            var defaultPersona = (wrap && wrap.getAttribute('data-bader-home-persona')) || '';
+            var isLockedPersona = (wrap && wrap.getAttribute('data-bader-home-persona-locked') === '1');
+            var canAutoRotate = (wrap && wrap.getAttribute('data-bader-home-persona-autorotate') === '1');
+            var urlParams = new URLSearchParams(window.location.search || '');
+            var queryPersona = (urlParams.get('persona') || urlParams.get('perfil') || urlParams.get('niche') || '').toLowerCase();
+            var storedPersona = '';
+            try {
+                storedPersona = (window.localStorage.getItem('bader_home_persona') || '').toLowerCase();
+            } catch (err) {
+                storedPersona = '';
+            }
+            if (personas.indexOf(queryPersona) !== -1) {
+                defaultPersona = queryPersona;
+                canAutoRotate = false;
+            } else if (personas.indexOf(storedPersona) !== -1) {
+                defaultPersona = storedPersona;
+                canAutoRotate = false;
+            }
+            if (personas.indexOf(defaultPersona) === -1) {
+                defaultPersona = 'clinica';
+            }
 
             var personaMeta = {
                 clinica: {
@@ -826,12 +848,36 @@ odoo.define('bader_website.main', function (require) {
                 applyPersonaMeta(persona);
             }
 
+            function persistPersona(persona) {
+                if (!window.fetch || personas.indexOf(persona) === -1) return;
+                try {
+                    window.localStorage.setItem('bader_home_persona', persona);
+                } catch (err) {
+                    // Ignore storage errors.
+                }
+                fetch('/bader/home/set_persona', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'call',
+                        params: { persona: persona },
+                    }),
+                }).catch(function () {
+                    // Keep UX working even if persistence fails.
+                });
+            }
+
             tabs.forEach(function (tab) {
                 tab.addEventListener('click', function (e) {
                     e.preventDefault();
                     var persona = this.getAttribute('data-persona');
                     currentIdx = personaIndex(persona);
                     switchPersona(persona);
+                    persistPersona(persona);
                 });
             });
 
@@ -841,16 +887,22 @@ odoo.define('bader_website.main', function (require) {
                     var persona = this.getAttribute('data-persona');
                     currentIdx = personaIndex(persona);
                     switchPersona(persona);
+                    persistPersona(persona);
                 });
             });
 
-            // Auto-rotate every 6 seconds
-            var currentIdx = 0;
+            // Initial persona from server/session and optional auto-rotation.
+            var currentIdx = personaIndex(defaultPersona);
             switchPersona(personas[currentIdx]);
-            setInterval(function () {
-                currentIdx = (currentIdx + 1) % personas.length;
-                switchPersona(personas[currentIdx]);
-            }, 6000);
+            if (personas.indexOf(queryPersona) !== -1) {
+                persistPersona(defaultPersona);
+            }
+            if (!isLockedPersona && canAutoRotate) {
+                setInterval(function () {
+                    currentIdx = (currentIdx + 1) % personas.length;
+                    switchPersona(personas[currentIdx]);
+                }, 6000);
+            }
         })();
 
         // ---- 6. Counter Animation (CountUp) ----

@@ -71,7 +71,7 @@ Atualizacao 2026-02-27:
 - Estado atual: homepage unica em [homepage.xml](../addons/bader_website/views/homepage.xml).
 - Paridade faltando vs app: [PersonalizedHome.tsx](../Bader-AR/client/src/pages/PersonalizedHome.tsx) + dashboards por nicho.
 - Item pendente:
-  - Definir se sera implementado em Odoo web com segmentacao por cliente.
+  - [x] Home personalizada implementada em Odoo web com segmentacao por cliente (perfil/sessao + persistencia da persona).
 
 ## Prioridade Baixa
 
