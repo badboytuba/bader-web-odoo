@@ -84,6 +84,7 @@ Atualizacao 2026-03-02:
 - [x] Home hero refinada para paridade visual com app (decoracao de fundo, card flutuante, indicador inferior de persona).
 - [x] Links legados `/shop` removidos das paginas de marketing/nicho (padrao `/productos`).
 - [x] Menu mobile reforcado para evitar duplicidade de navegacao canônica no drawer.
+- [x] Dashboard por perfil (fase 1) aplicado em `/mi-perfil` com blocos personalizados por persona e dados reais de Odoo.
 
 ## Ordem de execucao recomendada
 

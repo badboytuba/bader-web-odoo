@@ -2,6 +2,7 @@
 import logging
 import math
 import re
+import unicodedata
 from datetime import datetime
 from urllib.parse import quote
 from odoo import http
@@ -181,6 +182,160 @@ class BaderWebsite(Website):
                 return partner_persona, 'profile'
 
         return 'clinica', 'default'
+
+    def _normalize_search_text(self, raw_text):
+        """Lowercase + strip accents to support tolerant keyword matching."""
+        text = (raw_text or '').strip().lower()
+        if not text:
+            return ''
+        normalized = unicodedata.normalize('NFKD', text)
+        return ''.join(ch for ch in normalized if not unicodedata.combining(ch))
+
+    def _persona_dashboard_config(self, persona):
+        """UI/content config for account dashboard by persona."""
+        persona_map = {
+            'clinica': {
+                'label': 'Clinica Dental',
+                'badge_icon': 'fa-medkit',
+                'subtitle': (
+                    'Panel personalizado para clinicas: productos clave, ofertas '
+                    'relevantes y recomendaciones para tu practica.'
+                ),
+                'primary_href': '/productos?niche=clinica-dental',
+                'primary_label': 'Ver catalogo clinico',
+                'resource_title': 'Tips para clinica',
+                'resource_intro': 'Recomendaciones para optimizar la atencion y el equipamiento.',
+                'resource_entries': [
+                    {'icon': 'fa-stethoscope', 'title': 'Bioseguridad al dia', 'description': 'Revisa protocolos de esterilizacion y mantenimiento del autoclave.'},
+                    {'icon': 'fa-clock-o', 'title': 'Gestion de turnos', 'description': 'Configura buffers de 10-15 minutos para evitar retrasos en cascada.'},
+                    {'icon': 'fa-line-chart', 'title': 'Inventario minimo', 'description': 'Mantener stock de 2-3 meses evita quiebres en productos de alta rotacion.'},
+                ],
+                'tips_title': 'Acciones sugeridas',
+                'tips_intro': 'Atajos de trabajo para tu operacion diaria.',
+                'tips_entries': [
+                    {'icon': 'fa-heart-o', 'title': 'Guardar favoritos', 'description': 'Marca productos clave para reponerlos rapido desde tu cuenta.'},
+                    {'icon': 'fa-truck', 'title': 'Planificar compras', 'description': 'Consolida pedidos para mejorar tiempos y costos de envio.'},
+                    {'icon': 'fa-comments-o', 'title': 'Asesoria tecnica', 'description': 'Consulta compatibilidades de equipos antes de cerrar una inversion.'},
+                ],
+                'product_keywords': ['sillon', 'autoclave', 'rayos', 'compresor', 'rotatorio', 'clinica'],
+                'whatsapp_message': 'Hola, soy cliente de Clinica Dental y necesito asesoria de productos.',
+            },
+            'laboratorio': {
+                'label': 'Laboratorio Dental',
+                'badge_icon': 'fa-flask',
+                'subtitle': (
+                    'Panel para laboratorios: recursos tecnicos, ofertas por especialidad '
+                    'y productos para flujo de produccion.'
+                ),
+                'primary_href': '/productos?niche=laboratorio-dental',
+                'primary_label': 'Ver catalogo laboratorio',
+                'resource_title': 'Recursos tecnicos',
+                'resource_intro': 'Material util para procesos y calidad en laboratorio.',
+                'resource_entries': [
+                    {'icon': 'fa-cogs', 'title': 'Calibracion CAD/CAM', 'description': 'Verifica offset y estado de fresas para mejorar ajuste final.'},
+                    {'icon': 'fa-files-o', 'title': 'Protocolos por material', 'description': 'Documenta parametros de zirconia, metal-ceramica y resinas.'},
+                    {'icon': 'fa-wrench', 'title': 'Mantenimiento preventivo', 'description': 'Agenda revisiones para evitar paradas de produccion.'},
+                ],
+                'tips_title': 'Buenas practicas',
+                'tips_intro': 'Rutinas recomendadas para mayor precision.',
+                'tips_entries': [
+                    {'icon': 'fa-check-square-o', 'title': 'Checklist diario', 'description': 'Controla equipos y consumibles al inicio de cada turno.'},
+                    {'icon': 'fa-archive', 'title': 'Stock estrategico', 'description': 'Mantener insumos criticos para 2 semanas reduce riesgo operativo.'},
+                    {'icon': 'fa-camera', 'title': 'Registro de casos', 'description': 'Documenta resultados para seguimiento y mejora continua.'},
+                ],
+                'product_keywords': ['laboratorio', 'mesa', 'repasado', 'arenadora', 'articulador', 'termoformadora', 'zirconia', 'cad'],
+                'whatsapp_message': 'Hola, soy cliente de Laboratorio Dental y necesito soporte tecnico/comercial.',
+            },
+            'estudiantes': {
+                'label': 'Estudiantes',
+                'badge_icon': 'fa-graduation-cap',
+                'subtitle': (
+                    'Panel para estudiantes: kits sugeridos, recursos de aprendizaje '
+                    'y ofertas para etapa academica.'
+                ),
+                'primary_href': '/productos?niche=estudiantes',
+                'primary_label': 'Ver catalogo estudiantes',
+                'resource_title': 'Recursos de estudio',
+                'resource_intro': 'Material de apoyo para avanzar en tu formacion.',
+                'resource_entries': [
+                    {'icon': 'fa-book', 'title': 'Instrumental basico', 'description': 'Guia practica para reconocer y usar instrumental esencial.'},
+                    {'icon': 'fa-video-camera', 'title': 'Tutoriales', 'description': 'Videos paso a paso con tecnicas frecuentes de practica.'},
+                    {'icon': 'fa-download', 'title': 'Fichas descargables', 'description': 'Apuntes y checklists para laboratorio y clinica.'},
+                ],
+                'tips_title': 'Consejos para cursada',
+                'tips_intro': 'Sugerencias para comprar mejor y practicar con foco.',
+                'tips_entries': [
+                    {'icon': 'fa-shield', 'title': 'Cuidar instrumental', 'description': 'Limpieza y esterilizacion correctas prolongan vida util.'},
+                    {'icon': 'fa-puzzle-piece', 'title': 'Armar kit gradual', 'description': 'Prioriza compras segun materias y practicas del ano.'},
+                    {'icon': 'fa-users', 'title': 'Comunidad', 'description': 'Compartir experiencias acelera aprendizaje y decisiones de compra.'},
+                ],
+                'product_keywords': ['kit', 'simulador', 'tipodonto', 'fantoma', 'estudiante', 'diente', 'accesorio'],
+                'whatsapp_message': 'Hola, soy estudiante y necesito ayuda para elegir mi kit.',
+            },
+        }
+        return persona_map.get(persona, persona_map['clinica'])
+
+    def _build_product_search_blob(self, product):
+        """Build normalized text blob for quick keyword match."""
+        parts = [product.name or '', product.default_code or '']
+        if 'description_sale' in product._fields and product.description_sale:
+            parts.append(html2plaintext(product.description_sale))
+        if 'website_description' in product._fields and product.website_description:
+            parts.append(html2plaintext(product.website_description))
+        if 'public_categ_ids' in product._fields:
+            parts.extend(product.public_categ_ids.mapped('name'))
+        return self._normalize_search_text(' '.join(filter(None, parts)))
+
+    def _build_persona_dashboard_products(self, persona):
+        """Return persona-focused offer/recommended products for account dashboard."""
+        config = self._persona_dashboard_config(persona)
+        keywords = [self._normalize_search_text(k) for k in config.get('product_keywords', []) if k]
+
+        pricelist = request.website.get_current_pricelist()
+        products_model = request.env['product.template'].sudo().with_context(
+            website_id=request.website.id,
+            pricelist=pricelist.id,
+            partner=request.env.user.partner_id.id,
+            lang=request.context.get('lang')
+        )
+        candidates = products_model.search(
+            [('website_published', '=', True), ('sale_ok', '=', True)],
+            order='website_sequence asc, id desc',
+            limit=90
+        )
+        ordered_products = list(candidates)
+        if keywords:
+            matched = []
+            unmatched = []
+            for prod in ordered_products:
+                blob = self._build_product_search_blob(prod)
+                if blob and any(key in blob for key in keywords):
+                    matched.append(prod)
+                else:
+                    unmatched.append(prod)
+            if matched:
+                ordered_products = matched + unmatched
+
+        offer_ids = []
+        for prod in ordered_products:
+            compare_price = float(prod.compare_list_price or 0.0) if 'compare_list_price' in prod._fields else 0.0
+            list_price = float(prod.list_price or 0.0)
+            if compare_price > list_price:
+                offer_ids.append(prod.id)
+            if len(offer_ids) >= 4:
+                break
+        if not offer_ids:
+            offer_ids = [prod.id for prod in ordered_products[:4]]
+
+        offer_set = set(offer_ids)
+        recommended_ids = [prod.id for prod in ordered_products if prod.id not in offer_set][:6]
+
+        return {
+            'offers': products_model.browse(offer_ids),
+            'recommended': products_model.browse(recommended_ids),
+            'pricelist': pricelist,
+            'currency': pricelist.currency_id,
+        }
 
     def _order_domain_for_partner(self, partner):
         """Orders linked to the customer and child contacts."""
@@ -773,6 +928,9 @@ class BaderWebsite(Website):
 
         partner = self._current_customer_partner()
         user = request.env.user
+        persona, _source = self._resolve_home_persona(kw)
+        persona_config = self._persona_dashboard_config(persona)
+        persona_products = self._build_persona_dashboard_products(persona)
         orders = request.env['sale.order']
         order_count = 0
         wishlist_count = 0
@@ -801,6 +959,10 @@ class BaderWebsite(Website):
 
         member_since = user.create_date.strftime('%d/%m/%Y') if user.create_date else ''
         profile_initial = ((partner.name or 'U').strip()[:1] or 'U').upper()
+        whatsapp_url = 'https://wa.me/5491124522097?text=%s' % quote(
+            persona_config.get('whatsapp_message', 'Hola, necesito ayuda.'),
+            safe=''
+        )
 
         return request.render('bader_website.bader_mi_perfil', {
             'partner': partner,
@@ -812,6 +974,23 @@ class BaderWebsite(Website):
             'member_since': member_since,
             'profile_initial': profile_initial,
             'load_error': load_error,
+            'dashboard_persona': persona,
+            'dashboard_persona_label': persona_config.get('label'),
+            'dashboard_persona_badge_icon': persona_config.get('badge_icon'),
+            'dashboard_persona_subtitle': persona_config.get('subtitle'),
+            'dashboard_primary_href': persona_config.get('primary_href'),
+            'dashboard_primary_label': persona_config.get('primary_label'),
+            'dashboard_whatsapp_url': whatsapp_url,
+            'dashboard_chat_href': '/?persona=%s#baderChatWidget' % persona,
+            'dashboard_resource_title': persona_config.get('resource_title'),
+            'dashboard_resource_intro': persona_config.get('resource_intro'),
+            'dashboard_resource_entries': persona_config.get('resource_entries', []),
+            'dashboard_tips_title': persona_config.get('tips_title'),
+            'dashboard_tips_intro': persona_config.get('tips_intro'),
+            'dashboard_tips_entries': persona_config.get('tips_entries', []),
+            'dashboard_offer_products': persona_products.get('offers'),
+            'dashboard_recommended_products': persona_products.get('recommended'),
+            'dashboard_currency': persona_products.get('currency'),
         })
 
     @http.route('/mis-pedidos', type='http', auth='public', website=True, sitemap=False)

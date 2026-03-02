@@ -116,6 +116,144 @@
                             </p>
                         </div>
 
+                        <div class="bader-page-card bader-account-persona-hero">
+                            <div class="bader-account-persona-hero__head">
+                                <span class="bader-account-persona-hero__badge">
+                                    <i t-attf-class="fa #{dashboard_persona_badge_icon or 'fa-user'}"/>
+                                    Dashboard <t t-esc="dashboard_persona_label or 'Personalizado'"/>
+                                </span>
+                                <h3 class="bader-page-card__title">
+                                    Experiencia personalizada para <t t-esc="dashboard_persona_label or 'tu perfil'"/>
+                                </h3>
+                                <p class="bader-page-card__text" t-esc="dashboard_persona_subtitle or ''"/>
+                            </div>
+                            <div class="bader-account-persona-hero__actions">
+                                <a t-att-href="dashboard_primary_href or '/productos'" class="btn-bader">
+                                    <i class="fa fa-shopping-bag"/>
+                                    <t t-esc="dashboard_primary_label or 'Ver catalogo'"/>
+                                </a>
+                                <a href="/mis-pedidos" class="btn btn-outline-secondary">
+                                    <i class="fa fa-list-alt"/> Mis pedidos
+                                </a>
+                                <a t-att-href="dashboard_chat_href or '/'" class="btn btn-outline-secondary">
+                                    <i class="fa fa-comments-o"/> Nancy AI
+                                </a>
+                                <a t-att-href="dashboard_whatsapp_url or 'https://wa.me/5491124522097'"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="btn btn-outline-secondary">
+                                    <i class="fa fa-whatsapp"/> WhatsApp
+                                </a>
+                            </div>
+                        </div>
+
+                        <t t-if="dashboard_offer_products">
+                            <div class="bader-page-card bader-account-persona-products">
+                                <div class="bader-account-card-head">
+                                    <h3 class="bader-page-card__title">Ofertas recomendadas</h3>
+                                    <a t-att-href="dashboard_primary_href or '/productos'" class="btn-bader-sm">
+                                        Ver todas
+                                    </a>
+                                </div>
+                                <div class="bader-account-persona-products__grid">
+                                    <article class="bader-account-persona-product"
+                                             t-foreach="dashboard_offer_products"
+                                             t-as="prod">
+                                        <a t-att-href="'/producto/%s' % prod.id" class="bader-account-persona-product__img">
+                                            <img t-att-src="'/web/image/product.template/%s/image_512' % prod.id"
+                                                 t-att-alt="prod.name"/>
+                                        </a>
+                                        <div class="bader-account-persona-product__meta">
+                                            <h4 t-esc="prod.name"/>
+                                            <p t-if="prod.public_categ_ids">
+                                                <t t-esc="prod.public_categ_ids[0].name"/>
+                                            </p>
+                                        </div>
+                                        <div class="bader-account-persona-product__price">
+                                            <span class="is-compare"
+                                                  t-if="'compare_list_price' in prod._fields and prod.compare_list_price and prod.compare_list_price > prod.list_price"
+                                                  t-field="prod.compare_list_price"
+                                                  t-options='{"widget": "monetary", "display_currency": dashboard_currency}'/>
+                                            <strong t-field="prod.list_price"
+                                                    t-options='{"widget": "monetary", "display_currency": dashboard_currency}'/>
+                                        </div>
+                                        <div class="bader-account-persona-product__actions">
+                                            <a t-att-href="'/producto/%s' % prod.id" class="btn btn-outline-secondary btn-sm">
+                                                Ver
+                                            </a>
+                                            <a t-att-href="'/shop/cart/update?product_id=%s&amp;add_qty=1' % prod.id"
+                                               class="btn-bader-sm">
+                                                Agregar
+                                            </a>
+                                        </div>
+                                    </article>
+                                </div>
+                            </div>
+                        </t>
+
+                        <t t-if="dashboard_recommended_products">
+                            <div class="bader-page-card bader-account-persona-products bader-account-persona-products--compact">
+                                <div class="bader-account-card-head">
+                                    <h3 class="bader-page-card__title">Productos sugeridos</h3>
+                                    <a href="/productos" class="btn btn-outline-secondary btn-sm">Catalogo completo</a>
+                                </div>
+                                <div class="bader-account-persona-products__grid bader-account-persona-products__grid--compact">
+                                    <article class="bader-account-persona-product bader-account-persona-product--compact"
+                                             t-foreach="dashboard_recommended_products"
+                                             t-as="prod">
+                                        <a t-att-href="'/producto/%s' % prod.id" class="bader-account-persona-product__img">
+                                            <img t-att-src="'/web/image/product.template/%s/image_512' % prod.id"
+                                                 t-att-alt="prod.name"/>
+                                        </a>
+                                        <div class="bader-account-persona-product__meta">
+                                            <h4 t-esc="prod.name"/>
+                                        </div>
+                                        <div class="bader-account-persona-product__price">
+                                            <strong t-field="prod.list_price"
+                                                    t-options='{"widget": "monetary", "display_currency": dashboard_currency}'/>
+                                        </div>
+                                    </article>
+                                </div>
+                            </div>
+                        </t>
+
+                        <div class="bader-account-persona-insights">
+                            <div class="bader-page-card bader-account-persona-insights__card">
+                                <h3 class="bader-page-card__title" t-esc="dashboard_resource_title or 'Recursos'"/>
+                                <p class="bader-page-card__text" t-esc="dashboard_resource_intro or ''"/>
+                                <div class="bader-account-persona-list">
+                                    <article class="bader-account-persona-list__item"
+                                             t-foreach="dashboard_resource_entries or []"
+                                             t-as="resource">
+                                        <span class="bader-account-persona-list__icon">
+                                            <i t-attf-class="fa #{resource.get('icon', 'fa-file-text-o')}"/>
+                                        </span>
+                                        <div>
+                                            <strong t-esc="resource.get('title', '')"/>
+                                            <p t-esc="resource.get('description', '')"/>
+                                        </div>
+                                    </article>
+                                </div>
+                            </div>
+                            <div class="bader-page-card bader-account-persona-insights__card">
+                                <h3 class="bader-page-card__title" t-esc="dashboard_tips_title or 'Tips'"/>
+                                <p class="bader-page-card__text" t-esc="dashboard_tips_intro or ''"/>
+                                <div class="bader-account-persona-list">
+                                    <article class="bader-account-persona-list__item"
+                                             t-foreach="dashboard_tips_entries or []"
+                                             t-as="tip">
+                                        <span class="bader-account-persona-list__icon">
+                                            <i t-attf-class="fa #{tip.get('icon', 'fa-lightbulb-o')}"/>
+                                        </span>
+                                        <div>
+                                            <strong t-esc="tip.get('title', '')"/>
+                                            <p t-esc="tip.get('description', '')"/>
+                                        </div>
+                                    </article>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="bader-account-grid">
                             <aside class="bader-page-card bader-account-summary">
                                 <div class="bader-account-avatar" t-esc="profile_initial"/>

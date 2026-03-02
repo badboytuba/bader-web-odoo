@@ -887,6 +887,234 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
     margin-top: 0.8rem;
 }
 
+.bader-account-persona-hero {
+    margin-bottom: 1rem;
+
+    &__head {
+        margin-bottom: 0.9rem;
+    }
+
+    &__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-bottom: 0.45rem;
+        padding: 0.3rem 0.72rem;
+        border-radius: $radius-pill;
+        border: 1px solid rgba($bader-green, 0.28);
+        background: rgba($bader-green, 0.1);
+        color: $bader-dark;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+    }
+
+    &__actions {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.55rem;
+
+        a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            min-height: 38px;
+            text-align: center;
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 0 0.68rem;
+        }
+
+        @media (max-width: 992px) {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        @include mobile {
+            grid-template-columns: 1fr;
+        }
+    }
+}
+
+.bader-account-persona-products {
+    margin-bottom: 1rem;
+}
+
+.bader-account-persona-products__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.72rem;
+
+    @media (max-width: 1200px) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @include mobile {
+        grid-template-columns: 1fr;
+    }
+
+    &--compact {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+
+        @media (max-width: 1200px) {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        @media (max-width: 992px) {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        @include mobile {
+            grid-template-columns: 1fr;
+        }
+    }
+}
+
+.bader-account-persona-product {
+    border: 1px solid $gray-200;
+    border-radius: $radius-md;
+    background: $white;
+    padding: 0.56rem;
+    display: grid;
+    gap: 0.5rem;
+    transition: border-color $transition-fast, box-shadow $transition-fast, transform $transition-fast;
+
+    &:hover {
+        border-color: rgba($bader-green, 0.48);
+        box-shadow: 0 8px 18px rgba(0, 56, 65, 0.08);
+        transform: translateY(-2px);
+    }
+
+    &--compact {
+        .bader-account-persona-product__img {
+            height: 120px;
+        }
+    }
+}
+
+.bader-account-persona-product__img {
+    width: 100%;
+    height: 138px;
+    border-radius: $radius-sm;
+    background: $gray-50;
+    border: 1px solid $gray-100;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+}
+
+.bader-account-persona-product__meta {
+    h4 {
+        margin: 0;
+        font-size: 0.84rem;
+        font-weight: 700;
+        line-height: 1.35;
+        color: $bader-dark;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+
+    p {
+        margin: 0.2rem 0 0;
+        color: $gray-500;
+        font-size: 0.74rem;
+    }
+}
+
+.bader-account-persona-product__price {
+    display: grid;
+    gap: 0.06rem;
+
+    .is-compare {
+        color: $gray-400;
+        font-size: 0.74rem;
+        text-decoration: line-through;
+    }
+
+    strong {
+        color: $bader-dark;
+        font-size: 1rem;
+        font-family: $font-display;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+    }
+}
+
+.bader-account-persona-product__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.42rem;
+}
+
+.bader-account-persona-insights {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem;
+    margin-bottom: 1rem;
+
+    @media (max-width: 992px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.bader-account-persona-insights__card {
+    .bader-page-card__title {
+        margin-bottom: 0.2rem;
+    }
+}
+
+.bader-account-persona-list {
+    margin-top: 0.75rem;
+    display: grid;
+    gap: 0.52rem;
+}
+
+.bader-account-persona-list__item {
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    gap: 0.54rem;
+    align-items: flex-start;
+    border: 1px solid $gray-100;
+    background: $gray-50;
+    border-radius: $radius-md;
+    padding: 0.48rem 0.52rem;
+
+    strong {
+        display: block;
+        color: $bader-dark;
+        font-size: 0.84rem;
+    }
+
+    p {
+        margin: 0.14rem 0 0;
+        color: $gray-600;
+        font-size: 0.78rem;
+        line-height: 1.4;
+    }
+}
+
+.bader-account-persona-list__icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba($bader-green, 0.14);
+    color: $bader-dark;
+    font-size: 0.9rem;
+}
+
 .bader-account-quick-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
