@@ -43,7 +43,7 @@ Atualizacao 2026-02-27:
 - Itens pendentes:
   - [x] Menu mobile estilo app (com blocos por nicho e links de conta).
   - [x] Drawer de carrinho lateral.
-  - [~] Mesma ordem e comportamento das acoes mobile (falta refinamento final do fechamento/animacoes).
+  - [x] Mesma ordem e comportamento das acoes mobile (fechamento/animacoes refinados no menu e cart drawer).
 
 ## Prioridade Media
 

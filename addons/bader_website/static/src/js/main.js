@@ -173,6 +173,26 @@ odoo.define('bader_website.main', function (require) {
             var toggler = document.querySelector('header#top .navbar-toggler');
             if (!collapse || !toggler) return;
 
+            function setNicheOpen(card, shouldOpen) {
+                if (!card) return;
+                var body = card.querySelector('[data-bader-niche-body]');
+                var toggle = card.querySelector('[data-bader-niche-toggle]');
+                card.classList.toggle('is-open', !!shouldOpen);
+                if (toggle) toggle.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+                if (!body) return;
+                if (shouldOpen) {
+                    body.style.maxHeight = body.scrollHeight + 'px';
+                } else {
+                    body.style.maxHeight = '0px';
+                }
+            }
+
+            function closeAllNiches() {
+                collapse.querySelectorAll('.bader-mobile-niche').forEach(function (card) {
+                    setNicheOpen(card, false);
+                });
+            }
+
             function setDrawerBodyState() {
                 var shouldLock = window.innerWidth < 992 && collapse.classList.contains('show');
                 document.body.classList.toggle('bader-mobile-menu-open', shouldLock);
@@ -184,11 +204,15 @@ odoo.define('bader_website.main', function (require) {
                 collapse.style.height = '';
                 toggler.classList.add('collapsed');
                 toggler.setAttribute('aria-expanded', 'false');
+                closeAllNiches();
                 setDrawerBodyState();
             }
 
             collapse.addEventListener('shown.bs.collapse', setDrawerBodyState);
-            collapse.addEventListener('hidden.bs.collapse', setDrawerBodyState);
+            collapse.addEventListener('hidden.bs.collapse', function () {
+                closeAllNiches();
+                setDrawerBodyState();
+            });
             window.addEventListener('resize', setDrawerBodyState);
             setDrawerBodyState();
 
@@ -208,12 +232,17 @@ odoo.define('bader_website.main', function (require) {
 
             var nicheToggles = collapse.querySelectorAll('[data-bader-niche-toggle]');
             nicheToggles.forEach(function (btn) {
+                var key = btn.getAttribute('data-bader-niche-toggle');
+                var card = collapse.querySelector('.bader-mobile-niche[data-bader-niche="' + key + '"]');
+                if (card) setNicheOpen(card, card.classList.contains('is-open'));
+
                 btn.addEventListener('click', function () {
-                    var key = btn.getAttribute('data-bader-niche-toggle');
-                    collapse.querySelectorAll('.bader-mobile-niche').forEach(function (card) {
-                        var sameCard = card.getAttribute('data-bader-niche') === key;
-                        card.classList.toggle('is-open', sameCard ? !card.classList.contains('is-open') : false);
-                    });
+                    var selectedKey = btn.getAttribute('data-bader-niche-toggle');
+                    var selectedCard = collapse.querySelector('.bader-mobile-niche[data-bader-niche="' + selectedKey + '"]');
+                    var shouldOpen = selectedCard ? !selectedCard.classList.contains('is-open') : false;
+
+                    closeAllNiches();
+                    if (shouldOpen) setNicheOpen(selectedCard, true);
                 });
             });
         })();
@@ -227,8 +256,12 @@ odoo.define('bader_website.main', function (require) {
             var cartTotal = cartDrawer.querySelector('[data-bader-cart-total]');
             var cartCountEls = cartDrawer.querySelectorAll('[data-bader-cart-count]');
             var clearBtn = cartDrawer.querySelector('[data-bader-cart-clear]');
+            var closeBtn = cartDrawer.querySelector('.bader-cart-drawer__close');
             var currentLines = [];
             var isLoading = false;
+            var closeDelayMs = 280;
+            var closeTimer = null;
+            var lastFocusedElement = null;
 
             function parseIntSafe(value, fallback) {
                 var parsed = parseInt(String(value || '').replace(/[^\d-]/g, ''), 10);
@@ -260,9 +293,32 @@ odoo.define('bader_website.main', function (require) {
                 }
             }
 
+            function clearCloseTimer() {
+                if (!closeTimer) return;
+                clearTimeout(closeTimer);
+                closeTimer = null;
+            }
+
+            function finalizeClose() {
+                clearCloseTimer();
+                cartDrawer.classList.remove('is-open', 'is-closing');
+                cartDrawer.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('bader-cart-drawer-open');
+
+                if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+                    lastFocusedElement.focus();
+                }
+                lastFocusedElement = null;
+            }
+
             function renderLoading() {
                 if (!cartBody) return;
                 cartBody.innerHTML = '<div class="bader-cart-drawer__loading">Cargando carrito...</div>';
+            }
+
+            function setClearButtonState(disabled) {
+                if (!clearBtn) return;
+                clearBtn.disabled = !!disabled;
             }
 
             function renderState(state) {
@@ -361,6 +417,7 @@ odoo.define('bader_website.main', function (require) {
             function loadCartState() {
                 if (isLoading) return Promise.resolve();
                 isLoading = true;
+                setClearButtonState(true);
                 renderLoading();
 
                 return fetch('/shop/cart?type=popover&_=' + Date.now(), {
@@ -383,6 +440,7 @@ odoo.define('bader_website.main', function (require) {
                     })
                     .finally(function () {
                         isLoading = false;
+                        setClearButtonState(false);
                     });
             }
 
@@ -417,16 +475,39 @@ odoo.define('bader_website.main', function (require) {
             }
 
             function openCartDrawer() {
+                clearCloseTimer();
+                lastFocusedElement = document.activeElement;
+
+                var megaPanel = document.getElementById('baderMegaMenu');
+                if (megaPanel) megaPanel.classList.remove('bader-mega--open');
+
+                var mobileCollapse = document.getElementById('top_menu_collapse');
+                if (mobileCollapse && mobileCollapse.classList.contains('show')) {
+                    mobileCollapse.classList.remove('show');
+                    mobileCollapse.style.height = '';
+                    document.body.classList.remove('bader-mobile-menu-open');
+                    var mobileToggler = document.querySelector('header#top .navbar-toggler');
+                    if (mobileToggler) {
+                        mobileToggler.classList.add('collapsed');
+                        mobileToggler.setAttribute('aria-expanded', 'false');
+                    }
+                }
+
+                cartDrawer.classList.remove('is-closing');
                 cartDrawer.classList.add('is-open');
                 cartDrawer.setAttribute('aria-hidden', 'false');
                 document.body.classList.add('bader-cart-drawer-open');
+                if (closeBtn) closeBtn.focus();
                 loadCartState();
             }
 
             function closeCartDrawer() {
+                if (!cartDrawer.classList.contains('is-open') && !cartDrawer.classList.contains('is-closing')) return;
+                clearCloseTimer();
                 cartDrawer.classList.remove('is-open');
+                cartDrawer.classList.add('is-closing');
                 cartDrawer.setAttribute('aria-hidden', 'true');
-                document.body.classList.remove('bader-cart-drawer-open');
+                closeTimer = setTimeout(finalizeClose, closeDelayMs);
             }
 
             function normalizeHref(href) {
@@ -477,9 +558,35 @@ odoo.define('bader_website.main', function (require) {
             });
 
             document.addEventListener('keydown', function (ev) {
-                if (ev.key === 'Escape' && cartDrawer.classList.contains('is-open')) {
+                var isOpen = cartDrawer.classList.contains('is-open');
+                if (ev.key === 'Escape' && (isOpen || cartDrawer.classList.contains('is-closing'))) {
                     closeCartDrawer();
+                    return;
                 }
+                if (!isOpen || ev.key !== 'Tab') return;
+
+                var focusable = cartDrawer.querySelectorAll(
+                    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+                );
+                if (!focusable.length) return;
+
+                var first = focusable[0];
+                var last = focusable[focusable.length - 1];
+                var active = document.activeElement;
+
+                if (ev.shiftKey && active === first) {
+                    ev.preventDefault();
+                    last.focus();
+                } else if (!ev.shiftKey && active === last) {
+                    ev.preventDefault();
+                    first.focus();
+                }
+            });
+
+            cartDrawer.addEventListener('click', function (ev) {
+                var link = ev.target.closest('a[href]');
+                if (!link || !cartDrawer.contains(link)) return;
+                closeCartDrawer();
             });
 
             if (cartBody) {
@@ -510,6 +617,7 @@ odoo.define('bader_website.main', function (require) {
                 clearBtn.addEventListener('click', function () {
                     if (!currentLines.length || isLoading) return;
                     isLoading = true;
+                    setClearButtonState(true);
                     renderLoading();
                     var linesToClear = currentLines.slice();
 

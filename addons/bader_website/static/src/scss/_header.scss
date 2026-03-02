@@ -689,12 +689,17 @@ html.o_connected_user #wrapwrap>header#top {
     }
 
     .bader-mobile-niche__body {
-        display: none;
-        padding: 4px 0 6px 40px;
+        display: block;
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: max-height 0.26s ease, opacity 0.2s ease, padding 0.2s ease;
+        padding: 0 0 0 40px;
     }
 
     .bader-mobile-niche.is-open .bader-mobile-niche__body {
-        display: block;
+        opacity: 1;
+        padding: 4px 0 6px 40px;
     }
 
     .bader-mobile-niche__body a {

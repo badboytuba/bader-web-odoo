@@ -396,6 +396,18 @@ body.bader-cart-drawer-open {
     }
 }
 
+.bader-cart-drawer.is-closing {
+    pointer-events: none;
+
+    .bader-cart-drawer__backdrop {
+        opacity: 0;
+    }
+
+    .bader-cart-drawer__panel {
+        transform: translateX(105%);
+    }
+}
+
 .bader-cart-drawer__header {
     display: flex;
     align-items: center;
@@ -616,6 +628,14 @@ body.bader-cart-drawer-open {
         color: #b91c1c;
         border-color: #fecaca;
         background: #fef2f2;
+    }
+
+    &:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        color: $gray-400;
+        border-color: $bader-card-border;
+        background: $gray-50;
     }
 }
 
