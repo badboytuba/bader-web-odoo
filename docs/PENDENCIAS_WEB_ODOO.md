@@ -76,9 +76,14 @@ Atualizacao 2026-02-27:
 ## Prioridade Baixa
 
 8. QA visual e refinamentos finais
-- Revisao de detalhes de tipografia/espacamento/animacao.
-- Revisao de textos (acentuacao e consistencia de copy).
-- Revisao de microinteracoes mobile.
+- [x] Revisao de detalhes de tipografia/espacamento/animacao.
+- [x] Revisao de textos (acentuacao e consistencia de copy).
+- [x] Revisao de microinteracoes mobile.
+
+Atualizacao 2026-03-02:
+- [x] Home hero refinada para paridade visual com app (decoracao de fundo, card flutuante, indicador inferior de persona).
+- [x] Links legados `/shop` removidos das paginas de marketing/nicho (padrao `/productos`).
+- [x] Menu mobile reforcado para evitar duplicidade de navegacao canônica no drawer.
 
 ## Ordem de execucao recomendada
 

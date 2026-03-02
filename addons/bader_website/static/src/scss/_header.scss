@@ -577,7 +577,9 @@ html.o_connected_user #wrapwrap>header#top {
             transform: translateX(0);
         }
 
-        #top_menu_collapse>#top_menu {
+        #top_menu_collapse #top_menu,
+        #top_menu_collapse .navbar-nav#top_menu,
+        #top_menu_collapse .nav#top_menu {
             display: none !important;
         }
     }
