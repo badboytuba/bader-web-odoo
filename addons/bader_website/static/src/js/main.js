@@ -628,6 +628,10 @@ odoo.define('bader_website.main', function (require) {
                         });
                 });
             }
+
+            document.addEventListener('bader:cart-open', function () {
+                openCartDrawer();
+            });
         })();
 
         // ---- 2. Fade-in on Scroll (IntersectionObserver) ----
@@ -1033,6 +1037,65 @@ odoo.define('bader_website.main', function (require) {
             var addBtn = document.querySelector('#product_detail #add_to_cart, #product_detail .a-submit');
             if (!addBtn) return;
 
+            function parseIntSafe(raw, fallback) {
+                var parsed = parseInt(String(raw || '').replace(/[^\d-]/g, ''), 10);
+                return isNaN(parsed) ? fallback : parsed;
+            }
+
+            function renderHeaderCartQty(totalQty) {
+                var qty = Math.max(0, parseIntSafe(totalQty, 0));
+                var badgeText = qty > 99 ? '99+' : String(qty);
+                document.querySelectorAll('.my_cart_quantity, .o_wsale_my_cart .my_cart_quantity').forEach(function (badge) {
+                    badge.textContent = badgeText;
+                    badge.classList.remove('d-none');
+                });
+                try {
+                    if (window.sessionStorage) {
+                        window.sessionStorage.setItem('website_sale_cart_quantity', String(qty));
+                    }
+                } catch (err) {
+                    // Ignore storage errors.
+                }
+            }
+
+            function addToCartJson(form) {
+                var productInput = form.querySelector('input[name="product_id"]');
+                var qtyInput = form.querySelector('input[name="add_qty"], .css_quantity input');
+                var productId = parseIntSafe(productInput ? productInput.value : '', 0);
+                var addQty = parseIntSafe(qtyInput ? qtyInput.value : '1', 1);
+                if (!productId) {
+                    return Promise.reject(new Error('missing product id'));
+                }
+                if (addQty <= 0) addQty = 1;
+
+                return fetch('/shop/cart/update_json', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'call',
+                        params: {
+                            product_id: productId,
+                            add_qty: addQty,
+                        },
+                    }),
+                }).then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('invalid add-to-cart response');
+                    }
+                    return response.json();
+                }).then(function (payload) {
+                    var data = payload && payload.result ? payload.result : payload || {};
+                    if (typeof data.cart_quantity !== 'undefined') {
+                        renderHeaderCartQty(data.cart_quantity);
+                    }
+                    document.dispatchEvent(new Event('bader:cart-open'));
+                });
+            }
+
             addBtn.addEventListener('click', function (ev) {
                 var btn = this;
                 var originalText = btn.innerHTML;
@@ -1061,9 +1124,11 @@ odoo.define('bader_website.main', function (require) {
 
                 if (shouldForceSubmit && !btn.getAttribute('data-bader-force-submit')) {
                     btn.setAttribute('data-bader-force-submit', '1');
-                    setTimeout(function () {
+                    addToCartJson(form).catch(function () {
                         form.submit();
-                    }, 20);
+                    }).finally(function () {
+                        btn.removeAttribute('data-bader-force-submit');
+                    });
                 }
             });
         })();
