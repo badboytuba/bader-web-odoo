@@ -1,167 +1,225 @@
 // ============================================
-// Bader Homepage — Testimonials Carousel (dark accent)
+// Bader Homepage - Social Proof (Testimonials)
 // ============================================
+// Parity with Bader-AR SocialProof component.
 
 .bader-testimonials {
     background: $bader-dark !important;
     color: $white !important;
-    padding: $space-4xl 0;
+    padding: 80px 0 92px;
+    overflow: hidden;
+
+    @include mobile {
+        padding: 56px 0 64px;
+    }
 
     &__container {
         @include section-container;
     }
 
+    &__stats {
+        margin-bottom: 64px;
+
+        @include mobile {
+            margin-bottom: 44px;
+        }
+    }
+
     &__heading {
         text-align: center;
-        margin-bottom: $space-3xl;
+        margin-bottom: 48px;
+
+        @include mobile {
+            margin-bottom: 32px;
+        }
+    }
+
+    .bader-label {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 14px;
+        border-radius: $radius-pill;
+        background: rgba($bader-green, 0.2);
+        border: 1px solid rgba($bader-green, 0.35);
+        color: $bader-green;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+    }
+
+    .bader-section__title {
+        color: $white;
+        margin-bottom: 12px;
+    }
+
+    .bader-section__subtitle {
+        color: rgba($white, 0.72);
+        max-width: 680px;
+        margin: 0 auto;
     }
 
     &__carousel {
-        max-width: 800px;
+        max-width: 930px;
         margin: 0 auto;
         position: relative;
     }
 
     &__card {
-        background: $white;
-        border: 1px solid $gray-200;
-        border-radius: $radius-xl;
-        padding: $space-2xl $space-xl;
-        margin: 0 auto;
-        max-width: 700px;
-        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+        background: rgba($white, 0.1);
+        border: 1px solid rgba($white, 0.2);
+        border-radius: 22px;
+        padding: 34px 36px;
+        min-height: 350px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 20px 44px rgba(0, 0, 0, 0.14);
+
+        @include tablet-down {
+            min-height: 0;
+        }
 
         @include mobile {
-            padding: $space-xl $space-lg;
+            padding: 24px 22px;
+            border-radius: 18px;
         }
     }
 
     &__quote-icon {
-        color: $bader-green;
-        font-size: 2.5rem;
-        margin-bottom: $space-md;
-        opacity: 0.6;
+        color: rgba($bader-green, 0.55);
+        font-size: 46px;
+        line-height: 1;
+        margin-bottom: 16px;
     }
 
     &__stars {
         display: flex;
-        gap: 4px;
-        margin-bottom: $space-md;
+        gap: 5px;
+        margin-bottom: 16px;
 
         i {
             color: $stars-color;
-            font-size: 1rem;
+            font-size: 17px;
         }
     }
 
     &__text {
-        color: rgba($white, 0.75);
-        font-size: 1.05rem;
-        line-height: 1.8;
-        font-style: italic;
-        margin-bottom: $space-xl;
+        color: rgba($white, 0.9);
+        font-size: 1.14rem;
+        line-height: 1.72;
+        margin-bottom: 30px;
 
         @include mobile {
-            font-size: 0.95rem;
+            font-size: 1rem;
+            line-height: 1.62;
+            margin-bottom: 22px;
         }
     }
 
     &__author {
         display: flex;
         align-items: center;
-        gap: $space-md;
+        gap: 14px;
+    }
 
-        img {
-            width: 48px;
-            height: 48px;
-            border-radius: $radius-full;
-            object-fit: cover;
-            border: 2px solid $gray-200;
-        }
+    &__avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: $radius-full;
+        background: rgba($bader-green, 0.28);
+        border: 2px solid rgba($bader-green, 0.52);
+        color: $white;
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
     }
 
     &__author-name {
         color: $white;
+        font-size: 1rem;
         font-weight: 700;
-        font-size: 0.95rem;
+        margin-bottom: 1px;
     }
 
     &__author-role {
-        color: rgba($white, 0.7);
-        font-size: 0.82rem;
+        color: rgba($white, 0.72);
+        font-size: 0.88rem;
     }
 
     &__author-clinic {
         color: $bader-green;
-        font-size: 0.82rem;
+        font-size: 0.88rem;
         font-weight: 500;
     }
 
-    // Carousel navigation dots
     &__dots {
         display: flex;
         justify-content: center;
         gap: 8px;
-        margin-top: $space-xl;
+        margin-top: 26px;
     }
 
     &__dot {
         width: 8px;
         height: 8px;
+        border: 0;
         border-radius: $radius-full;
-        background: $gray-200;
-        border: none;
+        background: rgba($white, 0.3);
         cursor: pointer;
-        transition: all $transition-base;
+        transition: all $transition-fast;
         padding: 0;
 
         &.active,
         &:hover {
+            width: 32px;
             background: $bader-green;
-            width: 24px;
-            border-radius: 4px;
+            border-radius: 999px;
         }
     }
 
-    // Arrow buttons
     &__arrow {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        width: 44px;
-        height: 44px;
+        width: 46px;
+        height: 46px;
         border-radius: $radius-full;
-        background: $white;
-        border: 1px solid $gray-200;
-        color: $bader-dark;
-        display: flex;
+        background: rgba($white, 0.1);
+        border: 1px solid rgba($white, 0.2);
+        color: $white;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
         transition: all $transition-base;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        z-index: 3;
 
         &:hover {
-            background: $bader-green;
-            border-color: $bader-green;
+            background: rgba($white, 0.2);
+            border-color: rgba($white, 0.35);
             color: $white;
         }
 
         &--prev {
-            left: -60px;
+            left: -14px;
         }
 
         &--next {
-            right: -60px;
+            right: -14px;
         }
 
         @include tablet-down {
             &--prev {
-                left: -10px;
+                left: -6px;
             }
 
             &--next {
-                right: -10px;
+                right: -6px;
             }
         }
 

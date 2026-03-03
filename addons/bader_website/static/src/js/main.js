@@ -695,7 +695,7 @@ odoo.define('bader_website.main', function (require) {
         });
 
         if (totalSlides > 1) {
-            setInterval(function () { showSlide(currentSlide + 1); }, 6000);
+            setInterval(function () { showSlide(currentSlide + 1); }, 5000);
         }
 
         // ---- 4. Header Scroll Effect ----
@@ -1246,6 +1246,116 @@ odoo.define('bader_website.main', function (require) {
             if (document.querySelector('#product_detail')) return;
 
             // ── 10a. Hero Section + Segment Cards ── (DISABLED per user request)
+            // Flatten Odoo table mosaic into a uniform grid to avoid oversized cards caused by rowspan/colspan.
+            (function normalizeProductGridLayout() {
+                var normalizeQueued = false;
+
+                function copyUsefulAttributes(fromEl, toEl) {
+                    if (!fromEl || !toEl) return;
+                    Array.prototype.forEach.call(fromEl.attributes, function (attr) {
+                        var name = attr.name || '';
+                        if (name.indexOf('data-') === 0 || name === 'id') {
+                            toEl.setAttribute(name, attr.value);
+                        }
+                    });
+                }
+
+                function normalizeOnce(tableWrapper) {
+                    if (!tableWrapper || tableWrapper.classList.contains('bader-grid-normalized')) return false;
+
+                    var sourceTable = tableWrapper.querySelector('table');
+                    if (!sourceTable) return false;
+
+                    var sourceCells = sourceTable.querySelectorAll('td.oe_product');
+                    if (!sourceCells.length) return false;
+
+                    var flatGrid = document.createElement('div');
+                    flatGrid.className = 'bader-products-grid';
+
+                    sourceCells.forEach(function (cell) {
+                        var productWrapper = cell.querySelector('.o_wsale_product_grid_wrapper');
+                        var productCard = cell.querySelector('.oe_product_cart');
+                        if (!productWrapper && !productCard) return;
+
+                        var item = document.createElement('article');
+                        item.className = 'bader-products-grid__item oe_product';
+                        copyUsefulAttributes(cell, item);
+
+                        if (productWrapper) {
+                            var wrapperClass = (productWrapper.getAttribute('class') || '')
+                                .replace(/\bo_wsale_product_grid_wrapper_\d+_\d+\b/g, ' ')
+                                .replace(/\s+/g, ' ')
+                                .trim();
+                            productWrapper.setAttribute('class', (wrapperClass + ' o_wsale_product_grid_wrapper_1_1').trim());
+                            item.appendChild(productWrapper);
+                        } else {
+                            item.appendChild(productCard);
+                        }
+
+                        flatGrid.appendChild(item);
+                    });
+
+                    if (!flatGrid.children.length) return false;
+
+                    sourceTable.remove();
+                    tableWrapper.appendChild(flatGrid);
+                    tableWrapper.classList.add('bader-grid-normalized');
+                    return true;
+                }
+
+                function runNormalize(maxAttempts) {
+                    var gridArea = document.getElementById('products_grid');
+                    if (!gridArea) return;
+
+                    var normalized = false;
+                    var wrappers = gridArea.querySelectorAll('.o_wsale_products_grid_table_wrapper:not(.bader-grid-normalized)');
+                    wrappers.forEach(function (tableWrapper) {
+                        if (normalizeOnce(tableWrapper)) {
+                            normalized = true;
+                        }
+                    });
+                    if (normalized) return;
+
+                    var attempts = typeof maxAttempts === 'number' ? maxAttempts : 0;
+                    if (attempts > 0) {
+                        window.setTimeout(function () {
+                            runNormalize(attempts - 1);
+                        }, 80);
+                    }
+                }
+
+                function queueNormalize(maxAttempts) {
+                    if (normalizeQueued) return;
+                    normalizeQueued = true;
+                    window.requestAnimationFrame(function () {
+                        normalizeQueued = false;
+                        runNormalize(typeof maxAttempts === 'number' ? maxAttempts : 0);
+                    });
+                }
+
+                queueNormalize(22);
+                window.setTimeout(function () { queueNormalize(18); }, 0);
+                window.setTimeout(function () { queueNormalize(14); }, 180);
+                window.setTimeout(function () { queueNormalize(10); }, 600);
+
+                if ('MutationObserver' in window) {
+                    var gridArea = document.getElementById('products_grid');
+                    if (gridArea) {
+                        var observer = new MutationObserver(function () {
+                            if (gridArea.querySelector('.o_wsale_products_grid_table_wrapper:not(.bader-grid-normalized) table')) {
+                                queueNormalize(6);
+                            }
+                        });
+                        observer.observe(gridArea, { childList: true, subtree: true });
+                    }
+                }
+
+                document.addEventListener('visibilitychange', function () {
+                    if (!document.hidden) {
+                        queueNormalize(4);
+                    }
+                });
+            })();
             (function injectHeroSection() {
                 return; // Hero section removed
                 var shopGrid = document.querySelector('#products_grid, .bader-shop-grid');

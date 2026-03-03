@@ -6,7 +6,10 @@
 // ─── Hero Section (Shop page — scoped to avoid overriding homepage hero) ─────
 .oe_website_sale .bader-hero {
     background: linear-gradient(135deg, $bader-dark, $bader-dark-alt);
-    padding: 48px 0 56px;
+    min-height: auto;
+    display: block;
+    align-items: initial;
+    padding: 18px 0 16px;
     margin-top: -1px;
 
     .bader-hero__container {
@@ -19,9 +22,9 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        font-size: 14px;
+        font-size: 13px;
         color: rgba(255, 255, 255, 0.6);
-        margin-bottom: 16px;
+        margin-bottom: 10px;
 
         a {
             color: rgba(255, 255, 255, 0.6);
@@ -40,113 +43,65 @@
 
     .bader-hero__title {
         font-family: $font-display;
-        font-size: 36px;
+        font-size: 28px;
         font-weight: 700;
         color: $white;
-        margin: 0 0 12px;
+        margin: 0 0 6px;
         line-height: 1.2;
 
         @media (min-width: $bp-desktop) {
-            font-size: 42px;
+            font-size: 32px;
         }
     }
 
     .bader-hero__subtitle {
         color: rgba(255, 255, 255, 0.8);
-        font-size: 16px;
+        font-size: 14px;
         max-width: 640px;
-        margin: 0 0 32px;
+        margin: 0 0 10px;
         line-height: 1.5;
     }
 
-    .bader-hero__segments {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 16px;
-
-        @media (min-width: $bp-tablet) {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
-}
-
-// ─── Segment Card (Hero) ─────────────────
-.bader-segment-card {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    padding: 24px;
-    border-radius: $radius-lg;
-    background: rgba(255, 255, 255, 0.10);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: $white;
-    text-decoration: none !important;
-    transition: all $transition-base;
-    cursor: pointer;
-
-    &:hover {
-        background: rgba(255, 255, 255, 0.18);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-        color: $white;
-        text-decoration: none !important;
-    }
-
-    &__icon {
-        width: 56px;
-        height: 56px;
-        border-radius: $radius-md;
-        background: rgba(255, 255, 255, 0.20);
+    .bader-hero__quick-nav {
         display: flex;
         align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-
-        i {
-            font-size: 24px;
-            color: $white;
-        }
+        gap: 6px;
+        flex-wrap: wrap;
     }
 
-    &__content {
-        flex: 1;
-        min-width: 0;
-
-        h3 {
-            font-size: 18px;
-            font-weight: 700;
-            margin: 0 0 4px;
-            color: $white;
-        }
-
-        p {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.7);
-            margin: 0;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-    }
-
-    &__badge {
+    .bader-hero__quick-link {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        margin-top: 12px;
-        padding: 4px 12px;
-        background: rgba(255, 255, 255, 0.20);
+        gap: 6px;
+        min-height: 32px;
+        padding: 5px 11px;
         border-radius: $radius-pill;
-        font-size: 13px;
-        font-weight: 500;
-    }
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        background: rgba(255, 255, 255, 0.1);
+        color: $white;
+        font-size: 11px;
+        font-weight: 700;
+        text-decoration: none !important;
+        letter-spacing: 0.02em;
+        transition: all $transition-fast;
 
-    &__arrow {
-        font-size: 14px;
-        color: rgba(255, 255, 255, 0.6);
+        i {
+            font-size: 12px;
+            opacity: 0.92;
+        }
+
+        &:hover {
+            text-decoration: none !important;
+            color: $white;
+            border-color: rgba(255, 255, 255, 0.44);
+            background: rgba(255, 255, 255, 0.18);
+            transform: translateY(-1px);
+        }
+
+        &--all {
+            background: rgba(112, 212, 75, 0.26);
+            border-color: rgba(112, 212, 75, 0.55);
+        }
     }
 }
 
@@ -624,6 +579,11 @@
     border-radius: $radius-md !important;
 }
 
+// Keep only the Bader view toggle to avoid duplicate grid/list controls.
+.products_header .o_wsale_apply_layout {
+    display: none !important;
+}
+
 // ─── Active Filter Chips ─────────────────
 .bader-active-filters {
     display: flex;
@@ -991,20 +951,21 @@
         overflow: hidden;
         position: relative;
 
-        // Fix Odoo's absolute-positioned wrapper layers collapsing to 0 width
+        // Preserve Odoo's absolute image layers so product photos render correctly.
         .oe_product_image_link {
             width: 100%;
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: static !important;
+            position: relative !important;
         }
 
         .oe_product_image_img_wrapper {
             width: 100% !important;
             height: 100% !important;
-            position: static !important;
+            position: absolute !important;
+            inset: 0 !important;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1030,7 +991,9 @@
             width: auto;
             height: auto;
             object-fit: contain;
-            position: static !important;
+            position: absolute !important;
+            inset: 0 !important;
+            margin: auto;
             transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
         }
     }
@@ -1419,14 +1382,29 @@
 
 @media (max-width: $bp-tablet) {
     .oe_website_sale .bader-hero {
-        padding: 32px 0 40px;
+        padding: 14px 0 12px;
 
         .bader-hero__title {
-            font-size: 28px;
+            font-size: 22px;
         }
 
-        .bader-hero__segments {
-            grid-template-columns: 1fr;
+        .bader-hero__subtitle {
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .bader-hero__quick-nav {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 4px;
+        }
+
+        .bader-hero__quick-link {
+            flex: 0 0 auto;
+            min-height: 32px;
+            padding: 5px 10px;
+            font-size: 11px;
         }
     }
 
@@ -1509,9 +1487,9 @@
 
 #products_grid:not(.bader-view-list) {
     .oe_product_cart {
-        max-width: 320px;
-        margin: 0 auto;
-        height: auto !important;
+        max-width: none;
+        margin: 0;
+        height: 100% !important;
         min-height: 0 !important;
         border-radius: var(--bader-grid-card-radius);
         border: 1px solid var(--bader-grid-card-border);
@@ -1672,5 +1650,133 @@
             padding: 6px 10px;
             font-size: 9.5px;
         }
+    }
+}
+
+// Pre-normalization fallback so Odoo table mosaic does not show oversized cards.
+#products_grid:not(.bader-view-list) .o_wsale_products_grid_table_wrapper:not(.bader-grid-normalized) {
+    table {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        gap: 16px;
+        width: 100% !important;
+        border-spacing: 0;
+        table-layout: fixed;
+    }
+
+    tbody,
+    tr {
+        display: contents;
+    }
+
+    td:not(.oe_product) {
+        display: none !important;
+    }
+
+    td.oe_product {
+        display: block;
+        flex: 0 0 calc((100% - 32px) / 3);
+        max-width: calc((100% - 32px) / 3);
+        width: auto !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        min-width: 0;
+    }
+
+    td.oe_product .o_wsale_product_grid_wrapper {
+        height: 100%;
+        min-height: 0;
+    }
+
+    td.oe_product .oe_product_cart {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        height: 100%;
+    }
+}
+
+@media (min-width: 1500px) {
+    #products_grid:not(.bader-view-list) .o_wsale_products_grid_table_wrapper:not(.bader-grid-normalized) td.oe_product {
+        flex-basis: calc((100% - 48px) / 4);
+        max-width: calc((100% - 48px) / 4);
+    }
+}
+
+@media (max-width: 1200px) {
+    #products_grid:not(.bader-view-list) .o_wsale_products_grid_table_wrapper:not(.bader-grid-normalized) td.oe_product {
+        flex-basis: calc((100% - 16px) / 2);
+        max-width: calc((100% - 16px) / 2);
+    }
+}
+
+@media (max-width: $bp-mobile) {
+    #products_grid:not(.bader-view-list) .o_wsale_products_grid_table_wrapper:not(.bader-grid-normalized) table {
+        gap: 12px;
+    }
+
+    #products_grid:not(.bader-view-list) .o_wsale_products_grid_table_wrapper:not(.bader-grid-normalized) td.oe_product {
+        flex-basis: 100%;
+        max-width: 100%;
+    }
+}
+
+// ============================================================
+// Uniform product grid layout (replaces Odoo rowspan/colspan mosaic)
+// ============================================================
+#products_grid .o_wsale_products_grid_table_wrapper.bader-grid-normalized {
+    .bader-products-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        grid-auto-flow: row dense;
+        align-items: stretch;
+    }
+
+    .bader-products-grid__item.oe_product {
+        margin: 0 !important;
+        padding: 0 !important;
+        min-width: 0;
+    }
+
+    .bader-products-grid__item .o_wsale_product_grid_wrapper {
+        height: 100%;
+        min-height: 0;
+    }
+}
+
+#products_grid:not(.bader-view-list) .o_wsale_products_grid_table_wrapper.bader-grid-normalized {
+    .bader-products-grid__item .oe_product_cart {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+    }
+}
+
+#products_grid.bader-view-list .o_wsale_products_grid_table_wrapper.bader-grid-normalized {
+    .bader-products-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+}
+
+@media (min-width: 1500px) {
+    #products_grid .o_wsale_products_grid_table_wrapper.bader-grid-normalized .bader-products-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 1200px) {
+    #products_grid .o_wsale_products_grid_table_wrapper.bader-grid-normalized .bader-products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: $bp-mobile) {
+    #products_grid .o_wsale_products_grid_table_wrapper.bader-grid-normalized .bader-products-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
     }
 }

@@ -1,29 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- ====================================================
-         SOBRE NOSOTROS (About Us) — Bader Iberoamericana
-         Matches Bader-AR SobreNosotros.tsx layout
-         ==================================================== -->
     <template id="bader_sobre_nosotros" name="Bader Sobre Nosotros">
         <t t-call="website.layout">
             <t t-set="head">
-                <title>Sobre Nosotros — Bader Argentina</title>
-                <meta name="description" content="Bader Iberoamericana: +30 años liderando el mercado de equipamiento odontológico. Presencia en 8 países, +500 distribuidores y certificación ISO 9001."/>
-                <meta property="og:title" content="Sobre Nosotros — Bader Argentina"/>
-                <meta property="og:description" content="+30 años en equipamiento odontológico. Presencia en 8 países con +500 distribuidores y +2.800 productos."/>
+                <title>Sobre Nosotros - Bader Argentina</title>
+                <meta name="description" content="Bader Iberoamericana: mas de 30 anos liderando el mercado de equipamiento odontologico. Presencia en 8 paises, mas de 500 distribuidores y certificacion ISO 9001."/>
+                <meta property="og:title" content="Sobre Nosotros - Bader Argentina"/>
+                <meta property="og:description" content="Mas de 30 anos en equipamiento odontologico. Presencia en 8 paises con mas de 500 distribuidores y mas de 2.800 productos."/>
                 <meta property="og:image" content="/bader_website/static/src/img/bader_logotipo.png"/>
                 <meta property="og:type" content="website"/>
                 <meta property="og:url" t-att-content="request.httprequest.url"/>
                 <link rel="canonical" t-att-href="request.httprequest.url"/>
                 <meta name="twitter:card" content="summary_large_image"/>
             </t>
-            <div id="wrap" class="oe_structure oe_empty">
 
-                <!-- ============================
-                     HERO SECTION — Dark accent bg
-                     ============================ -->
-                <section class="bader-page-hero bader-animate" style="background: #003841; color: #FFFFFF;">
+            <div id="wrap" class="oe_structure oe_empty bader-about-page">
+
+                <section class="bader-page-hero bader-about__hero bader-animate">
                     <div class="bader-page-hero__blur bader-page-hero__blur--1"/>
                     <div class="bader-page-hero__blur bader-page-hero__blur--2"/>
                     <div class="bader-page-hero__container">
@@ -32,15 +26,14 @@
                                 <i class="fa fa-building"/> Sobre Nosotros
                             </span>
                             <h1 class="bader-page-hero__title">
-                                ¿Quiénes <span class="text-green">Somos</span>?
+                                Quienes <span class="text-green">Somos</span>?
                             </h1>
                             <p class="bader-page-hero__subtitle">
-                                Somos una empresa española que ha expandido su presencia a Argentina,
-                                llevando nuestra experiencia en la fabricación, importación, exportación,
-                                instalación y servicio técnico de material odontológico.
+                                Somos una empresa espanola que ha expandido su presencia a Argentina,
+                                llevando nuestra experiencia en la fabricacion, importacion, exportacion,
+                                instalacion y servicio tecnico de material odontologico.
                             </p>
 
-                            <!-- Stats Grid -->
                             <div class="bader-about__hero-stats">
                                 <div class="bader-about__hero-stat">
                                     <i class="fa fa-users"/>
@@ -59,7 +52,7 @@
                                 </div>
                                 <div class="bader-about__hero-stat">
                                     <i class="fa fa-star"/>
-                                    <div class="bader-about__hero-stat-value" data-count-to="4.7" data-count-suffix="">4.7</div>
+                                    <div class="bader-about__hero-stat-value" data-count-to="4.7">4.7</div>
                                     <div class="bader-about__hero-stat-label">Google Reviews</div>
                                 </div>
                             </div>
@@ -67,37 +60,32 @@
                     </div>
                 </section>
 
-                <!-- ============================
-                     MISSION SECTION — Light bg
-                     ============================ -->
-                <section class="bader-page-section bader-page-section--muted bader-animate" style="background: #FFFFFF;">
+                <section class="bader-page-section bader-page-section--muted bader-about__mission bader-animate">
                     <div class="bader-page-section__container">
                         <div class="bader-split">
-                            <!-- Left: Text -->
-                            <div>
-                                <span class="bader-page-hero__badge" style="background: rgba(112,212,75,0.10);">
-                                    Nuestra Misión
+                            <div class="bader-about__mission-copy">
+                                <span class="bader-page-hero__badge bader-about__soft-badge">
+                                    Nuestra Mision
                                 </span>
                                 <h2 class="bader-section__title">
                                     Equipando sonrisas en <span class="text-green">toda Argentina</span>
                                 </h2>
-                                <p style="color: #475569; margin-bottom: 1.5rem; line-height: 1.7;">
-                                    Ofrecemos una amplia gama de productos odontológicos, incluyendo equipos dentales,
-                                    instrumental rotatorio, materiales para laboratorio protésico y productos para
-                                    estudiantes de odontología.
+                                <p class="bader-about__copy">
+                                    Ofrecemos una amplia gama de productos odontologicos, incluyendo equipos dentales,
+                                    instrumental rotatorio, materiales para laboratorio protesico y productos para
+                                    estudiantes de odontologia.
                                 </p>
-                                <p style="color: #475569; margin-bottom: 2rem; line-height: 1.7;">
-                                    Con la misma calidad y compromiso que nos han convertido en un referente en España,
+                                <p class="bader-about__copy">
+                                    Con la misma calidad y compromiso que nos han convertido en un referente en Espana,
                                     ahora estamos listos para atender el mercado argentino con soluciones innovadoras
                                     y un soporte especializado.
                                 </p>
-                                <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+                                <div class="bader-about__mission-actions">
                                     <a href="/productos" class="btn-bader">Ver productos</a>
-                                    <a href="#contacto" class="btn-bader-outline">Contactarnos</a>
+                                    <a href="/#contacto" class="btn-bader-outline">Contactarnos</a>
                                 </div>
                             </div>
 
-                            <!-- Right: Values Grid -->
                             <div class="bader-about__values-grid">
                                 <div class="bader-about__value-card">
                                     <div class="bader-page-card__icon">
@@ -105,8 +93,8 @@
                                     </div>
                                     <h3 class="bader-page-card__title">Calidad Europea</h3>
                                     <p class="bader-page-card__text">
-                                        Productos fabricados con los más altos estándares de calidad europeos,
-                                        garantizando durabilidad y precisión.
+                                        Productos fabricados con los mas altos estandares de calidad europeos,
+                                        garantizando durabilidad y precision.
                                     </p>
                                 </div>
                                 <div class="bader-about__value-card">
@@ -123,9 +111,9 @@
                                     <div class="bader-page-card__icon">
                                         <i class="fa fa-bullseye"/>
                                     </div>
-                                    <h3 class="bader-page-card__title">Innovación</h3>
+                                    <h3 class="bader-page-card__title">Innovacion</h3>
                                     <p class="bader-page-card__text">
-                                        Constantemente buscamos las últimas tecnologías para ofrecer equipos
+                                        Constantemente buscamos las ultimas tecnologias para ofrecer equipos
                                         de vanguardia.
                                     </p>
                                 </div>
@@ -133,10 +121,10 @@
                                     <div class="bader-page-card__icon">
                                         <i class="fa fa-shield"/>
                                     </div>
-                                    <h3 class="bader-page-card__title">Garantía</h3>
+                                    <h3 class="bader-page-card__title">Garantia</h3>
                                     <p class="bader-page-card__text">
-                                        Respaldamos todos nuestros productos con garantía europea y servicio
-                                        técnico especializado.
+                                        Respaldamos todos nuestros productos con garantia europea y servicio
+                                        tecnico especializado.
                                     </p>
                                 </div>
                             </div>
@@ -144,13 +132,10 @@
                     </div>
                 </section>
 
-                <!-- ============================
-                     TIMELINE SECTION — White bg
-                     ============================ -->
-                <section class="bader-page-section bader-page-section--white bader-animate" style="background: #003841; color: #FFFFFF;">
+                <section class="bader-page-section bader-page-section--white bader-about__timeline-section bader-animate">
                     <div class="bader-page-section__container">
                         <div class="bader-page-section__heading">
-                            <span class="bader-page-hero__badge" style="background: rgba(112,212,75,0.10);">
+                            <span class="bader-page-hero__badge bader-about__soft-badge">
                                 Nuestra Historia
                             </span>
                             <h2 class="bader-section__title">
@@ -165,9 +150,8 @@
                                 <div class="bader-about__timeline-content">
                                     <div class="bader-about__timeline-card">
                                         <span class="bader-about__timeline-year">2008</span>
-                                        <h3>Fundación en España</h3>
-                                        <p>Bader nace en España como empresa especializada en equipamiento
-                                           odontológico.</p>
+                                        <h3>Fundacion en Espana</h3>
+                                        <p>Bader nace en Espana como empresa especializada en equipamiento odontologico.</p>
                                     </div>
                                 </div>
                                 <div class="bader-about__timeline-dot">
@@ -182,9 +166,8 @@
                                 <div class="bader-about__timeline-content">
                                     <div class="bader-about__timeline-card">
                                         <span class="bader-about__timeline-year">2015</span>
-                                        <h3>Expansión Europea</h3>
-                                        <p>Consolidamos nuestra presencia en múltiples países europeos
-                                           con más de 500 distribuidores.</p>
+                                        <h3>Expansion Europea</h3>
+                                        <p>Consolidamos nuestra presencia en multiples paises europeos con mas de 500 distribuidores.</p>
                                     </div>
                                 </div>
                             </div>
@@ -194,8 +177,7 @@
                                     <div class="bader-about__timeline-card">
                                         <span class="bader-about__timeline-year">2020</span>
                                         <h3>Llegada a Argentina</h3>
-                                        <p>Expandimos operaciones a Latinoamérica, estableciendo sede
-                                           en Buenos Aires.</p>
+                                        <p>Expandimos operaciones a Latinoamerica, estableciendo sede en Buenos Aires.</p>
                                     </div>
                                 </div>
                                 <div class="bader-about__timeline-dot">
@@ -210,9 +192,8 @@
                                 <div class="bader-about__timeline-content">
                                     <div class="bader-about__timeline-card">
                                         <span class="bader-about__timeline-year">2024</span>
-                                        <h3>Líderes Regionales</h3>
-                                        <p>Nos convertimos en referentes del mercado argentino con más
-                                           de 10,000 clientes.</p>
+                                        <h3>Lideres Regionales</h3>
+                                        <p>Nos convertimos en referentes del mercado argentino con mas de 10,000 clientes.</p>
                                     </div>
                                 </div>
                             </div>
@@ -220,82 +201,76 @@
                     </div>
                 </section>
 
-                <!-- ============================
-                     PRODUCT LINES — Muted bg
-                     ============================ -->
-                <section class="bader-page-section bader-page-section--muted bader-animate" style="background: #FFFFFF;">
+                <section class="bader-page-section bader-page-section--muted bader-about__lines bader-animate">
                     <div class="bader-page-section__container">
                         <div class="bader-page-section__heading">
-                            <span class="bader-page-hero__badge" style="background: rgba(112,212,75,0.10);">
-                                Nuestras Líneas
+                            <span class="bader-page-hero__badge bader-about__soft-badge">
+                                Nuestras Lineas
                             </span>
                             <h2 class="bader-section__title">
                                 Productos para cada <span class="text-green">necesidad</span>
                             </h2>
                             <p class="bader-section__subtitle">
-                                Ofrecemos una amplia variedad de material odontológico para clínicas,
-                                laboratorios, estudiantes y odontopediatría.
+                                Ofrecemos una amplia variedad de material odontologico para clinicas,
+                                laboratorios, estudiantes y odontopediatria.
                             </p>
                         </div>
 
                         <div class="bader-page-section__grid bader-page-section__grid--3">
-                            <div class="bader-page-card bader-animate" style="text-align:center;">
-                                <div class="bader-page-card__icon" style="margin: 0 auto 1.5rem;">
+                            <div class="bader-page-card bader-about__line-card bader-animate">
+                                <div class="bader-page-card__icon">
                                     <i class="fa fa-wrench"/>
                                 </div>
-                                <h3 class="bader-page-card__title" style="text-align:center;">Instrumental</h3>
-                                <p class="bader-page-card__text" style="text-align:center;">Herramientas de precisión para profesionales</p>
+                                <h3 class="bader-page-card__title">Instrumental</h3>
+                                <p class="bader-page-card__text">Herramientas de precision para profesionales</p>
                             </div>
-                            <div class="bader-page-card bader-animate" style="text-align:center;">
-                                <div class="bader-page-card__icon" style="margin: 0 auto 1.5rem;">
+                            <div class="bader-page-card bader-about__line-card bader-animate">
+                                <div class="bader-page-card__icon">
                                     <i class="fa fa-graduation-cap"/>
                                 </div>
-                                <h3 class="bader-page-card__title" style="text-align:center;">Formación</h3>
-                                <p class="bader-page-card__text" style="text-align:center;">Fantomas, simuladores y tipodontos</p>
+                                <h3 class="bader-page-card__title">Formacion</h3>
+                                <p class="bader-page-card__text">Fantomas, simuladores y tipodontos</p>
                             </div>
-                            <div class="bader-page-card bader-animate" style="text-align:center;">
-                                <div class="bader-page-card__icon" style="margin: 0 auto 1.5rem;">
+                            <div class="bader-page-card bader-about__line-card bader-animate">
+                                <div class="bader-page-card__icon">
                                     <i class="fa fa-bed"/>
                                 </div>
-                                <h3 class="bader-page-card__title" style="text-align:center;">Mobiliario</h3>
-                                <p class="bader-page-card__text" style="text-align:center;">Sillones y muebles para clínicas</p>
+                                <h3 class="bader-page-card__title">Mobiliario</h3>
+                                <p class="bader-page-card__text">Sillones y muebles para clinicas</p>
                             </div>
-                            <div class="bader-page-card bader-animate" style="text-align:center;">
-                                <div class="bader-page-card__icon" style="margin: 0 auto 1.5rem;">
+                            <div class="bader-page-card bader-about__line-card bader-animate">
+                                <div class="bader-page-card__icon">
                                     <i class="fa fa-flask"/>
                                 </div>
-                                <h3 class="bader-page-card__title" style="text-align:center;">Laboratorio</h3>
-                                <p class="bader-page-card__text" style="text-align:center;">Equipos para laboratorios protésicos</p>
+                                <h3 class="bader-page-card__title">Laboratorio</h3>
+                                <p class="bader-page-card__text">Equipos para laboratorios protesicos</p>
                             </div>
-                            <div class="bader-page-card bader-animate" style="text-align:center;">
-                                <div class="bader-page-card__icon" style="margin: 0 auto 1.5rem;">
+                            <div class="bader-page-card bader-about__line-card bader-animate">
+                                <div class="bader-page-card__icon">
                                     <i class="fa fa-camera"/>
                                 </div>
-                                <h3 class="bader-page-card__title" style="text-align:center;">Fotografía</h3>
-                                <p class="bader-page-card__text" style="text-align:center;">Equipos de fotografía dental</p>
+                                <h3 class="bader-page-card__title">Fotografia</h3>
+                                <p class="bader-page-card__text">Equipos de fotografia dental</p>
                             </div>
-                            <div class="bader-page-card bader-animate" style="text-align:center;">
-                                <div class="bader-page-card__icon" style="margin: 0 auto 1.5rem;">
+                            <div class="bader-page-card bader-about__line-card bader-animate">
+                                <div class="bader-page-card__icon">
                                     <i class="fa fa-cubes"/>
                                 </div>
-                                <h3 class="bader-page-card__title" style="text-align:center;">Accesorios</h3>
-                                <p class="bader-page-card__text" style="text-align:center;">Complementos y consumibles</p>
+                                <h3 class="bader-page-card__title">Accesorios</h3>
+                                <p class="bader-page-card__text">Complementos y consumibles</p>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- ============================
-                     BENEFITS BAR — Dark accent
-                     ============================ -->
-                <section class="bader-page-section bader-page-section--accent bader-animate" style="background: #003841; color: #FFFFFF;">
+                <section class="bader-page-section bader-page-section--accent bader-about__benefits bader-animate">
                     <div class="bader-page-section__container">
                         <div class="bader-about__benefits-bar">
                             <div class="bader-about__benefit-item">
                                 <div class="bader-about__benefit-icon">
                                     <i class="fa fa-truck"/>
                                 </div>
-                                <span>Entregas en CABA en el día</span>
+                                <span>Entregas en CABA en el dia</span>
                             </div>
                             <div class="bader-about__benefit-item">
                                 <div class="bader-about__benefit-icon">
@@ -307,38 +282,34 @@
                                 <div class="bader-about__benefit-icon">
                                     <i class="fa fa-cubes"/>
                                 </div>
-                                <span>Envío gratis a partir de $200.000</span>
+                                <span>Envio gratis a partir de $200.000</span>
                             </div>
                             <div class="bader-about__benefit-item">
                                 <div class="bader-about__benefit-icon">
                                     <i class="fa fa-globe"/>
                                 </div>
-                                <span>Entregas en todo el país despachadas en el día</span>
+                                <span>Entregas en todo el pais despachadas en el dia</span>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- ============================
-                     GLOBAL PRESENCE — White bg
-                     ============================ -->
-                <section class="bader-page-section bader-page-section--white bader-animate" style="background: #FFFFFF;">
+                <section class="bader-page-section bader-page-section--white bader-about__global bader-animate">
                     <div class="bader-page-section__container">
                         <div class="bader-split">
-                            <!-- Left: Text + Stats -->
-                            <div>
-                                <span class="bader-page-hero__badge" style="background: rgba(112,212,75,0.10);">
+                            <div class="bader-about__global-copy">
+                                <span class="bader-page-hero__badge bader-about__soft-badge">
                                     <i class="fa fa-globe"/> Presencia Global
                                 </span>
                                 <h2 class="bader-section__title">
-                                    ¿Querés vender <span class="text-green">nuestros productos</span>?
+                                    Queres vender <span class="text-green">nuestros productos</span>?
                                 </h2>
-                                <p style="color: #475569; margin-bottom: 1.5rem; line-height: 1.7;">
-                                    Tenemos una gran variedad de material odontológico para: Clínica dental,
-                                    Laboratorio de prótesis, Estudiantes y Odontopediatría.
+                                <p class="bader-about__copy">
+                                    Tenemos una gran variedad de material odontologico para: Clinica dental,
+                                    Laboratorio de protesis, Estudiantes y Odontopediatria.
                                 </p>
-                                <p style="color: #475569; margin-bottom: 2rem; line-height: 1.7;">
-                                    ¡Olvídate de las roturas de stock! Siempre tendrás lo que tus clientes necesitan.
+                                <p class="bader-about__copy">
+                                    Olvidate de las roturas de stock. Siempre tendras lo que tus clientes necesitan.
                                 </p>
 
                                 <div class="bader-about__stat-row">
@@ -349,54 +320,50 @@
                                     <div class="bader-about__stat-divider"/>
                                     <div class="bader-about__stat-item">
                                         <div class="bader-about__stat-big">15+</div>
-                                        <div class="bader-about__stat-desc">Países</div>
+                                        <div class="bader-about__stat-desc">Paises</div>
                                     </div>
                                     <div class="bader-about__stat-divider"/>
                                     <div class="bader-about__stat-item">
                                         <div class="bader-about__stat-big">16+</div>
-                                        <div class="bader-about__stat-desc">Años</div>
+                                        <div class="bader-about__stat-desc">Anos</div>
                                     </div>
                                 </div>
 
-                                <a href="/ser-distribuidor" class="btn-bader btn-bader--lg" style="margin-top: 2rem;">
+                                <a href="/ser-distribuidor" class="btn-bader btn-bader--lg bader-about__global-cta">
                                     <i class="fa fa-map-marker"/> Quiero ser distribuidor
                                 </a>
                             </div>
 
-                            <!-- Right: Dark card with benefits -->
                             <div class="bader-about__distributor-card">
                                 <h3>Beneficios para distribuidores</h3>
-                                <ul class="bader-checklist" style="color: white;">
+                                <ul class="bader-checklist">
                                     <li><i class="fa fa-check-circle"/> <span>Precios exclusivos para mayoristas</span></li>
                                     <li><i class="fa fa-check-circle"/> <span>Stock garantizado sin roturas</span></li>
                                     <li><i class="fa fa-check-circle"/> <span>Material de marketing incluido</span></li>
-                                    <li><i class="fa fa-check-circle"/> <span>Capacitación y soporte técnico</span></li>
-                                    <li><i class="fa fa-check-circle"/> <span>Financiación flexible</span></li>
-                                    <li><i class="fa fa-check-circle"/> <span>Envíos prioritarios</span></li>
+                                    <li><i class="fa fa-check-circle"/> <span>Capacitacion y soporte tecnico</span></li>
+                                    <li><i class="fa fa-check-circle"/> <span>Financiacion flexible</span></li>
+                                    <li><i class="fa fa-check-circle"/> <span>Envios prioritarios</span></li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- ============================
-                     CTA SECTION — Green gradient
-                     ============================ -->
-                <section class="bader-page-section bader-page-section--green bader-animate">
-                    <div class="bader-page-section__container" style="text-align: center;">
-                        <h2 style="font-family: 'BaderSans', sans-serif; font-size: 2rem; font-weight: 800; color: white; margin-bottom: 1rem;">
-                            ¿Listo para equipar tu clínica?
+                <section class="bader-page-section bader-page-section--green bader-about__cta bader-animate">
+                    <div class="bader-page-section__container">
+                        <h2 class="bader-about__cta-title">
+                            Listo para equipar tu clinica?
                         </h2>
-                        <p style="color: rgba(255,255,255,0.85); margin-bottom: 2rem; max-width: 36rem; margin-left: auto; margin-right: auto;">
+                        <p class="bader-about__cta-subtitle">
                             Contacta con nuestro equipo de especialistas y encuentra las mejores
-                            soluciones para tu práctica profesional.
+                            soluciones para tu practica profesional.
                         </p>
-                        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem;">
-                            <a href="/#bader-cta" class="btn-bader" style="background: white; color: #70D44B;">
+                        <div class="bader-about__cta-actions">
+                            <a href="/#contacto" class="btn-bader bader-about__cta-primary">
                                 Contactar ahora
                             </a>
-                            <a href="/productos" class="btn-bader-outline" style="border-color: white; color: white;">
-                                Ver catálogos
+                            <a href="/descargas" class="btn-bader-outline bader-about__cta-secondary">
+                                Ver catalogos
                             </a>
                         </div>
                     </div>

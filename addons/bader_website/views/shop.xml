@@ -55,52 +55,26 @@
                             Equipamiento odontologico profesional para potenciar tu practica.
                         </t>
                         <t t-else="">
-                            Mas de 3.000 productos de equipamiento odontologico con garantia europea.
-                            Elegi tu segmento para encontrar lo que necesitas.
+                            Equipamiento odontologico para clinicas, laboratorios y estudiantes.
                         </t>
                     </p>
 
-                    <div t-if="not category" class="bader-hero__segments">
-                        <a href="/productos?search=clinica" class="bader-segment-card">
-                            <div class="bader-segment-card__icon">
-                                <i class="fa fa-hospital-o"/>
-                            </div>
-                            <div class="bader-segment-card__content">
-                                <h3>Clinica Dental</h3>
-                                <p>Equipos e instrumental para consultorios y clinicas dentales.</p>
-                                <span class="bader-segment-card__badge">
-                                    <span class="bader-segment-card__count">Ver productos</span>
-                                    <span class="bader-segment-card__arrow">&#8250;</span>
-                                </span>
-                            </div>
+                    <div t-if="not category" class="bader-hero__quick-nav" role="navigation" aria-label="Segmentos del catalogo">
+                        <a href="/productos?search=clinica" class="bader-hero__quick-link">
+                            <i class="fa fa-hospital-o"/>
+                            Clinica Dental
                         </a>
-
-                        <a href="/productos?search=laboratorio" class="bader-segment-card">
-                            <div class="bader-segment-card__icon">
-                                <i class="fa fa-flask"/>
-                            </div>
-                            <div class="bader-segment-card__content">
-                                <h3>Laboratorio Dental</h3>
-                                <p>Equipos de fabricacion, CAD/CAM y flujo digital para laboratorio.</p>
-                                <span class="bader-segment-card__badge">
-                                    <span class="bader-segment-card__count">Ver productos</span>
-                                    <span class="bader-segment-card__arrow">&#8250;</span>
-                                </span>
-                            </div>
+                        <a href="/productos?search=laboratorio" class="bader-hero__quick-link">
+                            <i class="fa fa-flask"/>
+                            Laboratorio
                         </a>
-
-                        <a href="/productos?search=estudiantes" class="bader-segment-card">
-                            <div class="bader-segment-card__icon">
-                                <i class="fa fa-graduation-cap"/>
-                            </div>
-                            <div class="bader-segment-card__content">
-                                <h3>Estudiantes</h3>
-                                <p>Kits, simuladores y material de practica para formacion odontologica.</p>
-                                <span class="bader-segment-card__badge">
-                                    <span class="bader-segment-card__count">Ver productos</span>
-                                    <span class="bader-segment-card__arrow">&#8250;</span>
-                                </span>
-                            </div>
+                        <a href="/productos?search=estudiantes" class="bader-hero__quick-link">
+                            <i class="fa fa-graduation-cap"/>
+                            Estudiantes
+                        </a>
+                        <a href="/productos" class="bader-hero__quick-link bader-hero__quick-link--all">
+                            <i class="fa fa-th-large"/>
+                            Ver todo
                         </a>
                     </div>
                 </div>
