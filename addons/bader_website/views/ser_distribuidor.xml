@@ -1,424 +1,355 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- ====================================================
-         SER DISTRIBUIDOR — Become a distributor landing
-         Matches Bader-AR SerDistribuidor.tsx
-         Form → CRM Lead integration via controller
-         ==================================================== -->
     <template id="bader_ser_distribuidor" name="Bader Ser Distribuidor">
         <t t-call="website.layout">
             <t t-set="head">
-                <title>Ser Distribuidor Bader — Oportunidad de Negocio</title>
-                <meta name="description" content="Convertite en distribuidor oficial Bader. Márgenes atractivos, línea completa de +2.800 productos, soporte técnico y marketing. Completá el formulario y empezá hoy."/>
-                <meta property="og:title" content="Ser Distribuidor Bader — Oportunidad de Negocio"/>
-                <meta property="og:description" content="Sumate a la red de +500 distribuidores Bader en Iberoamérica. Márgenes atractivos, soporte integral y línea completa."/>
+                <title>Ser Distribuidor Bader - Oportunidad de Negocio</title>
+                <meta name="description" content="Convertite en distribuidor oficial Bader. Margenes atractivos, linea completa de productos, soporte tecnico y marketing."/>
+                <meta property="og:title" content="Ser Distribuidor Bader - Oportunidad de Negocio"/>
+                <meta property="og:description" content="Sumate a la red de distribuidores Bader en Argentina. Condiciones comerciales competitivas y soporte integral."/>
                 <meta property="og:image" content="/bader_website/static/src/img/bader_logotipo.png"/>
                 <meta property="og:type" content="website"/>
                 <meta property="og:url" t-att-content="request.httprequest.url"/>
                 <link rel="canonical" t-att-href="request.httprequest.url"/>
                 <meta name="twitter:card" content="summary_large_image"/>
             </t>
-            <div id="wrap" class="oe_structure oe_empty bader-page-distribuidor">
 
-                <!-- ============================
-                     HERO — Dark accent bg
-                     ============================ -->
-                <section class="bader-page-hero bader-animate">
-                    <div class="bader-page-hero__blur bader-page-hero__blur--1"/>
-                    <div class="bader-page-hero__blur bader-page-hero__blur--2"/>
-                    <div class="bader-page-hero__container">
-                        <div class="bader-page-hero__center">
-                            <span class="bader-page-hero__badge">
-                                <i class="fa fa-handshake-o"/> Programa de Distribuidores
-                            </span>
-                            <h1 class="bader-page-hero__title">
-                                Sé nuestro <span class="text-green">distribuidor</span>
-                            </h1>
-                            <p class="bader-page-hero__subtitle">
-                                Únete a la red de distribuidores más grande de equipamiento odontológico
-                                en Argentina. Ofrecemos las mejores condiciones del mercado.
-                            </p>
+            <div id="wrap" class="oe_structure oe_empty bader-dist-page">
 
-                            <div class="bader-about__hero-stats">
-                                <div class="bader-about__hero-stat">
-                                    <i class="fa fa-building"/>
-                                    <div class="bader-about__hero-stat-value" data-count-to="800" data-count-suffix="+">800+</div>
-                                    <div class="bader-about__hero-stat-label">Distribuidores activos</div>
+                <section class="bader-dist-hero bader-animate">
+                    <div class="bader-dist-hero__glow bader-dist-hero__glow--a"/>
+                    <div class="bader-dist-hero__glow bader-dist-hero__glow--b"/>
+                    <div class="bader-page-section__container bader-dist-hero__container">
+                        <div class="bader-dist-hero__grid">
+                            <div class="bader-dist-hero__content">
+                                <span class="bader-dist-badge">
+                                    <i class="fa fa-handshake-o"/> Programa de Distribuidores
+                                </span>
+                                <h1 class="bader-dist-hero__title">
+                                    Potencia tu negocio con <span class="text-green">Bader</span>
+                                </h1>
+                                <p class="bader-dist-hero__lead">
+                                    Somos entusiastas y nos mueve lo que hacemos, por eso cada dia obtenemos mejores resultados.
+                                </p>
+                                <p class="bader-dist-hero__text">
+                                    Queres ser distribuidor de material dental y aumentar tus rendimientos?
+                                    Gracias a nuestro crecimiento, ofrecemos condiciones comerciales competitivas,
+                                    con apoyo comercial y logistico en todo el pais.
+                                </p>
+
+                                <div class="bader-dist-metrics">
+                                    <div class="bader-dist-metric">
+                                        <div class="bader-dist-metric__icon">
+                                            <i class="fa fa-line-chart"/>
+                                        </div>
+                                        <div class="bader-dist-metric__info">
+                                            <strong>800+</strong>
+                                            <span>Distribuidores</span>
+                                        </div>
+                                    </div>
+                                    <div class="bader-dist-metric">
+                                        <div class="bader-dist-metric__icon">
+                                            <i class="fa fa-users"/>
+                                        </div>
+                                        <div class="bader-dist-metric__info">
+                                            <strong>10,000+</strong>
+                                            <span>Clientes</span>
+                                        </div>
+                                    </div>
+                                    <div class="bader-dist-metric">
+                                        <div class="bader-dist-metric__icon">
+                                            <i class="fa fa-cubes"/>
+                                        </div>
+                                        <div class="bader-dist-metric__info">
+                                            <strong>1,300+</strong>
+                                            <span>Productos</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="bader-about__hero-stat">
-                                    <i class="fa fa-cubes"/>
-                                    <div class="bader-about__hero-stat-value" data-count-to="1300" data-count-suffix="+">1,300+</div>
-                                    <div class="bader-about__hero-stat-label">Productos disponibles</div>
-                                </div>
-                                <div class="bader-about__hero-stat">
-                                    <i class="fa fa-globe"/>
-                                    <div class="bader-about__hero-stat-value" data-count-to="15" data-count-suffix="">15</div>
-                                    <div class="bader-about__hero-stat-label">Países</div>
-                                </div>
-                                <div class="bader-about__hero-stat">
-                                    <i class="fa fa-star"/>
-                                    <div class="bader-about__hero-stat-value" data-count-to="16" data-count-suffix="+">16+</div>
-                                    <div class="bader-about__hero-stat-label">Años de experiencia</div>
+                            </div>
+
+                            <div class="bader-dist-hero__media">
+                                <div class="bader-dist-media-card">
+                                    <img src="https://bader.com.ar/web/image/8239-8239b47d/woman-handshaking-outdoors-modern-glass-business-building-close-up-picture%20%281%29.jpg"
+                                         alt="Distribuidor Bader" loading="lazy"/>
+
+                                    <div class="bader-dist-float bader-dist-float--top">
+                                        <div class="bader-dist-float__dots">
+                                            <span>1</span>
+                                            <span>2</span>
+                                            <span>3</span>
+                                        </div>
+                                        <div class="bader-dist-float__meta">
+                                            <strong>+10,000</strong>
+                                            <small>Clientes felices</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="bader-dist-float bader-dist-float--left">
+                                        <div class="bader-dist-float__dots">
+                                            <span>1</span>
+                                            <span>2</span>
+                                            <span>3</span>
+                                        </div>
+                                        <div class="bader-dist-float__meta">
+                                            <strong>+1,300</strong>
+                                            <small>Productos</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="bader-dist-float bader-dist-float--bottom">
+                                        <div class="bader-dist-float__dots">
+                                            <span>4</span>
+                                            <span>.</span>
+                                            <span>7</span>
+                                        </div>
+                                        <div class="bader-dist-float__meta">
+                                            <strong><i class="fa fa-star"/> 4.7</strong>
+                                            <small>Google Reviews</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="bader-dist-brand">
+                                        <span class="bader-dist-brand__logo">
+                                            <i class="fa fa-star"/>
+                                        </span>
+                                        <div>
+                                            <strong>BADER</strong>
+                                            <small>Iberoamericana</small>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- ============================
-                     BENEFITS GRID — White bg
-                     ============================ -->
-                <section class="bader-page-section bader-page-section--white bader-animate">
+                <section class="bader-dist-section bader-dist-section--muted bader-animate">
                     <div class="bader-page-section__container">
-                        <div class="bader-page-section__heading">
-                            <span class="bader-page-hero__badge" style="background: rgba(112,212,75,0.10);">
-                                ¿Por qué ser distribuidor?
-                            </span>
-                            <h2 class="bader-section__title">
-                                Beneficios <span class="text-green">exclusivos</span>
-                            </h2>
-                            <p class="bader-section__subtitle">
-                                Ofrecemos las mejores condiciones comerciales del mercado
-                            </p>
+                        <div class="bader-dist-heading">
+                            <span class="bader-dist-badge bader-dist-badge--soft">Beneficios Exclusivos</span>
+                            <h2>Por que ser <span class="text-green">distribuidor Bader</span>?</h2>
+                            <p>Ofrecemos las mejores condiciones comerciales y apoyo integral para que tu negocio crezca.</p>
                         </div>
 
-                        <div class="bader-page-section__grid bader-page-section__grid--3">
-                            <div class="bader-page-card bader-animate">
-                                <div class="bader-gradient-icon bader-gradient-icon--green">
-                                    <i class="fa fa-tag"/>
-                                </div>
-                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Precios Mayoristas</h3>
-                                <p class="bader-page-card__text">
-                                    Acceso a precios exclusivos con márgenes competitivos para tu negocio.
-                                </p>
-                                <span class="bader-page-card__highlight">
-                                    <i class="fa fa-check-circle"/> Hasta 40% descuento
-                                </span>
-                            </div>
-
-                            <div class="bader-page-card bader-animate">
-                                <div class="bader-gradient-icon bader-gradient-icon--blue">
-                                    <i class="fa fa-cubes"/>
-                                </div>
-                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Stock Garantizado</h3>
-                                <p class="bader-page-card__text">
-                                    Nunca te quedarás sin producto. Nuestro almacén garantiza disponibilidad permanente.
-                                </p>
-                                <span class="bader-page-card__highlight">
-                                    <i class="fa fa-check-circle"/> Sin roturas de stock
-                                </span>
-                            </div>
-
-                            <div class="bader-page-card bader-animate">
-                                <div class="bader-gradient-icon bader-gradient-icon--purple">
-                                    <i class="fa fa-graduation-cap"/>
-                                </div>
-                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Capacitación</h3>
-                                <p class="bader-page-card__text">
-                                    Formación continua sobre productos, técnicas de venta y novedades del sector.
-                                </p>
-                                <span class="bader-page-card__highlight">
-                                    <i class="fa fa-check-circle"/> Cursos mensuales
-                                </span>
-                            </div>
-
-                            <div class="bader-page-card bader-animate">
-                                <div class="bader-gradient-icon bader-gradient-icon--orange">
-                                    <i class="fa fa-truck"/>
-                                </div>
-                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Logística Prioritaria</h3>
-                                <p class="bader-page-card__text">
-                                    Envíos express con tracking en tiempo real a todo el país.
-                                </p>
-                                <span class="bader-page-card__highlight">
-                                    <i class="fa fa-check-circle"/> Envío en 24hs
-                                </span>
-                            </div>
-
-                            <div class="bader-page-card bader-animate">
-                                <div class="bader-gradient-icon bader-gradient-icon--teal">
-                                    <i class="fa fa-bullhorn"/>
-                                </div>
-                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Material Marketing</h3>
-                                <p class="bader-page-card__text">
-                                    Catálogos, videos, imágenes de producto y material POP listo para usar.
-                                </p>
-                                <span class="bader-page-card__highlight">
-                                    <i class="fa fa-check-circle"/> Kit completo incluido
-                                </span>
-                            </div>
-
-                            <div class="bader-page-card bader-animate">
-                                <div class="bader-gradient-icon bader-gradient-icon--indigo">
-                                    <i class="fa fa-shield"/>
-                                </div>
-                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Garantía Europea</h3>
-                                <p class="bader-page-card__text">
-                                    Todos nuestros productos cuentan con garantía oficial del fabricante europeo.
-                                </p>
-                                <span class="bader-page-card__highlight">
-                                    <i class="fa fa-check-circle"/> 2 años de cobertura
-                                </span>
-                            </div>
+                        <div class="bader-dist-benefits-grid">
+                            <article class="bader-dist-benefit-card bader-animate">
+                                <div class="bader-dist-benefit-card__icon"><i class="fa fa-wrench"/></div>
+                                <h3>Tecnicos</h3>
+                                <p>Servicio tecnico especializado para todos nuestros productos.</p>
+                            </article>
+                            <article class="bader-dist-benefit-card bader-animate">
+                                <div class="bader-dist-benefit-card__icon"><i class="fa fa-cube"/></div>
+                                <h3>100% Stock</h3>
+                                <p>Alta disponibilidad para evitar roturas de stock en tu negocio.</p>
+                            </article>
+                            <article class="bader-dist-benefit-card bader-animate">
+                                <div class="bader-dist-benefit-card__icon"><i class="fa fa-truck"/></div>
+                                <h3>Envios 24h</h3>
+                                <p>Despachos agiles para que tus clientes reciban sus pedidos rapido.</p>
+                            </article>
+                            <article class="bader-dist-benefit-card bader-animate">
+                                <div class="bader-dist-benefit-card__icon"><i class="fa fa-headphones"/></div>
+                                <h3>Postventa</h3>
+                                <p>Acompanamiento y soluciones antes y despues de cada venta.</p>
+                            </article>
+                            <article class="bader-dist-benefit-card bader-animate">
+                                <div class="bader-dist-benefit-card__icon"><i class="fa fa-bullhorn"/></div>
+                                <h3>Marketing</h3>
+                                <p>Material grafico, fotos, videos y recursos comerciales listos para usar.</p>
+                            </article>
+                            <article class="bader-dist-benefit-card bader-animate">
+                                <div class="bader-dist-benefit-card__icon"><i class="fa fa-shield"/></div>
+                                <h3>Garantia</h3>
+                                <p>Todos los productos cuentan con garantia oficial de fabricante.</p>
+                            </article>
                         </div>
                     </div>
                 </section>
 
-                <!-- ============================
-                     PRODUCT LINES — Muted bg
-                     ============================ -->
-                <section class="bader-page-section bader-page-section--muted bader-animate">
+                <section class="bader-dist-section bader-dist-section--accent bader-animate">
                     <div class="bader-page-section__container">
-                        <div class="bader-page-section__heading">
-                            <span class="bader-page-hero__badge" style="background: rgba(112,212,75,0.10);">
-                                Catálogo Completo
-                            </span>
-                            <h2 class="bader-section__title">
-                                Líneas de <span class="text-green">productos</span>
-                            </h2>
-                            <p class="bader-section__subtitle">
-                                Ofrecemos una amplia variedad de material odontológico para diferentes necesidades
-                            </p>
+                        <div class="bader-dist-heading bader-dist-heading--light">
+                            <span class="bader-dist-badge">Nuestro Catalogo</span>
+                            <h2>Nuestras lineas de <span class="text-green">productos</span></h2>
+                            <p>Variedad de material odontologico para todos los segmentos y necesidades.</p>
                         </div>
 
-                        <div class="bader-page-section__grid bader-page-section__grid--4">
-                            <div class="bader-page-card bader-animate" style="text-align:center;">
-                                <div class="bader-page-card__icon" style="margin: 0 auto 1.5rem;">
-                                    <i class="fa fa-medkit"/>
-                                </div>
-                                <h3 class="bader-page-card__title" style="text-align:center;">Clínica Dental</h3>
-                                <p class="bader-page-card__text" style="text-align:center;">Sillones, autoclaves, equipos de diagnóstico</p>
-                            </div>
-                            <div class="bader-page-card bader-animate" style="text-align:center;">
-                                <div class="bader-page-card__icon" style="margin: 0 auto 1.5rem;">
-                                    <i class="fa fa-flask"/>
-                                </div>
-                                <h3 class="bader-page-card__title" style="text-align:center;">Laboratorio</h3>
-                                <p class="bader-page-card__text" style="text-align:center;">Equipos de prótesis y materiales</p>
-                            </div>
-                            <div class="bader-page-card bader-animate" style="text-align:center;">
-                                <div class="bader-page-card__icon" style="margin: 0 auto 1.5rem;">
-                                    <i class="fa fa-graduation-cap"/>
-                                </div>
-                                <h3 class="bader-page-card__title" style="text-align:center;">Estudiantes</h3>
-                                <p class="bader-page-card__text" style="text-align:center;">Fantomas, simuladores y kits</p>
-                            </div>
-                            <div class="bader-page-card bader-animate" style="text-align:center;">
-                                <div class="bader-page-card__icon" style="margin: 0 auto 1.5rem;">
-                                    <i class="fa fa-child"/>
-                                </div>
-                                <h3 class="bader-page-card__title" style="text-align:center;">Odontopediatría</h3>
-                                <p class="bader-page-card__text" style="text-align:center;">Equipamiento especializado</p>
-                            </div>
+                        <div class="bader-dist-lines-grid">
+                            <div class="bader-dist-line-card"><span><i class="fa fa-graduation-cap"/></span><h3>Formacion</h3></div>
+                            <div class="bader-dist-line-card"><span><i class="fa fa-wrench"/></span><h3>Instrumental</h3></div>
+                            <div class="bader-dist-line-card"><span><i class="fa fa-cube"/></span><h3>Mobiliario</h3></div>
+                            <div class="bader-dist-line-card"><span><i class="fa fa-flask"/></span><h3>Laboratorio</h3></div>
+                            <div class="bader-dist-line-card"><span><i class="fa fa-camera"/></span><h3>Fotografia</h3></div>
+                            <div class="bader-dist-line-card"><span><i class="fa fa-archive"/></span><h3>Accesorios</h3></div>
                         </div>
                     </div>
                 </section>
 
-                <!-- ============================
-                     DISTRIBUTOR FORM + INFO — White bg
-                     ============================ -->
-                <section class="bader-page-section bader-page-section--white bader-animate" id="distributor-form">
+                <section id="form" class="bader-dist-section bader-dist-section--white bader-animate">
                     <div class="bader-page-section__container">
-                        <div class="bader-page-section__heading">
-                            <span class="bader-page-hero__badge" style="background: rgba(112,212,75,0.10);">
-                                Formulario de Contacto
-                            </span>
-                            <h2 class="bader-section__title">
-                                ¿Querés ser <span class="text-green">distribuidor</span>?
-                            </h2>
-                            <p class="bader-section__subtitle">
-                                Completá el formulario y nos pondremos en contacto contigo
-                            </p>
-                        </div>
-
-                        <div class="bader-split">
-                            <!-- Left: Info -->
-                            <div>
-                                <h3 style="font-family: var(--font-display); font-weight: 700; color: #003841; margin-bottom: 1.5rem;">
-                                    Requisitos para ser distribuidor
-                                </h3>
+                        <div class="bader-dist-form-layout">
+                            <div class="bader-dist-form-copy">
+                                <span class="bader-dist-badge bader-dist-badge--soft">
+                                    <i class="fa fa-building-o"/> Unite al equipo
+                                </span>
+                                <h2>Unite al equipo de <span class="text-green">BADER</span></h2>
+                                <p>
+                                    Una vez cubierto el formulario, uno de nuestros comerciales se pondra en contacto
+                                    contigo para compartir toda la informacion necesaria y empezar a trabajar juntos.
+                                </p>
+                                <p class="bader-dist-form-copy__lead">
+                                    Estas a un paso de ser distribuidor de material dental de BADER.
+                                </p>
                                 <ul class="bader-checklist">
-                                    <li><i class="fa fa-check-circle"/> Ser persona física o jurídica habilitada</li>
-                                    <li><i class="fa fa-check-circle"/> Contar con establecimiento comercial</li>
-                                    <li><i class="fa fa-check-circle"/> Tener experiencia en el sector odontológico</li>
-                                    <li><i class="fa fa-check-circle"/> Disponibilidad para capacitación inicial</li>
-                                    <li><i class="fa fa-check-circle"/> Compromiso con volúmenes mínimos mensuales</li>
+                                    <li><i class="fa fa-check-circle"/> Precios exclusivos para mayoristas</li>
+                                    <li><i class="fa fa-check-circle"/> Stock garantizado sin roturas</li>
+                                    <li><i class="fa fa-check-circle"/> Material de marketing incluido</li>
+                                    <li><i class="fa fa-check-circle"/> Capacitacion y soporte tecnico</li>
+                                    <li><i class="fa fa-check-circle"/> Financiacion flexible</li>
+                                    <li><i class="fa fa-check-circle"/> Envios prioritarios a todo el pais</li>
                                 </ul>
-
-                                <div class="bader-about__distributor-card" style="margin-top: 2rem;">
-                                    <h3>Proceso de alta</h3>
-                                    <ul class="bader-checklist" style="color: white;">
-                                        <li><i class="fa fa-check-circle"/> <span>1. Completá el formulario</span></li>
-                                        <li><i class="fa fa-check-circle"/> <span>2. Evaluamos tu solicitud (48hs)</span></li>
-                                        <li><i class="fa fa-check-circle"/> <span>3. Reunión comercial virtual</span></li>
-                                        <li><i class="fa fa-check-circle"/> <span>4. Firma del acuerdo</span></li>
-                                        <li><i class="fa fa-check-circle"/> <span>5. ¡Empezá a vender!</span></li>
-                                    </ul>
-                                </div>
                             </div>
 
-                            <!-- Right: Form -->
-                            <div class="bader-form">
-                                <h3 class="bader-form__title">Solicitar información</h3>
-                                <p class="bader-form__subtitle">
-                                    Un asesor comercial se pondrá en contacto
-                                </p>
+                            <div class="bader-form bader-dist-form-card">
+                                <h3 class="bader-form__title">Formulario de Contacto</h3>
+                                <p class="bader-form__subtitle">Completa tus datos y te contactaremos</p>
                                 <form action="/bader/distribuidor-form" method="POST">
                                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                    <!-- Honeypot anti-spam: invisible to humans, bots fill it -->
                                     <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
                                         <input type="text" name="website_url" tabindex="-1" autocomplete="off"/>
                                     </div>
 
-                                    <div class="bader-form-grid">
-                                        <div class="bader-form__group">
-                                            <label>Nombre completo *</label>
-                                            <div class="input-wrapper">
-                                                <i class="fa fa-user"/>
-                                                <input type="text" name="name"
-                                                       placeholder="Tu nombre completo" required="required"/>
-                                            </div>
-                                        </div>
-                                        <div class="bader-form__group">
-                                            <label>Email *</label>
-                                            <div class="input-wrapper">
-                                                <i class="fa fa-envelope"/>
-                                                <input type="email" name="email"
-                                                       placeholder="tu@email.com" required="required"/>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="bader-form-grid">
-                                        <div class="bader-form__group">
-                                            <label>Teléfono *</label>
-                                            <div class="input-wrapper">
-                                                <i class="fa fa-phone"/>
-                                                <input type="tel" name="phone"
-                                                       placeholder="+54 11 1234 5678" required="required"/>
-                                            </div>
-                                        </div>
-                                        <div class="bader-form__group">
-                                            <label>Empresa</label>
-                                            <div class="input-wrapper">
-                                                <i class="fa fa-building"/>
-                                                <input type="text" name="company"
-                                                       placeholder="Nombre de tu empresa"/>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="bader-form-grid">
-                                        <div class="bader-form__group">
-                                            <label>Provincia *</label>
-                                            <div class="input-wrapper">
-                                                <i class="fa fa-map-marker"/>
-                                                <select name="province" required="required">
-                                                    <option value="">Seleccioná tu provincia</option>
-                                                    <option value="Buenos Aires">Buenos Aires</option>
-                                                    <option value="CABA">CABA</option>
-                                                    <option value="Córdoba">Córdoba</option>
-                                                    <option value="Santa Fe">Santa Fe</option>
-                                                    <option value="Mendoza">Mendoza</option>
-                                                    <option value="Tucumán">Tucumán</option>
-                                                    <option value="Otra">Otra</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="bader-form__group">
-                                            <label>Ciudad</label>
-                                            <div class="input-wrapper">
-                                                <i class="fa fa-map-pin"/>
-                                                <input type="text" name="city"
-                                                       placeholder="Tu ciudad"/>
-                                            </div>
+                                    <div class="bader-form__group">
+                                        <label>Nombre completo *</label>
+                                        <div class="input-wrapper">
+                                            <i class="fa fa-user"/>
+                                            <input type="text" name="name" placeholder="Tu nombre" required="required"/>
                                         </div>
                                     </div>
 
                                     <div class="bader-form__group">
-                                        <label>Tipo de negocio</label>
+                                        <label>Correo electronico *</label>
                                         <div class="input-wrapper">
-                                            <i class="fa fa-briefcase"/>
-                                            <select name="business_type">
-                                                <option value="">Seleccioná tu tipo de negocio</option>
-                                                <option value="deposito_dental">Depósito dental</option>
-                                                <option value="clinica">Clínica dental</option>
-                                                <option value="distribuidor">Distribuidor</option>
-                                                <option value="otro">Otro</option>
-                                            </select>
+                                            <i class="fa fa-envelope"/>
+                                            <input type="email" name="email" placeholder="tu@email.com" required="required"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="bader-form__group">
+                                        <label>Empresa *</label>
+                                        <div class="input-wrapper">
+                                            <i class="fa fa-building"/>
+                                            <input type="text" name="company" placeholder="Nombre de tu empresa" required="required"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="bader-form__group">
+                                        <label>Telefono *</label>
+                                        <div class="input-wrapper">
+                                            <i class="fa fa-phone"/>
+                                            <input type="tel" name="phone" placeholder="+54 11 1234-5678" required="required"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="bader-form-grid">
+                                        <div class="bader-form__group">
+                                            <label>Ciudad</label>
+                                            <div class="input-wrapper">
+                                                <i class="fa fa-map-marker"/>
+                                                <input type="text" name="city" placeholder="Tu ciudad"/>
+                                            </div>
+                                        </div>
+                                        <div class="bader-form__group">
+                                            <label>Provincia</label>
+                                            <div class="input-wrapper">
+                                                <i class="fa fa-map-marker"/>
+                                                <select name="province">
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="Buenos Aires">Buenos Aires</option>
+                                                    <option value="Ciudad Autonoma de Buenos Aires">Ciudad Autonoma de Buenos Aires</option>
+                                                    <option value="Catamarca">Catamarca</option>
+                                                    <option value="Chaco">Chaco</option>
+                                                    <option value="Chubut">Chubut</option>
+                                                    <option value="Cordoba">Cordoba</option>
+                                                    <option value="Corrientes">Corrientes</option>
+                                                    <option value="Entre Rios">Entre Rios</option>
+                                                    <option value="Formosa">Formosa</option>
+                                                    <option value="Jujuy">Jujuy</option>
+                                                    <option value="La Pampa">La Pampa</option>
+                                                    <option value="La Rioja">La Rioja</option>
+                                                    <option value="Mendoza">Mendoza</option>
+                                                    <option value="Misiones">Misiones</option>
+                                                    <option value="Neuquen">Neuquen</option>
+                                                    <option value="Rio Negro">Rio Negro</option>
+                                                    <option value="Salta">Salta</option>
+                                                    <option value="San Juan">San Juan</option>
+                                                    <option value="San Luis">San Luis</option>
+                                                    <option value="Santa Cruz">Santa Cruz</option>
+                                                    <option value="Santa Fe">Santa Fe</option>
+                                                    <option value="Santiago del Estero">Santiago del Estero</option>
+                                                    <option value="Tierra del Fuego">Tierra del Fuego</option>
+                                                    <option value="Tucuman">Tucuman</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="bader-form__group">
                                         <label>Mensaje (opcional)</label>
                                         <div class="input-wrapper">
-                                            <i class="fa fa-comment" style="top: 1.15rem;"/>
-                                            <textarea name="message" placeholder="Contanos sobre tu negocio..." rows="3"/>
+                                            <i class="fa fa-comment" style="top: 1rem;"/>
+                                            <textarea name="message" placeholder="Contanos sobre tu negocio..." rows="4"></textarea>
                                         </div>
                                     </div>
 
                                     <button type="submit" class="bader-form__submit">
-                                        <i class="fa fa-paper-plane"/> Enviar solicitud
+                                        Enviar solicitud <i class="fa fa-arrow-right"/>
                                     </button>
-
-                                    <div class="bader-form__footer">
-                                        <i class="fa fa-lock"/> Tus datos están protegidos
-                                    </div>
                                 </form>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- ============================
-                     CTA — Green gradient
-                     ============================ -->
-                <section class="bader-page-section bader-page-section--green bader-animate">
-                    <div class="bader-page-section__container" style="text-align: center;">
-                        <h2 style="font-family: 'BaderSans', sans-serif; font-size: 2rem; font-weight: 800; color: white; margin-bottom: 1rem;">
-                            ¿Tenés preguntas?
-                        </h2>
-                        <p style="color: rgba(255,255,255,0.85); margin-bottom: 2rem; max-width: 36rem; margin-left: auto; margin-right: auto;">
-                            Nuestro equipo comercial está disponible para resolver todas tus consultas.
-                        </p>
-                        <a href="https://wa.me/5491124522097?text=Hola!%20Quiero%20ser%20distribuidor"
-                           target="_blank" class="btn-bader" style="background: white; color: #70D44B;">
-                            <i class="fa fa-whatsapp"/> Contactar por WhatsApp
-                        </a>
+                <section class="bader-dist-section bader-dist-section--cta bader-animate">
+                    <div class="bader-page-section__container">
+                        <div class="bader-dist-cta">
+                            <div>
+                                <h2>Tenes dudas?</h2>
+                                <p>Contacta con nuestro equipo comercial para mas informacion.</p>
+                            </div>
+                            <div class="bader-dist-cta__actions">
+                                <a href="https://wa.me/5491124522097" target="_blank" class="btn-bader">
+                                    <i class="fa fa-whatsapp"/> WhatsApp
+                                </a>
+                                <a href="/productos" class="btn-bader-outline">
+                                    Ver tienda online <i class="fa fa-arrow-right"/>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </section>
-
             </div>
         </t>
     </template>
 
-    <!-- ============================
-         Thank You — Distributor form
-         ============================ -->
     <template id="bader_distribuidor_gracias" name="Bader Distribuidor Gracias">
         <t t-call="website.layout">
-            <div id="wrap">
-                <section class="bader-page-hero" style="min-height: 450px;">
-                    <div class="bader-page-hero__container">
-                        <div class="bader-page-hero__center">
-                            <div style="font-size: 4rem; margin-bottom: 1.5rem;">
-                                <i class="fa fa-check-circle text-green"/>
-                            </div>
-                            <h1 class="bader-page-hero__title">
-                                <span class="text-green">¡Gracias</span> por tu interés!
-                            </h1>
-                            <p class="bader-page-hero__subtitle">
-                                Hemos recibido tu solicitud para ser distribuidor Bader.
-                                Un asesor comercial se pondrá en contacto contigo dentro de las próximas 48 horas hábiles.
+            <div id="wrap" class="bader-dist-thankyou-wrap">
+                <section class="bader-dist-thankyou">
+                    <div class="bader-page-section__container">
+                        <div class="bader-dist-thankyou__card">
+                            <span class="bader-dist-thankyou__icon"><i class="fa fa-check-circle"/></span>
+                            <h1>Solicitud enviada</h1>
+                            <p>
+                                Gracias por tu interes en ser distribuidor Bader.
+                                Nuestro equipo comercial se pondra en contacto contigo muy pronto.
                             </p>
-                            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 2rem;">
-                                <a href="/productos" class="btn-bader">
-                                    <i class="fa fa-shopping-bag"/> Ver catálogo
-                                </a>
-                                <a href="/" class="btn-bader-outline" style="border-color: rgba(255,255,255,0.3); color: white;">
-                                    <i class="fa fa-home"/> Volver al inicio
-                                </a>
+                            <div class="bader-dist-thankyou__actions">
+                                <a href="/ser-distribuidor" class="btn-bader-outline">Enviar otra solicitud</a>
+                                <a href="/productos" class="btn-bader">Ver catalogo</a>
                             </div>
                         </div>
                     </div>
