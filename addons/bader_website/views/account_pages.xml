@@ -518,8 +518,8 @@
                                                 <span t-attf-class="bader-status-pill #{state_badges.get(order.state, 'is-gray')}"
                                                       t-esc="state_labels.get(order.state, order.state)"/>
                                                 <span class="bader-account-order__total">
-                                                    <t t-field="order.amount_total"
-                                                       t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
+                                                    <span t-field="order.amount_total"
+                                                          t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
                                                 </span>
                                             </div>
                                         </div>

@@ -1033,9 +1033,23 @@ odoo.define('bader_website.main', function (require) {
             var addBtn = document.querySelector('#product_detail #add_to_cart, #product_detail .a-submit');
             if (!addBtn) return;
 
-            addBtn.addEventListener('click', function () {
+            addBtn.addEventListener('click', function (ev) {
                 var btn = this;
                 var originalText = btn.innerHTML;
+                var form = btn.closest('form');
+                var shouldForceSubmit = !!(
+                    form &&
+                    btn.matches &&
+                    btn.matches('a.a-submit[href="#"], a.a-submit[href=""]')
+                );
+
+                if (shouldForceSubmit) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    if (typeof ev.stopImmediatePropagation === 'function') {
+                        ev.stopImmediatePropagation();
+                    }
+                }
 
                 btn.classList.add('bader-added');
                 btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> ¡Agregado!';
@@ -1044,6 +1058,13 @@ odoo.define('bader_website.main', function (require) {
                     btn.classList.remove('bader-added');
                     btn.innerHTML = originalText;
                 }, 2000);
+
+                if (shouldForceSubmit && !btn.getAttribute('data-bader-force-submit')) {
+                    btn.setAttribute('data-bader-force-submit', '1');
+                    setTimeout(function () {
+                        form.submit();
+                    }, 20);
+                }
             });
         })();
 
