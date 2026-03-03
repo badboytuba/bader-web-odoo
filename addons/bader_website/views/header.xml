@@ -16,9 +16,8 @@
         <xpath expr="//div[@id='top_menu_collapse']" position="after">
             <div class="bader-header-right d-none d-lg-flex align-items-center">
                 <a href="#" class="bader-search-pill" id="baderSearchPill">
-                    <i class="fa fa-search"/>
+                    <i class="fa fa-magic"/>
                     <span>Buscar con IA</span>
-                    <kbd>Q</kbd>
                 </a>
             </div>
         </xpath>
@@ -264,6 +263,133 @@
                         </div>
                     </footer>
                 </aside>
+            </div>
+
+            <div id="baderAiSearchModal" class="bader-ai-search" aria-hidden="true">
+                <button type="button"
+                        class="bader-ai-search__backdrop"
+                        data-bader-ai-close="1"
+                        aria-label="Cerrar búsqueda"/>
+
+                <section class="bader-ai-search__panel"
+                         role="dialog"
+                         aria-modal="true"
+                         aria-labelledby="baderAiSearchTitle">
+                    <header class="bader-ai-search__header">
+                        <div class="bader-ai-search__title-wrap">
+                            <span class="bader-ai-search__title-icon"><i class="fa fa-magic"/></span>
+                            <div>
+                                <h3 id="baderAiSearchTitle">BÚSQUEDA INTELIGENTE</h3>
+                                <p>Powered by Nancy AI</p>
+                            </div>
+                        </div>
+                        <button type="button"
+                                class="bader-ai-search__close"
+                                data-bader-ai-close="1"
+                                aria-label="Cerrar">
+                            <i class="fa fa-times"/>
+                        </button>
+                    </header>
+
+                    <form class="bader-ai-search__form" data-bader-ai-form="1">
+                        <div class="bader-ai-search__input-wrap">
+                            <i class="fa fa-magic bader-ai-search__lead-icon"/>
+                            <input type="text"
+                                   data-bader-ai-input="1"
+                                   autocomplete="off"
+                                   placeholder="Pregúntame lo que necesitas... Ej: 'Necesito equipar mi primera clínica'"/>
+                            <button type="button"
+                                    class="bader-ai-search__voice"
+                                    data-bader-ai-voice="1"
+                                    aria-label="Búsqueda por voz">
+                                <i class="fa fa-microphone"/>
+                            </button>
+                            <button type="submit" class="bader-ai-search__submit">
+                                <i class="fa fa-search"/>
+                                Buscar
+                            </button>
+                        </div>
+                    </form>
+
+                    <section class="bader-ai-search__section bader-ai-search__section--compact">
+                        <div class="bader-ai-search__chips" data-bader-ai-filters="1">
+                            <button type="button" class="bader-ai-search__chip" data-bader-ai-filter="clinica">
+                                <i class="fa fa-hospital-o"/>
+                                Para Clínicas
+                            </button>
+                            <button type="button" class="bader-ai-search__chip" data-bader-ai-filter="laboratorio">
+                                <i class="fa fa-flask"/>
+                                Para Labs
+                            </button>
+                            <button type="button" class="bader-ai-search__chip" data-bader-ai-filter="estudiantes">
+                                <i class="fa fa-graduation-cap"/>
+                                Estudiantes
+                            </button>
+                        </div>
+                    </section>
+
+                    <section class="bader-ai-search__section">
+                        <h4 class="bader-ai-search__label">
+                            <i class="fa fa-line-chart"/>
+                            Búsquedas populares
+                        </h4>
+                        <div class="bader-ai-search__chips bader-ai-search__chips--queries">
+                            <button type="button" class="bader-ai-search__chip bader-ai-search__chip--query" data-bader-ai-query="Nano Banan Pro 2">
+                                <i class="fa fa-search"/>
+                                Nano Banan Pro 2
+                            </button>
+                            <button type="button" class="bader-ai-search__chip bader-ai-search__chip--query" data-bader-ai-query="Autoclave clase B">
+                                <i class="fa fa-search"/>
+                                Autoclave clase B
+                            </button>
+                            <button type="button" class="bader-ai-search__chip bader-ai-search__chip--query" data-bader-ai-query="Rayos X digital">
+                                <i class="fa fa-search"/>
+                                Rayos X digital
+                            </button>
+                            <button type="button" class="bader-ai-search__chip bader-ai-search__chip--query" data-bader-ai-query="Equipo inicial clínica">
+                                <i class="fa fa-search"/>
+                                Equipo inicial clínica
+                            </button>
+                        </div>
+                    </section>
+
+                    <section class="bader-ai-search__section">
+                        <h4 class="bader-ai-search__label">
+                            <i class="fa fa-magic"/>
+                            Prueba preguntar...
+                        </h4>
+                        <div class="bader-ai-search__examples">
+                            <button type="button" class="bader-ai-search__example" data-bader-ai-query="Qué necesito para abrir mi clínica">
+                                <span>"¿Qué necesito para abrir mi clínica?"</span>
+                                <i class="fa fa-arrow-right"/>
+                            </button>
+                            <button type="button" class="bader-ai-search__example" data-bader-ai-query="Algo económico para empezar">
+                                <span>"Algo económico para empezar"</span>
+                                <i class="fa fa-arrow-right"/>
+                            </button>
+                            <button type="button" class="bader-ai-search__example" data-bader-ai-query="El mejor sillón del mercado">
+                                <span>"El mejor sillón del mercado"</span>
+                                <i class="fa fa-arrow-right"/>
+                            </button>
+                            <button type="button" class="bader-ai-search__example" data-bader-ai-query="Equipos con financiación">
+                                <span>"Equipos con financiación"</span>
+                                <i class="fa fa-arrow-right"/>
+                            </button>
+                        </div>
+                    </section>
+
+                    <section class="bader-ai-search__section">
+                        <div class="bader-ai-search__capabilities">
+                            <h4>¿QUÉ PUEDO HACER POR VOS?</h4>
+                            <div class="bader-ai-search__cap-grid">
+                                <div class="bader-ai-search__cap-item"><i class="fa fa-search"/> Buscar productos por nombre o descripción</div>
+                                <div class="bader-ai-search__cap-item"><i class="fa fa-lightbulb-o"/> Recomendar equipos según tus necesidades</div>
+                                <div class="bader-ai-search__cap-item"><i class="fa fa-building-o"/> Armar un presupuesto para tu clínica</div>
+                                <div class="bader-ai-search__cap-item"><i class="fa fa-cogs"/> Responder preguntas técnicas</div>
+                            </div>
+                        </div>
+                    </section>
+                </section>
             </div>
 
             <t t-if="request.website.is_public_user()">

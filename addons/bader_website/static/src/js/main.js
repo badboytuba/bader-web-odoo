@@ -138,30 +138,216 @@ odoo.define('bader_website.main', function (require) {
         (function initSearchPill() {
             var desktopPill = document.getElementById('baderSearchPill');
             var mobilePill = document.getElementById('baderSearchPillMobile');
+            var modal = document.getElementById('baderAiSearchModal');
+            var form = modal ? modal.querySelector('[data-bader-ai-form]') : null;
+            var input = modal ? modal.querySelector('[data-bader-ai-input]') : null;
+            var voiceBtn = modal ? modal.querySelector('[data-bader-ai-voice]') : null;
+            var closeTriggers = modal ? modal.querySelectorAll('[data-bader-ai-close]') : [];
+            var quickQueryButtons = modal ? modal.querySelectorAll('[data-bader-ai-query]') : [];
+            var filterButtons = modal ? modal.querySelectorAll('[data-bader-ai-filter]') : [];
+            var activeFilter = '';
+            var recognition = null;
+            var isListening = false;
+            var filterDefaults = {
+                clinica: 'equipamiento para clínica dental',
+                laboratorio: 'equipos para laboratorio dental',
+                estudiantes: 'kit para estudiantes odontología',
+            };
+
+            function closeMobileDrawerIfNeeded() {
+                var collapse = document.getElementById('top_menu_collapse');
+                var toggler = document.querySelector('header#top .navbar-toggler');
+                if (!collapse || !collapse.classList.contains('show')) return;
+                collapse.classList.remove('show');
+                collapse.style.height = '';
+                if (toggler) {
+                    toggler.classList.add('collapsed');
+                    toggler.setAttribute('aria-expanded', 'false');
+                }
+                document.body.classList.remove('bader-mobile-menu-open');
+            }
+
+            function updateFilterButtons() {
+                filterButtons.forEach(function (btn) {
+                    var key = btn.getAttribute('data-bader-ai-filter') || '';
+                    var selected = key === activeFilter;
+                    btn.classList.toggle('is-active', selected);
+                    btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
+                });
+            }
+
+            function setFilter(nextFilter) {
+                if (!nextFilter) {
+                    activeFilter = '';
+                } else {
+                    activeFilter = (activeFilter === nextFilter) ? '' : nextFilter;
+                }
+                updateFilterButtons();
+            }
+
+            function stopListening() {
+                if (!recognition || !isListening) return;
+                try {
+                    recognition.stop();
+                } catch (err) {
+                    // ignore speech api stop errors
+                }
+            }
+
+            function closeSearch() {
+                if (!modal || !modal.classList.contains('is-open')) return;
+                stopListening();
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('bader-ai-search-open');
+            }
 
             function openSearch(e) {
-                e.preventDefault();
-                // Try Odoo's built-in search toggle
-                var searchToggle = document.querySelector('.o_searchbar_form input[type="search"], .o_searchbar_form input[type="text"]');
-                if (searchToggle) {
-                    searchToggle.focus();
+                if (e && typeof e.preventDefault === 'function') e.preventDefault();
+                if (!modal) {
+                    window.location.href = '/productos';
                     return;
                 }
-                // Fallback: navigate to shop search
-                window.location.href = '/productos';
+                closeMobileDrawerIfNeeded();
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('bader-ai-search-open');
+                if (input) {
+                    window.setTimeout(function () {
+                        input.focus();
+                        input.select();
+                    }, 80);
+                }
+            }
+
+            function buildSearchUrl(rawValue) {
+                var query = (rawValue || '').trim();
+                if (!query && activeFilter) {
+                    query = filterDefaults[activeFilter] || '';
+                }
+                if (!query) return '';
+                var url = new URL('/productos', window.location.origin);
+                url.searchParams.set('search', query);
+                if (activeFilter) url.searchParams.set('persona', activeFilter);
+                return url.pathname + url.search;
+            }
+
+            function submitSearch(rawValue) {
+                var targetUrl = buildSearchUrl(rawValue || (input ? input.value : ''));
+                if (!targetUrl) {
+                    if (input) {
+                        input.classList.add('is-invalid');
+                        input.focus();
+                    }
+                    return;
+                }
+                window.location.href = targetUrl;
+            }
+
+            if (input) {
+                input.addEventListener('input', function () {
+                    input.classList.remove('is-invalid');
+                });
             }
 
             if (desktopPill) desktopPill.addEventListener('click', openSearch);
             if (mobilePill) mobilePill.addEventListener('click', openSearch);
 
-            // Keyboard shortcut: press Q to open search
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'q' && !e.ctrlKey && !e.altKey && !e.metaKey) {
-                    var tag = (e.target.tagName || '').toLowerCase();
-                    if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
-                    e.preventDefault();
-                    openSearch(e);
+            if (modal) {
+                if (form) {
+                    form.addEventListener('submit', function (ev) {
+                        ev.preventDefault();
+                        submitSearch();
+                    });
                 }
+
+                quickQueryButtons.forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        var query = btn.getAttribute('data-bader-ai-query') || '';
+                        if (input) input.value = query;
+                        submitSearch(query);
+                    });
+                });
+
+                filterButtons.forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        var key = btn.getAttribute('data-bader-ai-filter') || '';
+                        setFilter(key);
+                    });
+                });
+
+                closeTriggers.forEach(function (btn) {
+                    btn.addEventListener('click', closeSearch);
+                });
+
+                modal.addEventListener('click', function (ev) {
+                    if (ev.target === modal) closeSearch();
+                });
+
+                var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition && voiceBtn) {
+                    voiceBtn.disabled = true;
+                    voiceBtn.title = 'Búsqueda por voz no disponible en este navegador';
+                }
+                if (SpeechRecognition && voiceBtn) {
+                    recognition = new SpeechRecognition();
+                    recognition.lang = 'es-AR';
+                    recognition.continuous = false;
+                    recognition.interimResults = false;
+                    recognition.maxAlternatives = 1;
+
+                    recognition.onstart = function () {
+                        isListening = true;
+                        voiceBtn.classList.add('is-listening');
+                    };
+                    recognition.onend = function () {
+                        isListening = false;
+                        voiceBtn.classList.remove('is-listening');
+                    };
+                    recognition.onerror = function () {
+                        isListening = false;
+                        voiceBtn.classList.remove('is-listening');
+                    };
+                    recognition.onresult = function (ev) {
+                        var transcript = '';
+                        if (ev && ev.results && ev.results[0] && ev.results[0][0]) {
+                            transcript = (ev.results[0][0].transcript || '').trim();
+                        }
+                        if (transcript) {
+                            if (input) input.value = transcript;
+                            submitSearch(transcript);
+                        }
+                    };
+
+                    voiceBtn.addEventListener('click', function () {
+                        if (!recognition) return;
+                        if (isListening) {
+                            stopListening();
+                            return;
+                        }
+                        try {
+                            recognition.start();
+                        } catch (err) {
+                            // ignore duplicate start errors
+                        }
+                    });
+                }
+
+                updateFilterButtons();
+            }
+
+            document.addEventListener('keydown', function (e) {
+                var key = (e.key || '').toLowerCase();
+                if (key === 'escape' && modal && modal.classList.contains('is-open')) {
+                    e.preventDefault();
+                    closeSearch();
+                    return;
+                }
+                if (key !== 'q' || e.ctrlKey || e.altKey || e.metaKey) return;
+                var tag = (e.target && e.target.tagName ? e.target.tagName : '').toLowerCase();
+                if (tag === 'input' || tag === 'textarea' || tag === 'select' || (e.target && e.target.isContentEditable)) return;
+                e.preventDefault();
+                openSearch(e);
             });
         })();
 

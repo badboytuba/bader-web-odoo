@@ -2849,6 +2849,400 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
 }
 
 // ============================================
+// NANCY AI SEARCH MODAL
+// ============================================
+body.bader-ai-search-open {
+    overflow: hidden !important;
+}
+
+.bader-ai-search {
+    position: fixed;
+    inset: 0;
+    z-index: 1990;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity $transition-fast;
+
+    &.is-open {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    &__backdrop {
+        position: absolute;
+        inset: 0;
+        border: 0;
+        background:
+            radial-gradient(circle at 22% 16%, rgba(112, 212, 75, 0.18), transparent 44%),
+            radial-gradient(circle at 88% 90%, rgba(0, 86, 106, 0.22), transparent 48%),
+            rgba(1, 33, 41, 0.93);
+        backdrop-filter: blur(12px);
+    }
+
+    &__panel {
+        position: relative;
+        z-index: 2;
+        width: clamp(320px, calc(100% - 2rem), 920px);
+        max-height: calc(100vh - 5.5rem);
+        margin: 4.5rem auto 1rem;
+        overflow: auto;
+        border-radius: 18px;
+        border: 1px solid rgba(180, 225, 235, 0.18);
+        background:
+            linear-gradient(180deg, rgba(4, 73, 84, 0.78), rgba(3, 60, 69, 0.84)),
+            #043e47;
+        box-shadow: 0 28px 70px rgba(0, 0, 0, 0.42);
+        padding: 1.1rem 1.2rem 1.25rem;
+        color: $white;
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.85rem;
+    }
+
+    &__title-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        h3 {
+            margin: 0;
+            font-size: 1.15rem;
+            line-height: 1.1;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.95);
+            font-family: $font-display;
+            font-weight: 700;
+        }
+
+        p {
+            margin: 0.15rem 0 0;
+            color: rgba(205, 233, 239, 0.66);
+            font-size: 0.78rem;
+        }
+    }
+
+    &__title-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 11px;
+        border: 1px solid rgba(112, 212, 75, 0.42);
+        background: rgba(112, 212, 75, 0.14);
+        color: $bader-green;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex: 0 0 auto;
+    }
+
+    &__close {
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.85);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+            border-color: rgba(255, 255, 255, 0.48);
+            background: rgba(255, 255, 255, 0.14);
+            color: $white;
+        }
+    }
+
+    &__form {
+        margin-top: 0.85rem;
+    }
+
+    &__input-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        min-height: 56px;
+        border-radius: 15px;
+        border: 2px solid rgba($bader-green, 0.8);
+        background: rgba(17, 85, 96, 0.52);
+        padding: 0.32rem 0.34rem 0.32rem 0.7rem;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+    }
+
+    &__lead-icon {
+        color: $bader-green;
+        font-size: 1.02rem;
+        flex: 0 0 auto;
+    }
+
+    &__input-wrap input {
+        flex: 1 1 auto;
+        min-width: 0;
+        border: 0;
+        background: transparent;
+        color: $white;
+        font-size: 1.04rem;
+        line-height: 1.4;
+        padding: 0.1rem 0.25rem;
+
+        &::placeholder {
+            color: rgba(210, 236, 242, 0.45);
+        }
+
+        &:focus {
+            outline: 0;
+        }
+
+        &.is-invalid {
+            color: #ffd4d4;
+        }
+    }
+
+    &__voice,
+    &__submit {
+        border: 0;
+        border-radius: 10px;
+        min-height: 40px;
+        cursor: pointer;
+        transition: all $transition-fast;
+    }
+
+    &__voice {
+        width: 40px;
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.88);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+
+        &.is-listening {
+            color: $bader-green;
+            background: rgba($bader-green, 0.22);
+            box-shadow: 0 0 0 3px rgba($bader-green, 0.2);
+        }
+
+        &:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+    }
+
+    &__submit {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0 1rem;
+        color: $bader-dark;
+        font-weight: 700;
+        background: $bader-green;
+        flex: 0 0 auto;
+
+        &:hover {
+            background: lighten($bader-green, 4%);
+        }
+    }
+
+    &__section {
+        margin-top: 0.95rem;
+    }
+
+    &__section--compact {
+        margin-top: 0.75rem;
+    }
+
+    &__label {
+        margin: 0 0 0.45rem;
+        font-size: 0.9rem;
+        color: rgba(216, 240, 244, 0.72);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-weight: 600;
+    }
+
+    &__chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    &__chip {
+        border: 1px solid rgba(183, 223, 230, 0.24);
+        border-radius: 999px;
+        background: rgba(194, 224, 231, 0.13);
+        color: rgba(236, 249, 252, 0.9);
+        padding: 0.46rem 0.84rem;
+        font-size: 0.95rem;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.44rem;
+        cursor: pointer;
+        transition: all $transition-fast;
+
+        i {
+            opacity: 0.82;
+            font-size: 0.82rem;
+        }
+
+        &:hover {
+            background: rgba(220, 246, 251, 0.18);
+            color: $white;
+        }
+
+        &.is-active {
+            background: rgba($bader-green, 0.2);
+            border-color: rgba($bader-green, 0.64);
+            color: $white;
+        }
+    }
+
+    &__chip--query {
+        font-size: 0.88rem;
+        color: rgba(231, 247, 252, 0.86);
+    }
+
+    &__examples {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.55rem;
+    }
+
+    &__example {
+        border: 1px solid rgba(184, 224, 231, 0.2);
+        border-radius: 12px;
+        background: rgba(195, 224, 232, 0.08);
+        color: rgba(239, 250, 252, 0.86);
+        font-size: 0.95rem;
+        text-align: left;
+        padding: 0.7rem 0.86rem;
+        cursor: pointer;
+        transition: all $transition-fast;
+
+        span {
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        i {
+            color: rgba(200, 239, 247, 0.44);
+            transition: color $transition-fast;
+        }
+
+        &:hover {
+            border-color: rgba(201, 236, 242, 0.38);
+            background: rgba(205, 237, 244, 0.14);
+
+            i {
+                color: $bader-green;
+            }
+        }
+    }
+
+    &__capabilities {
+        border: 1px solid rgba(184, 224, 231, 0.2);
+        border-radius: 14px;
+        background: rgba(195, 224, 232, 0.08);
+        padding: 0.95rem;
+
+        h4 {
+            margin: 0;
+            font-size: 1.02rem;
+            letter-spacing: 0.01em;
+            color: rgba(244, 251, 252, 0.92);
+            font-family: $font-display;
+            font-weight: 700;
+        }
+    }
+
+    &__cap-grid {
+        margin-top: 0.6rem;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.52rem 0.85rem;
+    }
+
+    &__cap-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: rgba(216, 240, 245, 0.86);
+        font-size: 0.92rem;
+
+        i {
+            color: $bader-green;
+            width: 16px;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 1023px) {
+        &__panel {
+            margin-top: 4rem;
+        }
+    }
+
+    @media (max-width: 767px) {
+        &__panel {
+            width: calc(100% - 0.8rem);
+            margin-top: 3.6rem;
+            padding: 0.85rem 0.8rem 0.95rem;
+            border-radius: 14px;
+            max-height: calc(100vh - 4.1rem);
+        }
+
+        &__title-wrap h3 {
+            font-size: 0.97rem;
+        }
+
+        &__title-wrap p {
+            font-size: 0.7rem;
+        }
+
+        &__input-wrap {
+            min-height: 50px;
+            gap: 0.35rem;
+            padding-left: 0.55rem;
+        }
+
+        &__input-wrap input {
+            font-size: 0.9rem;
+        }
+
+        &__submit {
+            min-height: 36px;
+            padding: 0 0.72rem;
+            font-size: 0.84rem;
+        }
+
+        &__examples,
+        &__cap-grid {
+            grid-template-columns: 1fr;
+        }
+
+        &__chip {
+            font-size: 0.84rem;
+            padding: 0.42rem 0.7rem;
+        }
+
+        &__example {
+            font-size: 0.84rem;
+            padding: 0.62rem 0.7rem;
+        }
+    }
+}
+
+// ============================================
 // AUTH MODAL (Clerk-like)
 // ============================================
 body.bader-auth-modal-open {
