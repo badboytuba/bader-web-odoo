@@ -1651,14 +1651,70 @@ odoo.define('bader_website.main', function (require) {
                         var cartBtn = document.createElement('button');
                         cartBtn.className = 'bader-floating-cart';
                         cartBtn.innerHTML = '<i class="fa fa-shopping-cart"></i>';
-                        cartBtn.setAttribute('aria-label', 'Ver producto');
+                        cartBtn.setAttribute('aria-label', 'Agregar al carrito');
+                        cartBtn.setAttribute('title', 'Agregar al carrito');
                         imageSection.appendChild(cartBtn);
 
                         cartBtn.addEventListener('click', function (e) {
                             e.preventDefault();
                             e.stopPropagation();
                             var link = card.querySelector('a[href*="/shop/"]');
-                            if (link) window.location.href = link.href;
+                            if (cartBtn.getAttribute('data-bader-cart-loading') === '1') return;
+
+                            var productNode = card.querySelector('[data-product-product-id]');
+                            var productId = parseInt(
+                                String(productNode ? productNode.getAttribute('data-product-product-id') : '')
+                                    .replace(/[^\d]/g, ''),
+                                10
+                            );
+                            if (!productId) {
+                                if (link) window.location.href = link.href;
+                                return;
+                            }
+
+                            cartBtn.setAttribute('data-bader-cart-loading', '1');
+                            fetch('/shop/cart/update_json', {
+                                method: 'POST',
+                                credentials: 'same-origin',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    jsonrpc: '2.0',
+                                    method: 'call',
+                                    params: {
+                                        product_id: productId,
+                                        add_qty: 1,
+                                    },
+                                }),
+                            }).then(function (response) {
+                                if (!response.ok) {
+                                    throw new Error('invalid add-to-cart response');
+                                }
+                                return response.json();
+                            }).then(function (payload) {
+                                var data = payload && payload.result ? payload.result : payload || {};
+                                if (typeof data.cart_quantity !== 'undefined') {
+                                    var qty = Math.max(0, parseInt(String(data.cart_quantity), 10) || 0);
+                                    var badgeText = qty > 99 ? '99+' : String(qty);
+                                    document.querySelectorAll('.my_cart_quantity, .o_wsale_my_cart .my_cart_quantity').forEach(function (badge) {
+                                        badge.textContent = badgeText;
+                                        badge.classList.remove('d-none');
+                                    });
+                                    try {
+                                        if (window.sessionStorage) {
+                                            window.sessionStorage.setItem('website_sale_cart_quantity', String(qty));
+                                        }
+                                    } catch (err) {
+                                        // Ignore storage errors.
+                                    }
+                                }
+                                document.dispatchEvent(new Event('bader:cart-open'));
+                            }).catch(function () {
+                                if (link) window.location.href = link.href;
+                            }).finally(function () {
+                                cartBtn.removeAttribute('data-bader-cart-loading');
+                            });
                         });
                     }
 
