@@ -107,10 +107,6 @@
                        class="bader-mobile-account__login bader-auth-trigger"
                        data-bader-auth-open="login"
                        data-bader-auth-redirect="/">Tu Cuenta</a>
-                    <a href="/web/signup?redirect=/"
-                       class="bader-mobile-account__register bader-auth-trigger"
-                       data-bader-auth-open="register"
-                       data-bader-auth-redirect="/">Registrarse</a>
                 </section>
 
                 <section class="bader-mobile-account" t-else="">

@@ -14,14 +14,6 @@
                 <span t-if="request.session.profile_session" class="text-danger fa fa-circle"/>
             </a>
         </xpath>
-        <xpath expr="//a[contains(@t-attf-href, '/web/login?redirect=/')]" position="after">
-            <a t-attf-href="/web/signup?redirect=/"
-               class="bader-header-register-link bader-auth-trigger"
-               data-bader-auth-open="register"
-               data-bader-auth-redirect="/">
-                Registrarse
-            </a>
-        </xpath>
     </template>
 
     <template id="bader_hide_header_wishlist"
