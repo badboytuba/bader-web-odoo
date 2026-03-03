@@ -744,3 +744,182 @@
         }
     }
 }
+
+// ============================================================
+// V3 Product Detail Upgrade (premium, compact, conversion-first)
+// ============================================================
+#product_detail.bader-product-detail,
+.oe_website_sale #product_detail.bader-product-detail {
+    background:
+        radial-gradient(circle at 12% 4%, rgba(112, 212, 75, 0.10), transparent 38%),
+        radial-gradient(circle at 86% 10%, rgba(0, 86, 106, 0.08), transparent 34%),
+        $white;
+}
+
+#product_detail.bader-product-detail #product_detail_main>.row {
+    gap: clamp(28px, 4vw, 58px);
+    align-items: start;
+}
+
+#product_detail.bader-product-detail .carousel-inner,
+#product_detail.bader-product-detail .bader-gallery__main {
+    border-radius: 20px;
+    border: 1px solid rgba(0, 56, 65, 0.12);
+    box-shadow: 0 12px 28px rgba(0, 56, 65, 0.10);
+    background:
+        radial-gradient(circle at 18% 14%, rgba(112, 212, 75, 0.13), transparent 44%),
+        $white;
+}
+
+#product_detail.bader-product-detail #product_details {
+    border: 1px solid rgba(0, 56, 65, 0.13);
+    border-radius: 20px;
+    padding: clamp(16px, 2.2vw, 26px);
+    background: $white;
+    box-shadow: 0 10px 28px rgba(0, 56, 65, 0.10);
+    position: sticky;
+    top: 102px;
+}
+
+#product_detail.bader-product-detail #product_details h1[itemprop="name"] {
+    font-size: clamp(24px, 2.2vw, 32px);
+    line-height: 1.2;
+}
+
+#product_detail.bader-product-detail #product_details .oe_price .oe_currency_value {
+    font-size: clamp(30px, 3vw, 40px) !important;
+}
+
+.bader-highlight-strip {
+    margin: 14px 0 6px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+
+    .bader-highlight-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        min-height: 34px;
+        padding: 7px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(0, 56, 65, 0.16);
+        background: rgba(112, 212, 75, 0.11);
+        color: $bader-dark;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        text-align: center;
+
+        i {
+            font-size: 12px;
+            color: $bader-green-dark;
+        }
+    }
+}
+
+#product_full_description.bader-detail-tabs {
+    margin-top: 52px !important;
+    border-top: 0;
+    padding-top: 0;
+    background: $white;
+    border: 1px solid rgba(0, 56, 65, 0.12);
+    border-radius: 20px;
+    padding: clamp(18px, 2.2vw, 28px);
+    box-shadow: 0 10px 26px rgba(0, 56, 65, 0.08);
+}
+
+#product_full_description.bader-detail-tabs .nav-tabs {
+    border: 0 !important;
+    background: rgba(0, 56, 65, 0.06);
+    border-radius: 999px;
+    padding: 5px;
+    width: fit-content;
+    margin-bottom: 22px;
+    gap: 4px;
+}
+
+#product_full_description.bader-detail-tabs .nav-tabs .nav-link {
+    border: 0 !important;
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: $gray-600;
+    line-height: 1.2;
+}
+
+#product_full_description.bader-detail-tabs .nav-tabs .nav-link.active {
+    color: $white;
+    background: linear-gradient(135deg, $bader-dark, $bader-green-dark);
+
+    &::after {
+        display: none;
+    }
+}
+
+.bader-related-products {
+    margin-top: 58px;
+
+    .bader-related-card {
+        border: 1px solid rgba(0, 56, 65, 0.14);
+        border-radius: 16px;
+        box-shadow: 0 8px 20px rgba(0, 56, 65, 0.08);
+        overflow: hidden;
+        gap: 10px;
+    }
+
+    .bader-related-card__image {
+        border-radius: 12px;
+        background:
+            radial-gradient(circle at 22% 16%, rgba(112, 212, 75, 0.16), transparent 45%),
+            $gray-50;
+    }
+
+    .bader-related-card__price {
+        font-size: 20px;
+        letter-spacing: -0.01em;
+    }
+}
+
+.bader-faq-section .bader-faq-item {
+    border-radius: 14px;
+    border: 1px solid rgba(0, 56, 65, 0.12);
+    background: linear-gradient(145deg, rgba(112, 212, 75, 0.08), $white 64%);
+}
+
+@media (max-width: 1100px) {
+    #product_detail.bader-product-detail #product_details {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .bader-highlight-strip {
+        grid-template-columns: 1fr;
+    }
+
+    #product_full_description.bader-detail-tabs {
+        border-radius: 16px;
+        padding: 14px;
+    }
+
+    #product_full_description.bader-detail-tabs .nav-tabs {
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+        display: flex;
+        flex-wrap: nowrap;
+        border-radius: 12px;
+    }
+
+    #product_full_description.bader-detail-tabs .nav-tabs .nav-link {
+        flex: 0 0 auto;
+        font-size: 12.5px;
+    }
+
+    .bader-related-products .bader-related-card__price {
+        font-size: 18px;
+    }
+}

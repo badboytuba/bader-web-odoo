@@ -26,6 +26,20 @@
                 <span class="bader-stock-dot"/>
                 <span>En stock</span>
             </div>
+            <div class="bader-highlight-strip" role="list" aria-label="Beneficios clave">
+                <span class="bader-highlight-pill" role="listitem">
+                    <i class="fa fa-bolt"/>
+                    Entrega 48-72h
+                </span>
+                <span class="bader-highlight-pill" role="listitem">
+                    <i class="fa fa-credit-card"/>
+                    12 cuotas
+                </span>
+                <span class="bader-highlight-pill" role="listitem">
+                    <i class="fa fa-headphones"/>
+                    Soporte experto
+                </span>
+            </div>
         </xpath>
 
         <xpath expr="//a[@id='add_to_cart']/span" position="replace">
