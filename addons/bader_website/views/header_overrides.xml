@@ -6,9 +6,20 @@
               name="Bader Header Sign In Label"
               priority="99">
         <xpath expr="//a[contains(@t-attf-href, '/web/login')]" position="replace">
-            <a t-attf-href="/web/login" t-attf-class="#{_link_class}">
+            <a t-attf-href="/web/login?redirect=/"
+               t-attf-class="#{_link_class} bader-auth-trigger"
+               data-bader-auth-open="login"
+               data-bader-auth-redirect="/">
                 Tu Cuenta
                 <span t-if="request.session.profile_session" class="text-danger fa fa-circle"/>
+            </a>
+        </xpath>
+        <xpath expr="//a[contains(@t-attf-href, '/web/login?redirect=/')]" position="after">
+            <a t-attf-href="/web/signup?redirect=/"
+               class="bader-header-register-link bader-auth-trigger"
+               data-bader-auth-open="register"
+               data-bader-auth-redirect="/">
+                Registrarse
             </a>
         </xpath>
     </template>
@@ -23,4 +34,3 @@
     </template>
 
 </odoo>
-

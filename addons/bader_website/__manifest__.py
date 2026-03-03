@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Bader Website',
-    'version': '16.0.4.0.0',
+    'version': '16.0.5.0.0',
     'summary': 'Premium website for Bader dental equipment',
     'description': """
         Complete website for Bader Iberoamericana.
@@ -20,6 +20,7 @@
     'website': 'https://bader.com.ar',
     'category': 'Website',
     'depends': [
+        'auth_signup',
         'website',
         'website_sale',
         'website_sale_wishlist',
@@ -45,6 +46,7 @@
         'views/laboratorio_dental.xml',
         'views/estudiantes_odontologia.xml',
         # Menu and website pages
+        'data/auth_signup.xml',
         'data/website_menu.xml',
         # Website page records (for Odoo backend integration)
         'data/website_pages.xml',

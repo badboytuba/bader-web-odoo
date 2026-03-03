@@ -126,6 +126,28 @@
             }
         }
 
+        .bader-header-register-link {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 0.55rem;
+            padding: 0.34rem 0.74rem;
+            border-radius: 999px;
+            border: 1px solid rgba($bader-green, 0.65);
+            color: $bader-green !important;
+            text-decoration: none;
+            font-size: 0.76rem;
+            line-height: 1;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            transition: all $transition-fast;
+
+            &:hover {
+                border-color: $bader-green;
+                background: rgba($bader-green, 0.16);
+                color: $bader-green-dark !important;
+            }
+        }
+
         // Active menu item - underline effect like reference
         .navbar-nav .nav-item.active>.nav-link,
         #top_menu>li.active>a {
@@ -278,7 +300,8 @@
 
         // "TU CUENTA" style — green text like reference
         .o_header_call_to_action a,
-        a[href="/web/login"],
+        a[href^="/web/login"],
+        a.bader-auth-trigger[data-bader-auth-open="login"],
         a[href="/my/home"] {
             color: $bader-green !important;
             font-weight: 600;
@@ -769,6 +792,17 @@ html.o_connected_user #wrapwrap>header#top {
         text-transform: uppercase;
         letter-spacing: 0.05em;
         font-size: 0.76rem !important;
+    }
+
+    .bader-mobile-account__register {
+        color: $bader-green !important;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 0.76rem !important;
+        border: 1px solid rgba($bader-green, 0.6);
+        border-radius: 999px;
+        margin-top: 0.45rem;
     }
 
     .bader-mega {

@@ -2847,3 +2847,544 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
         }
     }
 }
+
+// ============================================
+// AUTH MODAL (Clerk-like)
+// ============================================
+body.bader-auth-modal-open {
+    overflow: hidden !important;
+}
+
+.bader-auth-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1995;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity $transition-fast;
+
+    &.is-open {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    &__backdrop {
+        position: absolute;
+        inset: 0;
+        border: 0;
+        background: rgba(2, 12, 18, 0.68);
+    }
+
+    &__panel {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 740px;
+        max-height: calc(100vh - 2rem);
+        overflow: auto;
+        margin: 1rem auto;
+        background: $white;
+        border: 1px solid $bader-card-border;
+        border-radius: $radius-lg;
+        box-shadow: $shadow-xl;
+        padding: 1rem;
+
+        @include mobile {
+            max-width: calc(100% - 1rem);
+            margin: 0.5rem auto;
+            max-height: calc(100vh - 1rem);
+            padding: 0.85rem 0.8rem;
+        }
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.7rem;
+
+        h3 {
+            margin: 0;
+            color: $bader-dark;
+            font-family: $font-display;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+    }
+
+    &__close {
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        border: 0;
+        background: $gray-100;
+        color: $gray-700;
+        cursor: pointer;
+    }
+
+    &__tabs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.45rem;
+        margin-bottom: 0.55rem;
+
+        button {
+            min-height: 38px;
+            border-radius: $radius-md;
+            border: 1px solid $gray-200;
+            background: $gray-50;
+            color: $gray-600;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all $transition-fast;
+
+            &.is-active {
+                border-color: rgba($bader-green, 0.68);
+                background: rgba($bader-green, 0.12);
+                color: $bader-dark;
+            }
+        }
+    }
+
+    &__hint {
+        margin: 0 0 0.7rem;
+        color: $bader-muted-fg;
+        font-size: 0.82rem;
+        line-height: 1.4;
+    }
+
+    &__form {
+        display: grid;
+        gap: 0.62rem;
+
+        &[hidden] {
+            display: none !important;
+        }
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.62rem;
+
+        @include mobile {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__field {
+        label {
+            display: block;
+            margin-bottom: 0.3rem;
+            color: $bader-dark;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        input,
+        select {
+            width: 100%;
+            min-height: 40px;
+            border-radius: $radius-md;
+            border: 1px solid $bader-border;
+            background: $white;
+            padding: 0.48rem 0.62rem;
+            color: $bader-dark;
+            font-size: 0.88rem;
+
+            &:focus {
+                outline: 0;
+                border-color: rgba($bader-green, 0.9);
+                box-shadow: 0 0 0 3px rgba($bader-green, 0.15);
+            }
+        }
+    }
+
+    &__checks {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.35rem 0.5rem;
+
+        @include mobile {
+            grid-template-columns: 1fr;
+        }
+
+        label {
+            margin: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.3rem 0.42rem;
+            border: 1px solid $gray-200;
+            border-radius: $radius-sm;
+            font-size: 0.78rem;
+            color: $gray-600;
+            font-weight: 500;
+        }
+
+        input {
+            width: 15px;
+            height: 15px;
+            margin: 0;
+            accent-color: $bader-green;
+        }
+    }
+
+    &__persona-group {
+        border: 1px solid $gray-200;
+        border-radius: $radius-md;
+        background: $gray-50;
+        padding: 0.7rem;
+
+        &[hidden] {
+            display: none !important;
+        }
+    }
+
+    &__forgot {
+        justify-self: start;
+        color: $bader-green-dark;
+        font-size: 0.79rem;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    &__message {
+        min-height: 1.1rem;
+        margin: 0.6rem 0 0;
+        font-size: 0.8rem;
+        line-height: 1.4;
+        color: $gray-600;
+        text-align: center;
+
+        &.is-error {
+            color: #b54747;
+        }
+
+        &.is-success {
+            color: #157e4d;
+        }
+    }
+
+    &.is-loading {
+        .btn-bader {
+            opacity: 0.75;
+            cursor: wait;
+        }
+    }
+}
+
+// ============================================
+// ONBOARDING MODAL (first login)
+// ============================================
+body.bader-onboarding-open {
+    overflow: hidden !important;
+}
+
+.bader-onboarding {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(4, 26, 30, 0.62);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity $transition-fast;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+
+    &.is-open {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    &__dialog {
+        width: 100%;
+        max-width: 640px;
+        max-height: calc(100vh - 2rem);
+        overflow: auto;
+        background: $white;
+        border: 1px solid $bader-card-border;
+        border-radius: $radius-lg;
+        box-shadow: $shadow-xl;
+        padding: 1rem 1rem 0.85rem;
+    }
+
+    &__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.55rem;
+    }
+
+    &__step {
+        font-size: 0.78rem;
+        color: $bader-muted-fg;
+        font-weight: 600;
+    }
+
+    &__skip-top {
+        width: 30px;
+        height: 30px;
+        border: 0;
+        border-radius: 999px;
+        background: $gray-100;
+        color: $gray-700;
+        cursor: pointer;
+    }
+
+    &__progress {
+        width: 100%;
+        height: 6px;
+        border-radius: 999px;
+        background: $gray-100;
+        overflow: hidden;
+        margin-bottom: 0.85rem;
+
+        span {
+            display: block;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, $bader-green 0%, #12ad8e 100%);
+            transition: width $transition-fast;
+        }
+    }
+
+    &__body {
+        min-height: 290px;
+        padding: 0.25rem 0;
+    }
+
+    &__welcome {
+        text-align: center;
+        padding: 1rem 0.25rem;
+
+        h3 {
+            margin: 0.75rem 0 0.55rem;
+            font-size: 1.5rem;
+            color: $bader-dark;
+        }
+
+        p {
+            margin: 0;
+            color: $bader-muted-fg;
+            line-height: 1.5;
+        }
+    }
+
+    &__icon {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba($bader-green, 0.15);
+        color: $bader-green-dark;
+        font-size: 1.15rem;
+    }
+
+    &__step-head {
+        margin-bottom: 0.85rem;
+
+        h3 {
+            margin: 0 0 0.35rem;
+            color: $bader-dark;
+            font-size: 1.3rem;
+        }
+
+        p {
+            margin: 0;
+            color: $bader-muted-fg;
+            line-height: 1.45;
+        }
+    }
+
+    &__persona-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.7rem;
+
+        @include mobile {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__persona {
+        border: 1px solid $bader-card-border;
+        border-radius: $radius-md;
+        background: $white;
+        text-align: left;
+        padding: 0.7rem 0.75rem;
+        cursor: pointer;
+        transition: border-color $transition-fast, box-shadow $transition-fast;
+
+        strong {
+            display: block;
+            color: $bader-dark;
+            margin-bottom: 0.3rem;
+        }
+
+        span {
+            font-size: 0.82rem;
+            color: $bader-muted-fg;
+            line-height: 1.35;
+        }
+
+        &:hover {
+            border-color: rgba($bader-green, 0.6);
+        }
+
+        &.is-active {
+            border-color: $bader-green;
+            box-shadow: 0 0 0 2px rgba($bader-green, 0.18);
+        }
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.7rem;
+
+        @include mobile {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__field {
+        margin-bottom: 0.7rem;
+
+        label {
+            display: block;
+            margin-bottom: 0.28rem;
+            font-size: 0.86rem;
+            color: $bader-dark;
+            font-weight: 600;
+        }
+
+        input,
+        select {
+            width: 100%;
+            border: 1px solid $bader-border;
+            border-radius: $radius-md;
+            min-height: 42px;
+            padding: 0.5rem 0.65rem;
+            font-size: 0.9rem;
+            color: $bader-dark;
+            background: $white;
+
+            &:focus {
+                border-color: rgba($bader-green, 0.85);
+                outline: 0;
+            }
+        }
+    }
+
+    &__chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+    }
+
+    &__chip {
+        border: 1px solid $bader-border;
+        border-radius: 999px;
+        background: $gray-50;
+        color: $bader-muted-fg;
+        padding: 0.32rem 0.62rem;
+        font-size: 0.78rem;
+        cursor: pointer;
+        transition: all $transition-fast;
+
+        &.is-active {
+            border-color: $bader-green;
+            background: rgba($bader-green, 0.12);
+            color: $bader-green-dark;
+        }
+    }
+
+    &__done {
+        text-align: center;
+        padding: 0.75rem 0.3rem 0.4rem;
+
+        h3 {
+            margin: 0.7rem 0 0.45rem;
+            font-size: 1.45rem;
+            color: $bader-dark;
+        }
+
+        p {
+            margin: 0 auto 0.75rem;
+            max-width: 470px;
+            color: $bader-muted-fg;
+            line-height: 1.48;
+        }
+
+        ul {
+            margin: 0 auto;
+            padding: 0;
+            list-style: none;
+            max-width: 430px;
+            display: grid;
+            gap: 0.4rem;
+            text-align: left;
+            color: $bader-dark;
+
+            li::before {
+                content: '\2022';
+                color: $bader-green;
+                margin-right: 0.4rem;
+            }
+        }
+    }
+
+    &__check {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba($bader-green, 0.16);
+        color: $bader-green-dark;
+        font-size: 1.2rem;
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.55rem;
+        margin-top: 0.55rem;
+
+        button {
+            flex: 1 1 0;
+            min-height: 42px;
+        }
+    }
+
+    &__message {
+        min-height: 1.2rem;
+        margin: 0.2rem 0 0;
+        color: #b54747;
+        font-size: 0.8rem;
+        text-align: center;
+    }
+
+    &__skip-bottom {
+        width: 100%;
+        margin-top: 0.35rem;
+        border: 0;
+        background: transparent;
+        color: $bader-muted-fg;
+        font-size: 0.8rem;
+        padding: 0.35rem 0.2rem;
+        cursor: pointer;
+    }
+}

@@ -2375,6 +2375,897 @@ odoo.define('bader_website.main', function (require) {
             });
         })();
 
+        // ---- 14. Auth Modal (Clerk-like UX, Odoo-native backend) ----
+        (function initAuthModal() {
+            var modal = document.getElementById('baderAuthModal');
+            if (!modal || !window.fetch) return;
+
+            var STORAGE_KEY = 'bader_onboarding_shown';
+            var loginForm = modal.querySelector('[data-bader-auth-form="login"]');
+            var registerForm = modal.querySelector('[data-bader-auth-form="register"]');
+            var messageEl = modal.querySelector('[data-bader-auth-message="1"]');
+            var hintEl = modal.querySelector('[data-bader-auth-hint="1"]');
+            var tabButtons = modal.querySelectorAll('[data-bader-auth-tab]');
+            var personaSelect = modal.querySelector('[data-bader-signup-persona-select="1"]');
+            var personaGroups = modal.querySelectorAll('[data-bader-signup-persona]');
+            var activeTab = 'login';
+            var isSubmitting = false;
+
+            function safeStorageRemove(key) {
+                try {
+                    if (window.localStorage) window.localStorage.removeItem(key);
+                } catch (err) {
+                    // Ignore storage errors.
+                }
+            }
+
+            function normalizeRedirect(path) {
+                var value = (path || '').trim();
+                if (!value || value.charAt(0) !== '/' || value.indexOf('//') === 0) return '/';
+                if (value.indexOf('/web/login') === 0 || value.indexOf('/web/signup') === 0) return '/';
+                if (value.indexOf('/bader/auth') === 0) return '/';
+                return value;
+            }
+
+            function currentRedirectFromWindow() {
+                return normalizeRedirect(
+                    window.location.pathname + (window.location.search || '') + (window.location.hash || '')
+                );
+            }
+
+            function rpc(url, params) {
+                return fetch(url, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'call',
+                        params: params || {},
+                        id: Date.now(),
+                    }),
+                }).then(function (response) {
+                    if (!response.ok) throw new Error('rpc_http_error');
+                    return response.json();
+                }).then(function (data) {
+                    if (data && data.error) throw new Error((data.error.data && data.error.data.message) || 'rpc_error');
+                    return (data && data.result) || {};
+                });
+            }
+
+            function setMessage(text, isError) {
+                if (!messageEl) return;
+                messageEl.textContent = text || '';
+                messageEl.classList.toggle('is-error', !!isError);
+                messageEl.classList.toggle('is-success', !isError && !!text);
+            }
+
+            function setSubmitting(flag) {
+                isSubmitting = !!flag;
+                modal.classList.toggle('is-loading', isSubmitting);
+                modal.querySelectorAll('button, input, select').forEach(function (el) {
+                    if (el.getAttribute('data-bader-auth-close') === '1') return;
+                    el.disabled = isSubmitting;
+                });
+            }
+
+            function updatePersonaRequired(persona) {
+                if (!registerForm) return;
+                var clinicRole = registerForm.querySelector('select[name="clinic_role"]');
+                var labType = registerForm.querySelector('select[name="lab_type"]');
+                var labSpecialization = registerForm.querySelector('select[name="lab_specialization"]');
+                var career = registerForm.querySelector('select[name="career"]');
+                var studyYear = registerForm.querySelector('select[name="study_year"]');
+
+                if (clinicRole) clinicRole.required = persona === 'clinica';
+                if (labType) labType.required = persona === 'laboratorio';
+                if (labSpecialization) labSpecialization.required = persona === 'laboratorio';
+                if (career) career.required = persona === 'estudiantes';
+                if (studyYear) studyYear.required = persona === 'estudiantes';
+            }
+
+            function updatePersonaPanels() {
+                if (!registerForm) return;
+                var persona = personaSelect ? (personaSelect.value || '') : '';
+                personaGroups.forEach(function (group) {
+                    var key = group.getAttribute('data-bader-signup-persona');
+                    var shouldShow = !!persona && key === persona;
+                    if (shouldShow) group.removeAttribute('hidden');
+                    else group.setAttribute('hidden', 'hidden');
+                });
+                updatePersonaRequired(persona);
+            }
+
+            function applyTabState() {
+                tabButtons.forEach(function (btn) {
+                    var key = btn.getAttribute('data-bader-auth-tab');
+                    btn.classList.toggle('is-active', key === activeTab);
+                    btn.setAttribute('aria-selected', key === activeTab ? 'true' : 'false');
+                });
+
+                if (activeTab === 'login') {
+                    if (loginForm) loginForm.removeAttribute('hidden');
+                    if (registerForm) registerForm.setAttribute('hidden', 'hidden');
+                    if (hintEl) hintEl.textContent = 'Accede para ver pedidos, facturas y recomendaciones personalizadas.';
+                } else {
+                    if (registerForm) registerForm.removeAttribute('hidden');
+                    if (loginForm) loginForm.setAttribute('hidden', 'hidden');
+                    if (hintEl) hintEl.textContent = 'Crea tu cuenta y completa tu perfil profesional para una experiencia personalizada.';
+                    updatePersonaPanels();
+                }
+                setMessage('', false);
+            }
+
+            function openModal(tab, redirectPath) {
+                activeTab = tab === 'register' ? 'register' : 'login';
+                applyTabState();
+
+                var safeRedirect = normalizeRedirect(redirectPath || currentRedirectFromWindow());
+                if (loginForm) loginForm.setAttribute('data-redirect', safeRedirect);
+                if (registerForm) registerForm.setAttribute('data-redirect', safeRedirect);
+
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('bader-auth-modal-open');
+
+                window.setTimeout(function () {
+                    var firstInput = modal.querySelector(
+                        activeTab === 'login'
+                            ? '[data-bader-auth-form="login"] input[name="login"]'
+                            : '[data-bader-auth-form="register"] input[name="name"]'
+                    );
+                    if (firstInput && typeof firstInput.focus === 'function') firstInput.focus();
+                }, 40);
+            }
+
+            function closeModal() {
+                if (!modal.classList.contains('is-open') || isSubmitting) return;
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('bader-auth-modal-open');
+                setMessage('', false);
+            }
+
+            function serializeLoginForm() {
+                var formData = new FormData(loginForm);
+                return {
+                    login: (formData.get('login') || '').toString().trim(),
+                    password: (formData.get('password') || '').toString(),
+                    redirect: normalizeRedirect(loginForm.getAttribute('data-redirect') || currentRedirectFromWindow()),
+                };
+            }
+
+            function serializeRegisterForm() {
+                var formData = new FormData(registerForm);
+                return {
+                    name: (formData.get('name') || '').toString().trim(),
+                    email: (formData.get('email') || '').toString().trim(),
+                    password: (formData.get('password') || '').toString(),
+                    confirm_password: (formData.get('confirm_password') || '').toString(),
+                    persona: (formData.get('persona') || '').toString(),
+                    clinic_role: (formData.get('clinic_role') || '').toString(),
+                    clinic_specialties: formData.getAll('clinic_specialties').map(function (v) { return String(v); }),
+                    clinic_size: (formData.get('clinic_size') || '').toString(),
+                    years_experience: (formData.get('years_experience') || '').toString(),
+                    clinic_name: (formData.get('clinic_name') || '').toString(),
+                    lab_type: (formData.get('lab_type') || '').toString(),
+                    lab_specialization: (formData.get('lab_specialization') || '').toString(),
+                    lab_team_size: (formData.get('lab_team_size') || '').toString(),
+                    lab_name: (formData.get('lab_name') || '').toString(),
+                    career: (formData.get('career') || '').toString(),
+                    study_year: (formData.get('study_year') || '').toString(),
+                    university: (formData.get('university') || '').toString(),
+                    student_city: (formData.get('student_city') || '').toString(),
+                    redirect: normalizeRedirect(registerForm.getAttribute('data-redirect') || currentRedirectFromWindow()),
+                };
+            }
+
+            function humanizeMissingFields(fields) {
+                if (!fields || !fields.length) return 'Completa los datos requeridos para terminar el registro.';
+                var labels = {
+                    clinic_role: 'cargo',
+                    clinic_specialties: 'especialidades',
+                    lab_type: 'tipo de laboratorio',
+                    lab_specialization: 'especializacion principal',
+                    career: 'carrera',
+                    study_year: 'ano de cursado',
+                };
+                return 'Falta completar: ' + fields.map(function (key) { return labels[key] || key; }).join(', ') + '.';
+            }
+
+            tabButtons.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    if (isSubmitting) return;
+                    var tabKey = btn.getAttribute('data-bader-auth-tab');
+                    activeTab = tabKey === 'register' ? 'register' : 'login';
+                    applyTabState();
+                });
+            });
+
+            if (personaSelect) {
+                personaSelect.addEventListener('change', updatePersonaPanels);
+            }
+
+            if (loginForm) {
+                loginForm.addEventListener('submit', function (ev) {
+                    ev.preventDefault();
+                    if (isSubmitting) return;
+
+                    var payload = serializeLoginForm();
+                    if (!payload.login || !payload.password) {
+                        setMessage('Ingresa email y contrasena.', true);
+                        return;
+                    }
+
+                    setSubmitting(true);
+                    setMessage('', false);
+                    rpc('/bader/auth/login', payload).then(function (result) {
+                        if (!result || !result.ok) {
+                            setSubmitting(false);
+                            setMessage(
+                                (result && result.message) || 'No se pudo iniciar sesion. Verifica tus datos.',
+                                true
+                            );
+                            return;
+                        }
+                        safeStorageRemove(STORAGE_KEY);
+                        window.location.href = normalizeRedirect(result.redirect || '/');
+                    }).catch(function () {
+                        setSubmitting(false);
+                        setMessage('Error de conexion. Intenta nuevamente.', true);
+                    });
+                });
+            }
+
+            if (registerForm) {
+                registerForm.addEventListener('submit', function (ev) {
+                    ev.preventDefault();
+                    if (isSubmitting) return;
+
+                    var payload = serializeRegisterForm();
+                    if (!payload.persona) {
+                        setMessage('Selecciona tu perfil profesional.', true);
+                        return;
+                    }
+                    if (payload.persona === 'clinica' && (!payload.clinic_specialties || !payload.clinic_specialties.length)) {
+                        setMessage('Selecciona al menos una especialidad para clinica.', true);
+                        return;
+                    }
+
+                    setSubmitting(true);
+                    setMessage('', false);
+                    rpc('/bader/auth/signup', payload).then(function (result) {
+                        if (!result || !result.ok) {
+                            setSubmitting(false);
+                            if (result && result.error === 'missing_required_fields') {
+                                setMessage(humanizeMissingFields(result.fields || []), true);
+                                return;
+                            }
+                            setMessage(
+                                (result && result.message) || 'No se pudo crear la cuenta.',
+                                true
+                            );
+                            return;
+                        }
+                        safeStorageRemove(STORAGE_KEY);
+                        window.location.href = normalizeRedirect(result.redirect || '/');
+                    }).catch(function () {
+                        setSubmitting(false);
+                        setMessage('Error de conexion. Intenta nuevamente.', true);
+                    });
+                });
+            }
+
+            document.addEventListener('click', function (ev) {
+                var target = ev.target;
+                if (!target) return;
+
+                var opener = target.closest('[data-bader-auth-open]');
+                if (opener) {
+                    if (!modal) return;
+                    ev.preventDefault();
+                    var tab = opener.getAttribute('data-bader-auth-open') || 'login';
+                    var redirectPath = opener.getAttribute('data-bader-auth-redirect') || currentRedirectFromWindow();
+                    openModal(tab, redirectPath);
+                    return;
+                }
+
+                if (!modal.classList.contains('is-open')) return;
+                var closeTrigger = target.closest && target.closest('[data-bader-auth-close="1"]');
+                if (target === modal || closeTrigger) {
+                    closeModal();
+                }
+            });
+
+            document.addEventListener('keydown', function (ev) {
+                if (ev.key === 'Escape' && modal.classList.contains('is-open')) {
+                    closeModal();
+                }
+            });
+
+            updatePersonaPanels();
+        })();
+
+        // ---- 15. First Login Onboarding (Bader-AR parity) ----
+        (function initOnboardingFlow() {
+            var bootstrap = document.getElementById('baderOnboardingBootstrap');
+            if (!bootstrap || !window.fetch) return;
+
+            var STORAGE_KEY = 'bader_onboarding_shown';
+            var modalRoot = null;
+            var contentEl = null;
+            var progressBarEl = null;
+            var stepLabelEl = null;
+            var primaryBtn = null;
+            var backBtn = null;
+            var skipTopBtn = null;
+            var skipBottomBtn = null;
+            var messageEl = null;
+            var isSaving = false;
+            var step = 0;
+
+            var personaOptions = [
+                { key: 'clinica', title: 'Clinica Dental', desc: 'Consultorios y clinicas odontologicas' },
+                { key: 'laboratorio', title: 'Laboratorio Dental', desc: 'Laboratorios de protesis y tecnica dental' },
+                { key: 'estudiantes', title: 'Estudiantes', desc: 'Estudiantes de odontologia y carreras afines' },
+            ];
+            var clinicRoles = [
+                { value: 'dueno', label: 'Dueno/a' },
+                { value: 'gerente', label: 'Gerente' },
+                { value: 'dentista', label: 'Dentista' },
+                { value: 'asistente', label: 'Asistente Dental' },
+                { value: 'recepcionista', label: 'Recepcionista' },
+            ];
+            var clinicSpecialties = [
+                { value: 'general', label: 'Odontologia General' },
+                { value: 'ortodoncia', label: 'Ortodoncia' },
+                { value: 'endodoncia', label: 'Endodoncia' },
+                { value: 'periodoncia', label: 'Periodoncia' },
+                { value: 'implantologia', label: 'Implantologia' },
+                { value: 'cirugia', label: 'Cirugia' },
+                { value: 'odontopediatria', label: 'Odontopediatria' },
+                { value: 'estetica', label: 'Estetica Dental' },
+            ];
+            var clinicSizes = [
+                { value: 'pequena', label: 'Pequena (1-2 sillones)' },
+                { value: 'mediana', label: 'Mediana (3-5 sillones)' },
+                { value: 'grande', label: 'Grande (6+ sillones)' },
+            ];
+            var labTypes = [
+                { value: 'protesico', label: 'Protesico' },
+                { value: 'ortodontico', label: 'Ortodontico' },
+                { value: 'cadcam', label: 'CAD/CAM Digital' },
+                { value: 'general', label: 'General' },
+            ];
+            var labSpecializations = [
+                { value: 'zirconio', label: 'Zirconio' },
+                { value: 'metal-ceramica', label: 'Metal-Ceramica' },
+                { value: 'acrilico', label: 'Acrilico' },
+                { value: 'alineadores', label: 'Alineadores' },
+                { value: 'implantes', label: 'Implantes' },
+                { value: 'protesis-removible', label: 'Protesis Removible' },
+            ];
+            var labTeamSizes = [
+                { value: 'solo', label: 'Solo (1 persona)' },
+                { value: 'pequeno', label: 'Pequeno (2-5 personas)' },
+                { value: 'mediano', label: 'Mediano (6-15 personas)' },
+                { value: 'grande', label: 'Grande (16+ personas)' },
+            ];
+            var studyYears = [
+                { value: '1', label: '1 Ano' },
+                { value: '2', label: '2 Ano' },
+                { value: '3', label: '3 Ano' },
+                { value: '4', label: '4 Ano' },
+                { value: '5', label: '5 Ano' },
+                { value: 'graduado', label: 'Graduado reciente' },
+            ];
+            var careers = [
+                { value: 'odontologia', label: 'Odontologia' },
+                { value: 'protesis', label: 'Tecnico en Protesis Dental' },
+                { value: 'higienista', label: 'Higienista Dental' },
+                { value: 'asistente', label: 'Asistente Dental' },
+            ];
+
+            var profile = {
+                persona: '',
+                clinic_name: '',
+                clinic_role: '',
+                clinic_specialties: [],
+                clinic_size: '',
+                years_experience: '',
+                lab_name: '',
+                lab_type: '',
+                lab_specialization: '',
+                lab_team_size: '',
+                university: '',
+                study_year: '',
+                career: '',
+                student_city: '',
+            };
+
+            function safeGetStorage(key) {
+                try {
+                    return window.localStorage.getItem(key) || '';
+                } catch (err) {
+                    return '';
+                }
+            }
+
+            function safeSetStorage(key, value) {
+                try {
+                    window.localStorage.setItem(key, value);
+                } catch (err) {
+                    // Ignore storage errors.
+                }
+            }
+
+            function htmlEscape(value) {
+                var text = String(value || '');
+                return text
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/\"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            function renderSelectOptions(options, selectedValue, placeholder) {
+                var html = '<option value="">' + htmlEscape(placeholder || 'Selecciona') + '</option>';
+                for (var i = 0; i < options.length; i += 1) {
+                    var option = options[i];
+                    var selected = option.value === selectedValue ? ' selected="selected"' : '';
+                    html += '<option value="' + htmlEscape(option.value) + '"' + selected + '>' + htmlEscape(option.label) + '</option>';
+                }
+                return html;
+            }
+
+            function rpc(url, params) {
+                return fetch(url, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'call',
+                        params: params || {},
+                    }),
+                }).then(function (response) {
+                    return response.text();
+                }).then(function (bodyText) {
+                    var payload = {};
+                    try {
+                        payload = JSON.parse(bodyText || '{}');
+                    } catch (err) {
+                        payload = {};
+                    }
+                    return payload && Object.prototype.hasOwnProperty.call(payload, 'result')
+                        ? payload.result
+                        : payload;
+                });
+            }
+
+            function mergeProfile(serverProfile) {
+                if (!serverProfile) return;
+                profile.persona = (serverProfile.persona || '').toLowerCase();
+                profile.clinic_name = serverProfile.clinic_name || '';
+                profile.clinic_role = serverProfile.clinic_role || '';
+                profile.clinic_specialties = Array.isArray(serverProfile.clinic_specialties)
+                    ? serverProfile.clinic_specialties.slice(0, 12)
+                    : [];
+                profile.clinic_size = serverProfile.clinic_size || '';
+                profile.years_experience = serverProfile.years_experience || '';
+                profile.lab_name = serverProfile.lab_name || '';
+                profile.lab_type = serverProfile.lab_type || '';
+                profile.lab_specialization = serverProfile.lab_specialization || '';
+                profile.lab_team_size = serverProfile.lab_team_size || '';
+                profile.university = serverProfile.university || '';
+                profile.study_year = serverProfile.study_year || '';
+                profile.career = serverProfile.career || '';
+                profile.student_city = serverProfile.student_city || '';
+            }
+
+            function currentTotalSteps() {
+                return 4;
+            }
+
+            function canProceedStep() {
+                if (step === 0) return true;
+                if (step === 1) return !!profile.persona;
+                if (step !== 2) return true;
+
+                if (profile.persona === 'clinica') {
+                    return !!profile.clinic_role && Array.isArray(profile.clinic_specialties) && profile.clinic_specialties.length > 0;
+                }
+                if (profile.persona === 'laboratorio') {
+                    return !!profile.lab_type && !!profile.lab_specialization;
+                }
+                if (profile.persona === 'estudiantes') {
+                    return !!profile.career && !!profile.study_year;
+                }
+                return false;
+            }
+
+            function personaTitle(personaKey) {
+                for (var i = 0; i < personaOptions.length; i += 1) {
+                    if (personaOptions[i].key === personaKey) return personaOptions[i].title;
+                }
+                return 'Profesional';
+            }
+
+            function stepOneHtml() {
+                return '' +
+                    '<div class="bader-onboarding__welcome">' +
+                    '<span class="bader-onboarding__icon"><i class="fa fa-sparkles fa-star"></i></span>' +
+                    '<h3>Bienvenido a Bader Argentina</h3>' +
+                    '<p>Completa tu perfil en 1 minuto para personalizar productos, ofertas y contenido segun tu especialidad.</p>' +
+                    '</div>';
+            }
+
+            function stepTwoHtml() {
+                var cards = '';
+                for (var i = 0; i < personaOptions.length; i += 1) {
+                    var item = personaOptions[i];
+                    var isActive = profile.persona === item.key ? ' is-active' : '';
+                    cards += '' +
+                        '<button type="button" class="bader-onboarding__persona' + isActive + '" data-onboarding-persona="' + item.key + '">' +
+                        '<strong>' + htmlEscape(item.title) + '</strong>' +
+                        '<span>' + htmlEscape(item.desc) + '</span>' +
+                        '</button>';
+                }
+                return '' +
+                    '<div class="bader-onboarding__step-head">' +
+                    '<h3>Selecciona tu perfil</h3>' +
+                    '<p>Este dato define recomendaciones y accesos rapidos en toda la web.</p>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__persona-grid">' + cards + '</div>';
+            }
+
+            function clinicQuestionsHtml() {
+                var chips = '';
+                for (var i = 0; i < clinicSpecialties.length; i += 1) {
+                    var spec = clinicSpecialties[i];
+                    var selected = profile.clinic_specialties.indexOf(spec.value) !== -1 ? ' is-active' : '';
+                    chips += '' +
+                        '<button type="button" class="bader-onboarding__chip' + selected + '" data-onboarding-specialty="' + htmlEscape(spec.value) + '">' +
+                        htmlEscape(spec.label) +
+                        '</button>';
+                }
+
+                return '' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Cargo *</label>' +
+                    '<select data-onboarding-input="clinic_role">' +
+                    renderSelectOptions(clinicRoles, profile.clinic_role, 'Selecciona tu cargo') +
+                    '</select>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Especialidades * (elige al menos una)</label>' +
+                    '<div class="bader-onboarding__chips">' + chips + '</div>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__grid">' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Tamano de la clinica</label>' +
+                    '<select data-onboarding-input="clinic_size">' +
+                    renderSelectOptions(clinicSizes, profile.clinic_size, 'Selecciona el tamano') +
+                    '</select>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Anos de experiencia</label>' +
+                    '<input type="number" min="0" max="80" data-onboarding-input="years_experience" value="' + htmlEscape(profile.years_experience) + '" placeholder="Ej: 5"/>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Nombre de la clinica</label>' +
+                    '<input type="text" data-onboarding-input="clinic_name" value="' + htmlEscape(profile.clinic_name) + '" placeholder="Ej: Clinica Dental Sonrisa"/>' +
+                    '</div>';
+            }
+
+            function labQuestionsHtml() {
+                return '' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Tipo de laboratorio *</label>' +
+                    '<select data-onboarding-input="lab_type">' +
+                    renderSelectOptions(labTypes, profile.lab_type, 'Selecciona el tipo') +
+                    '</select>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Especializacion principal *</label>' +
+                    '<select data-onboarding-input="lab_specialization">' +
+                    renderSelectOptions(labSpecializations, profile.lab_specialization, 'Selecciona especializacion') +
+                    '</select>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__grid">' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Tamano del equipo</label>' +
+                    '<select data-onboarding-input="lab_team_size">' +
+                    renderSelectOptions(labTeamSizes, profile.lab_team_size, 'Selecciona tamano') +
+                    '</select>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Nombre del laboratorio</label>' +
+                    '<input type="text" data-onboarding-input="lab_name" value="' + htmlEscape(profile.lab_name) + '" placeholder="Ej: Laboratorio Dental Elite"/>' +
+                    '</div>' +
+                    '</div>';
+            }
+
+            function studentQuestionsHtml() {
+                return '' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Que estudias? *</label>' +
+                    '<select data-onboarding-input="career">' +
+                    renderSelectOptions(careers, profile.career, 'Selecciona tu carrera') +
+                    '</select>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Ano de cursado *</label>' +
+                    '<select data-onboarding-input="study_year">' +
+                    renderSelectOptions(studyYears, profile.study_year, 'Selecciona tu ano') +
+                    '</select>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__grid">' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Universidad</label>' +
+                    '<input type="text" data-onboarding-input="university" value="' + htmlEscape(profile.university) + '" placeholder="Ej: Universidad de Buenos Aires"/>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Ciudad</label>' +
+                    '<input type="text" data-onboarding-input="student_city" value="' + htmlEscape(profile.student_city) + '" placeholder="Ej: Buenos Aires"/>' +
+                    '</div>' +
+                    '</div>';
+            }
+
+            function stepThreeHtml() {
+                var body = '';
+                if (profile.persona === 'clinica') body = clinicQuestionsHtml();
+                if (profile.persona === 'laboratorio') body = labQuestionsHtml();
+                if (profile.persona === 'estudiantes') body = studentQuestionsHtml();
+
+                return '' +
+                    '<div class="bader-onboarding__step-head">' +
+                    '<h3>Contanos sobre vos</h3>' +
+                    '<p>Perfil seleccionado: <strong>' + htmlEscape(personaTitle(profile.persona)) + '</strong></p>' +
+                    '</div>' +
+                    body;
+            }
+
+            function stepFourHtml() {
+                return '' +
+                    '<div class="bader-onboarding__done">' +
+                    '<span class="bader-onboarding__check"><i class="fa fa-check"/></span>' +
+                    '<h3>Todo listo</h3>' +
+                    '<p>Guardaremos tu perfil para personalizar productos, descuentos y recursos desde tu cuenta Odoo.</p>' +
+                    '<ul>' +
+                    '<li>Recomendaciones adaptadas a tu perfil</li>' +
+                    '<li>Acceso directo a categorias relevantes</li>' +
+                    '<li>Soporte comercial mas preciso</li>' +
+                    '</ul>' +
+                    '</div>';
+            }
+
+            function renderCurrentStep() {
+                if (!contentEl) return;
+                if (step === 0) contentEl.innerHTML = stepOneHtml();
+                if (step === 1) contentEl.innerHTML = stepTwoHtml();
+                if (step === 2) contentEl.innerHTML = stepThreeHtml();
+                if (step === 3) contentEl.innerHTML = stepFourHtml();
+                updateFrame();
+            }
+
+            function updateFrame() {
+                var total = currentTotalSteps();
+                var current = step + 1;
+                var pct = Math.round((current / total) * 100);
+
+                if (progressBarEl) progressBarEl.style.width = pct + '%';
+                if (stepLabelEl) stepLabelEl.textContent = 'Paso ' + current + ' de ' + total;
+                if (backBtn) backBtn.style.display = step > 0 ? '' : 'none';
+                if (primaryBtn) {
+                    var isLast = step >= 3;
+                    primaryBtn.textContent = isLast ? (isSaving ? 'Guardando...' : 'Empezar a explorar') : 'Continuar';
+                    primaryBtn.disabled = isSaving || !canProceedStep();
+                }
+            }
+
+            function closeOnboarding() {
+                if (!modalRoot) return;
+                modalRoot.classList.remove('is-open');
+                document.body.classList.remove('bader-onboarding-open');
+                setTimeout(function () {
+                    if (modalRoot && modalRoot.parentNode) {
+                        modalRoot.parentNode.removeChild(modalRoot);
+                    }
+                    modalRoot = null;
+                }, 180);
+            }
+
+            function skipOnboarding() {
+                safeSetStorage(STORAGE_KEY, 'true');
+                closeOnboarding();
+            }
+
+            function toggleSpecialty(value) {
+                var current = profile.clinic_specialties || [];
+                var idx = current.indexOf(value);
+                if (idx === -1) current.push(value);
+                else current.splice(idx, 1);
+                profile.clinic_specialties = current;
+            }
+
+            function saveOnboarding() {
+                if (isSaving || !canProceedStep()) return;
+                isSaving = true;
+                if (messageEl) messageEl.textContent = '';
+                updateFrame();
+
+                rpc('/bader/onboarding/save', {
+                    persona: profile.persona,
+                    clinic_name: profile.clinic_name,
+                    clinic_role: profile.clinic_role,
+                    clinic_specialties: profile.clinic_specialties || [],
+                    clinic_size: profile.clinic_size,
+                    years_experience: profile.years_experience,
+                    lab_name: profile.lab_name,
+                    lab_type: profile.lab_type,
+                    lab_specialization: profile.lab_specialization,
+                    lab_team_size: profile.lab_team_size,
+                    university: profile.university,
+                    study_year: profile.study_year,
+                    career: profile.career,
+                    student_city: profile.student_city,
+                }).then(function (result) {
+                    isSaving = false;
+                    if (!result || !result.ok) {
+                        if (messageEl) {
+                            messageEl.textContent = 'No se pudo guardar. Revisa los campos obligatorios e intenta nuevamente.';
+                        }
+                        updateFrame();
+                        return;
+                    }
+                    safeSetStorage(STORAGE_KEY, 'true');
+                    closeOnboarding();
+                    window.setTimeout(function () {
+                        window.location.reload();
+                    }, 120);
+                }).catch(function () {
+                    isSaving = false;
+                    if (messageEl) {
+                        messageEl.textContent = 'Error de conexion. Intenta nuevamente.';
+                    }
+                    updateFrame();
+                });
+            }
+
+            function handleInputChange(target) {
+                if (!target) return;
+                var key = target.getAttribute('data-onboarding-input');
+                if (!key) return;
+
+                if (key === 'years_experience') {
+                    var intVal = parseInt(target.value || '0', 10);
+                    if (isNaN(intVal) || intVal < 0) intVal = 0;
+                    if (intVal > 80) intVal = 80;
+                    profile.years_experience = String(intVal);
+                } else {
+                    profile[key] = target.value || '';
+                }
+                updateFrame();
+            }
+
+            function bindModalEvents() {
+                if (!modalRoot) return;
+
+                modalRoot.addEventListener('click', function (ev) {
+                    var target = ev.target;
+                    if (!target) return;
+
+                    if (target === modalRoot || target.getAttribute('data-onboarding-close') === '1') {
+                        skipOnboarding();
+                        return;
+                    }
+
+                    var personaBtn = target.closest('[data-onboarding-persona]');
+                    if (personaBtn) {
+                        profile.persona = personaBtn.getAttribute('data-onboarding-persona') || '';
+                        renderCurrentStep();
+                        return;
+                    }
+
+                    var specBtn = target.closest('[data-onboarding-specialty]');
+                    if (specBtn) {
+                        toggleSpecialty(specBtn.getAttribute('data-onboarding-specialty') || '');
+                        specBtn.classList.toggle('is-active');
+                        updateFrame();
+                        return;
+                    }
+
+                    if (target === skipTopBtn || target === skipBottomBtn) {
+                        skipOnboarding();
+                        return;
+                    }
+
+                    if (target === backBtn) {
+                        if (step > 0) {
+                            step -= 1;
+                            renderCurrentStep();
+                        }
+                        return;
+                    }
+
+                    if (target === primaryBtn) {
+                        if (step < 3) {
+                            if (!canProceedStep()) return;
+                            step += 1;
+                            renderCurrentStep();
+                        } else {
+                            saveOnboarding();
+                        }
+                    }
+                });
+
+                modalRoot.addEventListener('change', function (ev) {
+                    handleInputChange(ev.target);
+                });
+                modalRoot.addEventListener('input', function (ev) {
+                    handleInputChange(ev.target);
+                });
+                document.addEventListener('keydown', function (ev) {
+                    if (!modalRoot || !modalRoot.classList.contains('is-open')) return;
+                    if (ev.key === 'Escape') skipOnboarding();
+                });
+            }
+
+            function mountModal() {
+                if (modalRoot) return;
+                modalRoot = document.createElement('div');
+                modalRoot.className = 'bader-onboarding';
+                modalRoot.innerHTML = '' +
+                    '<div class="bader-onboarding__dialog">' +
+                    '<div class="bader-onboarding__head">' +
+                    '<span class="bader-onboarding__step" data-onboarding-step="1">Paso 1 de 4</span>' +
+                    '<button type="button" class="bader-onboarding__skip-top" data-onboarding-close="1" aria-label="Cerrar"><i class="fa fa-times"></i></button>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__progress"><span data-onboarding-progress="1"></span></div>' +
+                    '<div class="bader-onboarding__body" data-onboarding-content="1"></div>' +
+                    '<p class="bader-onboarding__message" data-onboarding-message="1"></p>' +
+                    '<div class="bader-onboarding__actions">' +
+                    '<button type="button" class="btn btn-outline-secondary" data-onboarding-back="1">Volver</button>' +
+                    '<button type="button" class="btn-bader" data-onboarding-next="1">Continuar</button>' +
+                    '</div>' +
+                    '<button type="button" class="bader-onboarding__skip-bottom" data-onboarding-skip="1">Omitir por ahora</button>' +
+                    '</div>';
+
+                document.body.appendChild(modalRoot);
+                contentEl = modalRoot.querySelector('[data-onboarding-content="1"]');
+                progressBarEl = modalRoot.querySelector('[data-onboarding-progress="1"]');
+                stepLabelEl = modalRoot.querySelector('[data-onboarding-step="1"]');
+                primaryBtn = modalRoot.querySelector('[data-onboarding-next="1"]');
+                backBtn = modalRoot.querySelector('[data-onboarding-back="1"]');
+                skipTopBtn = modalRoot.querySelector('[data-onboarding-close="1"]');
+                skipBottomBtn = modalRoot.querySelector('[data-onboarding-skip="1"]');
+                messageEl = modalRoot.querySelector('[data-onboarding-message="1"]');
+                bindModalEvents();
+                renderCurrentStep();
+                document.body.classList.add('bader-onboarding-open');
+                setTimeout(function () {
+                    if (modalRoot) modalRoot.classList.add('is-open');
+                }, 30);
+            }
+
+            var alreadyShown = safeGetStorage(STORAGE_KEY) === 'true';
+            rpc('/bader/onboarding/state', {}).then(function (result) {
+                if (!result || !result.ok || !result.show_onboarding) return;
+                if (alreadyShown) return;
+                mergeProfile(result.profile || {});
+                mountModal();
+            }).catch(function () {
+                // Keep web functional even if onboarding endpoint fails.
+            });
+        })();
+
     } // end initBader
 
     // Execute: by the time a lazy-loaded Odoo module runs, the DOM is always ready

@@ -8,6 +8,8 @@ from urllib.parse import quote
 from odoo import http
 from odoo.tools import html2plaintext
 from odoo.http import request
+from odoo.exceptions import UserError
+from odoo.addons.auth_signup.controllers.main import AuthSignupHome
 from odoo.addons.website.controllers.main import Website
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 from odoo.addons.http_routing.models.ir_http import slug
@@ -123,6 +125,7 @@ class BaderWebsite(Website):
 
         candidates = []
         candidate_fields = [
+            'bader_persona',
             'x_niche',
             'x_studio_niche',
             'x_profile_niche',
@@ -209,6 +212,7 @@ class BaderWebsite(Website):
         """Candidate field map for optional professional profile values."""
         return {
             'persona': [
+                'bader_persona',
                 'x_niche',
                 'x_studio_niche',
                 'x_profile_niche',
@@ -216,12 +220,14 @@ class BaderWebsite(Website):
                 'x_studio_perfil',
             ],
             'clinic_name': [
+                'bader_clinic_name',
                 'x_clinic_name',
                 'x_studio_clinic_name',
                 'x_nombre_clinica',
                 'x_studio_nombre_clinica',
             ],
             'clinic_role': [
+                'bader_clinic_role',
                 'x_clinic_role',
                 'x_studio_clinic_role',
                 'x_rol_clinica',
@@ -229,36 +235,51 @@ class BaderWebsite(Website):
                 'function',
             ],
             'clinic_specialties': [
+                'bader_clinic_specialties',
                 'x_clinic_specialties',
                 'x_studio_clinic_specialties',
                 'x_especialidades_clinica',
                 'x_studio_especialidades_clinica',
             ],
+            'clinic_size': [
+                'bader_clinic_size',
+            ],
+            'years_experience': [
+                'bader_years_experience',
+            ],
             'lab_name': [
+                'bader_lab_name',
                 'x_lab_name',
                 'x_studio_lab_name',
                 'x_nombre_laboratorio',
                 'x_studio_nombre_laboratorio',
             ],
             'lab_type': [
+                'bader_lab_type',
                 'x_lab_type',
                 'x_studio_lab_type',
                 'x_tipo_laboratorio',
                 'x_studio_tipo_laboratorio',
             ],
             'lab_specialization': [
+                'bader_lab_specialization',
                 'x_lab_specialization',
                 'x_studio_lab_specialization',
                 'x_especializacion_laboratorio',
                 'x_studio_especializacion_laboratorio',
             ],
+            'lab_team_size': [
+                'bader_lab_team_size',
+            ],
             'university': [
+                'bader_university',
                 'x_university',
                 'x_studio_university',
                 'x_universidad',
                 'x_studio_universidad',
             ],
             'study_year': [
+                'bader_study_year',
                 'x_study_year',
                 'x_studio_study_year',
                 'x_ano_estudio',
@@ -266,12 +287,14 @@ class BaderWebsite(Website):
                 'x_anio_estudio',
             ],
             'career': [
+                'bader_career',
                 'x_career',
                 'x_studio_career',
                 'x_carrera',
                 'x_studio_carrera',
             ],
             'student_city': [
+                'bader_student_city',
                 'x_student_city',
                 'x_studio_student_city',
                 'x_ciudad_estudiante',
@@ -425,6 +448,37 @@ class BaderWebsite(Website):
                 vals[persona_field] = value
 
         return vals
+
+    def _onboarding_profile_payload(self, partner):
+        """Serialize partner professional profile for onboarding frontend."""
+        specialties_raw = (partner.bader_clinic_specialties or '').strip()
+        specialties = []
+        if specialties_raw:
+            specialties = [
+                item.strip() for item in specialties_raw.split(',')
+                if item and item.strip()
+            ]
+
+        return {
+            'persona': self._normalize_home_persona(partner.bader_persona) or '',
+            'onboarding_completed_at': (
+                partner.bader_onboarding_completed_at.isoformat()
+                if partner.bader_onboarding_completed_at else ''
+            ),
+            'clinic_name': (partner.bader_clinic_name or '').strip(),
+            'clinic_role': (partner.bader_clinic_role or '').strip(),
+            'clinic_specialties': specialties,
+            'clinic_size': (partner.bader_clinic_size or '').strip(),
+            'years_experience': int(partner.bader_years_experience or 0),
+            'lab_name': (partner.bader_lab_name or '').strip(),
+            'lab_type': (partner.bader_lab_type or '').strip(),
+            'lab_specialization': (partner.bader_lab_specialization or '').strip(),
+            'lab_team_size': (partner.bader_lab_team_size or '').strip(),
+            'university': (partner.bader_university or '').strip(),
+            'study_year': (partner.bader_study_year or '').strip(),
+            'career': (partner.bader_career or '').strip(),
+            'student_city': (partner.bader_student_city or '').strip(),
+        }
 
     def _normalize_search_text(self, raw_text):
         """Lowercase + strip accents to support tolerant keyword matching."""
@@ -1444,7 +1498,7 @@ class BaderWebsite(Website):
         if request.website.is_public_user():
             return self._render_account_login_required('Configuracion')
 
-        partner = request.env.user.partner_id
+        partner = self._current_customer_partner()
         current_persona, _source = self._resolve_home_persona(kw)
         profile_data = self._professional_profile_data(
             partner, fallback_persona=current_persona
@@ -1464,7 +1518,7 @@ class BaderWebsite(Website):
                 sitemap=False, methods=['POST'])
     def configuracion_guardar(self, **post):
         """Persist customer profile changes on res.partner."""
-        partner = request.env.user.partner_id.sudo()
+        partner = self._current_customer_partner().sudo()
         vals = {}
         allowed_fields = [
             'name', 'phone', 'mobile', 'vat',
@@ -1532,6 +1586,280 @@ class BaderWebsite(Website):
     @http.route('/ayuda', type='http', auth='public', website=True, sitemap=True)
     def ayuda(self, **kw):
         return request.render('bader_website.bader_ayuda', {})
+
+    def _safe_auth_redirect(self, raw_redirect):
+        """Allow only local redirect paths to avoid open redirects."""
+        redirect_path = (raw_redirect or '/').strip()
+        if not redirect_path.startswith('/'):
+            return '/'
+        if redirect_path.startswith('//'):
+            return '/'
+        blocked_prefixes = ('/web/login', '/web/signup', '/bader/auth')
+        for prefix in blocked_prefixes:
+            if redirect_path.startswith(prefix):
+                return '/'
+        return redirect_path
+
+    def _prepare_onboarding_write_vals(self, partner, payload):
+        """Validate + normalize onboarding payload into partner write values."""
+        payload = payload or {}
+
+        def _clean_text(value, max_len=255):
+            text = (value or '').strip()
+            if not text:
+                return ''
+            return text[:max_len]
+
+        def _selection_keys(field_name):
+            field = partner._fields.get(field_name)
+            if not field:
+                return set()
+            selection = field.selection(partner.env) if callable(field.selection) else field.selection
+            return set(k for k, _label in (selection or []))
+
+        def _clean_selection(field_name, raw_value):
+            value = _clean_text(raw_value, max_len=64).lower()
+            allowed = _selection_keys(field_name)
+            if not value or not allowed:
+                return ''
+            return value if value in allowed else ''
+
+        def _clean_specialties(raw_value):
+            values = raw_value if isinstance(raw_value, list) else (raw_value or '').split(',')
+            clean = []
+            for item in values:
+                text = _clean_text(item, max_len=80).lower()
+                if text and text not in clean:
+                    clean.append(text)
+            return clean
+
+        persona = self._normalize_home_persona(
+            payload.get('persona') or payload.get('niche')
+        )
+        if persona not in ('clinica', 'laboratorio', 'estudiantes'):
+            return {'ok': False, 'error': 'invalid_persona'}
+
+        clinic_role = _clean_selection('bader_clinic_role', payload.get('clinic_role'))
+        clinic_specialties = _clean_specialties(payload.get('clinic_specialties'))
+        clinic_size = _clean_selection('bader_clinic_size', payload.get('clinic_size'))
+        lab_type = _clean_selection('bader_lab_type', payload.get('lab_type'))
+        lab_specialization = _clean_selection('bader_lab_specialization', payload.get('lab_specialization'))
+        lab_team_size = _clean_selection('bader_lab_team_size', payload.get('lab_team_size'))
+        study_year = _clean_selection('bader_study_year', payload.get('study_year'))
+        career = _clean_selection('bader_career', payload.get('career'))
+
+        try:
+            years_experience = int(payload.get('years_experience') or 0)
+        except Exception:
+            years_experience = 0
+        years_experience = max(0, min(years_experience, 80))
+
+        missing_fields = []
+        if persona == 'clinica':
+            if not clinic_role:
+                missing_fields.append('clinic_role')
+            if not clinic_specialties:
+                missing_fields.append('clinic_specialties')
+        elif persona == 'laboratorio':
+            if not lab_type:
+                missing_fields.append('lab_type')
+            if not lab_specialization:
+                missing_fields.append('lab_specialization')
+        elif persona == 'estudiantes':
+            if not career:
+                missing_fields.append('career')
+            if not study_year:
+                missing_fields.append('study_year')
+
+        if missing_fields:
+            return {
+                'ok': False,
+                'error': 'missing_required_fields',
+                'fields': missing_fields,
+            }
+
+        write_vals = {
+            'bader_persona': persona,
+            'bader_clinic_name': _clean_text(payload.get('clinic_name')),
+            'bader_clinic_role': clinic_role,
+            'bader_clinic_specialties': ', '.join(clinic_specialties),
+            'bader_clinic_size': clinic_size,
+            'bader_years_experience': years_experience,
+            'bader_lab_name': _clean_text(payload.get('lab_name')),
+            'bader_lab_type': lab_type,
+            'bader_lab_specialization': lab_specialization,
+            'bader_lab_team_size': lab_team_size,
+            'bader_university': _clean_text(payload.get('university')),
+            'bader_study_year': study_year,
+            'bader_career': career,
+            'bader_student_city': _clean_text(payload.get('student_city'), max_len=120),
+        }
+        return {'ok': True, 'persona': persona, 'write_vals': write_vals}
+
+    @http.route('/bader/auth/login', type='json', auth='public', website=True, csrf=False)
+    def auth_modal_login(self, **params):
+        """AJAX login endpoint used by the Clerk-like website modal."""
+        payload = params or {}
+        redirect_path = self._safe_auth_redirect(payload.get('redirect'))
+        if not request.website.is_public_user():
+            return {'ok': True, 'already_logged': True, 'redirect': redirect_path}
+
+        login = (payload.get('login') or payload.get('email') or '').strip().lower()
+        password = payload.get('password') or ''
+        if not login or not password:
+            return {
+                'ok': False,
+                'error': 'missing_credentials',
+                'message': 'Ingresa email y contrasena.',
+            }
+
+        db_name = request.session.db or request.env.cr.dbname
+        try:
+            uid = request.session.authenticate(db_name, login, password)
+        except Exception:
+            uid = False
+
+        if not uid:
+            return {
+                'ok': False,
+                'error': 'invalid_credentials',
+                'message': 'Credenciales invalidas. Verifica email y contrasena.',
+            }
+
+        return {'ok': True, 'redirect': redirect_path}
+
+    @http.route('/bader/auth/signup', type='json', auth='public', website=True, csrf=False)
+    def auth_modal_signup(self, **params):
+        """Create website account + segmented profile in one secure flow."""
+        payload = params or {}
+        redirect_path = self._safe_auth_redirect(payload.get('redirect'))
+        if not request.website.is_public_user():
+            return {'ok': True, 'already_logged': True, 'redirect': redirect_path}
+
+        full_name = (payload.get('name') or '').strip()[:120]
+        email = (payload.get('email') or payload.get('login') or '').strip().lower()[:320]
+        password = payload.get('password') or ''
+        confirm_password = payload.get('confirm_password') or payload.get('confirm') or ''
+        if not full_name:
+            return {'ok': False, 'error': 'missing_name', 'message': 'Ingresa tu nombre completo.'}
+        if not email:
+            return {'ok': False, 'error': 'missing_email', 'message': 'Ingresa un email valido.'}
+        if not re.match(r'^[^@\s]+@[^@\s]+\.[^@\s]+$', email):
+            return {'ok': False, 'error': 'invalid_email', 'message': 'Ingresa un email valido.'}
+        if len(password) < 8:
+            return {'ok': False, 'error': 'weak_password', 'message': 'La contrasena debe tener al menos 8 caracteres.'}
+        if password != confirm_password:
+            return {'ok': False, 'error': 'password_mismatch', 'message': 'Las contrasenas no coinciden.'}
+
+        profile_payload = self._prepare_onboarding_write_vals(
+            request.env['res.partner'].sudo(), payload
+        )
+        if not profile_payload.get('ok'):
+            profile_payload.setdefault(
+                'message',
+                'Completa los datos requeridos para terminar tu registro.',
+            )
+            return profile_payload
+
+        auth_signup = AuthSignupHome()
+        qcontext = auth_signup.get_auth_signup_qcontext()
+        qcontext.update({
+            'name': full_name,
+            'login': email,
+            'email': email,
+            'password': password,
+            'confirm_password': confirm_password,
+        })
+        try:
+            auth_signup.do_signup(qcontext)
+            # Keep signup + immediate login atomic enough for website UX.
+            request.env.cr.commit()
+        except UserError as exc:
+            return {
+                'ok': False,
+                'error': 'signup_failed',
+                'message': str(exc),
+            }
+        except Exception as exc:
+            _logger.exception("Bader auth modal signup failed for %s: %s", email, exc)
+            return {
+                'ok': False,
+                'error': 'signup_failed',
+                'message': 'No se pudo crear la cuenta en este momento.',
+            }
+
+        db_name = request.session.db or request.env.cr.dbname
+        try:
+            uid = request.session.authenticate(db_name, email, password)
+        except Exception:
+            uid = False
+        if not uid:
+            return {
+                'ok': False,
+                'error': 'post_signup_login_failed',
+                'message': 'La cuenta fue creada, pero no se pudo iniciar sesion automaticamente.',
+            }
+
+        partner = self._current_customer_partner().sudo()
+        write_vals = dict(profile_payload.get('write_vals') or {})
+        write_vals['bader_onboarding_completed_at'] = datetime.utcnow()
+        partner.write(write_vals)
+        request.session['bader_home_persona'] = profile_payload.get('persona')
+        request.session.modified = True
+
+        return {
+            'ok': True,
+            'redirect': redirect_path,
+            'profile': self._onboarding_profile_payload(partner),
+        }
+
+    @http.route('/bader/onboarding/state', type='json', auth='user', website=True, csrf=False)
+    def onboarding_state(self, **kw):
+        """Return onboarding state for the current logged website user."""
+        if request.website.is_public_user():
+            return {'ok': False, 'error': 'auth_required'}
+
+        user = request.env.user
+        is_internal_user = bool(user.has_group('base.group_user'))
+        partner = self._current_customer_partner().sudo()
+        profile = self._onboarding_profile_payload(partner)
+        is_completed = bool(partner.bader_onboarding_completed_at)
+
+        return {
+            'ok': True,
+            'show_onboarding': bool(not is_completed and not is_internal_user),
+            'is_internal_user': is_internal_user,
+            'profile': profile,
+        }
+
+    @http.route('/bader/onboarding/save', type='json', auth='user', website=True, csrf=False)
+    def onboarding_save(self, **params):
+        """Persist onboarding answers in res.partner and mark completion."""
+        if request.website.is_public_user():
+            return {'ok': False, 'error': 'auth_required'}
+
+        user = request.env.user
+        if user.has_group('base.group_user'):
+            return {'ok': False, 'error': 'internal_user_not_allowed'}
+
+        partner = self._current_customer_partner().sudo()
+        onboarding_payload = self._prepare_onboarding_write_vals(partner, params or {})
+        if not onboarding_payload.get('ok'):
+            return onboarding_payload
+        write_vals = dict(onboarding_payload.get('write_vals') or {})
+        persona = onboarding_payload.get('persona')
+
+        if not partner.bader_onboarding_completed_at:
+            write_vals['bader_onboarding_completed_at'] = datetime.utcnow()
+
+        partner.write(write_vals)
+        request.session['bader_home_persona'] = persona
+        request.session.modified = True
+
+        return {
+            'ok': True,
+            'profile': self._onboarding_profile_payload(partner),
+        }
 
     @http.route('/bader/home/set_persona', type='json', auth='public', website=True, csrf=False)
     def set_home_persona(self, persona=None, **kw):

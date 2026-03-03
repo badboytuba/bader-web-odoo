@@ -103,7 +103,14 @@
                 </nav>
 
                 <section class="bader-mobile-account" t-if="request.env.user._is_public()">
-                    <a href="/web/login" class="bader-mobile-account__login">Tu Cuenta</a>
+                    <a href="/web/login?redirect=/"
+                       class="bader-mobile-account__login bader-auth-trigger"
+                       data-bader-auth-open="login"
+                       data-bader-auth-redirect="/">Tu Cuenta</a>
+                    <a href="/web/signup?redirect=/"
+                       class="bader-mobile-account__register bader-auth-trigger"
+                       data-bader-auth-open="register"
+                       data-bader-auth-redirect="/">Registrarse</a>
                 </section>
 
                 <section class="bader-mobile-account" t-else="">
@@ -262,6 +269,250 @@
                     </footer>
                 </aside>
             </div>
+
+            <t t-if="request.website.is_public_user()">
+                <div id="baderAuthModal" class="bader-auth-modal" aria-hidden="true">
+                    <button type="button"
+                            class="bader-auth-modal__backdrop"
+                            data-bader-auth-close="1"
+                            aria-label="Cerrar cuenta"/>
+
+                    <aside class="bader-auth-modal__panel"
+                           role="dialog"
+                           aria-modal="true"
+                           aria-labelledby="baderAuthModalTitle">
+                        <header class="bader-auth-modal__header">
+                            <h3 id="baderAuthModalTitle">Tu Cuenta</h3>
+                            <button type="button"
+                                    class="bader-auth-modal__close"
+                                    data-bader-auth-close="1"
+                                    aria-label="Cerrar">
+                                <i class="fa fa-times"/>
+                            </button>
+                        </header>
+
+                        <div class="bader-auth-modal__tabs" role="tablist" aria-label="Cuenta">
+                            <button type="button" class="is-active" data-bader-auth-tab="login">Iniciar sesion</button>
+                            <button type="button" data-bader-auth-tab="register">Crear cuenta</button>
+                        </div>
+
+                        <p class="bader-auth-modal__hint" data-bader-auth-hint="1">
+                            Accede para ver pedidos, facturas y recomendaciones personalizadas.
+                        </p>
+
+                        <form class="bader-auth-modal__form"
+                              data-bader-auth-form="login"
+                              autocomplete="on">
+                            <div class="bader-auth-modal__field">
+                                <label>Email</label>
+                                <input type="email"
+                                       name="login"
+                                       required="required"
+                                       autocomplete="email"
+                                       placeholder="tu@email.com"/>
+                            </div>
+                            <div class="bader-auth-modal__field">
+                                <label>Contrasena</label>
+                                <input type="password"
+                                       name="password"
+                                       required="required"
+                                       autocomplete="current-password"
+                                       placeholder="********"/>
+                            </div>
+                            <button type="submit" class="btn-bader w-100">Entrar</button>
+                            <a class="bader-auth-modal__forgot" href="/web/reset_password">Olvide mi contrasena</a>
+                        </form>
+
+                        <form class="bader-auth-modal__form"
+                              data-bader-auth-form="register"
+                              autocomplete="on"
+                              hidden="hidden">
+                            <div class="bader-auth-modal__field">
+                                <label>Nombre completo *</label>
+                                <input type="text"
+                                       name="name"
+                                       required="required"
+                                       autocomplete="name"
+                                       placeholder="Nombre y apellido"/>
+                            </div>
+                            <div class="bader-auth-modal__grid">
+                                <div class="bader-auth-modal__field">
+                                    <label>Email *</label>
+                                    <input type="email"
+                                           name="email"
+                                           required="required"
+                                           autocomplete="email"
+                                           placeholder="tu@email.com"/>
+                                </div>
+                                <div class="bader-auth-modal__field">
+                                    <label>Contrasena *</label>
+                                    <input type="password"
+                                           name="password"
+                                           required="required"
+                                           autocomplete="new-password"
+                                           minlength="8"
+                                           placeholder="Minimo 8 caracteres"/>
+                                </div>
+                            </div>
+                            <div class="bader-auth-modal__field">
+                                <label>Confirmar contrasena *</label>
+                                <input type="password"
+                                       name="confirm_password"
+                                       required="required"
+                                       autocomplete="new-password"
+                                       minlength="8"
+                                       placeholder="Repite tu contrasena"/>
+                            </div>
+
+                            <div class="bader-auth-modal__field">
+                                <label>Perfil profesional *</label>
+                                <select name="persona" required="required" data-bader-signup-persona-select="1">
+                                    <option value="">Selecciona tu perfil</option>
+                                    <option value="clinica">Clinica Dental</option>
+                                    <option value="laboratorio">Laboratorio Dental</option>
+                                    <option value="estudiantes">Estudiantes</option>
+                                </select>
+                            </div>
+
+                            <div class="bader-auth-modal__persona-group"
+                                 data-bader-signup-persona="clinica"
+                                 hidden="hidden">
+                                <div class="bader-auth-modal__field">
+                                    <label>Cargo *</label>
+                                    <select name="clinic_role">
+                                        <option value="">Selecciona tu cargo</option>
+                                        <option value="dueno">Dueno/a</option>
+                                        <option value="gerente">Gerente</option>
+                                        <option value="dentista">Dentista</option>
+                                        <option value="asistente">Asistente Dental</option>
+                                        <option value="recepcionista">Recepcionista</option>
+                                    </select>
+                                </div>
+                                <div class="bader-auth-modal__field">
+                                    <label>Especialidades * (elige al menos una)</label>
+                                    <div class="bader-auth-modal__checks">
+                                        <label><input type="checkbox" name="clinic_specialties" value="general"/> Odontologia General</label>
+                                        <label><input type="checkbox" name="clinic_specialties" value="ortodoncia"/> Ortodoncia</label>
+                                        <label><input type="checkbox" name="clinic_specialties" value="endodoncia"/> Endodoncia</label>
+                                        <label><input type="checkbox" name="clinic_specialties" value="periodoncia"/> Periodoncia</label>
+                                        <label><input type="checkbox" name="clinic_specialties" value="implantologia"/> Implantologia</label>
+                                        <label><input type="checkbox" name="clinic_specialties" value="cirugia"/> Cirugia</label>
+                                        <label><input type="checkbox" name="clinic_specialties" value="odontopediatria"/> Odontopediatria</label>
+                                        <label><input type="checkbox" name="clinic_specialties" value="estetica"/> Estetica Dental</label>
+                                    </div>
+                                </div>
+                                <div class="bader-auth-modal__grid">
+                                    <div class="bader-auth-modal__field">
+                                        <label>Tamano de la clinica</label>
+                                        <select name="clinic_size">
+                                            <option value="">Selecciona tamano</option>
+                                            <option value="pequena">Pequena (1-2 sillones)</option>
+                                            <option value="mediana">Mediana (3-5 sillones)</option>
+                                            <option value="grande">Grande (6+ sillones)</option>
+                                        </select>
+                                    </div>
+                                    <div class="bader-auth-modal__field">
+                                        <label>Anos de experiencia</label>
+                                        <input type="number" name="years_experience" min="0" max="80" placeholder="Ej: 5"/>
+                                    </div>
+                                </div>
+                                <div class="bader-auth-modal__field">
+                                    <label>Nombre de la clinica</label>
+                                    <input type="text" name="clinic_name" placeholder="Ej: Clinica Dental Sonrisa"/>
+                                </div>
+                            </div>
+
+                            <div class="bader-auth-modal__persona-group"
+                                 data-bader-signup-persona="laboratorio"
+                                 hidden="hidden">
+                                <div class="bader-auth-modal__field">
+                                    <label>Tipo de laboratorio *</label>
+                                    <select name="lab_type">
+                                        <option value="">Selecciona el tipo</option>
+                                        <option value="protesico">Protesico</option>
+                                        <option value="ortodontico">Ortodontico</option>
+                                        <option value="cadcam">CAD/CAM Digital</option>
+                                        <option value="general">General</option>
+                                    </select>
+                                </div>
+                                <div class="bader-auth-modal__field">
+                                    <label>Especializacion principal *</label>
+                                    <select name="lab_specialization">
+                                        <option value="">Selecciona especializacion</option>
+                                        <option value="zirconio">Zirconio</option>
+                                        <option value="metal-ceramica">Metal-Ceramica</option>
+                                        <option value="acrilico">Acrilico</option>
+                                        <option value="alineadores">Alineadores</option>
+                                        <option value="implantes">Implantes</option>
+                                        <option value="protesis-removible">Protesis Removible</option>
+                                    </select>
+                                </div>
+                                <div class="bader-auth-modal__grid">
+                                    <div class="bader-auth-modal__field">
+                                        <label>Tamano del equipo</label>
+                                        <select name="lab_team_size">
+                                            <option value="">Selecciona tamano</option>
+                                            <option value="solo">Solo (1 persona)</option>
+                                            <option value="pequeno">Pequeno (2-5 personas)</option>
+                                            <option value="mediano">Mediano (6-15 personas)</option>
+                                            <option value="grande">Grande (16+ personas)</option>
+                                        </select>
+                                    </div>
+                                    <div class="bader-auth-modal__field">
+                                        <label>Nombre del laboratorio</label>
+                                        <input type="text" name="lab_name" placeholder="Ej: Laboratorio Dental Elite"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bader-auth-modal__persona-group"
+                                 data-bader-signup-persona="estudiantes"
+                                 hidden="hidden">
+                                <div class="bader-auth-modal__field">
+                                    <label>Que estudias? *</label>
+                                    <select name="career">
+                                        <option value="">Selecciona tu carrera</option>
+                                        <option value="odontologia">Odontologia</option>
+                                        <option value="protesis">Tecnico en Protesis Dental</option>
+                                        <option value="higienista">Higienista Dental</option>
+                                        <option value="asistente">Asistente Dental</option>
+                                    </select>
+                                </div>
+                                <div class="bader-auth-modal__field">
+                                    <label>Ano de cursado *</label>
+                                    <select name="study_year">
+                                        <option value="">Selecciona tu ano</option>
+                                        <option value="1">1 Ano</option>
+                                        <option value="2">2 Ano</option>
+                                        <option value="3">3 Ano</option>
+                                        <option value="4">4 Ano</option>
+                                        <option value="5">5 Ano</option>
+                                        <option value="graduado">Graduado Reciente</option>
+                                    </select>
+                                </div>
+                                <div class="bader-auth-modal__grid">
+                                    <div class="bader-auth-modal__field">
+                                        <label>Universidad</label>
+                                        <input type="text" name="university" placeholder="Ej: Universidad de Buenos Aires"/>
+                                    </div>
+                                    <div class="bader-auth-modal__field">
+                                        <label>Ciudad</label>
+                                        <input type="text" name="student_city" placeholder="Ej: Buenos Aires"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-bader w-100">Crear cuenta y continuar</button>
+                        </form>
+
+                        <p class="bader-auth-modal__message" data-bader-auth-message="1"></p>
+                    </aside>
+                </div>
+            </t>
+
+            <t t-if="not request.website.is_public_user()">
+                <div id="baderOnboardingBootstrap" aria-hidden="true"/>
+            </t>
         </xpath>
 
     </template>
