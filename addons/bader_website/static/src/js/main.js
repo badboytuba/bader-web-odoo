@@ -19,6 +19,42 @@ odoo.define('bader_website.main', function (require) {
         // Mark body as JS-ready
         document.body.classList.add('bader-js-ready');
 
+        // Product page runtime fallback loader.
+        // Guarantees product_page.js executes even when template-injected
+        // <script src> nodes are present but not executed by the browser.
+        (function ensureProductPageScript() {
+            if (!document.querySelector('#product_detail')) return;
+
+            function isProductPageScriptReady() {
+                return !!(window.__baderPageScripts && window.__baderPageScripts.productPage);
+            }
+
+            window.setTimeout(function () {
+                if (isProductPageScriptReady()) return;
+                if (!document.body) return;
+                if (document.querySelector('script[data-bader-loader=\"product\"]')) return;
+
+                var assetToken = 'bader';
+                var frontendAsset =
+                    document.querySelector('script[src*=\"web.assets_frontend_lazy.min.js\"]') ||
+                    document.querySelector('script[src*=\"web.assets_frontend.min.js\"]') ||
+                    document.querySelector('link[href*=\"web.assets_frontend.min.css\"]') ||
+                    document.querySelector('script[src*=\"/web/assets/\"]') ||
+                    document.querySelector('link[href*=\"/web/assets/\"]');
+                var assetUrl = frontendAsset ? (frontendAsset.getAttribute('src') || frontendAsset.getAttribute('href') || '') : '';
+                var tokenMatch = assetUrl.match(/\/web\/assets\/([^/]+)\//);
+                if (tokenMatch && tokenMatch[1]) {
+                    assetToken = tokenMatch[1];
+                }
+
+                var script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = '/bader_website/static/src/js/product_page.js?v=' + encodeURIComponent(assetToken);
+                script.setAttribute('data-bader-loader', 'product');
+                document.body.appendChild(script);
+            }, 120);
+        })();
+
         // ---- 0. DOMAIN GUARD — keep internal links on current host ----
         (function initDomainGuard() {
             var LEGACY_HOSTS = {

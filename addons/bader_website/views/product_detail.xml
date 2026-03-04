@@ -195,11 +195,4 @@
         </xpath>
     </template>
 
-    <template id="bader_product_page_js" inherit_id="website_sale.product"
-              name="Bader Product Page JS" priority="90">
-        <xpath expr="//div[@id='wrap']" position="inside">
-            <script type="text/javascript" src="/bader_website/static/src/js/product_page.js"/>
-        </xpath>
-    </template>
-
 </odoo>

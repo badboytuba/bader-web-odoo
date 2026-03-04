@@ -1,18 +1,115 @@
 /* Product page enhancements: loaded only on website_sale.product pages for performance. */
 'use strict';
 
-(function initBaderProductPage() {
-    // ---- 7. Product Gallery — Lightbox Zoom ----
-    (function initGalleryLightbox() {
-        var mainImage = document.querySelector('#product_detail .carousel-inner img, #product_detail .o_carousel_product_outer img');
-        if (!mainImage) return;
+(function bootstrapBaderProductPage() {
+    window.__baderPageScripts = window.__baderPageScripts || {};
+    if (window.__baderPageScripts.productPage) {
+        return;
+    }
+    window.__baderPageScripts.productPage = true;
+    if (document.documentElement) {
+        document.documentElement.setAttribute('data-bader-product-js', '1');
+    }
 
+    var started = false;
+
+    function startIfReady() {
+        if (started) return true;
+        var productRoot = document.querySelector('#product_detail');
+        if (!productRoot) return false;
+        started = true;
+        initBaderProductPage(productRoot);
+        return true;
+    }
+
+    function initBaderProductPage(productRoot) {
+
+    function parseIntSafe(raw, fallback) {
+        var parsed = parseInt(String(raw || '').replace(/[^\d-]/g, ''), 10);
+        return isNaN(parsed) ? fallback : parsed;
+    }
+
+    function parsePriceSafe(raw) {
+        var normalized = String(raw || '').trim();
+        if (!normalized) return null;
+        normalized = normalized.replace(/[^\d.,]/g, '');
+        if (!normalized) return null;
+        if (normalized.indexOf(',') !== -1) {
+            normalized = normalized.replace(/\./g, '').replace(',', '.');
+        }
+        var parsed = parseFloat(normalized);
+        return isNaN(parsed) ? null : parsed;
+    }
+
+    function moneySymbolFromPriceContainer(container) {
+        if (!container) return '$ ';
+        var textValue = container.textContent || '';
+        if (textValue.indexOf('$') !== -1) return '$ ';
+        return String.fromCharCode(8364) + ' ';
+    }
+
+    function renderHeaderCartQty(totalQty) {
+        var qty = Math.max(0, parseIntSafe(totalQty, 0));
+        var badgeText = qty > 99 ? '99+' : String(qty);
+        document.querySelectorAll('.my_cart_quantity, .o_wsale_my_cart .my_cart_quantity').forEach(function (badge) {
+            badge.textContent = badgeText;
+            badge.classList.remove('d-none');
+        });
+        try {
+            if (window.sessionStorage) {
+                window.sessionStorage.setItem('website_sale_cart_quantity', String(qty));
+            }
+        } catch (err) {
+            // Ignore storage errors.
+        }
+    }
+
+    function addToCartJson(form) {
+        var productInput = form ? form.querySelector('input[name="product_id"]') : null;
+        var qtyInput = form ? form.querySelector('input[name="add_qty"], .css_quantity input') : null;
+        var productId = parseIntSafe(productInput ? productInput.value : '', 0);
+        var addQty = parseIntSafe(qtyInput ? qtyInput.value : '1', 1);
+        if (!productId) return Promise.reject(new Error('missing_product_id'));
+        if (addQty <= 0) addQty = 1;
+
+        return fetch('/shop/cart/update_json', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                method: 'call',
+                params: {
+                    product_id: productId,
+                    add_qty: addQty,
+                },
+            }),
+        }).then(function (response) {
+            if (!response.ok) throw new Error('invalid_add_to_cart_response');
+            return response.json();
+        }).then(function (payload) {
+            var data = payload && payload.result ? payload.result : payload || {};
+            if (typeof data.cart_quantity !== 'undefined') {
+                renderHeaderCartQty(data.cart_quantity);
+            }
+            document.dispatchEvent(new Event('bader:cart-open'));
+            return data;
+        });
+    }
+
+    // ---- 1. Gallery lightbox ----
+    function initGalleryLightbox() {
+        var mainImage = productRoot.querySelector('.o_carousel_product_outer img, .carousel-inner img, img[itemprop="image"]');
+        if (!mainImage || mainImage.getAttribute('data-bader-lightbox') === '1') return;
+        mainImage.setAttribute('data-bader-lightbox', '1');
         mainImage.style.cursor = 'zoom-in';
 
         mainImage.addEventListener('click', function () {
-            var src = this.src;
+            var src = mainImage.getAttribute('src') || mainImage.getAttribute('data-src');
+            if (!src) return;
 
-            // Create lightbox safely (no innerHTML with user data)
             var lightbox = document.createElement('div');
             lightbox.className = 'bader-lightbox';
 
@@ -21,131 +118,71 @@
 
             var closeBtn = document.createElement('button');
             closeBtn.className = 'bader-lightbox__close';
-            closeBtn.textContent = '\u00D7';
+            closeBtn.type = 'button';
+            closeBtn.setAttribute('aria-label', 'Cerrar');
+            closeBtn.textContent = 'x';
 
             var img = document.createElement('img');
             img.src = src;
-            img.alt = 'Zoom del producto';
+            img.alt = mainImage.getAttribute('alt') || 'Zoom del producto';
 
             content.appendChild(closeBtn);
             content.appendChild(img);
             lightbox.appendChild(content);
-
             document.body.appendChild(lightbox);
             document.body.style.overflow = 'hidden';
 
-            // Close on click
-            lightbox.addEventListener('click', function (e) {
-                if (e.target === lightbox || e.target.classList.contains('bader-lightbox__close')) {
+            function closeLightbox() {
+                if (document.body.contains(lightbox)) {
                     document.body.removeChild(lightbox);
-                    document.body.style.overflow = '';
+                }
+                document.body.style.overflow = '';
+                document.removeEventListener('keydown', onEsc);
+            }
+
+            function onEsc(ev) {
+                if (ev.key === 'Escape') closeLightbox();
+            }
+
+            lightbox.addEventListener('click', function (ev) {
+                if (ev.target === lightbox || ev.target === closeBtn) {
+                    closeLightbox();
                 }
             });
-
-            // Close on ESC
-            function onEsc(e) {
-                if (e.key === 'Escape') {
-                    if (document.body.contains(lightbox)) {
-                        document.body.removeChild(lightbox);
-                        document.body.style.overflow = '';
-                    }
-                    document.removeEventListener('keydown', onEsc);
-                }
-            }
             document.addEventListener('keydown', onEsc);
         });
-    })();
+    }
 
-    // ---- 8. Quantity Selector ± (Product Detail) ----
-    (function initQtySelector() {
-        var qtyInput = document.querySelector('#product_detail input[name="add_qty"], #product_detail .css_quantity input');
+    // ---- 2. Qty style ----
+    function initQtySelectorStyle() {
+        var qtyInput = productRoot.querySelector('input[name="add_qty"], .css_quantity input');
         if (!qtyInput) return;
 
         var parent = qtyInput.closest('.input-group, .css_quantity');
         if (!parent) return;
 
-        // Style the buttons
-        var buttons = parent.querySelectorAll('a, button');
-        buttons.forEach(function (btn) {
+        parent.querySelectorAll('a, button').forEach(function (btn) {
             btn.classList.add('bader-qty-btn');
         });
-    })();
+    }
 
-    // ---- 9. Add-to-Cart Animation Feedback ----
-    (function initAddToCartFeedback() {
-        var addBtn = document.querySelector('#product_detail #add_to_cart, #product_detail .a-submit');
-        if (!addBtn) return;
+    // ---- 3. Add-to-cart feedback (delegated; survives DOM re-render) ----
+    (function initAddToCartFeedbackDelegated() {
+        if (document.body.getAttribute('data-bader-product-add-delegated') === '1') return;
+        document.body.setAttribute('data-bader-product-add-delegated', '1');
 
-        function parseIntSafe(raw, fallback) {
-            var parsed = parseInt(String(raw || '').replace(/[^\d-]/g, ''), 10);
-            return isNaN(parsed) ? fallback : parsed;
-        }
+        document.addEventListener('click', function (ev) {
+            var button = ev.target && ev.target.closest ? ev.target.closest('#product_detail #add_to_cart, #product_detail .a-submit') : null;
+            if (!button) return;
 
-        function renderHeaderCartQty(totalQty) {
-            var qty = Math.max(0, parseIntSafe(totalQty, 0));
-            var badgeText = qty > 99 ? '99+' : String(qty);
-            document.querySelectorAll('.my_cart_quantity, .o_wsale_my_cart .my_cart_quantity').forEach(function (badge) {
-                badge.textContent = badgeText;
-                badge.classList.remove('d-none');
-            });
-            try {
-                if (window.sessionStorage) {
-                    window.sessionStorage.setItem('website_sale_cart_quantity', String(qty));
-                }
-            } catch (err) {
-                // Ignore storage errors.
-            }
-        }
-
-        function addToCartJson(form) {
-            var productInput = form.querySelector('input[name="product_id"]');
-            var qtyInput = form.querySelector('input[name="add_qty"], .css_quantity input');
-            var productId = parseIntSafe(productInput ? productInput.value : '', 0);
-            var addQty = parseIntSafe(qtyInput ? qtyInput.value : '1', 1);
-            if (!productId) {
-                return Promise.reject(new Error('missing product id'));
-            }
-            if (addQty <= 0) addQty = 1;
-
-            return fetch('/shop/cart/update_json', {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    jsonrpc: '2.0',
-                    method: 'call',
-                    params: {
-                        product_id: productId,
-                        add_qty: addQty,
-                    },
-                }),
-            }).then(function (response) {
-                if (!response.ok) {
-                    throw new Error('invalid add-to-cart response');
-                }
-                return response.json();
-            }).then(function (payload) {
-                var data = payload && payload.result ? payload.result : payload || {};
-                if (typeof data.cart_quantity !== 'undefined') {
-                    renderHeaderCartQty(data.cart_quantity);
-                }
-                document.dispatchEvent(new Event('bader:cart-open'));
-            });
-        }
-
-        addBtn.addEventListener('click', function (ev) {
-            var btn = this;
-            var originalText = btn.innerHTML;
-            var form = btn.closest('form');
-            var shouldForceSubmit = !!(
+            var form = button.closest('form');
+            var shouldForceManual = !!(
                 form &&
-                btn.matches &&
-                btn.matches('a.a-submit[href="#"], a.a-submit[href=""]')
+                button.matches &&
+                button.matches('a.a-submit[href="#"], a.a-submit[href=""]')
             );
 
-            if (shouldForceSubmit) {
+            if (shouldForceManual) {
                 ev.preventDefault();
                 ev.stopPropagation();
                 if (typeof ev.stopImmediatePropagation === 'function') {
@@ -153,26 +190,32 @@
                 }
             }
 
-            btn.classList.add('bader-added');
-            btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> ¡Agregado!';
-
-            setTimeout(function () {
-                btn.classList.remove('bader-added');
-                btn.innerHTML = originalText;
-            }, 2000);
-
-            if (shouldForceSubmit && !btn.getAttribute('data-bader-force-submit')) {
-                btn.setAttribute('data-bader-force-submit', '1');
-                addToCartJson(form).catch(function () {
-                    form.submit();
-                }).finally(function () {
-                    btn.removeAttribute('data-bader-force-submit');
-                });
+            if (button.getAttribute('data-bader-feedback-running') !== '1') {
+                var originalHtml = button.innerHTML;
+                button.setAttribute('data-bader-feedback-running', '1');
+                button.classList.add('bader-added');
+                button.innerHTML = '<i class="fa fa-check-circle"></i> Agregado';
+                window.setTimeout(function () {
+                    button.classList.remove('bader-added');
+                    button.innerHTML = originalHtml;
+                    button.removeAttribute('data-bader-feedback-running');
+                }, 1800);
             }
-        });
+
+            if (shouldForceManual && !button.getAttribute('data-bader-force-submit')) {
+                button.setAttribute('data-bader-force-submit', '1');
+                addToCartJson(form)
+                    .catch(function () {
+                        if (form && form.submit) form.submit();
+                    })
+                    .finally(function () {
+                        button.removeAttribute('data-bader-force-submit');
+                    });
+            }
+        }, true);
     })();
 
-    // ---- 9b. Header Cart Badge Sync ----
+    // ---- 4. Header cart badge sync ----
     (function syncHeaderCartBadge() {
         var badgeSelector = '.my_cart_quantity, .o_wsale_my_cart .my_cart_quantity';
         var maxBadgeQty = 99;
@@ -186,9 +229,7 @@
         }
 
         function qtyFromPopover() {
-            if (document.querySelector('.bader-cart-popover--empty')) {
-                return 0;
-            }
+            if (document.querySelector('.bader-cart-popover--empty')) return 0;
             var rows = document.querySelectorAll('.bader-cart-popover__item');
             if (!rows.length) return null;
 
@@ -202,9 +243,7 @@
         }
 
         function qtyFromCartLines() {
-            if (document.querySelector('.js_cart_lines.bader-empty-cart')) {
-                return 0;
-            }
+            if (document.querySelector('.js_cart_lines.bader-empty-cart')) return 0;
             var qtyInputs = document.querySelectorAll('.js_cart_lines .js_quantity');
             if (!qtyInputs.length) return null;
 
@@ -223,17 +262,13 @@
         }
 
         function renderQty(totalQty) {
-            if (totalQty === null) return;
-            if (lastRenderedQty === totalQty) return;
-
+            if (totalQty === null || lastRenderedQty === totalQty) return;
             var badgeText = totalQty > maxBadgeQty ? String(maxBadgeQty) + '+' : String(totalQty);
             document.querySelectorAll(badgeSelector).forEach(function (badge) {
                 if (badge.textContent !== badgeText) {
                     badge.textContent = badgeText;
                 }
-                if (badge.classList.contains('d-none')) {
-                    badge.classList.remove('d-none');
-                }
+                badge.classList.remove('d-none');
             });
             lastRenderedQty = totalQty;
         }
@@ -252,20 +287,16 @@
         }
 
         syncQty();
-        setTimeout(scheduleSync, 350);
-        setTimeout(scheduleSync, 1200);
+        window.setTimeout(scheduleSync, 300);
+        window.setTimeout(scheduleSync, 1200);
 
         if ('MutationObserver' in window) {
-            // Observe cart content changes only; observing the cart badge container itself
-            // can create recursive mutation loops and freeze the UI.
             var observer = new MutationObserver(scheduleSync);
             [
                 document.querySelector('.bader-cart-popover'),
                 document.querySelector('.js_cart_lines'),
             ].forEach(function (root) {
-                if (root) {
-                    observer.observe(root, { childList: true, subtree: true, characterData: true });
-                }
+                if (root) observer.observe(root, { childList: true, subtree: true, characterData: true });
             });
         }
 
@@ -276,187 +307,244 @@
         });
     })();
 
+    // ---- 5. Product premium blocks ----
+    function injectFloatingStockBadge() {
+        if (productRoot.querySelector('.bader-stock-floating')) return;
 
-    // ---- 11. Product Detail — Full Bader AR Style ----
-    (function initProductDetailEnhancements() {
-        var productPage = document.querySelector('#product_detail, .oe_website_sale .o_wsale_product_page');
-        if (!productPage) return;
+        var gallery = productRoot.querySelector('.o_carousel_product_outer, .carousel, img[itemprop="image"]');
+        if (!gallery) return;
 
-        productPage.classList.add('bader-product-detail');
-        if (productPage.querySelector('.bader-product-meta')) return;
+        var galleryParent = gallery.closest('.o_wsale_product_images, .col-lg-6, .col-md-6') || gallery.parentElement;
+        if (!galleryParent) return;
 
-        // ── 11a. Floating Stock Badge on Gallery ──
-        (function injectStockBadge() {
-            var gallery = document.querySelector('.o_carousel_product_outer, #product_detail .carousel, #product_detail img[itemprop="image"]');
-            if (!gallery || document.querySelector('.bader-stock-floating')) return;
+        if (window.getComputedStyle(galleryParent).position === 'static') {
+            galleryParent.style.position = 'relative';
+        }
 
-            var galleryParent = gallery.closest('.col-lg-6, .col-md-6') || gallery.parentElement;
-            if (galleryParent) {
-                galleryParent.style.position = 'relative';
-                var badge = document.createElement('div');
-                badge.className = 'bader-stock-floating';
-                badge.innerHTML = '<i class="fa fa-check-circle"></i> En stock';
-                galleryParent.insertBefore(badge, galleryParent.firstChild);
-            }
-        })();
+        var status = productRoot.querySelector('.bader-stock-status span:last-child');
+        var label = status ? (status.textContent || '').trim() : 'En stock';
 
-        // ── 11b. Category Breadcrumb + Star Rating ──
-        (function injectMetaInfo() {
-            var productName = document.querySelector('[itemprop="name"], #product_detail h1, .product_name');
-            if (!productName || document.querySelector('.bader-detail-meta')) return;
+        var badge = document.createElement('div');
+        badge.className = 'bader-stock-floating';
 
-            // Build category breadcrumb from page breadcrumb
+        var icon = document.createElement('i');
+        icon.className = 'fa fa-check-circle';
+        var text = document.createElement('span');
+        text.textContent = label || 'En stock';
+
+        badge.appendChild(icon);
+        badge.appendChild(text);
+        galleryParent.appendChild(badge);
+    }
+
+    function injectDetailMeta() {
+        var detailsCol = productRoot.querySelector('#product_details');
+        if (!detailsCol || detailsCol.querySelector('.bader-detail-meta')) return;
+
+        var productName = detailsCol.querySelector('h1[itemprop="name"], h1:not(.d-none)');
+        if (!productName) return;
+
+        var categoryText = '';
+        var categoryTag = detailsCol.querySelector('.bader-product-category');
+        if (categoryTag) categoryText = (categoryTag.textContent || '').trim();
+
+        if (!categoryText) {
             var breadcrumbs = document.querySelectorAll('.breadcrumb-item, .breadcrumb li');
-            var categoryText = '';
             for (var i = 1; i < breadcrumbs.length - 1; i++) {
                 if (categoryText) categoryText += ' / ';
-                categoryText += breadcrumbs[i].textContent.trim();
+                categoryText += (breadcrumbs[i].textContent || '').trim();
             }
-            if (!categoryText) categoryText = 'Productos';
+        }
 
-            var meta = document.createElement('div');
-            meta.className = 'bader-detail-meta';
-            meta.innerHTML =
-                '<span class="bader-detail-meta__category">' + categoryText + '</span>' +
-                '<div class="bader-detail-meta__rating">' +
-                '<span class="bader-stars">★★★★★</span>' +
-                '<span class="bader-rating-count">(4.9)</span>' +
-                '</div>';
+        if (!categoryText) categoryText = 'Productos';
 
-            productName.parentElement.insertBefore(meta, productName);
-        })();
+        var meta = document.createElement('div');
+        meta.className = 'bader-detail-meta';
 
-        // ── 11c. IVA Note + Installment Breakdown ──
-        (function injectPriceDetails() {
-            var priceDiv = document.querySelector('.product_price, [itemprop="offers"]');
-            if (!priceDiv || document.querySelector('.bader-price-extras')) return;
+        var cat = document.createElement('span');
+        cat.className = 'bader-detail-meta__category';
+        cat.textContent = categoryText;
 
-            var priceEl = priceDiv.querySelector('.oe_price .oe_currency_value, [itemprop="price"]');
-            var priceText = priceEl ? priceEl.textContent.trim().replace(/[^\d.,]/g, '') : '';
-            var price = parseFloat(priceText.replace(/\./g, '').replace(',', '.'));
-            var installmentPrice = price ? (price / 12) : 0;
+        var rating = document.createElement('div');
+        rating.className = 'bader-detail-meta__rating';
+        var stars = document.createElement('span');
+        stars.className = 'bader-stars';
+        stars.innerHTML = '<i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>';
+        var count = document.createElement('span');
+        count.className = 'bader-rating-count';
+        count.textContent = '(4.9)';
 
-            // Format installment price
-            var formattedInstallment = installmentPrice > 0 ?
-                installmentPrice.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0';
+        rating.appendChild(stars);
+        rating.appendChild(count);
+        meta.appendChild(cat);
+        meta.appendChild(rating);
+        productName.parentElement.insertBefore(meta, productName);
+    }
 
-            var extras = document.createElement('div');
-            extras.className = 'bader-price-extras';
-            extras.innerHTML =
-                '<span class="bader-price-iva">IVA Incluido</span>' +
-                (installmentPrice > 0 ?
-                    '<div class="bader-price-installment">' +
-                    '<i class="fa fa-credit-card"></i>' +
-                    '<span> <strong>12x € ' + formattedInstallment + '</strong> <em>sin interés</em></span>' +
-                    '</div>' : '');
+    function injectInstallmentNote() {
+        var detailsCol = productRoot.querySelector('#product_details');
+        if (!detailsCol) return;
 
-            // Remove old IVA note if present
-            var oldNote = priceDiv.querySelector('.bader-price-note');
-            if (oldNote) oldNote.remove();
+        var priceContainer = detailsCol.querySelector('.product_price, [itemprop="offers"]');
+        var priceValueEl = detailsCol.querySelector('.oe_price .oe_currency_value, [itemprop="price"], .oe_currency_value');
+        if (!priceContainer || !priceValueEl) return;
 
-            priceDiv.appendChild(extras);
-        })();
+        var note = detailsCol.querySelector('.bader-price-note');
+        if (!note || note.querySelector('[data-bader-installments="1"]')) return;
 
-        // ── 11d. Stock Status with Dot ──
-        (function injectStockStatus() {
-            var priceExtras = document.querySelector('.bader-price-extras');
-            if (!priceExtras || document.querySelector('.bader-detail-stock')) return;
+        var price = parsePriceSafe(priceValueEl.textContent || '');
+        if (!price || price <= 0) return;
 
-            var stockDiv = document.createElement('div');
-            stockDiv.className = 'bader-detail-stock bader-detail-stock--in';
-            stockDiv.innerHTML = '<span class="bader-stock-dot"></span> En stock - Envío inmediato';
+        var symbol = moneySymbolFromPriceContainer(priceContainer);
+        var installment = price / 12;
+        var formatted = installment.toLocaleString('es-AR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
 
-            priceExtras.parentElement.insertBefore(stockDiv, priceExtras.nextSibling);
-        })();
+        var installmentTag = document.createElement('span');
+        installmentTag.className = 'bader-price-installment-note';
+        installmentTag.setAttribute('data-bader-installments', '1');
+        installmentTag.textContent = '12x ' + symbol + formatted + ' sin interes';
+        note.appendChild(installmentTag);
+    }
 
-        // ── 11e. "Comprar Ahora" Button + Wishlist/Share ──
-        (function injectExtraButtons() {
-            var addToCart = document.querySelector('#add_to_cart, .a-submit');
-            if (!addToCart || document.querySelector('.bader-buy-now-btn')) return;
+    function injectActionButtons() {
+        var detailsCol = productRoot.querySelector('#product_details');
+        if (!detailsCol || detailsCol.querySelector('.bader-product-actions')) return;
 
-            var parent = addToCart.closest('.js_main_product, form') || addToCart.parentElement;
-            if (!parent) return;
+        var addToCart = detailsCol.querySelector('#add_to_cart, .a-submit');
+        if (!addToCart) return;
 
-            // "Comprar Ahora" button
-            var buyNow = document.createElement('div');
-            buyNow.className = 'bader-extra-actions';
-            buyNow.innerHTML =
-                '<button class="bader-buy-now-btn" onclick="document.querySelector(\'#add_to_cart, .a-submit\').click(); setTimeout(function() { window.location.href = \'/shop/cart\'; }, 500);">' +
-                '<i class="fa fa-bolt"></i> Comprar Ahora' +
-                '</button>' +
-                '<div class="bader-action-icons">' +
-                '<button class="bader-action-icon" title="Favoritos"><i class="fa fa-heart-o"></i></button>' +
-                '<button class="bader-action-icon" title="Compartir" onclick="navigator.share ? navigator.share({title: document.title, url: location.href}) : navigator.clipboard.writeText(location.href)"><i class="fa fa-share-alt"></i></button>' +
-                '</div>';
+        var ctaWrapper = addToCart.closest('#o_wsale_cta_wrapper') || addToCart.parentElement;
+        if (!ctaWrapper || !ctaWrapper.parentElement) return;
 
-            // Insert after the add-to-cart section
-            var submitRow = addToCart.closest('.css_quantity') || addToCart.closest('.row') || addToCart.parentElement;
-            if (submitRow && submitRow.parentElement) {
-                submitRow.parentElement.insertBefore(buyNow, submitRow.nextSibling);
+        var actions = document.createElement('div');
+        actions.className = 'bader-product-actions';
+
+        var buyNow = document.createElement('button');
+        buyNow.type = 'button';
+        buyNow.className = 'bader-add-to-cart bader-buy-now-btn';
+        buyNow.innerHTML = '<i class="fa fa-bolt"></i> Comprar ahora';
+
+        var wishlist = document.createElement('button');
+        wishlist.type = 'button';
+        wishlist.className = 'bader-btn-wishlist';
+        wishlist.setAttribute('title', 'Favoritos');
+        wishlist.setAttribute('aria-label', 'Favoritos');
+        wishlist.innerHTML = '<i class="fa fa-heart-o"></i>';
+
+        var share = document.createElement('button');
+        share.type = 'button';
+        share.className = 'bader-btn-share';
+        share.setAttribute('title', 'Compartir');
+        share.setAttribute('aria-label', 'Compartir');
+        share.innerHTML = '<i class="fa fa-share-alt"></i>';
+
+        buyNow.addEventListener('click', function () {
+            addToCart.click();
+            window.setTimeout(function () {
+                window.location.href = '/shop/cart';
+            }, 450);
+        });
+
+        wishlist.addEventListener('click', function () {
+            var wishlistTrigger = detailsCol.querySelector('.o_add_wishlist, [data-action="o_wishlist_submit"]');
+            if (wishlistTrigger && typeof wishlistTrigger.click === 'function') {
+                wishlistTrigger.click();
             }
-        })();
+        });
 
-        // ── 11f. Benefits Grid (2×2) ──
-        (function injectBenefitsGrid() {
-            var existingBenefits = document.querySelector('.bader-product-benefits');
-            if (existingBenefits) existingBenefits.remove(); // Remove old linear layout
-
-            var extraActions = document.querySelector('.bader-extra-actions');
-            var insertTarget = extraActions || document.querySelector('#add_to_cart, .a-submit');
-            if (!insertTarget) return;
-
-            var parent = insertTarget.parentElement;
-            if (!parent || document.querySelector('.bader-benefits-grid')) return;
-
-            var grid = document.createElement('div');
-            grid.className = 'bader-benefits-grid';
-            grid.innerHTML =
-                '<div class="bader-benefits-grid__item">' +
-                '<div class="bader-benefits-grid__icon"><i class="fa fa-truck"></i></div>' +
-                '<div class="bader-benefits-grid__text"><strong>Envío Gratis</strong><span>A todo el país</span></div>' +
-                '</div>' +
-                '<div class="bader-benefits-grid__item">' +
-                '<div class="bader-benefits-grid__icon"><i class="fa fa-shield"></i></div>' +
-                '<div class="bader-benefits-grid__text"><strong>Garantía Europea</strong><span>12 meses oficial</span></div>' +
-                '</div>' +
-                '<div class="bader-benefits-grid__item">' +
-                '<div class="bader-benefits-grid__icon"><i class="fa fa-credit-card"></i></div>' +
-                '<div class="bader-benefits-grid__text"><strong>12 Cuotas</strong><span>Sin interés</span></div>' +
-                '</div>' +
-                '<div class="bader-benefits-grid__item">' +
-                '<div class="bader-benefits-grid__icon"><i class="fa fa-refresh"></i></div>' +
-                '<div class="bader-benefits-grid__text"><strong>Devolución</strong><span>30 días</span></div>' +
-                '</div>';
-
-            parent.appendChild(grid);
-        })();
-
-        // ── Cart Page Benefits ──
-        (function injectCartBenefits() {
-            var path = window.location.pathname || '';
-            if (path.indexOf('/shop/cart') !== 0 && path.indexOf('/checkout') !== 0) {
+        share.addEventListener('click', function () {
+            var shareData = {
+                title: document.title,
+                url: window.location.href,
+            };
+            if (navigator.share) {
+                navigator.share(shareData).catch(function () {
+                    // Ignore share cancel.
+                });
                 return;
             }
-
-            var cartSummary = document.querySelector('#o_cart_summary .card, .js_cart_summary.bader-summary-card, .bader-summary-card');
-            if (cartSummary && !cartSummary.querySelector('.bader-checkout-benefits')) {
-                var cartBenefits = document.createElement('div');
-                cartBenefits.className = 'bader-checkout-benefits';
-                cartBenefits.innerHTML =
-                    '<div class="bader-benefit">' +
-                    '<i class="fa fa-truck"></i>' +
-                    '<span>Envío gratis a todo el país</span>' +
-                    '</div>' +
-                    '<div class="bader-benefit">' +
-                    '<i class="fa fa-shield"></i>' +
-                    '<span>Pago seguro</span>' +
-                    '</div>' +
-                    '<div class="bader-benefit">' +
-                    '<i class="fa fa-credit-card"></i>' +
-                    '<span>Hasta 12 cuotas sin interés</span>' +
-                    '</div>';
-                cartSummary.appendChild(cartBenefits);
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(window.location.href).catch(function () {
+                    // Ignore clipboard errors.
+                });
             }
-        })();
-    })();
+        });
+
+        actions.appendChild(buyNow);
+        actions.appendChild(wishlist);
+        actions.appendChild(share);
+        ctaWrapper.parentElement.insertBefore(actions, ctaWrapper.nextSibling);
+    }
+
+    function enhanceBenefitsPanel() {
+        var detailsCol = productRoot.querySelector('#product_details');
+        if (!detailsCol) return;
+        var benefits = detailsCol.querySelector('.bader-product-benefits');
+        if (!benefits) return;
+        benefits.classList.add('bader-product-benefits--enhanced');
+    }
+
+    function applyEnhancements() {
+        initGalleryLightbox();
+        initQtySelectorStyle();
+        injectFloatingStockBadge();
+        injectDetailMeta();
+        injectInstallmentNote();
+        injectActionButtons();
+        enhanceBenefitsPanel();
+    }
+
+    var applyScheduled = false;
+    function scheduleEnhancements() {
+        if (applyScheduled) return;
+        applyScheduled = true;
+        window.requestAnimationFrame(function () {
+            applyScheduled = false;
+            applyEnhancements();
+        });
+    }
+
+    // Initial and delayed passes for async website_sale updates.
+    scheduleEnhancements();
+    window.setTimeout(scheduleEnhancements, 300);
+    window.setTimeout(scheduleEnhancements, 1000);
+    window.setTimeout(scheduleEnhancements, 2000);
+
+    if ('MutationObserver' in window) {
+        var observer = new MutationObserver(function () {
+            scheduleEnhancements();
+        });
+        observer.observe(productRoot, { childList: true, subtree: true });
+
+        // Keep observer focused to initial composition period.
+        window.setTimeout(function () {
+            if (observer && observer.disconnect) {
+                observer.disconnect();
+            }
+        }, 25000);
+    }
+    }
+
+    if (startIfReady()) return;
+
+    document.addEventListener('DOMContentLoaded', startIfReady, { once: true });
+    window.addEventListener('load', startIfReady, { once: true });
+
+    if ('MutationObserver' in window && document.documentElement) {
+        var bootObserver = new MutationObserver(function () {
+            if (startIfReady() && bootObserver && bootObserver.disconnect) {
+                bootObserver.disconnect();
+            }
+        });
+        bootObserver.observe(document.documentElement, { childList: true, subtree: true });
+        window.setTimeout(function () {
+            if (bootObserver && bootObserver.disconnect) {
+                bootObserver.disconnect();
+            }
+        }, 12000);
+    }
 })();
+
