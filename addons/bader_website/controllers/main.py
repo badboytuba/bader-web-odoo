@@ -2,9 +2,11 @@
 import logging
 import math
 import re
+import threading
+import time
 import unicodedata
 from datetime import datetime
-from urllib.parse import quote
+from urllib.parse import quote, urlsplit
 from odoo import http
 from odoo.tools import html2plaintext
 from odoo.http import request
@@ -16,18 +18,225 @@ from odoo.addons.http_routing.models.ir_http import slug
 
 _logger = logging.getLogger(__name__)
 
+AUTH_RATE_WINDOW_SECONDS = 300
+AUTH_RATE_MAX_ATTEMPTS = {
+    'login': 8,
+    'signup': 6,
+    'cta_form': 6,
+    'distribuidor_form': 5,
+    'servicio_form': 5,
+}
+AUTH_RATE_LOCK_SECONDS = {
+    'login': 900,
+    'signup': 1200,
+    'cta_form': 1800,
+    'distribuidor_form': 2400,
+    'servicio_form': 2400,
+}
+AUTH_RATE_MAX_KEYS = 4000
+_AUTH_RATE_STATE = {}
+_AUTH_RATE_LOCK = threading.Lock()
+
 # ─── Base URL helper ──────────────────────────────────────────
-PRODUCTION_DOMAIN = 'https://www.bader4business.com'
+FALLBACK_BASE_URL = 'https://www.bader4business.com'
 
 
 def _base_url():
-    """Return the production base URL (no trailing slash)."""
-    return PRODUCTION_DOMAIN
+    """Return current request base URL (no trailing slash)."""
+    try:
+        if request and getattr(request, 'httprequest', None):
+            root = (request.httprequest.url_root or '').strip()
+            if root:
+                return root.rstrip('/')
+        if request and getattr(request, 'website', None):
+            domain = (request.website.sudo().domain or '').strip()
+            if domain:
+                if not domain.startswith(('http://', 'https://')):
+                    domain = 'https://' + domain
+                return domain.rstrip('/')
+        if request and getattr(request, 'env', None):
+            base = (
+                request.env['ir.config_parameter']
+                .sudo()
+                .get_param('web.base.url')
+                or ''
+            ).strip()
+            if base:
+                return base.rstrip('/')
+    except Exception:
+        pass
+    return FALLBACK_BASE_URL
 
 
 def _is_spam(kw):
     """Check honeypot field — bots fill hidden 'website_url' field, humans don't."""
     return bool(kw.get('website_url', '').strip())
+
+
+def _client_ip():
+    httprequest = getattr(request, 'httprequest', None)
+    if not httprequest:
+        return 'unknown'
+    forwarded_for = (httprequest.headers.get('X-Forwarded-For') or '').strip()
+    if forwarded_for:
+        return forwarded_for.split(',')[0].strip()[:96] or 'unknown'
+    return (httprequest.remote_addr or 'unknown')[:96]
+
+
+def _auth_rate_key(action, identity=''):
+    token = (identity or '').strip().lower()[:160]
+    return '%s|%s|%s' % (action, _client_ip(), token)
+
+
+def _cleanup_auth_rate_state(now_ts):
+    if len(_AUTH_RATE_STATE) <= AUTH_RATE_MAX_KEYS:
+        return
+    max_lock_window = max(AUTH_RATE_LOCK_SECONDS.values())
+    stale_cutoff = now_ts - max(AUTH_RATE_WINDOW_SECONDS, max_lock_window) * 2
+    stale_keys = []
+    for key, state in _AUTH_RATE_STATE.items():
+        attempts = state.get('attempts') or []
+        locked_until = float(state.get('locked_until') or 0.0)
+        last_attempt = attempts[-1] if attempts else 0.0
+        if locked_until < now_ts and last_attempt < stale_cutoff:
+            stale_keys.append(key)
+    stale_keys = stale_keys[: max(0, len(_AUTH_RATE_STATE) - AUTH_RATE_MAX_KEYS)]
+    for key in stale_keys:
+        _AUTH_RATE_STATE.pop(key, None)
+
+
+def _auth_rate_status(action, identity=''):
+    now_ts = time.time()
+    max_attempts = AUTH_RATE_MAX_ATTEMPTS.get(action, 6)
+    lock_seconds = AUTH_RATE_LOCK_SECONDS.get(action, 900)
+    key = _auth_rate_key(action, identity)
+
+    with _AUTH_RATE_LOCK:
+        _cleanup_auth_rate_state(now_ts)
+        state = _AUTH_RATE_STATE.setdefault(key, {'attempts': [], 'locked_until': 0.0})
+        locked_until = float(state.get('locked_until') or 0.0)
+        if locked_until > now_ts:
+            return False, int(math.ceil(locked_until - now_ts)), key
+
+        recent_attempts = [
+            ts for ts in (state.get('attempts') or [])
+            if (now_ts - float(ts)) <= AUTH_RATE_WINDOW_SECONDS
+        ]
+        state['attempts'] = recent_attempts
+
+        if len(recent_attempts) >= max_attempts:
+            state['attempts'] = []
+            state['locked_until'] = now_ts + lock_seconds
+            return False, lock_seconds, key
+
+    return True, 0, key
+
+
+def _record_auth_failure(rate_key, action):
+    now_ts = time.time()
+    max_attempts = AUTH_RATE_MAX_ATTEMPTS.get(action, 6)
+    lock_seconds = AUTH_RATE_LOCK_SECONDS.get(action, 900)
+    if not rate_key:
+        return
+
+    with _AUTH_RATE_LOCK:
+        state = _AUTH_RATE_STATE.setdefault(rate_key, {'attempts': [], 'locked_until': 0.0})
+        recent_attempts = [
+            ts for ts in (state.get('attempts') or [])
+            if (now_ts - float(ts)) <= AUTH_RATE_WINDOW_SECONDS
+        ]
+        recent_attempts.append(now_ts)
+        if len(recent_attempts) >= max_attempts:
+            state['attempts'] = []
+            state['locked_until'] = now_ts + lock_seconds
+            return
+        state['attempts'] = recent_attempts
+
+
+def _clear_auth_failures(rate_key):
+    if not rate_key:
+        return
+    with _AUTH_RATE_LOCK:
+        _AUTH_RATE_STATE.pop(rate_key, None)
+
+
+def _clean_text_line(value, max_len=255):
+    text = '' if value is None else str(value)
+    text = re.sub(r'[\x00-\x1f\x7f]', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text[:max_len]
+
+
+def _clean_text_block(value, max_len=2000):
+    text = '' if value is None else str(value)
+    text = text.replace('\r\n', '\n').replace('\r', '\n')
+    text = re.sub(r'[^\S\n]+', ' ', text)
+    text = '\n'.join(line.strip() for line in text.split('\n') if line.strip())
+    return text[:max_len]
+
+
+def _clean_email(value, max_len=320):
+    email = _clean_text_line(value, max_len=max_len).lower()
+    if not email:
+        return ''
+    if not re.match(r'^[^@\s]+@[^@\s]+\.[^@\s]+$', email):
+        return ''
+    return email
+
+
+def _clean_phone(value, max_len=40):
+    raw = _clean_text_line(value, max_len=max_len * 2)
+    if not raw:
+        return ''
+    cleaned = re.sub(r'[^0-9+().\-\s]', '', raw).strip()
+    return cleaned[:max_len]
+
+
+def _public_form_identity(payload):
+    payload = payload or {}
+    email = _clean_email(payload.get('email'))
+    if email:
+        return email
+    phone = _clean_phone(payload.get('phone'))
+    if phone:
+        return phone
+    return _clean_text_line(payload.get('name'), max_len=80).lower()
+
+
+def _register_public_form_attempt(action, payload):
+    identity = _public_form_identity(payload)
+    allowed, retry_after, rate_key = _auth_rate_status(action, identity)
+    if not allowed:
+        return False, retry_after
+    _record_auth_failure(rate_key, action)
+    return True, 0
+
+
+def _is_same_origin_request():
+    httprequest = getattr(request, 'httprequest', None)
+    if not httprequest:
+        return False
+    expected_host = (httprequest.host or '').strip().lower()
+    if not expected_host:
+        return False
+
+    candidate = (httprequest.headers.get('Origin') or '').strip()
+    if not candidate:
+        candidate = (httprequest.headers.get('Referer') or '').strip()
+    if not candidate:
+        # If the upstream/proxy strips origin headers, keep compatibility.
+        return True
+
+    try:
+        parsed = urlsplit(candidate)
+    except Exception:
+        return False
+
+    candidate_host = (parsed.netloc or '').strip().lower()
+    if not candidate_host:
+        return False
+
+    return candidate_host == expected_host
 
 
 class BaderWebsiteSale(WebsiteSale):
@@ -665,7 +874,7 @@ class BaderWebsite(Website):
                 'id': 1,
                 'title': 'Catalogo General',
                 'description': 'Catalogo completo con todos los productos Bader para profesionales dentales.',
-                'image': 'https://bader.com.ar/web/image/7420-92f24f98/Catalogo-general-263x300-_1_.png',
+                'image': '/web/image/7420-92f24f98/Catalogo-general-263x300-_1_.png',
                 'download_url': '/bader_website/static/src/pdf/descargas/catalogo-general-bader-es.pdf',
                 'category': 'general',
                 'available': True,
@@ -677,7 +886,7 @@ class BaderWebsite(Website):
                 'id': 2,
                 'title': 'Fantasia Dental',
                 'description': 'Coleccion exclusiva de productos para tratamientos esteticos y restauraciones.',
-                'image': 'https://bader.com.ar/web/image/7431-8afd337c/Fantasia-dental-263x300-_2_.png',
+                'image': '/web/image/7431-8afd337c/Fantasia-dental-263x300-_2_.png',
                 'download_url': '/bader_website/static/src/pdf/descargas/catalogo-fantasia-dental-2023-es.pdf',
                 'category': 'clinica',
                 'available': True,
@@ -689,7 +898,7 @@ class BaderWebsite(Website):
                 'id': 3,
                 'title': 'Sillones Dentales',
                 'description': 'Equipos dentales de ultima generacion para clinicas modernas.',
-                'image': 'https://bader.com.ar/web/image/7437-2a297382/Mockup-sillones-dentales-1024x825-_2_.png',
+                'image': '/web/image/7437-2a297382/Mockup-sillones-dentales-1024x825-_2_.png',
                 'download_url': '/bader_website/static/src/pdf/descargas/catalogo-equipos-dentales-bader-europe-group.pdf',
                 'category': 'equipos',
                 'available': True,
@@ -701,7 +910,7 @@ class BaderWebsite(Website):
                 'id': 4,
                 'title': 'Fantomas y Tipodontos',
                 'description': 'Modelos de practica y simulacion para formacion odontologica.',
-                'image': 'https://bader.com.ar/web/image/7433-4aeb8a3e/Iconos-fantoma-e-tipodontos-263x300.png',
+                'image': '/web/image/7433-4aeb8a3e/Iconos-fantoma-e-tipodontos-263x300.png',
                 'download_url': '/bader_website/static/src/pdf/descargas/catalogo-tipodontos-y-fantomas-2023-es.pdf',
                 'category': 'formacion',
                 'available': True,
@@ -713,7 +922,7 @@ class BaderWebsite(Website):
                 'id': 5,
                 'title': 'Linea de Endodoncia',
                 'description': 'Instrumental especializado para tratamientos de conducto.',
-                'image': 'https://bader.com.ar/web/image/7434-23bdbe94/folleto-endodoncia-263x300-_1_.png',
+                'image': '/web/image/7434-23bdbe94/folleto-endodoncia-263x300-_1_.png',
                 'download_url': '/bader_website/static/src/pdf/descargas/folleto-endodoncia-2019-es.pdf',
                 'category': 'instrumental',
                 'available': False,
@@ -725,7 +934,7 @@ class BaderWebsite(Website):
                 'id': 6,
                 'title': 'Fresas y Abrasivos',
                 'description': 'Amplia gama de fresas dentales y materiales abrasivos de alta calidad.',
-                'image': 'https://bader.com.ar/web/image/7432-571e95bf/fresas-bader-263x300-_1_.png',
+                'image': '/web/image/7432-571e95bf/fresas-bader-263x300-_1_.png',
                 'download_url': '/bader_website/static/src/pdf/descargas/folleto-fresas-bader-1.pdf',
                 'category': 'instrumental',
                 'available': False,
@@ -737,7 +946,7 @@ class BaderWebsite(Website):
                 'id': 7,
                 'title': 'Mobiliario para Clinica',
                 'description': 'Muebles y equipamiento para disenar tu clinica dental perfecta.',
-                'image': 'https://bader.com.ar/web/image/7435-1ac7adde/Iconos-descargas-mobiliario-clinica-263x300-_1_.png',
+                'image': '/web/image/7435-1ac7adde/Iconos-descargas-mobiliario-clinica-263x300-_1_.png',
                 'download_url': '/bader_website/static/src/pdf/descargas/catalago-muebles-clinica-dental.pdf',
                 'category': 'mobiliario',
                 'available': True,
@@ -749,7 +958,7 @@ class BaderWebsite(Website):
                 'id': 8,
                 'title': 'Instrumental Dental',
                 'description': 'Catalogo completo de instrumental odontologico profesional.',
-                'image': 'https://bader.com.ar/web/image/7436-201c1214/Instrumental-bader-263x300-_2_.png',
+                'image': '/web/image/7436-201c1214/Instrumental-bader-263x300-_2_.png',
                 'download_url': '/bader_website/static/src/pdf/descargas/catalogo-instrumental-es.pdf',
                 'category': 'instrumental',
                 'available': True,
@@ -1700,12 +1909,22 @@ class BaderWebsite(Website):
     def auth_modal_login(self, **params):
         """AJAX login endpoint used by the Clerk-like website modal."""
         payload = params or {}
+        if not _is_same_origin_request():
+            return {'ok': False, 'error': 'forbidden_origin'}
         redirect_path = self._safe_auth_redirect(payload.get('redirect'))
         if not request.website.is_public_user():
             return {'ok': True, 'already_logged': True, 'redirect': redirect_path}
 
         login = (payload.get('login') or payload.get('email') or '').strip().lower()
         password = payload.get('password') or ''
+        allowed, retry_after, rate_key = _auth_rate_status('login', login)
+        if not allowed:
+            return {
+                'ok': False,
+                'error': 'too_many_attempts',
+                'retry_after': retry_after,
+                'message': 'Demasiados intentos. Espera %s segundos e intentalo nuevamente.' % retry_after,
+            }
         if not login or not password:
             return {
                 'ok': False,
@@ -1720,18 +1939,22 @@ class BaderWebsite(Website):
             uid = False
 
         if not uid:
+            _record_auth_failure(rate_key, 'login')
             return {
                 'ok': False,
                 'error': 'invalid_credentials',
                 'message': 'Credenciales invalidas. Verifica email y contrasena.',
             }
 
+        _clear_auth_failures(rate_key)
         return {'ok': True, 'redirect': redirect_path}
 
     @http.route('/bader/auth/signup', type='json', auth='public', website=True, csrf=False)
     def auth_modal_signup(self, **params):
         """Create website account + segmented profile in one secure flow."""
         payload = params or {}
+        if not _is_same_origin_request():
+            return {'ok': False, 'error': 'forbidden_origin'}
         redirect_path = self._safe_auth_redirect(payload.get('redirect'))
         if not request.website.is_public_user():
             return {'ok': True, 'already_logged': True, 'redirect': redirect_path}
@@ -1740,21 +1963,35 @@ class BaderWebsite(Website):
         email = (payload.get('email') or payload.get('login') or '').strip().lower()[:320]
         password = payload.get('password') or ''
         confirm_password = payload.get('confirm_password') or payload.get('confirm') or ''
+        allowed, retry_after, rate_key = _auth_rate_status('signup', email)
+        if not allowed:
+            return {
+                'ok': False,
+                'error': 'too_many_attempts',
+                'retry_after': retry_after,
+                'message': 'Demasiados intentos de registro. Espera %s segundos e intentalo nuevamente.' % retry_after,
+            }
         if not full_name:
+            _record_auth_failure(rate_key, 'signup')
             return {'ok': False, 'error': 'missing_name', 'message': 'Ingresa tu nombre completo.'}
         if not email:
+            _record_auth_failure(rate_key, 'signup')
             return {'ok': False, 'error': 'missing_email', 'message': 'Ingresa un email valido.'}
         if not re.match(r'^[^@\s]+@[^@\s]+\.[^@\s]+$', email):
+            _record_auth_failure(rate_key, 'signup')
             return {'ok': False, 'error': 'invalid_email', 'message': 'Ingresa un email valido.'}
         if len(password) < 8:
+            _record_auth_failure(rate_key, 'signup')
             return {'ok': False, 'error': 'weak_password', 'message': 'La contrasena debe tener al menos 8 caracteres.'}
         if password != confirm_password:
+            _record_auth_failure(rate_key, 'signup')
             return {'ok': False, 'error': 'password_mismatch', 'message': 'Las contrasenas no coinciden.'}
 
         profile_payload = self._prepare_onboarding_write_vals(
             request.env['res.partner'].sudo(), payload
         )
         if not profile_payload.get('ok'):
+            _record_auth_failure(rate_key, 'signup')
             profile_payload.setdefault(
                 'message',
                 'Completa los datos requeridos para terminar tu registro.',
@@ -1775,12 +2012,14 @@ class BaderWebsite(Website):
             # Keep signup + immediate login atomic enough for website UX.
             request.env.cr.commit()
         except UserError as exc:
+            _record_auth_failure(rate_key, 'signup')
             return {
                 'ok': False,
                 'error': 'signup_failed',
                 'message': str(exc),
             }
         except Exception as exc:
+            _record_auth_failure(rate_key, 'signup')
             _logger.exception("Bader auth modal signup failed for %s: %s", email, exc)
             return {
                 'ok': False,
@@ -1794,12 +2033,14 @@ class BaderWebsite(Website):
         except Exception:
             uid = False
         if not uid:
+            _record_auth_failure(rate_key, 'signup')
             return {
                 'ok': False,
                 'error': 'post_signup_login_failed',
                 'message': 'La cuenta fue creada, pero no se pudo iniciar sesion automaticamente.',
             }
 
+        _clear_auth_failures(rate_key)
         partner = self._current_customer_partner().sudo()
         write_vals = dict(profile_payload.get('write_vals') or {})
         write_vals['bader_onboarding_completed_at'] = datetime.utcnow()
@@ -1863,6 +2104,8 @@ class BaderWebsite(Website):
 
     @http.route('/bader/home/set_persona', type='json', auth='public', website=True, csrf=False)
     def set_home_persona(self, persona=None, **kw):
+        if not _is_same_origin_request():
+            return {'ok': False, 'error': 'forbidden_origin'}
         normalized = self._normalize_home_persona(persona or kw.get('persona'))
         if not normalized:
             return {'ok': False, 'error': 'invalid_persona'}
@@ -1872,6 +2115,8 @@ class BaderWebsite(Website):
 
     @http.route('/bader/shop/intelligent_categories', type='json', auth='public', csrf=False)
     def intelligent_shop_categories(self, **kw):
+        if not _is_same_origin_request():
+            return {'ok': False, 'error': 'forbidden_origin'}
         return self._build_intelligent_shop_tree()
 
     @http.route('/terminos', type='http', auth='public', website=True, sitemap=True)
@@ -2163,19 +2408,34 @@ class BaderWebsite(Website):
     def cta_form_submit(self, **kw):
         """Handle the CTA discount form submission -> create CRM lead."""
         if _is_spam(kw):
+            _register_public_form_attempt('cta_form', kw)
             _logger.warning("CTA form: honeypot triggered, rejecting spam")
             return request.redirect('/contacto/gracias')
+        allowed, retry_after = _register_public_form_attempt('cta_form', kw)
+        if not allowed:
+            _logger.warning(
+                "CTA form: rate limited ip=%s retry_after=%ss",
+                _client_ip(),
+                retry_after,
+            )
+            return request.redirect('/contacto/gracias')
+
+        contact_name = _clean_text_line(kw.get('name'), max_len=120) or 'Sin nombre'
+        contact_email = _clean_email(kw.get('email'))
+        contact_phone = _clean_phone(kw.get('phone'))
+        clinic_name = _clean_text_line(kw.get('clinic'), max_len=160) or 'N/A'
+        profession = _clean_text_line(kw.get('profession'), max_len=120) or 'N/A'
         try:
             values = {
-                'name': '[Web CTA] %s' % kw.get('name', 'Sin nombre'),
-                'contact_name': kw.get('name', ''),
-                'email_from': kw.get('email', ''),
-                'phone': kw.get('phone', ''),
+                'name': '[Web CTA] %s' % contact_name,
+                'contact_name': contact_name,
+                'email_from': contact_email,
+                'phone': contact_phone,
                 'description': (
                     'Consultorio: %s\n'
                     'Profesion: %s\n'
                     'Origen: Formulario CTA Homepage - 10%% Descuento'
-                ) % (kw.get('clinic', 'N/A'), kw.get('profession', 'N/A')),
+                ) % (clinic_name, profession),
                 'type': 'lead',
             }
             utm_source = request.env.ref(
@@ -2187,7 +2447,7 @@ class BaderWebsite(Website):
             lead = request.env['crm.lead'].sudo().create(values)
             _logger.info(
                 "CTA form: created lead #%s for %s",
-                lead.id, kw.get('email')
+                lead.id, contact_email or contact_name
             )
             return request.redirect('/contacto/gracias')
         except Exception as e:
@@ -2200,15 +2460,33 @@ class BaderWebsite(Website):
     def distribuidor_form_submit(self, **kw):
         """Handle distributor form submission -> create CRM lead."""
         if _is_spam(kw):
+            _register_public_form_attempt('distribuidor_form', kw)
             _logger.warning("Distributor form: honeypot triggered, rejecting spam")
             return request.redirect('/ser-distribuidor/gracias')
+        allowed, retry_after = _register_public_form_attempt('distribuidor_form', kw)
+        if not allowed:
+            _logger.warning(
+                "Distributor form: rate limited ip=%s retry_after=%ss",
+                _client_ip(),
+                retry_after,
+            )
+            return request.redirect('/ser-distribuidor/gracias')
+
+        contact_name = _clean_text_line(kw.get('name'), max_len=120) or 'Sin nombre'
+        contact_email = _clean_email(kw.get('email'))
+        contact_phone = _clean_phone(kw.get('phone'))
+        company = _clean_text_line(kw.get('company'), max_len=160)
+        province = _clean_text_line(kw.get('province'), max_len=120) or 'N/A'
+        city = _clean_text_line(kw.get('city'), max_len=120) or 'N/A'
+        business_type = _clean_text_line(kw.get('business_type'), max_len=120) or 'N/A'
+        message = _clean_text_block(kw.get('message'), max_len=1200) or 'N/A'
         try:
             values = {
-                'name': '[Web Distribuidor] %s' % kw.get('name', 'Sin nombre'),
-                'contact_name': kw.get('name', ''),
-                'email_from': kw.get('email', ''),
-                'phone': kw.get('phone', ''),
-                'partner_name': kw.get('company', ''),
+                'name': '[Web Distribuidor] %s' % contact_name,
+                'contact_name': contact_name,
+                'email_from': contact_email,
+                'phone': contact_phone,
+                'partner_name': company,
                 'description': (
                     'Empresa: %s\n'
                     'Provincia: %s\n'
@@ -2217,11 +2495,11 @@ class BaderWebsite(Website):
                     'Mensaje: %s\n'
                     'Origen: Formulario Ser Distribuidor'
                 ) % (
-                    kw.get('company', 'N/A'),
-                    kw.get('province', 'N/A'),
-                    kw.get('city', 'N/A'),
-                    kw.get('business_type', 'N/A'),
-                    kw.get('message', 'N/A'),
+                    company or 'N/A',
+                    province,
+                    city,
+                    business_type,
+                    message,
                 ),
                 'type': 'lead',
             }
@@ -2234,7 +2512,7 @@ class BaderWebsite(Website):
             lead = request.env['crm.lead'].sudo().create(values)
             _logger.info(
                 "Distributor form: created lead #%s for %s",
-                lead.id, kw.get('email')
+                lead.id, contact_email or contact_name
             )
             return request.redirect('/ser-distribuidor/gracias')
         except Exception as e:
@@ -2247,8 +2525,23 @@ class BaderWebsite(Website):
     def servicio_form_submit(self, **kw):
         """Handle service request form submission -> create CRM lead."""
         if _is_spam(kw):
+            _register_public_form_attempt('servicio_form', kw)
             _logger.warning("Service form: honeypot triggered, rejecting spam")
             return request.redirect('/servicios/gracias')
+        allowed, retry_after = _register_public_form_attempt('servicio_form', kw)
+        if not allowed:
+            _logger.warning(
+                "Service form: rate limited ip=%s retry_after=%ss",
+                _client_ip(),
+                retry_after,
+            )
+            return request.redirect('/servicios/gracias')
+
+        contact_name = _clean_text_line(kw.get('name'), max_len=120) or 'Sin nombre'
+        contact_email = _clean_email(kw.get('email'))
+        contact_phone = _clean_phone(kw.get('phone'))
+        product_name = _clean_text_line(kw.get('product'), max_len=220) or 'N/A'
+        service_description = _clean_text_block(kw.get('description'), max_len=1600) or 'N/A'
         try:
             service_labels = {
                 'instalacion': 'Instalación',
@@ -2264,11 +2557,11 @@ class BaderWebsite(Website):
             values = {
                 'name': '[Web Servicio - %s] %s' % (
                     service_label,
-                    kw.get('name', 'Sin nombre')
+                    contact_name
                 ),
-                'contact_name': kw.get('name', ''),
-                'email_from': kw.get('email', ''),
-                'phone': kw.get('phone', ''),
+                'contact_name': contact_name,
+                'email_from': contact_email,
+                'phone': contact_phone,
                 'description': (
                     'Tipo de servicio: %s\n'
                     'Equipo/Producto: %s\n'
@@ -2276,8 +2569,8 @@ class BaderWebsite(Website):
                     'Origen: Formulario Servicios'
                 ) % (
                     service_label,
-                    kw.get('product', 'N/A'),
-                    kw.get('description', 'N/A'),
+                    product_name,
+                    service_description,
                 ),
                 'type': 'lead',
             }
@@ -2290,7 +2583,7 @@ class BaderWebsite(Website):
             lead = request.env['crm.lead'].sudo().create(values)
             _logger.info(
                 "Service form: created lead #%s for %s",
-                lead.id, kw.get('email')
+                lead.id, contact_email or contact_name
             )
             return request.redirect('/servicios/gracias')
         except Exception as e:
