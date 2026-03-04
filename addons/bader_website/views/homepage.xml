@@ -16,6 +16,36 @@
                 <meta name="twitter:card" content="summary_large_image"/>
                 <meta name="twitter:title" content="Bader Argentina — Equipamiento Odontológico"/>
                 <meta name="twitter:description" content="Líder en equipamiento odontológico. +2.800 productos en stock. Envíos a todo el país."/>
+                <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Bader Argentina",
+  "url": "<t t-esc="(request.httprequest.url_root or '').rstrip('/')"/>",
+  "logo": "<t t-esc="(request.httprequest.url_root or '').rstrip('/')"/>/bader_website/static/src/img/bader_logotipo.png",
+  "email": "hola@bader.com.ar",
+  "telephone": "+54-11-2452-2097",
+  "sameAs": [
+    "https://www.instagram.com/baderargentina/",
+    "https://www.facebook.com/baderargentina/",
+    "https://www.linkedin.com/company/baderargentina/",
+    "https://www.youtube.com/@baderargentina"
+  ]
+}
+                </script>
+                <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Bader Argentina",
+  "url": "<t t-esc="(request.httprequest.url_root or '').rstrip('/')"/>",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "<t t-esc="(request.httprequest.url_root or '').rstrip('/')"/>/productos?search={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+                </script>
             </t>
             <t t-set="home_pricelist" t-value="request.website.get_current_pricelist()"/>
             <t t-set="home_currency" t-value="home_pricelist.currency_id"/>
@@ -117,10 +147,18 @@
                                     <span class="bader-hero__label">
                                         <i class="fa fa-star"/> Para Clínica Dental
                                     </span>
-                                    <h1 class="bader-hero__title">
-                                        Tu clinica,<br/>
-                                        <span class="text-green">tu exito</span>
-                                    </h1>
+                                    <t t-if="home_persona == 'clinica'">
+                                        <h1 class="bader-hero__title">
+                                            Tu clinica,<br/>
+                                            <span class="text-green">tu exito</span>
+                                        </h1>
+                                    </t>
+                                    <t t-else="">
+                                        <h2 class="bader-hero__title">
+                                            Tu clinica,<br/>
+                                            <span class="text-green">tu exito</span>
+                                        </h2>
+                                    </t>
                                     <p class="bader-hero__subtitle">
                                         Equipamiento de ultima generacion para que tus pacientes
                                         confien en cada sonrisa que creas.
@@ -134,10 +172,18 @@
                                     <span class="bader-hero__label">
                                         <i class="fa fa-flask"/> Para Laboratorio Dental
                                     </span>
-                                    <h1 class="bader-hero__title">
-                                        Precision que<br/>
-                                        <span class="text-green">marca la diferencia</span>
-                                    </h1>
+                                    <t t-if="home_persona == 'laboratorio'">
+                                        <h1 class="bader-hero__title">
+                                            Precision que<br/>
+                                            <span class="text-green">marca la diferencia</span>
+                                        </h1>
+                                    </t>
+                                    <t t-else="">
+                                        <h2 class="bader-hero__title">
+                                            Precision que<br/>
+                                            <span class="text-green">marca la diferencia</span>
+                                        </h2>
+                                    </t>
                                     <p class="bader-hero__subtitle">
                                         Herramientas de precision milimetrica para crear protesis perfectas,
                                         cada vez.
@@ -151,10 +197,18 @@
                                     <span class="bader-hero__label">
                                         <i class="fa fa-graduation-cap"/> Para Estudiantes
                                     </span>
-                                    <h1 class="bader-hero__title">
-                                        Aprende con<br/>
-                                        <span class="text-green">los mejores</span>
-                                    </h1>
+                                    <t t-if="home_persona == 'estudiantes'">
+                                        <h1 class="bader-hero__title">
+                                            Aprende con<br/>
+                                            <span class="text-green">los mejores</span>
+                                        </h1>
+                                    </t>
+                                    <t t-else="">
+                                        <h2 class="bader-hero__title">
+                                            Aprende con<br/>
+                                            <span class="text-green">los mejores</span>
+                                        </h2>
+                                    </t>
                                     <p class="bader-hero__subtitle">
                                         Planes especiales para futuros profesionales. Tu carrera empieza
                                         con las herramientas correctas.
@@ -208,24 +262,30 @@
 
                             <!-- Right: Image -->
                             <div class="bader-hero__image">
-                                <img src="/bader_website/static/src/img/hero/hero-clinica.png"
+                                <img src="/bader_website/static/src/img/hero/hero-clinica.webp"
                                      alt="Clinica dental moderna"
                                      t-attf-class="bader-hero__persona-img #{home_persona == 'clinica' and 'bader-hero__persona-img--active' or ''}"
                                      data-persona-img="clinica"
                                      t-att-style="home_persona == 'clinica' and '' or 'display:none;'"
-                                     loading="lazy"/>
-                                <img src="/bader_website/static/src/img/hero/hero-laboratorio.png"
+                                     t-att-loading="home_persona == 'clinica' and 'eager' or 'lazy'"
+                                     t-att-fetchpriority="home_persona == 'clinica' and 'high' or 'low'"
+                                     decoding="async"/>
+                                <img src="/bader_website/static/src/img/hero/hero-laboratorio.webp"
                                      alt="Laboratorio dental profesional"
                                      t-attf-class="bader-hero__persona-img #{home_persona == 'laboratorio' and 'bader-hero__persona-img--active' or ''}"
                                      data-persona-img="laboratorio"
                                      t-att-style="home_persona == 'laboratorio' and '' or 'display:none;'"
-                                     loading="lazy"/>
-                                <img src="/bader_website/static/src/img/hero/hero-estudiantes.png"
+                                     t-att-loading="home_persona == 'laboratorio' and 'eager' or 'lazy'"
+                                     t-att-fetchpriority="home_persona == 'laboratorio' and 'high' or 'low'"
+                                     decoding="async"/>
+                                <img src="/bader_website/static/src/img/hero/hero-estudiantes.webp"
                                      alt="Kit de estudiante de odontologia"
                                      t-attf-class="bader-hero__persona-img #{home_persona == 'estudiantes' and 'bader-hero__persona-img--active' or ''}"
                                      data-persona-img="estudiantes"
                                      t-att-style="home_persona == 'estudiantes' and '' or 'display:none;'"
-                                     loading="lazy"/>
+                                     t-att-loading="home_persona == 'estudiantes' and 'eager' or 'lazy'"
+                                     t-att-fetchpriority="home_persona == 'estudiantes' and 'high' or 'low'"
+                                     decoding="async"/>
                                 <div class="bader-hero__floating-stats">
                                     <div class="bader-hero__avatars">
                                         <span class="bader-hero__avatar">1</span>
@@ -842,6 +902,7 @@
                         </div>
                     </div>
                 </div>
+                <script type="text/javascript" src="/bader_website/static/src/js/home_page.js"/>
 
             </div>
         </t>
