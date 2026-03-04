@@ -213,6 +213,12 @@ def audit_pages(
 
         missing_required = [h for h in REQUIRED_SECURITY_HEADERS if h not in headers]
         missing_recommended = [h for h in RECOMMENDED_SECURITY_HEADERS if h not in headers]
+        csp_value = headers.get("content-security-policy", "").lower()
+        csp_weak_flags: List[str] = []
+        if "'unsafe-inline'" in csp_value:
+            csp_weak_flags.append("unsafe-inline")
+        if "'unsafe-eval'" in csp_value:
+            csp_weak_flags.append("unsafe-eval")
 
         if idx == 0:
             baseline_headers = headers
@@ -240,6 +246,8 @@ def audit_pages(
 
         if ok and missing_recommended:
             warning = (warning + "; " if warning else "") + "recommended security headers missing: " + ", ".join(missing_recommended)
+        if ok and csp_weak_flags:
+            warning = (warning + "; " if warning else "") + "CSP contains " + ", ".join(csp_weak_flags)
 
         if ok and not marker_ok:
             ok = False
