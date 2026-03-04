@@ -11,7 +11,9 @@ from __future__ import annotations
 
 import argparse
 import os
+import subprocess
 import sys
+import time
 from pathlib import Path
 
 import paramiko
@@ -28,6 +30,8 @@ PASSWORD = os.getenv("DEPLOY_PASSWORD")
 
 REMOTE_BADER_PATH = "/opt/odoo/src/bader"
 LOCAL_ADDONS_PATH = Path(__file__).resolve().parent.parent / "addons"
+SCRIPTS_PATH = Path(__file__).resolve().parent
+DEFAULT_AUDIT_URL = os.getenv("WEB_AUDIT_BASE_URL", "https://qas.bader4business.com").rstrip("/")
 
 SKIP_DIRS = {"__pycache__", ".git", "node_modules"}
 
@@ -128,6 +132,10 @@ def main() -> None:
     parser.add_argument("--upload-only", action="store_true", help="only upload")
     parser.add_argument("--restart-only", action="store_true", help="only restart Odoo")
     parser.add_argument("--no-upgrade", action="store_true", help="upload + restart, skip upgrade")
+    parser.add_argument("--skip-audit", action="store_true", help="skip frontend QA audit after deployment")
+    parser.add_argument("--audit-url", type=str, default=DEFAULT_AUDIT_URL, help="base URL used by frontend QA audit")
+    parser.add_argument("--audit-retries", type=int, default=6, help="audit retry attempts after restart")
+    parser.add_argument("--audit-retry-delay", type=int, default=8, help="seconds between audit retries")
     args = parser.parse_args()
 
     if not args.module and not args.restart_only:
@@ -162,6 +170,25 @@ def main() -> None:
         if restart_code != 0:
             print(f"ERROR: restart failed with exit code {restart_code}")
             sys.exit(restart_code)
+
+        if not args.skip_audit:
+            audit_script = SCRIPTS_PATH / "web_qa_audit.py"
+            audit_cmd = [sys.executable, str(audit_script), "--base-url", args.audit_url]
+            attempts = max(1, int(args.audit_retries))
+            delay = max(1, int(args.audit_retry_delay))
+            last_code = 0
+            for attempt in range(1, attempts + 1):
+                print("Running frontend QA audit (attempt %d/%d): %s" % (attempt, attempts, " ".join(audit_cmd)))
+                audit_result = subprocess.run(audit_cmd, check=False)
+                last_code = int(audit_result.returncode)
+                if last_code == 0:
+                    break
+                if attempt < attempts:
+                    print(f"Audit failed with exit code {last_code}. Waiting {delay}s before retry...")
+                    time.sleep(delay)
+            if last_code != 0:
+                print(f"ERROR: frontend QA audit failed with exit code {last_code}")
+                sys.exit(last_code)
 
         print("Deployment completed.")
     finally:
