@@ -456,6 +456,34 @@
         </xpath>
     </template>
 
+    <template id="bader_cart_page_js" inherit_id="website_sale.cart"
+              name="Bader Cart Page JS" priority="95">
+        <xpath expr="//div[@id='wrap']" position="inside">
+            <script type="text/javascript" src="/bader_website/static/src/js/checkout_page.js"/>
+        </xpath>
+    </template>
+
+    <template id="bader_checkout_page_js" inherit_id="website_sale.checkout"
+              name="Bader Checkout Page JS" priority="95">
+        <xpath expr="//div[@id='wrap']" position="inside">
+            <script type="text/javascript" src="/bader_website/static/src/js/checkout_page.js"/>
+        </xpath>
+    </template>
+
+    <template id="bader_address_page_js" inherit_id="website_sale.address"
+              name="Bader Address Page JS" priority="95">
+        <xpath expr="//div[@id='wrap']" position="inside">
+            <script type="text/javascript" src="/bader_website/static/src/js/checkout_page.js"/>
+        </xpath>
+    </template>
+
+    <template id="bader_payment_page_js" inherit_id="website_sale.payment"
+              name="Bader Payment Page JS" priority="95">
+        <xpath expr="//div[@id='wrap']" position="inside">
+            <script type="text/javascript" src="/bader_website/static/src/js/checkout_page.js"/>
+        </xpath>
+    </template>
+
     <template id="bader_payment_footer" inherit_id="website_sale.payment_footer"
               name="Bader Payment Footer" priority="30">
         <xpath expr="//a[@href='/shop/cart' and hasclass('btn-secondary')]" position="replace">

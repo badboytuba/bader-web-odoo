@@ -79,6 +79,21 @@
                     </div>
                 </div>
             </section>
+            <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Catalogo de Productos Bader Argentina",
+  "url": "<t t-esc='request.httprequest.url'/>",
+  "inLanguage": "es-AR",
+  "about": "Catalogo de equipamiento odontologico para clinicas, laboratorios y estudiantes.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bader Argentina",
+    "url": "<t t-esc="(request.httprequest.url_root or '').rstrip('/')" />"
+  }
+}
+            </script>
         </xpath>
     </template>
 
@@ -159,6 +174,13 @@
                 </p>
                 <a href="/productos" class="btn btn-outline-secondary mt-3">Limpiar filtros</a>
             </div>
+        </xpath>
+    </template>
+
+    <template id="bader_shop_page_js" inherit_id="website_sale.products"
+              name="Bader Shop Page JS" priority="90">
+        <xpath expr="//div[@id='wrap']" position="inside">
+            <script type="text/javascript" src="/bader_website/static/src/js/shop_page.js"/>
         </xpath>
     </template>
 
