@@ -220,6 +220,10 @@ def _is_same_origin_request():
     if not expected_host:
         return False
 
+    fetch_site = (httprequest.headers.get('Sec-Fetch-Site') or '').strip().lower()
+    if fetch_site == 'cross-site':
+        return False
+
     candidate = (httprequest.headers.get('Origin') or '').strip()
     if not candidate:
         candidate = (httprequest.headers.get('Referer') or '').strip()
@@ -2407,6 +2411,10 @@ class BaderWebsite(Website):
                 website=True, methods=['POST'], csrf=True)
     def cta_form_submit(self, **kw):
         """Handle the CTA discount form submission -> create CRM lead."""
+        if not _is_same_origin_request():
+            _register_public_form_attempt('cta_form', kw)
+            _logger.warning("CTA form: forbidden origin for ip=%s", _client_ip())
+            return request.redirect('/contacto/gracias')
         if _is_spam(kw):
             _register_public_form_attempt('cta_form', kw)
             _logger.warning("CTA form: honeypot triggered, rejecting spam")
@@ -2459,6 +2467,10 @@ class BaderWebsite(Website):
                 website=True, methods=['POST'], csrf=True)
     def distribuidor_form_submit(self, **kw):
         """Handle distributor form submission -> create CRM lead."""
+        if not _is_same_origin_request():
+            _register_public_form_attempt('distribuidor_form', kw)
+            _logger.warning("Distributor form: forbidden origin for ip=%s", _client_ip())
+            return request.redirect('/ser-distribuidor/gracias')
         if _is_spam(kw):
             _register_public_form_attempt('distribuidor_form', kw)
             _logger.warning("Distributor form: honeypot triggered, rejecting spam")
@@ -2524,6 +2536,10 @@ class BaderWebsite(Website):
                 website=True, methods=['POST'], csrf=True)
     def servicio_form_submit(self, **kw):
         """Handle service request form submission -> create CRM lead."""
+        if not _is_same_origin_request():
+            _register_public_form_attempt('servicio_form', kw)
+            _logger.warning("Service form: forbidden origin for ip=%s", _client_ip())
+            return request.redirect('/servicios/gracias')
         if _is_spam(kw):
             _register_public_form_attempt('servicio_form', kw)
             _logger.warning("Service form: honeypot triggered, rejecting spam")
