@@ -64,6 +64,8 @@ REQUIRED_SECURITY_HEADERS = (
 RECOMMENDED_SECURITY_HEADERS = (
     "cross-origin-opener-policy",
     "cross-origin-resource-policy",
+    "content-security-policy-report-only",
+    "reporting-endpoints",
 )
 
 DEFAULT_EXTRA_PATHS = (

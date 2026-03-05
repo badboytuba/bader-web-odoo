@@ -31,6 +31,26 @@ class IrHttp(models.AbstractModel):
             "form-action 'self' https:; "
             "upgrade-insecure-requests;"
         )
+        headers.setdefault(
+            'Content-Security-Policy-Report-Only',
+            "default-src 'self' https: data: blob:; "
+            "script-src 'self' 'unsafe-inline' https:; "
+            "style-src 'self' 'unsafe-inline' https:; "
+            "img-src 'self' data: blob: https:; "
+            "font-src 'self' data: https:; "
+            "connect-src 'self' https: wss:; "
+            "object-src 'none'; "
+            "frame-src 'self' https:; "
+            "frame-ancestors 'self'; "
+            "base-uri 'self'; "
+            "form-action 'self' https:; "
+            "report-uri /bader/csp-report;"
+        )
+        headers.setdefault(
+            'Report-To',
+            '{"group":"bader-csp","max_age":10886400,"endpoints":[{"url":"/bader/csp-report"}]}'
+        )
+        headers.setdefault('Reporting-Endpoints', 'bader-csp="/bader/csp-report"')
         headers.setdefault('X-Frame-Options', 'SAMEORIGIN')
         headers.setdefault('X-Content-Type-Options', 'nosniff')
         headers.setdefault('Referrer-Policy', 'strict-origin-when-cross-origin')
