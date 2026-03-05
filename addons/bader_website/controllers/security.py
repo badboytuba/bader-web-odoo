@@ -80,18 +80,23 @@ class BaderSecurityController(http.Controller):
         document_uri = str(report.get('document-uri') or 'unknown')[:220]
         source_file = str(report.get('source-file') or 'unknown')[:220]
         disposition = str(report.get('disposition') or 'unknown')[:60]
+        line_number = str(report.get('line-number') or report.get('lineNumber') or '')[:20]
+        column_number = str(report.get('column-number') or report.get('columnNumber') or '')[:20]
+        script_sample = str(report.get('script-sample') or report.get('sample') or '')[:200]
         fingerprint = '|'.join([_client_ip(), directive, blocked_uri, document_uri])
 
         if _should_log_report(fingerprint):
             _logger.warning(
-                "CSP report ip=%s directive=%s blocked=%s document=%s source=%s disposition=%s",
+                "CSP report ip=%s directive=%s blocked=%s document=%s source=%s line=%s col=%s sample=%s disposition=%s",
                 _client_ip(),
                 directive,
                 blocked_uri,
                 document_uri,
                 source_file,
+                line_number or '-',
+                column_number or '-',
+                script_sample or '-',
                 disposition,
             )
 
         return request.make_response('', [('Content-Type', 'text/plain; charset=utf-8')], status=204)
-

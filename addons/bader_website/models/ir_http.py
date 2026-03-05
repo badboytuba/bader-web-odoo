@@ -34,7 +34,7 @@ class IrHttp(models.AbstractModel):
         headers.setdefault(
             'Content-Security-Policy-Report-Only',
             "default-src 'self' https: data: blob:; "
-            "script-src 'self' 'unsafe-inline' https:; "
+            "script-src 'self' https:; "
             "style-src 'self' 'unsafe-inline' https:; "
             "img-src 'self' data: blob: https:; "
             "font-src 'self' data: https:; "
