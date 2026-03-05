@@ -1742,6 +1742,30 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
     .bader-page-hero__center {
         max-width: 62rem;
     }
+
+    .bader-downloads-hero__content {
+        margin-left: 0;
+        margin-right: auto;
+        text-align: left;
+    }
+
+    .bader-downloads-hero__content .bader-downloads-search {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    @include mobile {
+        .bader-downloads-hero__content {
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .bader-downloads-hero__content .bader-downloads-search {
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
 }
 
 .bader-downloads-search {

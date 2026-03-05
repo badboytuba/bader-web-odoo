@@ -2556,10 +2556,53 @@ class BaderWebsite(Website):
         contact_name = _clean_text_line(kw.get('name'), max_len=120) or 'Sin nombre'
         contact_email = _clean_email(kw.get('email'))
         contact_phone = _clean_phone(kw.get('phone'))
-        product_name = _clean_text_line(kw.get('product'), max_len=220) or 'N/A'
-        service_description = _clean_text_block(kw.get('description'), max_len=1600) or 'N/A'
+        product_name = _clean_text_line(kw.get('product'), max_len=220)
+        if not product_name:
+            product_name = (
+                _clean_text_line(kw.get('equipment'), max_len=220)
+                or _clean_text_line(kw.get('purchased_equipment'), max_len=220)
+                or _clean_text_line(kw.get('equipment_interest'), max_len=220)
+                or 'N/A'
+            )
+        description_raw = _clean_text_block(kw.get('description'), max_len=1600)
+        service_details = []
+        detail_specs = [
+            ('preferred_datetime', 'Fecha y hora preferida', 'line'),
+            ('clinic_address', 'Direccion de clinica', 'line'),
+            ('preferred_date', 'Fecha preferida', 'line'),
+            ('technical_service_kind', 'Tipo tecnico', 'line'),
+            ('equipment', 'Equipo', 'line'),
+            ('problem_description', 'Problema reportado', 'block'),
+            ('approximate_value', 'Valor aproximado', 'line'),
+            ('desired_term', 'Plazo deseado', 'line'),
+            ('area_interest', 'Area de interes', 'line'),
+            ('level', 'Nivel', 'line'),
+            ('install_address', 'Direccion de instalacion', 'line'),
+            ('purchased_equipment', 'Equipo comprado', 'line'),
+            ('preferred_install_date', 'Fecha de instalacion', 'line'),
+            ('message', 'Mensaje', 'block'),
+        ]
+        for field_name, label, clean_mode in detail_specs:
+            if clean_mode == 'block':
+                clean_value = _clean_text_block(kw.get(field_name), max_len=500)
+            else:
+                clean_value = _clean_text_line(kw.get(field_name), max_len=220)
+            if clean_value:
+                service_details.append('%s: %s' % (label, clean_value))
+        if description_raw:
+            service_details.insert(0, 'Descripcion: %s' % description_raw)
+        service_description = '\n'.join(service_details) if service_details else 'N/A'
         try:
             service_labels = {
+                'nancy_asesora': 'Nancy Asesora Virtual',
+                'visita_tecnica': 'Visita Tecnica Comercial',
+                'servicio_tecnico': 'Servicio Tecnico Premium',
+                'financiacion': 'Financiacion Inteligente',
+                'capacitacion': 'Capacitacion Bader Academy',
+                'instalacion': 'Instalacion Express',
+                'soporte_tecnico': 'Soporte Tecnico',
+                'mantenimiento': 'Mantenimiento Preventivo',
+                'garantia': 'Garantia',
                 'instalacion': 'Instalación',
                 'soporte_tecnico': 'Soporte Técnico',
                 'mantenimiento': 'Mantenimiento',
@@ -2567,8 +2610,8 @@ class BaderWebsite(Website):
                 'garantia': 'Garantía',
                 'otro': 'Otro',
             }
-            service_type = kw.get('service_type', 'N/A')
-            service_label = service_labels.get(service_type, service_type)
+            service_type = _clean_text_line(kw.get('service_type'), max_len=64).lower().replace('-', '_')
+            service_label = service_labels.get(service_type, 'Otro')
 
             values = {
                 'name': '[Web Servicio - %s] %s' % (

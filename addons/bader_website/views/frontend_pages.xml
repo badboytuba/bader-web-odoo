@@ -12,15 +12,15 @@
                     <div class="bader-page-hero__blur bader-page-hero__blur--1"/>
                     <div class="bader-page-hero__blur bader-page-hero__blur--2"/>
                     <div class="bader-page-hero__container">
-                        <div class="bader-page-hero__center">
+                        <div class="bader-page-hero__center bader-downloads-hero__content">
                             <span class="bader-page-hero__badge">
                                 <i class="fa fa-book"/> Centro de Descargas
                             </span>
                             <h1 class="bader-page-hero__title">
-                                Catalogos y <span class="text-green">documentacion</span>
+                                Catalogos y <span class="text-green">Documentacion</span>
                             </h1>
                             <p class="bader-page-hero__subtitle">
-                                Archivos PDF oficiales sincronizados con la seleccion del app Bader-AR.
+                                Descarga catalogos, manuales y guias tecnicas con informacion detallada para tu practica profesional.
                             </p>
                             <form action="/descargas" method="get" class="bader-downloads-search">
                                 <input type="hidden" name="category" t-att-value="selected_category"/>

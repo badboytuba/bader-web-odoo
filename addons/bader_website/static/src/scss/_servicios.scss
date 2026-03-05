@@ -9,6 +9,7 @@
     flex-direction: column;
     position: relative;
     overflow: hidden;
+    min-height: 100%;
 
     &::before {
         content: '';
@@ -26,6 +27,15 @@
         opacity: 1;
     }
 
+    &.is-clickable {
+        cursor: pointer;
+    }
+
+    &:focus-visible {
+        outline: 2px solid rgba($bader-green, 0.85);
+        outline-offset: 2px;
+    }
+
     // On hover, scale the gradient icon
     &:hover .bader-gradient-icon {
         transform: scale(1.10);
@@ -36,6 +46,46 @@
         transition:
             transform $transition-base,
             box-shadow $transition-base;
+    }
+}
+
+.bader-services__cta {
+    margin-top: auto;
+    align-self: flex-start;
+}
+
+.bader-services-hero-pills {
+    margin-top: 1.2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.65rem;
+}
+
+.bader-services-hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba($white, 0.12);
+    border: 1px solid rgba($white, 0.24);
+    border-radius: $radius-pill;
+    padding: 0.38rem 0.8rem;
+    font-size: 0.8rem;
+    color: rgba($white, 0.92);
+
+    i {
+        color: rgba($bader-green, 0.95);
+    }
+}
+
+#servicio-form {
+    .bader-form {
+        transition: box-shadow $transition-base, transform $transition-base, border-color $transition-base;
+    }
+
+    &.bader-services-form-focus .bader-form {
+        box-shadow: 0 0 0 2px rgba($bader-green, 0.55), $shadow-lg;
+        transform: translateY(-2px);
     }
 }
 

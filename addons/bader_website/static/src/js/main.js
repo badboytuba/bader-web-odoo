@@ -1010,6 +1010,93 @@ odoo.define('bader_website.main', function (require) {
         }
         // ---- 5. Hero Persona Tab Switching moved to static/src/js/home_page.js (homepage-only load) ----
 
+        // ---- 5b. Servicios cards -> lead form bridge ----
+        (function initServiciosLeadFlow() {
+            var pageRoot = document.querySelector('[data-bader-services-page="1"]');
+            if (!pageRoot) return;
+
+            var formSection = document.getElementById('servicio-form');
+            var form = document.getElementById('baderServicioLeadForm');
+            var serviceSelect = document.getElementById('baderServicioType');
+            if (!formSection || !form || !serviceSelect) return;
+
+            var cards = pageRoot.querySelectorAll('.bader-services__card[data-service-type]');
+            if (!cards.length) return;
+
+            var removeHighlightTimer = null;
+
+            function clearHighlightTimer() {
+                if (!removeHighlightTimer) return;
+                window.clearTimeout(removeHighlightTimer);
+                removeHighlightTimer = null;
+            }
+
+            function highlightFormSection() {
+                clearHighlightTimer();
+                formSection.classList.add('bader-services-form-focus');
+                removeHighlightTimer = window.setTimeout(function () {
+                    formSection.classList.remove('bader-services-form-focus');
+                }, 2200);
+            }
+
+            function focusFirstField() {
+                var firstInput = form.querySelector('input[name="name"]');
+                if (!firstInput || typeof firstInput.focus !== 'function') return;
+                try {
+                    firstInput.focus({ preventScroll: true });
+                } catch (err) {
+                    firstInput.focus();
+                }
+            }
+
+            function openLeadFormFor(serviceType) {
+                var value = (serviceType || '').trim();
+                if (!value) return;
+
+                serviceSelect.value = value;
+                serviceSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                window.setTimeout(function () {
+                    highlightFormSection();
+                    focusFirstField();
+                }, 420);
+            }
+
+            cards.forEach(function (card) {
+                card.addEventListener('click', function (ev) {
+                    var button = ev.target && ev.target.closest
+                        ? ev.target.closest('.js-bader-service-open')
+                        : null;
+                    if (button) return;
+                    ev.preventDefault();
+                    openLeadFormFor(card.getAttribute('data-service-type'));
+                });
+
+                card.addEventListener('keydown', function (ev) {
+                    if (ev.key !== 'Enter' && ev.key !== ' ') return;
+                    ev.preventDefault();
+                    openLeadFormFor(card.getAttribute('data-service-type'));
+                });
+            });
+
+            pageRoot.querySelectorAll('.js-bader-service-open').forEach(function (button) {
+                button.addEventListener('click', function (ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    var card = button.closest('.bader-services__card[data-service-type]');
+                    if (!card) return;
+                    openLeadFormFor(card.getAttribute('data-service-type'));
+                });
+            });
+
+            if (window.location.hash === '#servicio-form') {
+                window.setTimeout(function () {
+                    highlightFormSection();
+                }, 320);
+            }
+        })();
+
         // ---- 6. Counter Animation (CountUp) ----
         (function initCounters() {
             var counters = document.querySelectorAll('[data-count-to]');

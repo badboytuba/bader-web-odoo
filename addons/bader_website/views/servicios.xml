@@ -19,7 +19,7 @@
                 <link rel="canonical" t-att-href="request.httprequest.url"/>
                 <meta name="twitter:card" content="summary_large_image"/>
             </t>
-            <div id="wrap" class="oe_structure oe_empty">
+            <div id="wrap" class="oe_structure oe_empty bader-services-page" data-bader-services-page="1">
 
                 <!-- ============================
                      HERO — Dark accent bg
@@ -62,7 +62,7 @@
 
                         <div class="bader-page-section__grid bader-page-section__grid--3">
                             <!-- Service 1: Instalación -->
-                            <div class="bader-services__card bader-page-card bader-animate">
+                            <div class="bader-services__card bader-page-card bader-animate is-clickable" tabindex="0" role="button" data-service-type="instalacion">
                                 <div class="bader-gradient-icon bader-gradient-icon--green">
                                     <i class="fa fa-wrench"/>
                                 </div>
@@ -76,10 +76,11 @@
                                     <li><i class="fa fa-check"/> Configuración inicial</li>
                                     <li><i class="fa fa-check"/> Pruebas de funcionamiento</li>
                                 </ul>
+                                <button type="button" class="btn-bader-sm bader-services__cta js-bader-service-open">Solicitar</button>
                             </div>
 
                             <!-- Service 2: Soporte Técnico -->
-                            <div class="bader-services__card bader-page-card bader-animate">
+                            <div class="bader-services__card bader-page-card bader-animate is-clickable" tabindex="0" role="button" data-service-type="servicio_tecnico">
                                 <div class="bader-gradient-icon bader-gradient-icon--blue">
                                     <i class="fa fa-life-ring"/>
                                 </div>
@@ -93,10 +94,11 @@
                                     <li><i class="fa fa-check"/> Diagnóstico remoto</li>
                                     <li><i class="fa fa-check"/> Repuestos originales</li>
                                 </ul>
+                                <button type="button" class="btn-bader-sm bader-services__cta js-bader-service-open">Solicitar</button>
                             </div>
 
                             <!-- Service 3: Mantenimiento -->
-                            <div class="bader-services__card bader-page-card bader-animate">
+                            <div class="bader-services__card bader-page-card bader-animate is-clickable" tabindex="0" role="button" data-service-type="mantenimiento">
                                 <div class="bader-gradient-icon bader-gradient-icon--purple">
                                     <i class="fa fa-heartbeat"/>
                                 </div>
@@ -110,10 +112,11 @@
                                     <li><i class="fa fa-check"/> Calibración de equipos</li>
                                     <li><i class="fa fa-check"/> Reporte de estado</li>
                                 </ul>
+                                <button type="button" class="btn-bader-sm bader-services__cta js-bader-service-open">Solicitar</button>
                             </div>
 
                             <!-- Service 4: Capacitación -->
-                            <div class="bader-services__card bader-page-card bader-animate">
+                            <div class="bader-services__card bader-page-card bader-animate is-clickable" tabindex="0" role="button" data-service-type="capacitacion">
                                 <div class="bader-gradient-icon bader-gradient-icon--orange">
                                     <i class="fa fa-graduation-cap"/>
                                 </div>
@@ -127,10 +130,11 @@
                                     <li><i class="fa fa-check"/> Videos tutoriales</li>
                                     <li><i class="fa fa-check"/> Manual de usuario</li>
                                 </ul>
+                                <button type="button" class="btn-bader-sm bader-services__cta js-bader-service-open">Solicitar</button>
                             </div>
 
                             <!-- Service 5: Garantía -->
-                            <div class="bader-services__card bader-page-card bader-animate">
+                            <div class="bader-services__card bader-page-card bader-animate is-clickable" tabindex="0" role="button" data-service-type="garantia">
                                 <div class="bader-gradient-icon bader-gradient-icon--teal">
                                     <i class="fa fa-shield"/>
                                 </div>
@@ -144,10 +148,11 @@
                                     <li><i class="fa fa-check"/> Garantía extendida opcional</li>
                                     <li><i class="fa fa-check"/> Cobertura total</li>
                                 </ul>
+                                <button type="button" class="btn-bader-sm bader-services__cta js-bader-service-open">Solicitar</button>
                             </div>
 
                             <!-- Service 6: Financiación -->
-                            <div class="bader-services__card bader-page-card bader-animate">
+                            <div class="bader-services__card bader-page-card bader-animate is-clickable" tabindex="0" role="button" data-service-type="financiacion">
                                 <div class="bader-gradient-icon bader-gradient-icon--indigo">
                                     <i class="fa fa-credit-card"/>
                                 </div>
@@ -161,6 +166,7 @@
                                     <li><i class="fa fa-check"/> Todas las tarjetas</li>
                                     <li><i class="fa fa-check"/> Transferencia con descuento</li>
                                 </ul>
+                                <button type="button" class="btn-bader-sm bader-services__cta js-bader-service-open">Solicitar</button>
                             </div>
                         </div>
                     </div>
@@ -222,7 +228,7 @@
                                 <p class="bader-form__subtitle">
                                     Completá tus datos y un técnico se pondrá en contacto
                                 </p>
-                                <form action="/bader/servicio-form" method="POST">
+                                <form action="/bader/servicio-form" method="POST" id="baderServicioLeadForm">
                                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                     <!-- Honeypot anti-spam: invisible to humans, bots fill it -->
                                     <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
@@ -261,13 +267,16 @@
                                             <label>Tipo de servicio *</label>
                                             <div class="input-wrapper">
                                                 <i class="fa fa-cog"/>
-                                                <select name="service_type" required="required">
-                                                    <option value="">Seleccioná el servicio</option>
-                                                    <option value="instalacion">Instalación</option>
-                                                    <option value="soporte_tecnico">Soporte Técnico</option>
-                                                    <option value="mantenimiento">Mantenimiento</option>
-                                                    <option value="capacitacion">Capacitación</option>
-                                                    <option value="garantia">Garantía</option>
+                                                <select name="service_type" required="required" id="baderServicioType">
+                                                    <option value="">Selecciona el servicio</option>
+                                                    <option value="nancy_asesora">Nancy Asesora Virtual</option>
+                                                    <option value="visita_tecnica">Visita Tecnica Comercial</option>
+                                                    <option value="servicio_tecnico">Servicio Tecnico Premium</option>
+                                                    <option value="capacitacion">Capacitacion Bader Academy</option>
+                                                    <option value="financiacion">Financiacion Inteligente</option>
+                                                    <option value="instalacion">Instalacion Express</option>
+                                                    <option value="mantenimiento">Mantenimiento Preventivo</option>
+                                                    <option value="garantia">Garantia</option>
                                                     <option value="otro">Otro</option>
                                                 </select>
                                             </div>
