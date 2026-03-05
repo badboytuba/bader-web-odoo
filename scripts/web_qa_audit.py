@@ -16,12 +16,14 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import statistics
 import sys
 import time
 from dataclasses import dataclass
+from html.parser import HTMLParser
 from pathlib import Path
-from typing import Dict, Iterable, List, Tuple
+from typing import Dict, Iterable, List, Optional, Tuple
 from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin, urlparse
 from urllib.request import Request, urlopen
@@ -70,6 +72,12 @@ DEFAULT_EXTRA_PATHS = (
     "/shop/checkout",
 )
 
+DEFAULT_FORBIDDEN_DOMAINS = tuple(
+    d.strip().lower()
+    for d in os.getenv("WEB_AUDIT_FORBIDDEN_DOMAINS", "shop.bader.com.ar").split(",")
+    if d.strip()
+)
+
 
 @dataclass
 class PageResult:
@@ -84,6 +92,68 @@ class PageResult:
     marker: str
 
 
+class HTMLSignalsParser(HTMLParser):
+    """Extract lightweight HTML quality/security/performance signals."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.title_text: List[str] = []
+        self.in_title = False
+        self.meta_description = ""
+        self.meta_viewport = ""
+        self.html_lang = ""
+        self.canonical_href = ""
+        self.link_hrefs: List[str] = []
+        self.stylesheet_hrefs: List[str] = []
+        self.script_srcs: List[str] = []
+        self.form_actions: List[str] = []
+
+    def handle_starttag(self, tag: str, attrs: List[Tuple[str, Optional[str]]]) -> None:
+        attr_map = {k.lower(): (v or "") for k, v in attrs}
+        tag = tag.lower()
+
+        if tag == "html":
+            self.html_lang = attr_map.get("lang", "").strip()
+        elif tag == "title":
+            self.in_title = True
+        elif tag == "meta":
+            name = attr_map.get("name", "").strip().lower()
+            content = attr_map.get("content", "").strip()
+            if name == "description" and content:
+                self.meta_description = content
+            elif name == "viewport" and content:
+                self.meta_viewport = content
+        elif tag == "link":
+            href = attr_map.get("href", "").strip()
+            rel = attr_map.get("rel", "").strip().lower()
+            if href:
+                self.link_hrefs.append(href)
+            if href and "canonical" in rel:
+                self.canonical_href = href
+            if href and "stylesheet" in rel:
+                self.stylesheet_hrefs.append(href)
+        elif tag == "script":
+            src = attr_map.get("src", "").strip()
+            if src:
+                self.script_srcs.append(src)
+        elif tag == "form":
+            action = attr_map.get("action", "").strip()
+            if action:
+                self.form_actions.append(action)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag.lower() == "title":
+            self.in_title = False
+
+    def handle_data(self, data: str) -> None:
+        if self.in_title and data:
+            self.title_text.append(data.strip())
+
+    @property
+    def title(self) -> str:
+        return " ".join(part for part in self.title_text if part).strip()
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Audit frontend website health/performance/security.")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="Base URL to audit.")
@@ -95,6 +165,18 @@ def parse_args() -> argparse.Namespace:
         action="append",
         default=[],
         help="Extra relative path to audit. Repeat for multiple paths.",
+    )
+    parser.add_argument(
+        "--forbidden-domain",
+        action="append",
+        default=[],
+        help="Domain that must never appear in page links (repeatable).",
+    )
+    parser.add_argument(
+        "--resource-probe-limit",
+        type=int,
+        default=4,
+        help="How many CSS/JS resources to probe per page (0 disables).",
     )
     return parser.parse_args()
 
@@ -170,6 +252,79 @@ def fetch_url(url: str, timeout: int) -> Tuple[int, Dict[str, str], bytes, str, 
         return int(exc.code), headers, body, url, elapsed_ms
 
 
+def probe_status(url: str, timeout: int) -> Tuple[int, str]:
+    req = Request(url=url, headers={"User-Agent": "BaderWebAudit/1.0", "Accept": "*/*"})
+    try:
+        with urlopen(req, timeout=timeout) as resp:
+            # Read a small chunk to ensure response body starts correctly.
+            resp.read(2048)
+            return int(resp.status), resp.geturl()
+    except HTTPError as exc:
+        return int(exc.code), url
+
+
+def parse_html_signals(body: bytes) -> HTMLSignalsParser:
+    parser = HTMLSignalsParser()
+    html = body.decode("utf-8", errors="ignore")
+    parser.feed(html)
+    return parser
+
+
+def host_from_url(url: str) -> str:
+    return (urlparse(url).hostname or "").lower()
+
+
+def is_forbidden_link(url: str, forbidden_domains: Tuple[str, ...]) -> bool:
+    host = host_from_url(url)
+    if not host:
+        return False
+    for blocked in forbidden_domains:
+        if host == blocked or host.endswith("." + blocked):
+            return True
+    return False
+
+
+def build_quality_warnings(
+    parser: HTMLSignalsParser,
+    page_url: str,
+    base_url: str,
+    forbidden_domains: Tuple[str, ...],
+) -> List[str]:
+    warnings: List[str] = []
+    title = parser.title
+    if not title:
+        warnings.append("missing <title>")
+    elif len(title) < 8:
+        warnings.append("short <title>")
+
+    if not parser.meta_viewport:
+        warnings.append("missing viewport meta")
+
+    if not parser.html_lang:
+        warnings.append("missing html lang")
+
+    if parser.meta_description and len(parser.meta_description) < 40:
+        warnings.append("short meta description")
+    if not parser.meta_description:
+        warnings.append("missing meta description")
+
+    if parser.canonical_href:
+        canonical_abs = urljoin(page_url, parser.canonical_href)
+        canonical_host = host_from_url(canonical_abs)
+        base_host = host_from_url(base_url)
+        if canonical_host and canonical_host != base_host:
+            warnings.append("canonical points to another domain")
+    else:
+        warnings.append("missing canonical")
+
+    all_urls = [urljoin(page_url, ref) for ref in parser.link_hrefs + parser.form_actions]
+    forbidden_hits = [u for u in all_urls if is_forbidden_link(u, forbidden_domains)]
+    if forbidden_hits:
+        warnings.append("forbidden domain link found")
+
+    return warnings
+
+
 def check_marker(path: str, body: bytes) -> Tuple[bool, str]:
     marker = FUNCTIONAL_MARKERS.get(path, "")
     if not marker:
@@ -185,11 +340,14 @@ def audit_pages(
     timeout: int,
     perf_warn_ms: int,
     perf_fail_ms: int,
+    forbidden_domains: Tuple[str, ...],
+    resource_probe_limit: int,
 ) -> Tuple[List[PageResult], Dict[str, str], List[str], List[str]]:
     page_results: List[PageResult] = []
     baseline_headers: Dict[str, str] = {}
     required_missing: List[str] = []
     recommended_missing: List[str] = []
+    resource_cache: Dict[str, int] = {}
 
     for idx, path in enumerate(paths):
         url = urljoin(base_url + "/", path.lstrip("/"))
@@ -252,6 +410,44 @@ def audit_pages(
         if ok and not marker_ok:
             ok = False
             error = f"marker not found: '{marker}'"
+
+        quality_warnings: List[str] = []
+        resource_failures: List[str] = []
+        if status >= 200 and status < 400 and body:
+            signals = parse_html_signals(body)
+            quality_warnings = build_quality_warnings(
+                parser=signals,
+                page_url=final_url,
+                base_url=base_url,
+                forbidden_domains=forbidden_domains,
+            )
+            if "forbidden domain link found" in quality_warnings and ok:
+                ok = False
+                error = "forbidden domain link found"
+
+            if resource_probe_limit > 0:
+                resource_urls: List[str] = []
+                for ref in signals.stylesheet_hrefs + signals.script_srcs:
+                    abs_url = urljoin(final_url, ref)
+                    if abs_url not in resource_urls:
+                        resource_urls.append(abs_url)
+                for resource_url in resource_urls[:resource_probe_limit]:
+                    if resource_url in resource_cache:
+                        resource_status = resource_cache[resource_url]
+                    else:
+                        try:
+                            resource_status, _ = probe_status(resource_url, timeout=timeout)
+                        except URLError:
+                            resource_status = 0
+                        resource_cache[resource_url] = resource_status
+                    if resource_status < 200 or resource_status >= 400:
+                        resource_failures.append(f"{resource_status} {resource_url}")
+            if resource_failures and ok:
+                ok = False
+                error = "asset load failure: " + "; ".join(resource_failures[:2])
+
+        if ok and quality_warnings:
+            warning = (warning + "; " if warning else "") + "; ".join(quality_warnings)
 
         page_results.append(
             PageResult(
@@ -347,6 +543,11 @@ def print_report(
 def main() -> None:
     args = parse_args()
     base_url = args.base_url.rstrip("/")
+    forbidden_domains = tuple(
+        d.strip().lower()
+        for d in (list(DEFAULT_FORBIDDEN_DOMAINS) + list(args.forbidden_domain))
+        if d and d.strip()
+    )
     paths = build_audit_paths(args.path)
     page_results, baseline_headers, required_missing, recommended_missing = audit_pages(
         base_url=base_url,
@@ -354,6 +555,8 @@ def main() -> None:
         timeout=args.timeout,
         perf_warn_ms=args.perf_warn_ms,
         perf_fail_ms=args.perf_fail_ms,
+        forbidden_domains=forbidden_domains,
+        resource_probe_limit=max(0, int(args.resource_probe_limit)),
     )
     exit_code = print_report(
         base_url=base_url,
