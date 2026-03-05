@@ -78,14 +78,101 @@
     }
 }
 
-#servicio-form {
-    .bader-form {
-        transition: box-shadow $transition-base, transform $transition-base, border-color $transition-base;
-    }
+body.bader-services-modal-open {
+    overflow: hidden;
+}
 
-    &.bader-services-form-focus .bader-form {
-        box-shadow: 0 0 0 2px rgba($bader-green, 0.55), $shadow-lg;
-        transform: translateY(-2px);
+.bader-services-modal {
+    position: fixed;
+    inset: 0;
+    z-index: $z-modal + 20;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity $transition-base, visibility $transition-base;
+}
+
+.bader-services-modal.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.bader-services-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba($bader-dark, 0.72);
+    backdrop-filter: blur(2px);
+}
+
+.bader-services-modal__dialog {
+    position: relative;
+    width: calc(100vw - 2rem);
+    max-width: 700px;
+    max-height: calc(100vh - 2rem);
+    overflow: auto;
+    margin: 1rem auto;
+    background: $white;
+    border-radius: $radius-xl;
+    box-shadow: $shadow-2xl;
+    padding: 1.25rem 1.25rem 1rem;
+}
+
+.bader-services-modal__close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: 999px;
+    background: rgba($bader-dark, 0.08);
+    color: $bader-dark;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background $transition-fast, color $transition-fast;
+
+    &:hover {
+        background: $bader-dark;
+        color: $white;
+    }
+}
+
+.bader-services-modal__header {
+    margin-bottom: 0.8rem;
+}
+
+.bader-services-modal__icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: $radius-lg;
+    background: linear-gradient(135deg, rgba($bader-green, 0.95), rgba($bader-green, 0.72));
+    color: $white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.65rem;
+    font-size: 1.1rem;
+    box-shadow: $shadow-green;
+}
+
+.bader-services-modal__form {
+    margin-top: 0.4rem;
+    padding: 0.95rem;
+}
+
+.bader-services-modal__fields[hidden] {
+    display: none !important;
+}
+
+@media (max-width: 767px) {
+    .bader-services-modal__dialog {
+        width: calc(100vw - 1rem);
+        margin: 0.5rem auto;
+        max-height: calc(100vh - 1rem);
+        padding: 0.85rem 0.85rem 0.8rem;
+        border-radius: $radius-lg;
     }
 }
 

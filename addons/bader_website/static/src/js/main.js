@@ -1015,68 +1015,124 @@ odoo.define('bader_website.main', function (require) {
             var pageRoot = document.querySelector('[data-bader-services-page="1"]');
             if (!pageRoot) return;
 
-            var formSection = document.getElementById('servicio-form');
-            var form = document.getElementById('baderServicioLeadForm');
-            var serviceSelect = document.getElementById('baderServicioType');
-            if (!formSection || !form || !serviceSelect) return;
+            var modal = document.getElementById('baderServicesModal');
+            var form = document.getElementById('baderServiceModalForm');
+            var serviceTypeInput = document.getElementById('baderServiceTypeInput');
+            var titleEl = document.getElementById('baderServiceModalTitle');
+            var descriptionEl = document.getElementById('baderServiceModalDescription');
+            var iconEl = document.getElementById('baderServiceModalIcon');
+            if (!modal || !form || !serviceTypeInput || !titleEl || !descriptionEl || !iconEl) return;
 
             var cards = pageRoot.querySelectorAll('.bader-services__card[data-service-type]');
             if (!cards.length) return;
+            var fieldGroups = modal.querySelectorAll('[data-service-fields]');
 
-            var removeHighlightTimer = null;
-
-            function clearHighlightTimer() {
-                if (!removeHighlightTimer) return;
-                window.clearTimeout(removeHighlightTimer);
-                removeHighlightTimer = null;
+            function getCardInfo(card) {
+                var serviceType = (card.getAttribute('data-service-type') || '').trim();
+                var serviceTitle = (card.getAttribute('data-service-title') || '').trim() || 'Servicio Bader';
+                var serviceDescription = (card.getAttribute('data-service-description') || '').trim() || 'Completa el formulario para solicitar este servicio.';
+                var serviceIcon = (card.getAttribute('data-service-icon') || '').trim() || 'fa-wrench';
+                return {
+                    type: serviceType,
+                    title: serviceTitle,
+                    description: serviceDescription,
+                    icon: serviceIcon,
+                };
             }
 
-            function highlightFormSection() {
-                clearHighlightTimer();
-                formSection.classList.add('bader-services-form-focus');
-                removeHighlightTimer = window.setTimeout(function () {
-                    formSection.classList.remove('bader-services-form-focus');
-                }, 2200);
-            }
-
-            function focusFirstField() {
-                var firstInput = form.querySelector('input[name="name"]');
-                if (!firstInput || typeof firstInput.focus !== 'function') return;
-                try {
-                    firstInput.focus({ preventScroll: true });
-                } catch (err) {
-                    firstInput.focus();
+            function setGroupState(group, enabled) {
+                if (enabled) {
+                    group.removeAttribute('hidden');
+                } else {
+                    group.setAttribute('hidden', 'hidden');
                 }
+                group.querySelectorAll('input, select, textarea').forEach(function (field) {
+                    var isRequired = field.getAttribute('data-service-required') === '1';
+                    field.disabled = !enabled;
+                    field.required = enabled ? isRequired : false;
+
+                    if (!enabled) {
+                        if (field.tagName === 'SELECT') {
+                            field.selectedIndex = 0;
+                        } else if (field.type === 'checkbox' || field.type === 'radio') {
+                            field.checked = false;
+                        } else {
+                            field.value = '';
+                        }
+                    }
+                });
             }
 
-            function openLeadFormFor(serviceType) {
-                var value = (serviceType || '').trim();
-                if (!value) return;
+            function openModal(card) {
+                var info = getCardInfo(card);
+                if (!info.type) return;
+                serviceTypeInput.value = info.type;
+                titleEl.textContent = info.title;
+                descriptionEl.textContent = info.description;
+                iconEl.className = 'fa ' + info.icon;
 
-                serviceSelect.value = value;
-                serviceSelect.dispatchEvent(new Event('change', { bubbles: true }));
-                formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                fieldGroups.forEach(function (group) {
+                    setGroupState(group, group.getAttribute('data-service-fields') === info.type);
+                });
+
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('bader-services-modal-open');
 
                 window.setTimeout(function () {
-                    highlightFormSection();
-                    focusFirstField();
-                }, 420);
+                    var firstInput = form.querySelector('input[name="name"]');
+                    if (firstInput && typeof firstInput.focus === 'function') firstInput.focus();
+                }, 40);
             }
+
+            function closeModal() {
+                if (!modal.classList.contains('is-open')) return;
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('bader-services-modal-open');
+                form.reset();
+                serviceTypeInput.value = '';
+                fieldGroups.forEach(function (group) {
+                    setGroupState(group, false);
+                });
+            }
+
+            fieldGroups.forEach(function (group) {
+                setGroupState(group, false);
+            });
+
+            modal.querySelectorAll('[data-bader-service-modal-close="1"]').forEach(function (closeEl) {
+                closeEl.addEventListener('click', function (ev) {
+                    ev.preventDefault();
+                    closeModal();
+                });
+            });
+
+            document.addEventListener('keydown', function (ev) {
+                if (ev.key === 'Escape' && modal.classList.contains('is-open')) {
+                    closeModal();
+                }
+            });
+
+            form.addEventListener('submit', function () {
+                if (serviceTypeInput.value) return;
+                var firstCard = cards[0];
+                if (firstCard) {
+                    var info = getCardInfo(firstCard);
+                    serviceTypeInput.value = info.type || 'otro';
+                }
+            });
 
             cards.forEach(function (card) {
                 card.addEventListener('click', function (ev) {
-                    var button = ev.target && ev.target.closest
-                        ? ev.target.closest('.js-bader-service-open')
-                        : null;
-                    if (button) return;
                     ev.preventDefault();
-                    openLeadFormFor(card.getAttribute('data-service-type'));
+                    openModal(card);
                 });
 
                 card.addEventListener('keydown', function (ev) {
                     if (ev.key !== 'Enter' && ev.key !== ' ') return;
                     ev.preventDefault();
-                    openLeadFormFor(card.getAttribute('data-service-type'));
+                    openModal(card);
                 });
             });
 
@@ -1086,15 +1142,9 @@ odoo.define('bader_website.main', function (require) {
                     ev.stopPropagation();
                     var card = button.closest('.bader-services__card[data-service-type]');
                     if (!card) return;
-                    openLeadFormFor(card.getAttribute('data-service-type'));
+                    openModal(card);
                 });
             });
-
-            if (window.location.hash === '#servicio-form') {
-                window.setTimeout(function () {
-                    highlightFormSection();
-                }, 320);
-            }
         })();
 
         // ---- 6. Counter Animation (CountUp) ----

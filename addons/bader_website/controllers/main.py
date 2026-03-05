@@ -2561,7 +2561,8 @@ class BaderWebsite(Website):
             product_name = (
                 _clean_text_line(kw.get('equipment'), max_len=220)
                 or _clean_text_line(kw.get('purchased_equipment'), max_len=220)
-                or _clean_text_line(kw.get('equipment_interest'), max_len=220)
+                or _clean_text_line(kw.get('nancy_equipment_interest'), max_len=220)
+                or _clean_text_line(kw.get('visita_equipment_interest'), max_len=220)
                 or 'N/A'
             )
         description_raw = _clean_text_block(kw.get('description'), max_len=1600)
@@ -2572,6 +2573,8 @@ class BaderWebsite(Website):
             ('preferred_date', 'Fecha preferida', 'line'),
             ('technical_service_kind', 'Tipo tecnico', 'line'),
             ('equipment', 'Equipo', 'line'),
+            ('nancy_equipment_interest', 'Equipo de interes (Nancy)', 'line'),
+            ('visita_equipment_interest', 'Equipos de interes (Visita)', 'line'),
             ('problem_description', 'Problema reportado', 'block'),
             ('approximate_value', 'Valor aproximado', 'line'),
             ('desired_term', 'Plazo deseado', 'line'),
@@ -2603,11 +2606,6 @@ class BaderWebsite(Website):
                 'soporte_tecnico': 'Soporte Tecnico',
                 'mantenimiento': 'Mantenimiento Preventivo',
                 'garantia': 'Garantia',
-                'instalacion': 'Instalación',
-                'soporte_tecnico': 'Soporte Técnico',
-                'mantenimiento': 'Mantenimiento',
-                'capacitacion': 'Capacitación',
-                'garantia': 'Garantía',
                 'otro': 'Otro',
             }
             service_type = _clean_text_line(kw.get('service_type'), max_len=64).lower().replace('-', '_')
@@ -2624,7 +2622,7 @@ class BaderWebsite(Website):
                 'description': (
                     'Tipo de servicio: %s\n'
                     'Equipo/Producto: %s\n'
-                    'Descripción: %s\n'
+                    'Descripcion: %s\n'
                     'Origen: Formulario Servicios'
                 ) % (
                     service_label,

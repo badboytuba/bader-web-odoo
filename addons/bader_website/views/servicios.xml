@@ -30,15 +30,20 @@
                     <div class="bader-page-hero__container">
                         <div class="bader-page-hero__center">
                             <span class="bader-page-hero__badge">
-                                <i class="fa fa-cogs"/> Nuestros Servicios
+                                <i class="fa fa-magic"/> Servicios Exclusivos
                             </span>
                             <h1 class="bader-page-hero__title">
-                                Servicios <span class="text-green">profesionales</span>
+                                Servicios <span class="text-green">Bader</span>
                             </h1>
                             <p class="bader-page-hero__subtitle">
-                                Ofrecemos servicios integrales de soporte técnico, instalación,
-                                capacitación y mantenimiento para todos nuestros equipos.
+                                Te acompanamos en cada paso, desde la asesoria hasta la instalacion.
+                                Nuestro equipo experto esta para ayudarte.
                             </p>
+                            <div class="bader-services-hero-pills" role="list" aria-label="Beneficios de servicio">
+                                <span class="bader-services-hero-pill" role="listitem"><i class="fa fa-phone"/> Atencion personalizada</span>
+                                <span class="bader-services-hero-pill" role="listitem"><i class="fa fa-calendar"/> Agenda online</span>
+                                <span class="bader-services-hero-pill" role="listitem"><i class="fa fa-headphones"/> Soporte continuo</span>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -50,121 +55,115 @@
                     <div class="bader-page-section__container">
                         <div class="bader-page-section__heading">
                             <span class="bader-page-hero__badge" style="background: rgba(112,212,75,0.10);">
-                                ¿Qué ofrecemos?
+                                <i class="fa fa-cogs"/> Que ofrecemos
                             </span>
                             <h2 class="bader-section__title">
-                                Servicios <span class="text-green">integrales</span>
+                                Servicios <span class="text-green">Bader</span>
                             </h2>
                             <p class="bader-section__subtitle">
-                                Acompañamos a nuestros clientes en cada etapa con servicios especializados
+                                Haz click en cualquier servicio para abrir el formulario segmentado.
                             </p>
                         </div>
 
                         <div class="bader-page-section__grid bader-page-section__grid--3">
-                            <!-- Service 1: Instalación -->
-                            <div class="bader-services__card bader-page-card bader-animate is-clickable" tabindex="0" role="button" data-service-type="instalacion">
-                                <div class="bader-gradient-icon bader-gradient-icon--green">
+                            <!-- Service 1: Nancy Asesora -->
+                            <div class="bader-services__card bader-page-card bader-animate is-clickable" tabindex="0" role="button" data-service-type="nancy_asesora" data-service-title="Nancy Asesora Virtual" data-service-description="Conecta con especialistas por videollamada para elegir tu equipamiento ideal." data-service-icon="fa-video-camera">
+                                <div class="bader-gradient-icon bader-gradient-icon--blue">
+                                    <i class="fa fa-video-camera"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Nancy Asesora Virtual</h3>
+                                <p class="bader-page-card__text">
+                                    Conecta con nuestros especialistas por videollamada para asesoramiento personalizado.
+                                </p>
+                                <ul class="bader-services__features">
+                                    <li><i class="fa fa-check"/> Asesoramiento personalizado</li>
+                                    <li><i class="fa fa-check"/> Demostraciones en vivo</li>
+                                    <li><i class="fa fa-check"/> Sin costo ni compromiso</li>
+                                </ul>
+                                <button type="button" class="btn-bader-sm bader-services__cta js-bader-service-open">Solicitar</button>
+                            </div>
+
+                            <!-- Service 2: Visita Tecnica -->
+                            <div class="bader-services__card bader-page-card bader-animate is-clickable" tabindex="0" role="button" data-service-type="visita_tecnica" data-service-title="Visita Tecnica Comercial" data-service-description="Nuestro equipo te visita para una demostracion presencial y propuesta a medida." data-service-icon="fa-car">
+                                <div class="bader-gradient-icon bader-gradient-icon--purple">
+                                    <i class="fa fa-car"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Visita Tecnica Comercial</h3>
+                                <p class="bader-page-card__text">
+                                    Demostracion presencial en tu clinica, evaluacion de espacio y recomendaciones.
+                                </p>
+                                <ul class="bader-services__features">
+                                    <li><i class="fa fa-check"/> Demostracion in situ</li>
+                                    <li><i class="fa fa-check"/> Evaluacion de espacio</li>
+                                    <li><i class="fa fa-check"/> Propuesta personalizada</li>
+                                </ul>
+                                <button type="button" class="btn-bader-sm bader-services__cta js-bader-service-open">Solicitar</button>
+                            </div>
+
+                            <!-- Service 3: Servicio Tecnico -->
+                            <div class="bader-services__card bader-page-card bader-animate is-clickable" tabindex="0" role="button" data-service-type="servicio_tecnico" data-service-title="Servicio Tecnico Premium" data-service-description="Mantenimiento y reparacion con tecnicos certificados y repuestos originales." data-service-icon="fa-wrench">
+                                <div class="bader-gradient-icon bader-gradient-icon--orange">
                                     <i class="fa fa-wrench"/>
                                 </div>
-                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Instalación Profesional</h3>
+                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Servicio Tecnico Premium</h3>
                                 <p class="bader-page-card__text">
-                                    Nuestro equipo técnico realiza la instalación completa de todos los equipos,
-                                    garantizando su correcto funcionamiento desde el primer día.
+                                    Mantenimiento preventivo y reparacion de equipos odontologicos con seguimiento.
                                 </p>
                                 <ul class="bader-services__features">
-                                    <li><i class="fa fa-check"/> Instalación en sitio</li>
-                                    <li><i class="fa fa-check"/> Configuración inicial</li>
-                                    <li><i class="fa fa-check"/> Pruebas de funcionamiento</li>
-                                </ul>
-                                <button type="button" class="btn-bader-sm bader-services__cta js-bader-service-open">Solicitar</button>
-                            </div>
-
-                            <!-- Service 2: Soporte Técnico -->
-                            <div class="bader-services__card bader-page-card bader-animate is-clickable" tabindex="0" role="button" data-service-type="servicio_tecnico">
-                                <div class="bader-gradient-icon bader-gradient-icon--blue">
-                                    <i class="fa fa-life-ring"/>
-                                </div>
-                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Soporte Técnico</h3>
-                                <p class="bader-page-card__text">
-                                    Equipo de técnicos certificados disponibles para resolver cualquier
-                                    incidencia con tus equipos de forma rápida y eficiente.
-                                </p>
-                                <ul class="bader-services__features">
-                                    <li><i class="fa fa-check"/> Respuesta en 24hs</li>
-                                    <li><i class="fa fa-check"/> Diagnóstico remoto</li>
+                                    <li><i class="fa fa-check"/> Tecnicos certificados</li>
                                     <li><i class="fa fa-check"/> Repuestos originales</li>
+                                    <li><i class="fa fa-check"/> Garantia de servicio</li>
                                 </ul>
                                 <button type="button" class="btn-bader-sm bader-services__cta js-bader-service-open">Solicitar</button>
                             </div>
 
-                            <!-- Service 3: Mantenimiento -->
-                            <div class="bader-services__card bader-page-card bader-animate is-clickable" tabindex="0" role="button" data-service-type="mantenimiento">
-                                <div class="bader-gradient-icon bader-gradient-icon--purple">
-                                    <i class="fa fa-heartbeat"/>
-                                </div>
-                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Mantenimiento Preventivo</h3>
-                                <p class="bader-page-card__text">
-                                    Planes de mantenimiento preventivo para extender la vida útil de tus equipos
-                                    y evitar paradas no programadas.
-                                </p>
-                                <ul class="bader-services__features">
-                                    <li><i class="fa fa-check"/> Revisión periódica</li>
-                                    <li><i class="fa fa-check"/> Calibración de equipos</li>
-                                    <li><i class="fa fa-check"/> Reporte de estado</li>
-                                </ul>
-                                <button type="button" class="btn-bader-sm bader-services__cta js-bader-service-open">Solicitar</button>
-                            </div>
-
-                            <!-- Service 4: Capacitación -->
-                            <div class="bader-services__card bader-page-card bader-animate is-clickable" tabindex="0" role="button" data-service-type="capacitacion">
-                                <div class="bader-gradient-icon bader-gradient-icon--orange">
+                            <!-- Service 4: Capacitacion -->
+                            <div class="bader-services__card bader-page-card bader-animate is-clickable" tabindex="0" role="button" data-service-type="capacitacion" data-service-title="Capacitacion Bader Academy" data-service-description="Cursos y webinars para aprovechar al maximo tus equipos." data-service-icon="fa-graduation-cap">
+                                <div class="bader-gradient-icon bader-gradient-icon--indigo">
                                     <i class="fa fa-graduation-cap"/>
                                 </div>
-                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Capacitación</h3>
+                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Capacitacion Bader Academy</h3>
                                 <p class="bader-page-card__text">
-                                    Formación completa sobre el uso correcto de cada equipo para que
-                                    aproveches al máximo tu inversión.
+                                    Programas presenciales y online para potenciar tu crecimiento profesional.
                                 </p>
                                 <ul class="bader-services__features">
-                                    <li><i class="fa fa-check"/> Capacitación in situ</li>
-                                    <li><i class="fa fa-check"/> Videos tutoriales</li>
-                                    <li><i class="fa fa-check"/> Manual de usuario</li>
+                                    <li><i class="fa fa-check"/> Certificados oficiales</li>
+                                    <li><i class="fa fa-check"/> Presencial y online</li>
+                                    <li><i class="fa fa-check"/> Expertos de la industria</li>
                                 </ul>
                                 <button type="button" class="btn-bader-sm bader-services__cta js-bader-service-open">Solicitar</button>
                             </div>
 
-                            <!-- Service 5: Garantía -->
-                            <div class="bader-services__card bader-page-card bader-animate is-clickable" tabindex="0" role="button" data-service-type="garantia">
-                                <div class="bader-gradient-icon bader-gradient-icon--teal">
-                                    <i class="fa fa-shield"/>
-                                </div>
-                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Garantía Extendida</h3>
-                                <p class="bader-page-card__text">
-                                    Todos nuestros equipos cuentan con garantía oficial europea. Opcionalmente
-                                    podés extender la cobertura hasta 5 años.
-                                </p>
-                                <ul class="bader-services__features">
-                                    <li><i class="fa fa-check"/> 2 años de garantía base</li>
-                                    <li><i class="fa fa-check"/> Garantía extendida opcional</li>
-                                    <li><i class="fa fa-check"/> Cobertura total</li>
-                                </ul>
-                                <button type="button" class="btn-bader-sm bader-services__cta js-bader-service-open">Solicitar</button>
-                            </div>
-
-                            <!-- Service 6: Financiación -->
-                            <div class="bader-services__card bader-page-card bader-animate is-clickable" tabindex="0" role="button" data-service-type="financiacion">
-                                <div class="bader-gradient-icon bader-gradient-icon--indigo">
+                            <!-- Service 5: Financiacion -->
+                            <div class="bader-services__card bader-page-card bader-animate is-clickable" tabindex="0" role="button" data-service-type="financiacion" data-service-title="Financiacion Inteligente" data-service-description="Simula cuotas y accede a opciones de financiamiento adaptadas a tu negocio." data-service-icon="fa-credit-card">
+                                <div class="bader-gradient-icon bader-gradient-icon--green">
                                     <i class="fa fa-credit-card"/>
                                 </div>
-                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Financiación Flexible</h3>
+                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Financiacion Inteligente</h3>
                                 <p class="bader-page-card__text">
-                                    Múltiples opciones de pago para que puedas equipar tu consultorio
-                                    sin comprometer tu flujo de caja.
+                                    Equipate sin esfuerzo con planes flexibles y aprobacion agil.
                                 </p>
                                 <ul class="bader-services__features">
-                                    <li><i class="fa fa-check"/> Hasta 12 cuotas sin interés</li>
-                                    <li><i class="fa fa-check"/> Todas las tarjetas</li>
-                                    <li><i class="fa fa-check"/> Transferencia con descuento</li>
+                                    <li><i class="fa fa-check"/> Cuotas fijas en pesos</li>
+                                    <li><i class="fa fa-check"/> Sin anticipo</li>
+                                    <li><i class="fa fa-check"/> Aprobacion rapida</li>
+                                </ul>
+                                <button type="button" class="btn-bader-sm bader-services__cta js-bader-service-open">Solicitar</button>
+                            </div>
+
+                            <!-- Service 6: Instalacion -->
+                            <div class="bader-services__card bader-page-card bader-animate is-clickable" tabindex="0" role="button" data-service-type="instalacion" data-service-title="Instalacion Express" data-service-description="Instalacion profesional para que empieces a trabajar de inmediato." data-service-icon="fa-cube">
+                                <div class="bader-gradient-icon bader-gradient-icon--teal">
+                                    <i class="fa fa-cube"/>
+                                </div>
+                                <h3 class="bader-page-card__title" style="margin-top: 1rem;">Instalacion Express</h3>
+                                <p class="bader-page-card__text">
+                                    Instalacion profesional de tus equipos para que operes en 24-48h.
+                                </p>
+                                <ul class="bader-services__features">
+                                    <li><i class="fa fa-check"/> Instalacion en 24-48h</li>
+                                    <li><i class="fa fa-check"/> Capacitacion incluida</li>
+                                    <li><i class="fa fa-check"/> Garantia de satisfaccion</li>
                                 </ul>
                                 <button type="button" class="btn-bader-sm bader-services__cta js-bader-service-open">Solicitar</button>
                             </div>
@@ -175,7 +174,7 @@
                 <!-- ============================
                      SERVICE REQUEST FORM — White bg
                      ============================ -->
-                <section class="bader-page-section bader-page-section--white bader-animate" id="servicio-form">
+                <section class="bader-page-section bader-page-section--white bader-animate" id="servicio-form" style="display:none;" aria-hidden="true">
                     <div class="bader-page-section__container">
                         <div class="bader-split">
                             <!-- Left: Info -->
@@ -314,24 +313,245 @@
                     </div>
                 </section>
 
+                <div class="bader-services-modal" id="baderServicesModal" aria-hidden="true">
+                    <div class="bader-services-modal__backdrop" data-bader-service-modal-close="1"/>
+                    <div class="bader-services-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="baderServiceModalTitle">
+                        <button type="button" class="bader-services-modal__close" aria-label="Cerrar" data-bader-service-modal-close="1">
+                            <i class="fa fa-times"/>
+                        </button>
+                        <div class="bader-services-modal__header">
+                            <span class="bader-services-modal__icon"><i id="baderServiceModalIcon" class="fa fa-wrench"/></span>
+                            <h3 class="bader-form__title" id="baderServiceModalTitle">Servicio</h3>
+                            <p class="bader-form__subtitle" id="baderServiceModalDescription">
+                                Completa el formulario y te contactaremos pronto.
+                            </p>
+                        </div>
+                        <form action="/bader/servicio-form" method="POST" id="baderServiceModalForm" class="bader-form bader-services-modal__form">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="service_type" id="baderServiceTypeInput"/>
+                            <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
+                                <input type="text" name="website_url" tabindex="-1" autocomplete="off"/>
+                            </div>
+
+                            <div class="bader-form__group">
+                                <label>Nombre completo *</label>
+                                <div class="input-wrapper">
+                                    <i class="fa fa-user"/>
+                                    <input type="text" name="name" placeholder="Tu nombre" required="required"/>
+                                </div>
+                            </div>
+                            <div class="bader-form-grid">
+                                <div class="bader-form__group">
+                                    <label>Email *</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa fa-envelope"/>
+                                        <input type="email" name="email" placeholder="tu@email.com" required="required"/>
+                                    </div>
+                                </div>
+                                <div class="bader-form__group">
+                                    <label>Telefono *</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa fa-phone"/>
+                                        <input type="tel" name="phone" placeholder="+54 11 1234 5678" required="required"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bader-services-modal__fields" data-service-fields="nancy_asesora">
+                                <div class="bader-form__group">
+                                    <label>Fecha y hora preferida *</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa fa-calendar"/>
+                                        <input type="datetime-local" name="preferred_datetime" data-service-required="1"/>
+                                    </div>
+                                </div>
+                                <div class="bader-form__group">
+                                    <label>Equipo de interes *</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa fa-medkit"/>
+                                        <input type="text" name="nancy_equipment_interest" placeholder="Ej: Sillon, CBCT, Autoclave" data-service-required="1"/>
+                                    </div>
+                                </div>
+                                <div class="bader-form__group">
+                                    <label>Mensaje</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa fa-comment" style="top: 1.15rem;"/>
+                                        <textarea name="message" rows="3" placeholder="Contanos que necesitas..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bader-services-modal__fields" data-service-fields="visita_tecnica">
+                                <div class="bader-form__group">
+                                    <label>Direccion de la clinica *</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa fa-map-marker"/>
+                                        <input type="text" name="clinic_address" placeholder="Direccion completa" data-service-required="1"/>
+                                    </div>
+                                </div>
+                                <div class="bader-form-grid">
+                                    <div class="bader-form__group">
+                                        <label>Fecha preferida *</label>
+                                        <div class="input-wrapper">
+                                            <i class="fa fa-calendar"/>
+                                            <input type="date" name="preferred_date" data-service-required="1"/>
+                                        </div>
+                                    </div>
+                                    <div class="bader-form__group">
+                                        <label>Equipos de interes *</label>
+                                        <div class="input-wrapper">
+                                            <i class="fa fa-medkit"/>
+                                            <input type="text" name="visita_equipment_interest" placeholder="Equipos para demostracion" data-service-required="1"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bader-services-modal__fields" data-service-fields="servicio_tecnico">
+                                <div class="bader-form__group">
+                                    <label>Tipo de servicio *</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa fa-cog"/>
+                                        <select name="technical_service_kind" data-service-required="1">
+                                            <option value="">Selecciona una opcion</option>
+                                            <option value="mantenimiento">Mantenimiento preventivo</option>
+                                            <option value="reparacion">Reparacion</option>
+                                            <option value="calibracion">Calibracion</option>
+                                            <option value="instalacion">Instalacion</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="bader-form__group">
+                                    <label>Equipo *</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa fa-medkit"/>
+                                        <input type="text" name="equipment" placeholder="Marca y modelo" data-service-required="1"/>
+                                    </div>
+                                </div>
+                                <div class="bader-form__group">
+                                    <label>Descripcion del problema *</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa fa-comment" style="top: 1.15rem;"/>
+                                        <textarea name="problem_description" rows="3" placeholder="Describe el problema" data-service-required="1"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bader-services-modal__fields" data-service-fields="financiacion">
+                                <div class="bader-form-grid">
+                                    <div class="bader-form__group">
+                                        <label>Valor aproximado *</label>
+                                        <div class="input-wrapper">
+                                            <i class="fa fa-money"/>
+                                            <select name="approximate_value" data-service-required="1">
+                                                <option value="">Selecciona un rango</option>
+                                                <option value="hasta-5000">Hasta USD 5.000</option>
+                                                <option value="5000-15000">USD 5.000 - 15.000</option>
+                                                <option value="15000-30000">USD 15.000 - 30.000</option>
+                                                <option value="30000-50000">USD 30.000 - 50.000</option>
+                                                <option value="mas-50000">Mas de USD 50.000</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="bader-form__group">
+                                        <label>Plazo deseado *</label>
+                                        <div class="input-wrapper">
+                                            <i class="fa fa-clock-o"/>
+                                            <select name="desired_term" data-service-required="1">
+                                                <option value="">Selecciona plazo</option>
+                                                <option value="6">6 meses</option>
+                                                <option value="12">12 meses</option>
+                                                <option value="18">18 meses</option>
+                                                <option value="24">24 meses</option>
+                                                <option value="36">36 meses</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bader-services-modal__fields" data-service-fields="capacitacion">
+                                <div class="bader-form-grid">
+                                    <div class="bader-form__group">
+                                        <label>Area de interes *</label>
+                                        <div class="input-wrapper">
+                                            <i class="fa fa-graduation-cap"/>
+                                            <select name="area_interest" data-service-required="1">
+                                                <option value="">Selecciona area</option>
+                                                <option value="sillones">Sillones y unidades dentales</option>
+                                                <option value="radiografia">Radiografia y CBCT</option>
+                                                <option value="esterilizacion">Esterilizacion y bioseguridad</option>
+                                                <option value="laboratorio">Equipos de laboratorio</option>
+                                                <option value="instrumental">Instrumental rotatorio</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="bader-form__group">
+                                        <label>Nivel *</label>
+                                        <div class="input-wrapper">
+                                            <i class="fa fa-line-chart"/>
+                                            <select name="level" data-service-required="1">
+                                                <option value="">Selecciona nivel</option>
+                                                <option value="basico">Basico</option>
+                                                <option value="intermedio">Intermedio</option>
+                                                <option value="avanzado">Avanzado</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bader-services-modal__fields" data-service-fields="instalacion">
+                                <div class="bader-form__group">
+                                    <label>Direccion de instalacion *</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa fa-map-marker"/>
+                                        <input type="text" name="install_address" placeholder="Direccion completa" data-service-required="1"/>
+                                    </div>
+                                </div>
+                                <div class="bader-form-grid">
+                                    <div class="bader-form__group">
+                                        <label>Equipo comprado *</label>
+                                        <div class="input-wrapper">
+                                            <i class="fa fa-cube"/>
+                                            <input type="text" name="purchased_equipment" placeholder="Equipo y numero de orden" data-service-required="1"/>
+                                        </div>
+                                    </div>
+                                    <div class="bader-form__group">
+                                        <label>Fecha preferida *</label>
+                                        <div class="input-wrapper">
+                                            <i class="fa fa-calendar"/>
+                                            <input type="date" name="preferred_install_date" data-service-required="1"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="bader-form__submit">
+                                <i class="fa fa-paper-plane"/> Enviar solicitud
+                            </button>
+                            <div class="bader-form__footer">
+                                <i class="fa fa-lock"/> Tus datos estan protegidos
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
                 <!-- ============================
                      CTA — Green gradient
                      ============================ -->
                 <section class="bader-page-section bader-page-section--green bader-animate">
                     <div class="bader-page-section__container" style="text-align: center;">
                         <h2 style="font-family: 'BaderSans', sans-serif; font-size: 2rem; font-weight: 800; color: white; margin-bottom: 1rem;">
-                            ¿Necesitás asistencia urgente?
+                            Tienes alguna consulta?
                         </h2>
                         <p style="color: rgba(255,255,255,0.85); margin-bottom: 2rem; max-width: 36rem; margin-left: auto; margin-right: auto;">
-                            Nuestro equipo está disponible de lunes a viernes de 9:00 a 18:00.
+                            Nuestro equipo esta listo para ayudarte por WhatsApp y responder al instante.
                         </p>
                         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem;">
-                            <a href="https://wa.me/5491124522097?text=Hola!%20Necesito%20servicio%20técnico"
-                               target="_blank" class="btn-bader" style="background: white; color: #70D44B;">
-                                <i class="fa fa-whatsapp"/> WhatsApp
-                            </a>
-                            <a href="tel:+541124522097" class="btn-bader-outline" style="border-color: white; color: white;">
-                                <i class="fa fa-phone"/> Llamar ahora
+                            <a href="https://wa.me/5491124522097?text=Hola!%20Quiero%20consultar%20sobre%20los%20servicios%20de%20Bader"
+                               target="_blank" class="btn-bader" style="background: #70D44B; color: #003841;">
+                                <i class="fa fa-whatsapp"/> Escribinos por WhatsApp
                             </a>
                         </div>
                     </div>
