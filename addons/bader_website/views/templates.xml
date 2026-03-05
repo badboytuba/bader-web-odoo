@@ -31,6 +31,29 @@
         </xpath>
     </template>
 
+    <template id="bader_layout_meta_descriptions" inherit_id="website.layout"
+              name="Bader Layout Meta Descriptions" priority="80">
+        <xpath expr="//head" position="inside">
+            <t t-set="bader_raw_path" t-value="((request.httprequest.path or '').rstrip('/') or '/')"/>
+            <t t-set="bader_segments" t-value="bader_raw_path.split('/')"/>
+            <t t-set="bader_path"
+               t-value="'/' + '/'.join(bader_segments[2:]) if len(bader_segments) &gt; 2 and '_' in (bader_segments[1] or '') else bader_raw_path"/>
+
+            <meta t-if="bader_path == '/productos' or bader_path == '/shop' or bader_path.startswith('/productos/page/') or bader_path.startswith('/shop/page/') or bader_path.startswith('/productos/category/') or bader_path.startswith('/shop/category/')"
+                  name="description"
+                  content="Catalogo completo de productos odontologicos Bader Argentina para clinicas, laboratorios y estudiantes. Equipamiento profesional con garantia europea y envio a todo el pais."/>
+            <meta t-if="bader_path == '/shop/cart'"
+                  name="description"
+                  content="Revisa los productos de tu carrito Bader, ajusta cantidades y continua al checkout seguro con envio a todo el pais."/>
+            <meta t-if="bader_path == '/shop/checkout' or bader_path == '/shop/address'"
+                  name="description"
+                  content="Completa tus datos de facturacion y envio para finalizar tu compra en Bader Argentina con pago 100% seguro."/>
+            <meta t-if="bader_path == '/shop/payment'"
+                  name="description"
+                  content="Selecciona tu metodo de pago para confirmar tu pedido Bader con proteccion de datos y proceso de pago seguro."/>
+        </xpath>
+    </template>
+
     <template id="bader_cart_lines" inherit_id="website_sale.cart_lines"
               name="Bader Cart Lines" priority="30">
         <xpath expr="//div[hasclass('js_cart_lines') and hasclass('alert-info')]" position="replace">
