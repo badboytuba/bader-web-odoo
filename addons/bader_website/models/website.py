@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from urllib.parse import urlsplit
 from odoo import api, models
 
 
@@ -14,6 +15,18 @@ class Website(models.Model):
         lang_model = self.env["res.lang"].sudo()
         all_lang_codes = set(lang_model.search([]).mapped("code"))
         es_lang = lang_model.search([("code", "=", "es_ES")], limit=1)
+        internal_hosts = {
+            "shop.bader.com.ar",
+            "www.shop.bader.com.ar",
+            "bader.com.ar",
+            "www.bader.com.ar",
+            "bader4business.com",
+            "www.bader4business.com",
+            "qas.bader4business.com",
+            "www.qas.bader4business.com",
+            "bader.es",
+            "www.bader.es",
+        }
 
         canonical_items = [
             {"name": "Inicio", "url": "/", "sequence": 10, "aliases": ["/home"]},
@@ -46,6 +59,21 @@ class Website(models.Model):
             cleaned = (url or "").strip()
             if not cleaned:
                 return ""
+            lower_cleaned = cleaned.lower()
+            if lower_cleaned.startswith(("http://", "https://")):
+                try:
+                    parsed = urlsplit(cleaned)
+                    host = (parsed.hostname or "").lower()
+                    if host in internal_hosts or host.endswith(".bader4business.com") or host.endswith(".bader.com.ar") or host.endswith(".bader.es"):
+                        cleaned = parsed.path or "/"
+                        if parsed.query:
+                            cleaned += "?" + parsed.query
+                        if parsed.fragment:
+                            cleaned += "#" + parsed.fragment
+                    else:
+                        return cleaned
+                except Exception:
+                    return cleaned
             if not cleaned.startswith(("/", "#")):
                 cleaned = "/" + cleaned
             if cleaned.startswith("/") and cleaned != "/" and cleaned.endswith("/"):

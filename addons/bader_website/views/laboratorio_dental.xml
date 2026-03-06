@@ -12,7 +12,7 @@
                 <meta name="description" content="Equipamiento profesional para laboratorio dental: mesas de trabajo, cabinas de repasado, arenadoras, articuladores, termoformadoras e instrumental. Calidad europea."/>
                 <meta property="og:title" content="Equipamiento para Laboratorio Dental — Bader Argentina"/>
                 <meta property="og:description" content="Mesas, cabinas, arenadoras, articuladores y termoformadoras para protésicos dentales. Envíos a todo el país."/>
-                <meta property="og:image" content="/bader_website/static/src/img/hero/hero-laboratorio-dental.png"/>
+                <meta property="og:image" content="/bader_website/static/src/img/hero/hero-laboratorio-dental.webp"/>
                 <meta property="og:type" content="website"/>
                 <meta property="og:url" t-att-content="request.httprequest.url"/>
                 <link rel="canonical" t-att-href="request.httprequest.url"/>
@@ -53,7 +53,7 @@
                             <!-- Right: Image -->
                             <div class="bader-niche-hero-img" style="display:none;">
                                 <div class="bader-niche-hero-img__wrap">
-                                    <img src="/bader_website/static/src/img/hero/hero-laboratorio-dental.png"
+                                    <img src="/bader_website/static/src/img/hero/hero-laboratorio-dental.webp"
                                          alt="Laboratorio dental profesional" loading="lazy"/>
                                     <div class="bader-niche-hero-img__overlay bader-niche-hero-img__overlay--purple"/>
                                     <div class="bader-niche-hero-img__badge">
@@ -85,7 +85,7 @@
 
                         <div class="bader-page-section__grid bader-page-section__grid--3">
                             <a href="/productos?search=mesas" class="bader-category-card bader-animate">
-                                <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=600&amp;q=80');"/>
+                                <div class="bader-category-card__img" style="background-image: url('/bader_website/static/src/img/hero/card-laboratorio.webp');"/>
                                 <div class="bader-category-card__overlay"/>
                                 <div class="bader-category-card__badge" style="background:rgba(139,92,246,0.90);"><i class="fa fa-laptop"/></div>
                                 <div class="bader-category-card__content">
@@ -96,7 +96,7 @@
                             </a>
 
                             <a href="/productos?search=cabinas" class="bader-category-card bader-animate">
-                                <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&amp;q=80');"/>
+                                <div class="bader-category-card__img" style="background-image: url('/bader_website/static/src/img/hero/card-general.webp');"/>
                                 <div class="bader-category-card__overlay"/>
                                 <div class="bader-category-card__badge" style="background:rgba(139,92,246,0.90);"><i class="fa fa-diamond"/></div>
                                 <div class="bader-category-card__content">
@@ -107,7 +107,7 @@
                             </a>
 
                             <a href="/productos?search=arenadoras" class="bader-category-card bader-animate">
-                                <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?w=600&amp;q=80');"/>
+                                <div class="bader-category-card__img" style="background-image: url('/bader_website/static/src/img/hero/card-laboratorio.webp');"/>
                                 <div class="bader-category-card__overlay"/>
                                 <div class="bader-category-card__badge" style="background:rgba(139,92,246,0.90);"><i class="fa fa-cog"/></div>
                                 <div class="bader-category-card__content">
@@ -118,7 +118,7 @@
                             </a>
 
                             <a href="/productos?search=articuladores" class="bader-category-card bader-animate">
-                                <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=600&amp;q=80');"/>
+                                <div class="bader-category-card__img" style="background-image: url('/bader_website/static/src/img/hero/card-general.webp');"/>
                                 <div class="bader-category-card__overlay"/>
                                 <div class="bader-category-card__badge" style="background:rgba(139,92,246,0.90);"><i class="fa fa-cubes"/></div>
                                 <div class="bader-category-card__content">
@@ -129,7 +129,7 @@
                             </a>
 
                             <a href="/productos?search=termoformadoras" class="bader-category-card bader-animate">
-                                <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1583912086296-be5b665bdf86?w=600&amp;q=80');"/>
+                                <div class="bader-category-card__img" style="background-image: url('/bader_website/static/src/img/hero/card-laboratorio.webp');"/>
                                 <div class="bader-category-card__overlay"/>
                                 <div class="bader-category-card__badge" style="background:rgba(139,92,246,0.90);"><i class="fa fa-bolt"/></div>
                                 <div class="bader-category-card__content">
@@ -140,7 +140,7 @@
                             </a>
 
                             <a href="/productos?search=instrumental" class="bader-category-card bader-animate">
-                                <div class="bader-category-card__img" style="background-image: url('https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=600&amp;q=80');"/>
+                                <div class="bader-category-card__img" style="background-image: url('/bader_website/static/src/img/hero/card-general.webp');"/>
                                 <div class="bader-category-card__overlay"/>
                                 <div class="bader-category-card__badge" style="background:rgba(139,92,246,0.90);"><i class="fa fa-wrench"/></div>
                                 <div class="bader-category-card__content">

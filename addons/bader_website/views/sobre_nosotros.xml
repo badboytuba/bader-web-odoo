@@ -13,6 +13,25 @@
                 <meta property="og:url" t-att-content="request.httprequest.url"/>
                 <link rel="canonical" t-att-href="request.httprequest.url"/>
                 <meta name="twitter:card" content="summary_large_image"/>
+                <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "Sobre Nosotros - Bader Argentina",
+  "url": "<t t-esc="request.httprequest.url"/>",
+  "description": "Mas de 30 anos en equipamiento odontologico. Presencia en 8 paises con mas de 500 distribuidores y mas de 2.800 productos."
+}
+                </script>
+                <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Bader Argentina",
+  "url": "<t t-esc="(request.httprequest.url_root or '').rstrip('/')"/>",
+  "email": "hola@bader.com.ar",
+  "telephone": "+54-11-2452-2097"
+}
+                </script>
             </t>
 
             <div id="wrap" class="oe_structure oe_empty bader-about-page">
@@ -37,22 +56,22 @@
                             <div class="bader-about__hero-stats">
                                 <div class="bader-about__hero-stat">
                                     <i class="fa fa-users"/>
-                                    <div class="bader-about__hero-stat-value" data-count-to="10000" data-count-suffix="+">10,000+</div>
+                                    <div class="bader-about__hero-stat-value">10,000+</div>
                                     <div class="bader-about__hero-stat-label">Clientes satisfechos</div>
                                 </div>
                                 <div class="bader-about__hero-stat">
                                     <i class="fa fa-cubes"/>
-                                    <div class="bader-about__hero-stat-value" data-count-to="1300" data-count-suffix="+">1,300+</div>
+                                    <div class="bader-about__hero-stat-value">1,300+</div>
                                     <div class="bader-about__hero-stat-label">Productos disponibles</div>
                                 </div>
                                 <div class="bader-about__hero-stat">
                                     <i class="fa fa-globe"/>
-                                    <div class="bader-about__hero-stat-value" data-count-to="800" data-count-suffix="+">800+</div>
+                                    <div class="bader-about__hero-stat-value">800+</div>
                                     <div class="bader-about__hero-stat-label">Distribuidores mundiales</div>
                                 </div>
                                 <div class="bader-about__hero-stat">
                                     <i class="fa fa-star"/>
-                                    <div class="bader-about__hero-stat-value" data-count-to="4.7">4.7</div>
+                                    <div class="bader-about__hero-stat-value">4.7</div>
                                     <div class="bader-about__hero-stat-label">Google Reviews</div>
                                 </div>
                             </div>
