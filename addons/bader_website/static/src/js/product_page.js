@@ -344,6 +344,24 @@
         var productName = detailsCol.querySelector('h1[itemprop="name"], h1:not(.d-none)');
         if (!productName) return;
 
+        var baseMeta = detailsCol.querySelector('.bader-product-meta');
+        if (baseMeta) {
+            if (baseMeta.querySelector('.bader-detail-meta__rating')) return;
+
+            var inlineRating = document.createElement('div');
+            inlineRating.className = 'bader-detail-meta__rating';
+            var inlineStars = document.createElement('span');
+            inlineStars.className = 'bader-stars';
+            inlineStars.innerHTML = '<i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>';
+            var inlineCount = document.createElement('span');
+            inlineCount.className = 'bader-rating-count';
+            inlineCount.textContent = '(4.9)';
+            inlineRating.appendChild(inlineStars);
+            inlineRating.appendChild(inlineCount);
+            baseMeta.appendChild(inlineRating);
+            return;
+        }
+
         var categoryText = '';
         var categoryTag = detailsCol.querySelector('.bader-product-category');
         if (categoryTag) categoryText = (categoryTag.textContent || '').trim();
@@ -379,6 +397,156 @@
         meta.appendChild(cat);
         meta.appendChild(rating);
         productName.parentElement.insertBefore(meta, productName);
+    }
+
+    function initAudienceExperience() {
+        var stage = productRoot.querySelector('[data-bader-audience-stage]');
+        if (!stage || stage.getAttribute('data-bader-audience-ready') === '1') return;
+
+        var buttons = Array.prototype.slice.call(
+            stage.querySelectorAll('[data-bader-audience-btn]')
+        );
+        var panels = Array.prototype.slice.call(
+            stage.querySelectorAll('[data-bader-audience-panel]')
+        );
+        if (!buttons.length || !panels.length) return;
+
+        var validAudiences = ['clinica', 'laboratorio', 'estudiantes', 'mayoristas'];
+        var storageKey = 'bader_pdp_audience';
+
+        function normalizeAudience(rawValue) {
+            var token = String(rawValue || '').trim().toLowerCase();
+            if (!token) return '';
+            if (token === 'lab') return 'laboratorio';
+            if (token === 'student' || token === 'estudiante') return 'estudiantes';
+            if (token === 'mayorista' || token === 'wholesale') return 'mayoristas';
+            return validAudiences.indexOf(token) !== -1 ? token : '';
+        }
+
+        function inferAudienceFromContext() {
+            var rootText = (productRoot.textContent || '').toLowerCase();
+            if (rootText.indexOf('laboratorio') !== -1) return 'laboratorio';
+            if (rootText.indexOf('estudiante') !== -1 || rootText.indexOf('tipodonto') !== -1) return 'estudiantes';
+            return 'clinica';
+        }
+
+        function readInitialAudience() {
+            var defaultAudience = normalizeAudience(
+                stage.getAttribute('data-bader-default-audience')
+            );
+            if (defaultAudience) return defaultAudience;
+
+            try {
+                var storedAudience = normalizeAudience(
+                    window.localStorage.getItem(storageKey)
+                );
+                if (storedAudience) return storedAudience;
+
+                var storedPersona = normalizeAudience(
+                    window.localStorage.getItem('bader_home_persona')
+                );
+                if (storedPersona) return storedPersona;
+            } catch (err) {
+                // Ignore localStorage failures.
+            }
+
+            return inferAudienceFromContext();
+        }
+
+        function activateAudience(audienceKey) {
+            var target = normalizeAudience(audienceKey) || inferAudienceFromContext();
+
+            buttons.forEach(function (button) {
+                var isActive = normalizeAudience(
+                    button.getAttribute('data-bader-audience-btn')
+                ) === target;
+                button.classList.toggle('is-active', isActive);
+                button.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                button.setAttribute('tabindex', isActive ? '0' : '-1');
+            });
+
+            panels.forEach(function (panel) {
+                var isActive = normalizeAudience(
+                    panel.getAttribute('data-bader-audience-panel')
+                ) === target;
+                panel.classList.toggle('is-active', isActive);
+                panel.setAttribute('tabindex', isActive ? '0' : '-1');
+                if (isActive) panel.removeAttribute('hidden');
+                else panel.setAttribute('hidden', 'hidden');
+            });
+
+            stage.setAttribute('data-bader-active-audience', target);
+            try {
+                window.localStorage.setItem(storageKey, target);
+            } catch (err) {
+                // Ignore localStorage failures.
+            }
+        }
+
+        buttons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                activateAudience(button.getAttribute('data-bader-audience-btn'));
+            });
+            button.addEventListener('keydown', function (ev) {
+                var currentIndex = buttons.indexOf(button);
+                if (currentIndex === -1) return;
+
+                var targetIndex = currentIndex;
+                if (ev.key === 'ArrowRight' || ev.key === 'ArrowDown') {
+                    targetIndex = (currentIndex + 1) % buttons.length;
+                } else if (ev.key === 'ArrowLeft' || ev.key === 'ArrowUp') {
+                    targetIndex = (currentIndex - 1 + buttons.length) % buttons.length;
+                } else if (ev.key === 'Home') {
+                    targetIndex = 0;
+                } else if (ev.key === 'End') {
+                    targetIndex = buttons.length - 1;
+                } else {
+                    return;
+                }
+
+                ev.preventDefault();
+                activateAudience(
+                    buttons[targetIndex].getAttribute('data-bader-audience-btn')
+                );
+                buttons[targetIndex].focus();
+            });
+        });
+
+        activateAudience(readInitialAudience());
+        stage.setAttribute('data-bader-audience-ready', '1');
+    }
+
+    function initAnchorLinks() {
+        if (productRoot.getAttribute('data-bader-anchor-links') === '1') return;
+
+        var links = Array.prototype.slice.call(
+            productRoot.querySelectorAll('[data-bader-anchor-link]')
+        );
+        if (!links.length) return;
+
+        function scrollToTarget(selector) {
+            var target = document.querySelector(selector);
+            if (!target) return;
+
+            var header = document.querySelector('header#top');
+            var offset = header ? header.getBoundingClientRect().height + 22 : 96;
+            var y = target.getBoundingClientRect().top + window.scrollY - offset;
+            window.scrollTo({
+                top: Math.max(0, y),
+                behavior: 'smooth',
+            });
+        }
+
+        links.forEach(function (link) {
+            link.addEventListener('click', function (ev) {
+                var href = link.getAttribute('href') || '';
+                if (!href || href.charAt(0) !== '#') return;
+                ev.preventDefault();
+                scrollToTarget(href);
+            });
+        });
+
+        productRoot.setAttribute('data-bader-anchor-links', '1');
     }
 
     function injectInstallmentNote() {
@@ -492,6 +660,8 @@
         initQtySelectorStyle();
         injectFloatingStockBadge();
         injectDetailMeta();
+        initAudienceExperience();
+        initAnchorLinks();
         injectInstallmentNote();
         injectActionButtons();
         enhanceBenefitsPanel();
