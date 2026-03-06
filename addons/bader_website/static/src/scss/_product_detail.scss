@@ -923,3 +923,100 @@
         font-size: 18px;
     }
 }
+
+// ============================================================
+// Product page JS-enhanced elements (runtime injected)
+// ============================================================
+#product_detail .bader-stock-floating {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(112, 212, 75, 0.55);
+    background: rgba(255, 255, 255, 0.95);
+    color: $bader-dark;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: 0 8px 18px rgba(0, 56, 65, 0.14);
+
+    i {
+        color: $bader-green;
+    }
+}
+
+#product_detail #product_details .bader-detail-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: $gray-500;
+
+    .bader-detail-meta__category {
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(0, 56, 65, 0.16);
+        background: rgba(112, 212, 75, 0.09);
+        color: $bader-dark;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+
+    .bader-detail-meta__rating {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: $gray-600;
+    }
+
+    .bader-stars {
+        color: #f59e0b;
+        letter-spacing: 0.08em;
+        font-size: 11px;
+    }
+
+    .bader-rating-count {
+        font-weight: 600;
+    }
+}
+
+#product_detail #product_details .bader-price-note {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+#product_detail #product_details .bader-price-installment-note {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 56, 65, 0.14);
+    background: rgba(112, 212, 75, 0.10);
+    color: $bader-dark;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+#product_detail #product_details .bader-buy-now-btn {
+    background: linear-gradient(135deg, $bader-green-light, $bader-green);
+    color: $bader-dark !important;
+}
+
+#product_detail #product_details .bader-buy-now-btn:hover {
+    background: linear-gradient(135deg, $bader-green, #4ec43b);
+}
+
+#product_detail #product_details .bader-product-benefits--enhanced {
+    border: 1px solid rgba(0, 56, 65, 0.12);
+    background: linear-gradient(145deg, rgba(112, 212, 75, 0.08), $white 62%);
+}
