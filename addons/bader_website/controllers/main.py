@@ -883,7 +883,7 @@ class BaderWebsite(Website):
                 'category': 'general',
                 'available': True,
                 'featured': True,
-                'pages': '120+',
+                'pages': '114',
                 'year': '2024',
             },
             {
@@ -895,7 +895,7 @@ class BaderWebsite(Website):
                 'category': 'clinica',
                 'available': True,
                 'featured': False,
-                'pages': '48',
+                'pages': '43',
                 'year': '2023',
             },
             {
@@ -907,7 +907,7 @@ class BaderWebsite(Website):
                 'category': 'equipos',
                 'available': True,
                 'featured': True,
-                'pages': '64',
+                'pages': '28',
                 'year': '2024',
             },
             {
@@ -919,7 +919,7 @@ class BaderWebsite(Website):
                 'category': 'formacion',
                 'available': True,
                 'featured': False,
-                'pages': '32',
+                'pages': '8',
                 'year': '2023',
             },
             {
@@ -931,7 +931,7 @@ class BaderWebsite(Website):
                 'category': 'instrumental',
                 'available': False,
                 'featured': False,
-                'pages': '24',
+                'pages': '6',
                 'year': '2019',
             },
             {
@@ -943,7 +943,7 @@ class BaderWebsite(Website):
                 'category': 'instrumental',
                 'available': False,
                 'featured': False,
-                'pages': '36',
+                'pages': '6',
                 'year': '2023',
             },
             {
@@ -955,7 +955,7 @@ class BaderWebsite(Website):
                 'category': 'mobiliario',
                 'available': True,
                 'featured': False,
-                'pages': '28',
+                'pages': '8',
                 'year': '2024',
             },
             {
@@ -967,7 +967,7 @@ class BaderWebsite(Website):
                 'category': 'instrumental',
                 'available': True,
                 'featured': True,
-                'pages': '84',
+                'pages': '56',
                 'year': '2024',
             },
         ]
