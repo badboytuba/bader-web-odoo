@@ -16,6 +16,19 @@ odoo.define('bader_website.main', function (require) {
     function initBader() {
         // initBader running
 
+        // Prevent initial flicker: keep in-view animated blocks visible
+        // before enabling JS-only animation state.
+        var initialAnimatedEls = document.querySelectorAll('.bader-animate');
+        if (initialAnimatedEls.length) {
+            var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+            initialAnimatedEls.forEach(function (el) {
+                var rect = el.getBoundingClientRect();
+                if (rect.top < viewportHeight && rect.bottom > 0) {
+                    el.classList.add('bader-visible');
+                }
+            });
+        }
+
         // Mark body as JS-ready
         document.body.classList.add('bader-js-ready');
 
@@ -978,7 +991,7 @@ odoo.define('bader_website.main', function (require) {
                         observer.unobserve(entry.target);
                     }
                 });
-            }, { threshold: 0.1, rootMargin: '0px 0px -20px 0px' });
+            }, { threshold: 0.01, rootMargin: '0px 0px -5% 0px' });
 
             animatedEls.forEach(function (el) {
                 observer.observe(el);

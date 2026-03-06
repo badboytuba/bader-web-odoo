@@ -1740,6 +1740,18 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
 // --- Descargas Page ---
 .bader-downloads-page {
     background: linear-gradient(180deg, #f8fafc 0%, #ffffff 54%);
+
+    .bader-downloads-hero {
+        background: $bader-dark;
+    }
+
+    .bader-downloads-featured-section {
+        background: $white;
+    }
+
+    .bader-downloads-grid-section {
+        background: $bader-muted;
+    }
 }
 
 .bader-downloads-hero {
