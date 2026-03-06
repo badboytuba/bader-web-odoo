@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Sync Bader-AR download PDFs into the Odoo module static folder."""
 
+import argparse
 from pathlib import Path
+import subprocess
+import sys
 from urllib.request import urlopen
 
 
@@ -42,6 +45,14 @@ FILES = [
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Sync /descargas PDFs from Bader source")
+    parser.add_argument(
+        "--skip-page-sync",
+        action="store_true",
+        help="skip running scripts/sync_descargas_pages.py after download",
+    )
+    args = parser.parse_args()
+
     root = Path(__file__).resolve().parents[1]
     out_dir = root / "addons" / "bader_website" / "static" / "src" / "pdf" / "descargas"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -54,6 +65,11 @@ def main() -> None:
             data = response.read()
         target.write_bytes(data)
         print(f"Saved {filename} ({len(data)} bytes)")
+
+    sync_pages_script = root / "scripts" / "sync_descargas_pages.py"
+    if sync_pages_script.is_file() and not args.skip_page_sync:
+        print("Syncing PDF page counts in controller metadata...")
+        subprocess.run([sys.executable, str(sync_pages_script), "--write"], check=True)
 
     print("Done.")
 

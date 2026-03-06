@@ -132,6 +132,11 @@ def main() -> None:
     parser.add_argument("--upload-only", action="store_true", help="only upload")
     parser.add_argument("--restart-only", action="store_true", help="only restart Odoo")
     parser.add_argument("--no-upgrade", action="store_true", help="upload + restart, skip upgrade")
+    parser.add_argument(
+        "--skip-sync-descargas-pages",
+        action="store_true",
+        help="skip automatic /descargas PDF page count sync for bader_website",
+    )
     parser.add_argument("--skip-audit", action="store_true", help="skip frontend QA audit after deployment")
     parser.add_argument("--audit-url", type=str, default=DEFAULT_AUDIT_URL, help="base URL used by frontend QA audit")
     parser.add_argument("--audit-retries", type=int, default=6, help="audit retry attempts after restart")
@@ -140,6 +145,25 @@ def main() -> None:
 
     if not args.module and not args.restart_only:
         parser.error("Specify a module name or use --restart-only")
+
+    if (
+        args.module == "bader_website"
+        and not args.restart_only
+        and not args.skip_sync_descargas_pages
+    ):
+        sync_script = SCRIPTS_PATH / "sync_descargas_pages.py"
+        if sync_script.is_file():
+            sync_cmd = [sys.executable, str(sync_script), "--write"]
+            print("Syncing /descargas PDF page counts: %s" % " ".join(sync_cmd))
+            sync_result = subprocess.run(sync_cmd, check=False)
+            if int(sync_result.returncode) != 0:
+                print(
+                    "ERROR: failed to sync /descargas page counts "
+                    f"(exit {int(sync_result.returncode)})"
+                )
+                sys.exit(int(sync_result.returncode))
+        else:
+            print(f"WARN: sync script not found: {sync_script}")
 
     client = get_ssh_client()
     try:
