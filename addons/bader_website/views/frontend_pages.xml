@@ -7,7 +7,7 @@
                 <title>Descargas - Bader Argentina</title>
                 <meta name="description" content="Descarga catalogos y documentacion oficial de Bader Argentina en PDF."/>
             </t>
-            <div id="wrap" class="oe_structure oe_empty">
+            <div id="wrap" class="oe_structure oe_empty bader-downloads-page">
                 <section class="bader-page-hero bader-downloads-hero bader-animate">
                     <div class="bader-page-hero__blur bader-page-hero__blur--1"/>
                     <div class="bader-page-hero__blur bader-page-hero__blur--2"/>
@@ -32,7 +32,7 @@
                     </div>
                 </section>
 
-                <section class="bader-page-section bader-page-section--white bader-animate">
+                <section class="bader-page-section bader-page-section--white bader-animate bader-downloads-featured-section">
                     <div class="bader-page-section__container">
                         <div class="bader-downloads-featured-head">
                             <span class="bader-page-hero__badge"><i class="fa fa-star"/> Destacados</span>
@@ -69,7 +69,7 @@
                     </div>
                 </section>
 
-                <section class="bader-page-section bader-page-section--muted bader-animate">
+                <section class="bader-page-section bader-page-section--muted bader-animate bader-downloads-grid-section">
                     <div class="bader-page-section__container">
                         <div class="bader-downloads-filters">
                             <span class="bader-downloads-filters__label">
@@ -77,14 +77,17 @@
                             </span>
                             <a t-foreach="categories"
                                t-as="category"
-                               t-attf-href="/descargas?category=#{category['id']}"
+                               t-attf-href="/descargas?category=#{category['id']}&amp;q=#{search_query}"
                                t-attf-class="bader-downloads-filter #{'is-active' if selected_category == category['id'] else ''}">
                                 <t t-esc="category['label']"/>
                                 <span class="bader-downloads-filter__count" t-esc="category['count']"/>
                             </a>
                         </div>
                         <p class="bader-downloads-results">
-                            Mostrando <strong t-esc="len(filtered_catalogs)"/> catalogos
+                            Mostrando
+                            <strong t-esc="len(filtered_catalogs)"/>
+                            <t t-if="len(filtered_catalogs) == 1">catalogo</t>
+                            <t t-else="">catalogos</t>
                         </p>
 
                         <div class="bader-page-section__grid bader-page-section__grid--4" t-if="filtered_catalogs">
@@ -115,13 +118,13 @@
                                        class="btn-bader-sm">
                                         <i class="fa fa-download"/> Descargar
                                     </a>
-                                    <span t-else="" class="btn btn-secondary disabled">
+                                    <span t-else="" class="bader-downloads-action-disabled">
                                         <i class="fa fa-clock-o"/> Pronto
                                     </span>
                                     <a t-if="catalog['available']"
                                        t-att-href="catalog['download_url']"
                                        target="_blank"
-                                       class="btn btn-outline-secondary btn-sm"
+                                       class="bader-downloads-preview"
                                        title="Ver PDF">
                                         <i class="fa fa-eye"/>
                                     </a>
@@ -129,7 +132,8 @@
                             </div>
                         </div>
 
-                        <div t-else="" class="bader-page-card text-center">
+                        <div t-else="" class="bader-page-card text-center bader-downloads-empty">
+                            <div class="bader-downloads-empty__icon"><i class="fa fa-file-text-o"/></div>
                             <h3 class="bader-page-card__title">No se encontraron catalogos</h3>
                             <p class="bader-page-card__text">Prueba otro texto de busqueda o categoria.</p>
                             <a href="/descargas" class="btn-bader">Limpiar filtros</a>
@@ -143,9 +147,9 @@
                         <p class="bader-section__subtitle">
                             Nuestro equipo puede ayudarte a elegir el equipamiento ideal para tu clinica o laboratorio.
                         </p>
-                        <div class="mt-4">
+                        <div class="bader-downloads-cta-actions">
                             <a href="/#contacto" class="btn-bader">Contactar a un asesor</a>
-                            <a href="/productos" class="btn btn-outline-secondary ms-2">Ver productos</a>
+                            <a href="/productos" class="btn-bader-outline bader-downloads-cta-secondary">Ver productos</a>
                         </div>
                     </div>
                 </section>
