@@ -3,6 +3,30 @@
 // ============================================
 // Matches Bader-AR Servicios.tsx visual design.
 
+// Keep intended section backgrounds on this page.
+// Use descendant selectors (not only direct child) because Odoo website editor
+// can inject wrapper blocks and break `> section` targeting.
+.bader-services-page,
+[data-bader-services-page='1'] {
+    .bader-page-hero {
+        background: $bader-dark !important;
+        color: $white !important;
+    }
+
+    .bader-page-section--muted {
+        background: $bader-muted !important;
+    }
+
+    .bader-page-section--white {
+        background: $white !important;
+    }
+
+    .bader-page-section--green {
+        background: linear-gradient(135deg, $bader-green, rgba($bader-green, 0.85)) !important;
+        color: $white !important;
+    }
+}
+
 // --- Service Card --- 
 .bader-services__card {
     display: flex;
