@@ -1,65 +1,109 @@
 // ============================================
-// Ser Distribuidor - Bader-AR parity styles
+// Ser Distribuidor - Bader-AR parity
 // ============================================
 
 .bader-dist-page {
     overflow: hidden;
 
+    // Odoo website resets direct section backgrounds inside .oe_structure.
+    // Use more specific selectors so this page keeps the intended Bader palette.
+    > .bader-dist-hero {
+        background: linear-gradient(135deg, #003841 0%, #003841 65%, rgba(0, 56, 65, 0.9) 100%) !important;
+        color: #fff !important;
+    }
+
+    > .bader-dist-section--muted {
+        background: #f9fafb !important;
+    }
+
+    > .bader-dist-section--accent {
+        background: #003841 !important;
+    }
+
+    > .bader-dist-section--white {
+        background: #fff !important;
+    }
+
+    > .bader-dist-section--cta {
+        background: linear-gradient(to right, #003841 0%, rgba(0, 56, 65, 0.9) 100%) !important;
+    }
+
+    .bader-page-section__container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 1rem;
+
+        @media (min-width: 1024px) {
+            padding: 0 2rem;
+        }
+    }
+
     .bader-dist-badge {
         display: inline-flex;
         align-items: center;
-        gap: 0.4rem;
-        background: rgba(255, 255, 255, 0.18);
-        border: 1px solid rgba(255, 255, 255, 0.22);
-        color: #fff;
-        border-radius: 999px;
-        padding: 0.45rem 0.9rem;
-        font-size: 0.8rem;
+        gap: 0.35rem;
+        border: 1px solid transparent;
+        border-radius: 0.375rem;
+        padding: 0.125rem 0.625rem;
+        white-space: nowrap;
+        font-size: 0.75rem;
         font-weight: 600;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
+        letter-spacing: 0;
+        text-transform: none;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
     }
 
     .bader-dist-badge--soft {
-        background: rgba($bader-green, 0.12);
-        border-color: rgba($bader-green, 0.24);
-        color: $bader-dark;
+        background: rgba($bader-green, 0.1);
+        color: $bader-green;
     }
 }
 
 .bader-dist-hero {
     position: relative;
     isolation: isolate;
-    background: linear-gradient(135deg, #003841 0%, #00484d 52%, #003841 100%);
-    padding: 4.5rem 0 4.25rem;
+    overflow: hidden;
+    background: linear-gradient(135deg, #003841 0%, #003841 65%, rgba(0, 56, 65, 0.9) 100%) !important;
     color: #fff;
+    padding: 6rem 0 5rem;
 
-    @include mobile {
-        padding: 3rem 0 2.5rem;
+    @media (max-width: 767px) {
+        padding: 4rem 0 3.5rem;
     }
 
     .bader-dist-hero__glow {
         position: absolute;
-        border-radius: 999px;
-        filter: blur(90px);
-        pointer-events: none;
         z-index: 0;
+        border-radius: 999px;
+        pointer-events: none;
+        filter: blur(80px);
     }
 
     .bader-dist-hero__glow--a {
         top: 2.5rem;
-        right: 4rem;
-        width: 23rem;
-        height: 23rem;
-        background: rgba(255, 255, 255, 0.12);
+        right: 2.5rem;
+        width: 24rem;
+        height: 24rem;
+        background: rgba(255, 255, 255, 0.08);
     }
 
     .bader-dist-hero__glow--b {
         left: -4rem;
         bottom: -4rem;
-        width: 20rem;
-        height: 20rem;
-        background: rgba($bader-green, 0.3);
+        width: 18rem;
+        height: 18rem;
+        background: rgba($bader-green, 0.2);
+    }
+
+    .bader-dist-hero__glow--c {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50rem;
+        height: 50rem;
+        background: rgba(255, 255, 255, 0.05);
     }
 
     .bader-dist-hero__container {
@@ -69,12 +113,11 @@
 
     .bader-dist-hero__grid {
         display: grid;
-        gap: 2.5rem;
+        gap: 3rem;
         align-items: center;
 
-        @media (min-width: $bp-desktop) {
-            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-            gap: 3rem;
+        @media (min-width: 1024px) {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
         }
     }
 
@@ -83,132 +126,135 @@
     }
 
     .bader-dist-hero__title {
-        margin: 0 0 1rem;
+        margin: 1rem 0 1.5rem;
         font-family: $font-display;
-        font-weight: 800;
-        font-size: 2.1rem;
-        line-height: 1.1;
+        font-size: 2.25rem;
+        font-weight: 700;
+        line-height: 1.05;
         letter-spacing: -0.02em;
 
-        @media (min-width: $bp-tablet) {
-            font-size: 2.9rem;
-        }
-
-        @media (min-width: $bp-desktop) {
-            font-size: 3.6rem;
+        @media (min-width: 1024px) {
+            font-size: 3.75rem;
         }
     }
 
     .bader-dist-hero__lead {
-        margin: 0 0 0.85rem;
+        margin: 0 0 1rem;
+        font-size: 1.25rem;
+        line-height: 1.625;
         color: rgba(255, 255, 255, 0.9);
-        font-size: 1.08rem;
-        line-height: 1.65;
     }
 
     .bader-dist-hero__text {
-        margin: 0 0 1.9rem;
-        color: rgba(255, 255, 255, 0.82);
-        font-size: 1rem;
+        margin: 0 0 2rem;
+        font-size: 1.125rem;
         line-height: 1.7;
+        color: rgba(255, 255, 255, 0.82);
     }
 }
 
 .bader-dist-metrics {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem 1.35rem;
+    gap: 1.5rem;
 }
 
 .bader-dist-metric {
     display: inline-flex;
     align-items: center;
-    gap: 0.7rem;
-    min-width: 10.5rem;
+    gap: 0.75rem;
+    min-width: 9.5rem;
 
     .bader-dist-metric__icon {
-        width: 2.75rem;
-        height: 2.75rem;
+        width: 3rem;
+        height: 3rem;
         border-radius: 999px;
         background: rgba(255, 255, 255, 0.2);
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 1rem;
         color: #fff;
+        font-size: 1.05rem;
         flex-shrink: 0;
     }
 
     .bader-dist-metric__info {
         display: flex;
         flex-direction: column;
-        gap: 0.05rem;
+        line-height: 1.05;
 
         strong {
-            font-size: 1.5rem;
-            line-height: 1;
-            font-weight: 700;
             color: #fff;
+            font-size: 1.5rem;
+            font-weight: 700;
         }
 
         span {
-            font-size: 0.82rem;
-            color: rgba(255, 255, 255, 0.7);
+            margin-top: 0.15rem;
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 0.875rem;
         }
     }
 }
 
 .bader-dist-hero__media {
     min-width: 0;
+    position: relative;
+}
+
+.bader-dist-media-card__glow {
+    position: absolute;
+    inset: -1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 1.5rem;
+    filter: blur(24px);
+    pointer-events: none;
+    z-index: 0;
 }
 
 .bader-dist-media-card {
     position: relative;
-    border-radius: 1.5rem;
-    padding: 0.8rem;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.24);
+    z-index: 1;
 
     img {
         display: block;
         width: 100%;
-        height: 100%;
-        max-height: 32rem;
+        max-height: 31.25rem;
         object-fit: cover;
         border-radius: 1rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     }
 }
 
 .bader-dist-float {
     position: absolute;
-    z-index: 2;
+    z-index: 3;
+    min-width: 11.25rem;
     display: inline-flex;
     align-items: center;
-    gap: 0.7rem;
-    min-width: 11rem;
-    padding: 0.7rem 0.9rem;
-    border-radius: 0.85rem;
+    gap: 0.75rem;
     background: #fff;
-    border: 1px solid rgba(2, 35, 41, 0.09);
-    box-shadow: 0 12px 28px rgba(7, 24, 31, 0.18);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    padding: 0.75rem 1rem;
 
     .bader-dist-float__dots {
         display: inline-flex;
-        gap: 0.26rem;
+        gap: 0.2rem;
 
         span {
-            width: 1.2rem;
-            height: 1.2rem;
+            width: 1.5rem;
+            height: 1.5rem;
             border-radius: 999px;
-            background: #f3f4f6;
-            border: 1px solid #e5e7eb;
-            color: #6b7280;
-            font-size: 0.65rem;
-            font-weight: 600;
+            border: 0;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            background: rgba($bader-green, 0.14);
+            color: $bader-green;
+            font-size: 0.7rem;
+            font-weight: 600;
             line-height: 1;
         }
     }
@@ -216,121 +262,197 @@
     .bader-dist-float__meta {
         display: flex;
         flex-direction: column;
-        line-height: 1.2;
 
         strong {
-            font-size: 1rem;
-            color: $bader-dark;
+            color: #003841;
+            font-size: 1.125rem;
             font-weight: 700;
+            line-height: 1.1;
         }
 
         small {
-            color: #6b7280;
-            font-size: 0.72rem;
+            color: #4b5563;
+            font-size: 0.75rem;
+            line-height: 1.2;
         }
 
         i {
-            color: #f59e0b;
+            color: #facc15;
         }
     }
 }
 
 .bader-dist-float--top {
-    top: 0.95rem;
+    top: -1rem;
     right: -1rem;
 }
 
 .bader-dist-float--left {
-    left: -1.2rem;
-    top: 38%;
+    top: 33%;
+    left: -2rem;
 }
 
 .bader-dist-float--bottom {
     right: -1rem;
-    bottom: 24%;
+    bottom: 25%;
 }
 
 .bader-dist-brand {
     position: absolute;
-    left: -1.1rem;
-    bottom: -1.1rem;
-    z-index: 2;
+    z-index: 3;
+    left: -1.5rem;
+    bottom: -1.5rem;
     display: inline-flex;
     align-items: center;
-    gap: 0.65rem;
+    gap: 0.75rem;
     background: #fff;
-    border-radius: 0.9rem;
-    padding: 0.7rem 0.9rem;
-    box-shadow: 0 12px 28px rgba(7, 24, 31, 0.18);
+    border-radius: 1rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
 
     .bader-dist-brand__logo {
-        width: 2.3rem;
-        height: 2.3rem;
+        width: 3rem;
+        height: 3rem;
         border-radius: 999px;
+        background: rgba($bader-dark, 0.1);
+        color: $bader-dark;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: rgba($bader-green, 0.16);
-        color: $bader-green;
     }
 
     strong {
         display: block;
-        color: $bader-dark;
-        font-size: 0.95rem;
-        line-height: 1.1;
-        letter-spacing: 0.08em;
+        color: #003841;
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.01em;
     }
 
     small {
         display: block;
+        margin-top: 0.2rem;
         color: #6b7280;
-        font-size: 0.72rem;
+        font-size: 0.8rem;
+        line-height: 1;
     }
 }
 
 .bader-dist-section {
-    padding: 4.5rem 0;
+    padding: 5rem 0;
 
-    @include mobile {
-        padding: 3rem 0;
+    @media (max-width: 767px) {
+        padding: 3.5rem 0;
     }
 }
 
 .bader-dist-section--muted {
-    background: #f8fafc;
-}
-
-.bader-dist-section--white {
-    background: #fff;
+    background: #f9fafb;
 }
 
 .bader-dist-section--accent {
     background: #003841;
 }
 
+.bader-dist-section--white {
+    background: #fff;
+}
+
 .bader-dist-section--cta {
-    background: linear-gradient(90deg, #003841 0%, #0a4a4f 100%);
+    background: linear-gradient(to right, #003841 0%, rgba(0, 56, 65, 0.9) 100%);
     color: #fff;
-    padding: 3.2rem 0;
+    padding: 4rem 0;
 }
 
 .bader-dist-heading {
     text-align: center;
-    max-width: 48rem;
-    margin: 0 auto 2.4rem;
+    max-width: 42rem;
+    margin: 0 auto 4rem;
 
     h2 {
-        margin: 0.9rem 0 0.85rem;
-        color: $bader-dark;
+        margin: 1rem 0;
+        color: #003841;
         font-family: $font-display;
-        font-size: 1.9rem;
-        font-weight: 800;
-        letter-spacing: -0.015em;
+        font-size: 1.875rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
 
-        @media (min-width: $bp-tablet) {
-            font-size: 2.45rem;
+        @media (min-width: 1024px) {
+            font-size: 2.25rem;
         }
+    }
+
+    p {
+        margin: 0 auto;
+        color: #4b5563;
+        font-size: 1rem;
+        line-height: 1.625;
+    }
+}
+
+.bader-dist-heading--light {
+
+    h2 {
+        color: #fff;
+    }
+
+    p {
+        color: rgba(255, 255, 255, 0.72);
+    }
+}
+
+.bader-dist-benefits-grid {
+    display: grid;
+    gap: 1.5rem;
+
+    @media (min-width: 768px) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (min-width: 1024px) {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.bader-dist-benefit-card {
+    height: 100%;
+    border: 2px solid transparent;
+    border-radius: 0.75rem;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+
+    &:hover {
+        transform: translateY(-0.25rem);
+        border-color: rgba($bader-green, 0.22);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    }
+
+    .bader-dist-benefit-card__icon {
+        width: 4rem;
+        height: 4rem;
+        border-radius: 1rem;
+        margin-bottom: 1.5rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba($bader-green, 0.2), rgba($bader-green, 0.05));
+        color: $bader-green;
+        font-size: 2rem;
+        transition: transform 0.3s ease;
+    }
+
+    &:hover .bader-dist-benefit-card__icon {
+        transform: scale(1.05);
+    }
+
+    h3 {
+        margin: 0 0 0.75rem;
+        color: #003841;
+        font-size: 1.25rem;
+        font-weight: 700;
     }
 
     p {
@@ -341,184 +463,206 @@
     }
 }
 
-.bader-dist-heading--light {
-
-    h2,
-    p {
-        color: #fff;
-    }
-
-    p {
-        color: rgba(255, 255, 255, 0.75);
-    }
-}
-
-.bader-dist-benefits-grid {
-    display: grid;
-    gap: 1.25rem;
-
-    @media (min-width: $bp-tablet) {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    @media (min-width: $bp-desktop) {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-}
-
-.bader-dist-benefit-card {
-    background: #fff;
-    border: 2px solid transparent;
-    border-radius: 1rem;
-    padding: 1.7rem;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-
-    &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
-        border-color: rgba($bader-green, 0.28);
-    }
-
-    .bader-dist-benefit-card__icon {
-        width: 3.5rem;
-        height: 3.5rem;
-        border-radius: 0.9rem;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 1rem;
-        background: linear-gradient(135deg, rgba($bader-green, 0.22), rgba($bader-green, 0.07));
-        color: $bader-green;
-        font-size: 1.45rem;
-    }
-
-    h3 {
-        margin: 0 0 0.55rem;
-        color: $bader-dark;
-        font-size: 1.2rem;
-        font-weight: 700;
-    }
-
-    p {
-        margin: 0;
-        color: #4b5563;
-        line-height: 1.6;
-        font-size: 0.95rem;
-    }
-}
-
 .bader-dist-lines-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.85rem;
+    gap: 1rem;
 
-    @media (min-width: $bp-tablet) {
+    @media (min-width: 768px) {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    @media (min-width: $bp-desktop) {
+    @media (min-width: 1024px) {
         grid-template-columns: repeat(6, minmax(0, 1fr));
     }
 }
 
 .bader-dist-line-card {
-    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 1rem;
-    padding: 1.3rem 0.95rem;
     background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    backdrop-filter: blur(5px);
-    transition: background 0.2s ease, transform 0.2s ease;
+    backdrop-filter: blur(6px);
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.3s ease, background 0.3s ease;
 
     &:hover {
         transform: translateY(-2px);
-        background: rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.2);
     }
 
     span {
-        width: 3.1rem;
-        height: 3.1rem;
-        border-radius: 0.85rem;
-        margin: 0 auto 0.8rem;
+        width: 4rem;
+        height: 4rem;
+        margin: 0 auto 1rem;
+        border-radius: 1rem;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, #27c471, #1cae62);
         color: #fff;
-        font-size: 1.25rem;
-        box-shadow: 0 10px 18px rgba(39, 196, 113, 0.3);
+        font-size: 1.65rem;
+        box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
     }
 
     h3 {
         margin: 0;
         color: #fff;
-        font-size: 0.98rem;
+        font-size: 1rem;
         font-weight: 600;
     }
 }
 
+.bader-dist-line-card--blue span {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.bader-dist-line-card--emerald span {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.bader-dist-line-card--purple span {
+    background: linear-gradient(135deg, #a855f7, #9333ea);
+}
+
+.bader-dist-line-card--orange span {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+}
+
+.bader-dist-line-card--pink span {
+    background: linear-gradient(135deg, #ec4899, #db2777);
+}
+
+.bader-dist-line-card--teal span {
+    background: linear-gradient(135deg, #14b8a6, #0d9488);
+}
+
 .bader-dist-form-layout {
     display: grid;
-    gap: 2rem;
+    gap: 3rem;
+    align-items: start;
 
-    @media (min-width: $bp-desktop) {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 2.8rem;
+    @media (min-width: 1024px) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
 .bader-dist-form-copy {
 
     h2 {
-        margin: 1rem 0 1rem;
-        color: $bader-dark;
+        margin: 1rem 0 1.5rem;
+        color: #003841;
         font-family: $font-display;
-        font-size: 2rem;
-        font-weight: 800;
-        letter-spacing: -0.015em;
+        font-size: 1.875rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+
+        @media (min-width: 1024px) {
+            font-size: 2.25rem;
+        }
     }
 
     p {
-        margin: 0 0 1.1rem;
+        margin: 0 0 1.5rem;
         color: #4b5563;
-        line-height: 1.65;
+        line-height: 1.7;
     }
 
     .bader-dist-form-copy__lead {
-        color: #0f172a;
+        color: #003841;
+        font-size: 1.125rem;
         font-weight: 600;
-        font-size: 1.04rem;
+        margin-bottom: 2rem;
     }
 
     .bader-checklist {
-        margin-top: 1rem;
 
         li {
-            padding: 0.36rem 0;
             color: #374151;
+            font-size: 1rem;
+            padding: 0.45rem 0;
+            gap: 0.75rem;
+        }
+
+        i {
+            color: $bader-green;
+            font-size: 1.1rem;
         }
     }
 }
 
 .bader-dist-form-card {
-    border-radius: 1.25rem;
-    box-shadow: 0 18px 42px rgba(15, 23, 42, 0.14);
-    border: 1px solid #f1f5f9;
+    border: 0;
+    border-radius: 0.75rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     padding: 2rem;
 
-    @include mobile {
-        padding: 1.35rem;
+    @media (max-width: 767px) {
+        padding: 1.5rem;
+    }
+
+    .bader-form__title {
+        font-size: 1.25rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .bader-form__subtitle {
+        margin-bottom: 1.5rem;
     }
 
     .bader-form__group {
-        margin-bottom: 0.95rem;
+        margin-bottom: 1.25rem;
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrapper {
+
+            i {
+                left: 0.75rem;
+                color: #9ca3af;
+            }
+
+            input,
+            select {
+                min-height: 2.25rem;
+                border-radius: 0.375rem;
+                border-color: #d1d5db;
+                font-size: 0.875rem;
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+
+                &:focus {
+                    border-color: $bader-green;
+                    box-shadow: 0 0 0 2px rgba($bader-green, 0.2);
+                }
+            }
+
+            textarea {
+                min-height: 80px;
+                border-radius: 0.375rem;
+                border-color: #d1d5db;
+                font-size: 0.875rem;
+                line-height: 1.5;
+
+                &:focus {
+                    border-color: $bader-green;
+                    box-shadow: 0 0 0 2px rgba($bader-green, 0.2);
+                }
+            }
+        }
     }
 
     .bader-form__submit {
-        margin-top: 0.6rem;
-        font-weight: 700;
-        border-radius: 0.72rem;
+        width: 100%;
+        min-height: 2.5rem;
+        margin-top: 0.25rem;
+        border-radius: 0.375rem;
+        font-size: 1rem;
+        font-weight: 600;
     }
 }
 
@@ -527,14 +671,18 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 1.3rem;
+    gap: 1.5rem;
 
     h2 {
-        margin: 0 0 0.45rem;
+        margin: 0 0 0.5rem;
         color: #fff;
         font-family: $font-display;
-        font-size: 2rem;
-        font-weight: 800;
+        font-size: 1.5rem;
+        font-weight: 700;
+
+        @media (min-width: 1024px) {
+            font-size: 1.875rem;
+        }
     }
 
     p {
@@ -545,16 +693,23 @@
     .bader-dist-cta__actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.8rem;
+        gap: 1rem;
+    }
+
+    .btn-bader,
+    .btn-bader-outline {
+        min-height: 2.5rem;
+        border-radius: 0.375rem;
+        font-weight: 600;
     }
 
     .btn-bader-outline {
-        border-color: rgba(255, 255, 255, 0.4);
+        border-color: rgba(255, 255, 255, 0.5);
         color: #fff;
 
         &:hover {
+            border-color: rgba(255, 255, 255, 0.8);
             background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.55);
             color: #fff;
         }
     }
@@ -565,48 +720,48 @@
 }
 
 .bader-dist-thankyou {
-    padding: 4.5rem 0;
+    padding: 4.7rem 0;
 
     .bader-dist-thankyou__card {
         max-width: 40rem;
         margin: 0 auto;
-        text-align: center;
         background: #fff;
         border-radius: 1.25rem;
         box-shadow: 0 20px 44px rgba(15, 23, 42, 0.12);
+        text-align: center;
         padding: 2.6rem 2rem;
     }
 
     .bader-dist-thankyou__icon {
-        width: 4.3rem;
-        height: 4.3rem;
-        margin: 0 auto 1.1rem;
+        width: 4.2rem;
+        height: 4.2rem;
+        margin: 0 auto 1rem;
         border-radius: 999px;
+        background: rgba($bader-green, 0.16);
+        color: $bader-green;
+        font-size: 1.95rem;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: rgba($bader-green, 0.16);
-        color: $bader-green;
-        font-size: 2rem;
     }
 
     h1 {
         margin: 0 0 0.8rem;
-        color: $bader-dark;
         font-family: $font-display;
+        color: #003841;
         font-size: 2rem;
         font-weight: 800;
     }
 
     p {
         margin: 0 auto;
-        max-width: 30rem;
+        max-width: 31rem;
         color: #475569;
         line-height: 1.7;
     }
 
     .bader-dist-thankyou__actions {
-        margin-top: 1.4rem;
+        margin-top: 1.45rem;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
@@ -614,45 +769,53 @@
     }
 }
 
-@media (max-width: #{$bp-desktop - 1}) {
+@media (max-width: 1023px) {
 
     .bader-dist-float--left {
         display: none;
     }
 }
 
-@include mobile {
+@media (max-width: 767px) {
+
+    .bader-dist-hero__title {
+        font-size: 2rem;
+    }
+
+    .bader-dist-hero__lead {
+        font-size: 1.05rem;
+    }
 
     .bader-dist-float {
         min-width: auto;
-        padding: 0.55rem 0.65rem;
         gap: 0.45rem;
+        padding: 0.55rem 0.62rem;
     }
 
     .bader-dist-float--top {
-        top: 0.5rem;
-        right: 0.5rem;
+        top: 0.55rem;
+        right: 0.55rem;
     }
 
     .bader-dist-float--bottom {
-        right: 0.5rem;
-        bottom: 0.6rem;
+        right: 0.55rem;
+        bottom: 0.7rem;
     }
 
     .bader-dist-float__dots span {
         width: 1rem;
         height: 1rem;
-        font-size: 0.58rem;
+        font-size: 0.55rem;
     }
 
     .bader-dist-brand {
-        left: 0.5rem;
-        bottom: 0.5rem;
-        padding: 0.55rem 0.65rem;
+        left: 0.55rem;
+        bottom: 0.55rem;
+        padding: 0.6rem 0.7rem;
     }
 
     .bader-dist-heading h2 {
-        font-size: 1.65rem;
+        font-size: 1.7rem;
     }
 
     .bader-dist-form-copy h2 {
@@ -660,6 +823,6 @@
     }
 
     .bader-dist-cta h2 {
-        font-size: 1.5rem;
+        font-size: 1.55rem;
     }
 }

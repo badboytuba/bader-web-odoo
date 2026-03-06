@@ -13,29 +13,54 @@
                 <meta property="og:url" t-att-content="request.httprequest.url"/>
                 <link rel="canonical" t-att-href="request.httprequest.url"/>
                 <meta name="twitter:card" content="summary_large_image"/>
+                <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Ser Distribuidor Bader",
+  "url": "<t t-esc="request.httprequest.url"/>",
+  "description": "Convertite en distribuidor oficial Bader. Margenes atractivos, linea completa de productos, soporte tecnico y marketing."
+}
+                </script>
+                <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Bader Argentina",
+  "url": "<t t-esc="(request.httprequest.url_root or '').rstrip('/')"/>",
+  "contactPoint": [{
+    "@type": "ContactPoint",
+    "contactType": "sales",
+    "telephone": "+54-11-2452-2097",
+    "areaServed": "AR"
+  }]
+}
+                </script>
             </t>
 
             <div id="wrap" class="oe_structure oe_empty bader-dist-page">
-
                 <section class="bader-dist-hero bader-animate">
                     <div class="bader-dist-hero__glow bader-dist-hero__glow--a"/>
                     <div class="bader-dist-hero__glow bader-dist-hero__glow--b"/>
+                    <div class="bader-dist-hero__glow bader-dist-hero__glow--c"/>
                     <div class="bader-page-section__container bader-dist-hero__container">
                         <div class="bader-dist-hero__grid">
                             <div class="bader-dist-hero__content">
                                 <span class="bader-dist-badge">
                                     <i class="fa fa-handshake-o"/> Programa de Distribuidores
                                 </span>
+
                                 <h1 class="bader-dist-hero__title">
-                                    Potencia tu negocio con <span class="text-green">Bader</span>
+                                    Potenci&#225; tu negocio con <span class="text-green">Bader</span>
                                 </h1>
+
                                 <p class="bader-dist-hero__lead">
-                                    Somos entusiastas y nos mueve lo que hacemos, por eso cada dia obtenemos mejores resultados.
+                                    Somos entusiastas y nos mueve lo que hacemos, por eso cada d&#237;a obtenemos mejores resultados.
                                 </p>
                                 <p class="bader-dist-hero__text">
-                                    Queres ser distribuidor de material dental y aumentar tus rendimientos?
-                                    Gracias a nuestro crecimiento, ofrecemos condiciones comerciales competitivas,
-                                    con apoyo comercial y logistico en todo el pais.
+                                    &#191;Quer&#233;s ser distribuidor de material dental y aumentar tus rendimientos?
+                                    Gracias a nuestro crecimiento exponencial, podemos ofrecer buenas condiciones
+                                    comerciales y damos apoyo comercial y log&#237;stico.
                                 </p>
 
                                 <div class="bader-dist-metrics">
@@ -70,54 +95,55 @@
                             </div>
 
                             <div class="bader-dist-hero__media">
+                                <div class="bader-dist-media-card__glow"/>
                                 <div class="bader-dist-media-card">
-                                    <img src="https://bader.com.ar/web/image/8239-8239b47d/woman-handshaking-outdoors-modern-glass-business-building-close-up-picture%20%281%29.jpg"
-                                         alt="Distribuidor Bader" loading="lazy"/>
+                                    <img src="/bader_website/static/src/img/hero/ser-distribuidor-hero.jpg"
+                                         alt="Distribuidor Bader"
+                                         width="1200" height="800"
+                                         loading="lazy" decoding="async"/>
+                                </div>
 
-                                    <div class="bader-dist-float bader-dist-float--top">
-                                        <div class="bader-dist-float__dots">
-                                            <span>1</span>
-                                            <span>2</span>
-                                            <span>3</span>
-                                        </div>
-                                        <div class="bader-dist-float__meta">
-                                            <strong>+10,000</strong>
-                                            <small>Clientes felices</small>
-                                        </div>
+                                <div class="bader-dist-float bader-dist-float--top">
+                                    <div class="bader-dist-float__dots">
+                                        <span>1</span>
+                                        <span>2</span>
+                                        <span>3</span>
                                     </div>
-
-                                    <div class="bader-dist-float bader-dist-float--left">
-                                        <div class="bader-dist-float__dots">
-                                            <span>1</span>
-                                            <span>2</span>
-                                            <span>3</span>
-                                        </div>
-                                        <div class="bader-dist-float__meta">
-                                            <strong>+1,300</strong>
-                                            <small>Productos</small>
-                                        </div>
+                                    <div class="bader-dist-float__meta">
+                                        <strong>+10,000</strong>
+                                        <small>Clientes felices</small>
                                     </div>
+                                </div>
 
-                                    <div class="bader-dist-float bader-dist-float--bottom">
-                                        <div class="bader-dist-float__dots">
-                                            <span>4</span>
-                                            <span>.</span>
-                                            <span>7</span>
-                                        </div>
-                                        <div class="bader-dist-float__meta">
-                                            <strong><i class="fa fa-star"/> 4.7</strong>
-                                            <small>Google Reviews</small>
-                                        </div>
+                                <div class="bader-dist-float bader-dist-float--left">
+                                    <div class="bader-dist-float__dots">
+                                        <span>1</span>
+                                        <span>2</span>
+                                        <span>3</span>
                                     </div>
+                                    <div class="bader-dist-float__meta">
+                                        <strong>+1,300</strong>
+                                        <small>Productos</small>
+                                    </div>
+                                </div>
 
-                                    <div class="bader-dist-brand">
-                                        <span class="bader-dist-brand__logo">
-                                            <i class="fa fa-star"/>
-                                        </span>
-                                        <div>
-                                            <strong>BADER</strong>
-                                            <small>Iberoamericana</small>
-                                        </div>
+                                <div class="bader-dist-float bader-dist-float--bottom">
+                                    <div class="bader-dist-float__dots">
+                                        <span>4</span>
+                                        <span>.</span>
+                                        <span>7</span>
+                                    </div>
+                                    <div class="bader-dist-float__meta">
+                                        <strong><i class="fa fa-star"/> 4.7</strong>
+                                        <small>Google Reviews</small>
+                                    </div>
+                                </div>
+
+                                <div class="bader-dist-brand">
+                                    <span class="bader-dist-brand__logo"><i class="fa fa-star"/></span>
+                                    <div>
+                                        <strong>BADER</strong>
+                                        <small>Iberoamericana</small>
                                     </div>
                                 </div>
                             </div>
@@ -129,40 +155,45 @@
                     <div class="bader-page-section__container">
                         <div class="bader-dist-heading">
                             <span class="bader-dist-badge bader-dist-badge--soft">Beneficios Exclusivos</span>
-                            <h2>Por que ser <span class="text-green">distribuidor Bader</span>?</h2>
+                            <h2>&#191;Por qu&#233; ser <span class="text-green">distribuidor Bader</span>?</h2>
                             <p>Ofrecemos las mejores condiciones comerciales y apoyo integral para que tu negocio crezca.</p>
                         </div>
 
                         <div class="bader-dist-benefits-grid">
                             <article class="bader-dist-benefit-card bader-animate">
                                 <div class="bader-dist-benefit-card__icon"><i class="fa fa-wrench"/></div>
-                                <h3>Tecnicos</h3>
-                                <p>Servicio tecnico especializado para todos nuestros productos.</p>
+                                <h3>T&#233;cnicos</h3>
+                                <p>Contamos con un servicio t&#233;cnico eficaz especializado en nuestros productos.</p>
                             </article>
+
                             <article class="bader-dist-benefit-card bader-animate">
                                 <div class="bader-dist-benefit-card__icon"><i class="fa fa-cube"/></div>
                                 <h3>100% Stock</h3>
-                                <p>Alta disponibilidad para evitar roturas de stock en tu negocio.</p>
+                                <p>Olvidate de las roturas de stock. El 98% de nuestro cat&#225;logo est&#225; disponible.</p>
                             </article>
+
                             <article class="bader-dist-benefit-card bader-animate">
                                 <div class="bader-dist-benefit-card__icon"><i class="fa fa-truck"/></div>
-                                <h3>Envios 24h</h3>
-                                <p>Despachos agiles para que tus clientes reciban sus pedidos rapido.</p>
+                                <h3>Env&#237;os 24h</h3>
+                                <p>Pedilo hoy y recibilo ma&#241;ana. No hacemos esperar a tus clientes.</p>
                             </article>
+
                             <article class="bader-dist-benefit-card bader-animate">
                                 <div class="bader-dist-benefit-card__icon"><i class="fa fa-headphones"/></div>
                                 <h3>Postventa</h3>
-                                <p>Acompanamiento y soluciones antes y despues de cada venta.</p>
+                                <p>Asesoramiento y soluciones. Nos importas antes y despu&#233;s de la venta.</p>
                             </article>
+
                             <article class="bader-dist-benefit-card bader-animate">
                                 <div class="bader-dist-benefit-card__icon"><i class="fa fa-bullhorn"/></div>
                                 <h3>Marketing</h3>
-                                <p>Material grafico, fotos, videos y recursos comerciales listos para usar.</p>
+                                <p>Te apoyamos con material gr&#225;fico, videos, fotos, folletos, herramientas de IA, etc.</p>
                             </article>
+
                             <article class="bader-dist-benefit-card bader-animate">
                                 <div class="bader-dist-benefit-card__icon"><i class="fa fa-shield"/></div>
-                                <h3>Garantia</h3>
-                                <p>Todos los productos cuentan con garantia oficial de fabricante.</p>
+                                <h3>Garant&#237;a</h3>
+                                <p>Todos nuestros productos tienen garant&#237;a de fabricante.</p>
                             </article>
                         </div>
                     </div>
@@ -171,18 +202,36 @@
                 <section class="bader-dist-section bader-dist-section--accent bader-animate">
                     <div class="bader-page-section__container">
                         <div class="bader-dist-heading bader-dist-heading--light">
-                            <span class="bader-dist-badge">Nuestro Catalogo</span>
-                            <h2>Nuestras lineas de <span class="text-green">productos</span></h2>
-                            <p>Variedad de material odontologico para todos los segmentos y necesidades.</p>
+                            <span class="bader-dist-badge">Nuestro Cat&#225;logo</span>
+                            <h2>Nuestras l&#237;neas de <span class="text-green">productos</span></h2>
+                            <p>Tenemos una gran variedad de material odontol&#243;gico para todos los sectores.</p>
                         </div>
 
                         <div class="bader-dist-lines-grid">
-                            <div class="bader-dist-line-card"><span><i class="fa fa-graduation-cap"/></span><h3>Formacion</h3></div>
-                            <div class="bader-dist-line-card"><span><i class="fa fa-wrench"/></span><h3>Instrumental</h3></div>
-                            <div class="bader-dist-line-card"><span><i class="fa fa-cube"/></span><h3>Mobiliario</h3></div>
-                            <div class="bader-dist-line-card"><span><i class="fa fa-flask"/></span><h3>Laboratorio</h3></div>
-                            <div class="bader-dist-line-card"><span><i class="fa fa-camera"/></span><h3>Fotografia</h3></div>
-                            <div class="bader-dist-line-card"><span><i class="fa fa-archive"/></span><h3>Accesorios</h3></div>
+                            <div class="bader-dist-line-card bader-dist-line-card--blue">
+                                <span><i class="fa fa-graduation-cap"/></span>
+                                <h3>Formaci&#243;n</h3>
+                            </div>
+                            <div class="bader-dist-line-card bader-dist-line-card--emerald">
+                                <span><i class="fa fa-wrench"/></span>
+                                <h3>Instrumental</h3>
+                            </div>
+                            <div class="bader-dist-line-card bader-dist-line-card--purple">
+                                <span><i class="fa fa-cube"/></span>
+                                <h3>Mobiliario</h3>
+                            </div>
+                            <div class="bader-dist-line-card bader-dist-line-card--orange">
+                                <span><i class="fa fa-flask"/></span>
+                                <h3>Laboratorio</h3>
+                            </div>
+                            <div class="bader-dist-line-card bader-dist-line-card--pink">
+                                <span><i class="fa fa-camera"/></span>
+                                <h3>Fotograf&#237;a</h3>
+                            </div>
+                            <div class="bader-dist-line-card bader-dist-line-card--teal">
+                                <span><i class="fa fa-archive"/></span>
+                                <h3>Accesorios</h3>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -192,29 +241,32 @@
                         <div class="bader-dist-form-layout">
                             <div class="bader-dist-form-copy">
                                 <span class="bader-dist-badge bader-dist-badge--soft">
-                                    <i class="fa fa-building-o"/> Unite al equipo
+                                    <i class="fa fa-building-o"/> &#218;nete al equipo
                                 </span>
-                                <h2>Unite al equipo de <span class="text-green">BADER</span></h2>
+                                <h2>&#218;nete al equipo de <span class="text-green">BADER</span></h2>
                                 <p>
-                                    Una vez cubierto el formulario, uno de nuestros comerciales se pondra en contacto
-                                    contigo para compartir toda la informacion necesaria y empezar a trabajar juntos.
+                                    Una vez cubierto el formulario, alguno de nuestros comerciales se pondr&#225;
+                                    en contacto contigo lo antes posible para darte toda la informaci&#243;n
+                                    necesaria para empezar a trabajar juntos.
                                 </p>
                                 <p class="bader-dist-form-copy__lead">
-                                    Estas a un paso de ser distribuidor de material dental de BADER.
+                                    Est&#225;s a un paso de ser Distribuidor de material dental de BADER.
                                 </p>
+
                                 <ul class="bader-checklist">
                                     <li><i class="fa fa-check-circle"/> Precios exclusivos para mayoristas</li>
                                     <li><i class="fa fa-check-circle"/> Stock garantizado sin roturas</li>
                                     <li><i class="fa fa-check-circle"/> Material de marketing incluido</li>
-                                    <li><i class="fa fa-check-circle"/> Capacitacion y soporte tecnico</li>
-                                    <li><i class="fa fa-check-circle"/> Financiacion flexible</li>
-                                    <li><i class="fa fa-check-circle"/> Envios prioritarios a todo el pais</li>
+                                    <li><i class="fa fa-check-circle"/> Capacitaci&#243;n y soporte t&#233;cnico</li>
+                                    <li><i class="fa fa-check-circle"/> Financiaci&#243;n flexible</li>
+                                    <li><i class="fa fa-check-circle"/> Env&#237;os prioritarios a todo el pa&#237;s</li>
                                 </ul>
                             </div>
 
                             <div class="bader-form bader-dist-form-card">
                                 <h3 class="bader-form__title">Formulario de Contacto</h3>
                                 <p class="bader-form__subtitle">Completa tus datos y te contactaremos</p>
+
                                 <form action="/bader/distribuidor-form" method="POST">
                                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                     <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
@@ -230,7 +282,7 @@
                                     </div>
 
                                     <div class="bader-form__group">
-                                        <label>Correo electronico *</label>
+                                        <label>Correo electr&#243;nico *</label>
                                         <div class="input-wrapper">
                                             <i class="fa fa-envelope"/>
                                             <input type="email" name="email" placeholder="tu@email.com" required="required"/>
@@ -246,7 +298,7 @@
                                     </div>
 
                                     <div class="bader-form__group">
-                                        <label>Telefono *</label>
+                                        <label>Tel&#233;fono *</label>
                                         <div class="input-wrapper">
                                             <i class="fa fa-phone"/>
                                             <input type="tel" name="phone" placeholder="+54 11 1234-5678" required="required"/>
@@ -268,21 +320,21 @@
                                                 <select name="province">
                                                     <option value="">Seleccionar</option>
                                                     <option value="Buenos Aires">Buenos Aires</option>
-                                                    <option value="Ciudad Autonoma de Buenos Aires">Ciudad Autonoma de Buenos Aires</option>
+                                                    <option value="Ciudad Autonoma de Buenos Aires">Ciudad Aut&#243;noma de Buenos Aires</option>
                                                     <option value="Catamarca">Catamarca</option>
                                                     <option value="Chaco">Chaco</option>
                                                     <option value="Chubut">Chubut</option>
-                                                    <option value="Cordoba">Cordoba</option>
+                                                    <option value="Cordoba">C&#243;rdoba</option>
                                                     <option value="Corrientes">Corrientes</option>
-                                                    <option value="Entre Rios">Entre Rios</option>
+                                                    <option value="Entre Rios">Entre R&#237;os</option>
                                                     <option value="Formosa">Formosa</option>
                                                     <option value="Jujuy">Jujuy</option>
                                                     <option value="La Pampa">La Pampa</option>
                                                     <option value="La Rioja">La Rioja</option>
                                                     <option value="Mendoza">Mendoza</option>
                                                     <option value="Misiones">Misiones</option>
-                                                    <option value="Neuquen">Neuquen</option>
-                                                    <option value="Rio Negro">Rio Negro</option>
+                                                    <option value="Neuquen">Neuqu&#233;n</option>
+                                                    <option value="Rio Negro">R&#237;o Negro</option>
                                                     <option value="Salta">Salta</option>
                                                     <option value="San Juan">San Juan</option>
                                                     <option value="San Luis">San Luis</option>
@@ -290,7 +342,7 @@
                                                     <option value="Santa Fe">Santa Fe</option>
                                                     <option value="Santiago del Estero">Santiago del Estero</option>
                                                     <option value="Tierra del Fuego">Tierra del Fuego</option>
-                                                    <option value="Tucuman">Tucuman</option>
+                                                    <option value="Tucuman">Tucum&#225;n</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -317,8 +369,8 @@
                     <div class="bader-page-section__container">
                         <div class="bader-dist-cta">
                             <div>
-                                <h2>Tenes dudas?</h2>
-                                <p>Contacta con nuestro equipo comercial para mas informacion.</p>
+                                <h2>&#191;Ten&#233;s dudas?</h2>
+                                <p>Contacta con nuestro equipo comercial para m&#225;s informaci&#243;n.</p>
                             </div>
                             <div class="bader-dist-cta__actions">
                                 <a href="https://wa.me/5491124522097" target="_blank" class="btn-bader">
@@ -342,14 +394,14 @@
                     <div class="bader-page-section__container">
                         <div class="bader-dist-thankyou__card">
                             <span class="bader-dist-thankyou__icon"><i class="fa fa-check-circle"/></span>
-                            <h1>Solicitud enviada</h1>
+                            <h1>&#161;Solicitud enviada!</h1>
                             <p>
-                                Gracias por tu interes en ser distribuidor Bader.
-                                Nuestro equipo comercial se pondra en contacto contigo muy pronto.
+                                Gracias por tu inter&#233;s en ser distribuidor Bader.
+                                Nuestro equipo comercial se pondr&#225; en contacto contigo muy pronto.
                             </p>
                             <div class="bader-dist-thankyou__actions">
                                 <a href="/ser-distribuidor" class="btn-bader-outline">Enviar otra solicitud</a>
-                                <a href="/productos" class="btn-bader">Ver catalogo</a>
+                                <a href="/productos" class="btn-bader">Ver cat&#225;logo</a>
                             </div>
                         </div>
                     </div>
