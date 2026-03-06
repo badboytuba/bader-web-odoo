@@ -2317,3 +2317,1425 @@
         grid-template-columns: 1fr;
     }
 }
+
+// ============================================================
+// V6 Product Detail Rebuild - Bader-AR inspired architecture
+// ============================================================
+#product_detail.bader-product-detail,
+.oe_website_sale #product_detail.bader-product-detail {
+    --bader-pdp-primary: #70d44b;
+    --bader-pdp-deep: #003841;
+    --bader-pdp-deep-soft: #0d525d;
+    --bader-pdp-text: #152430;
+    --bader-pdp-muted: #5e707b;
+    --bader-pdp-border: rgba(0, 56, 65, 0.12);
+    --bader-pdp-border-strong: rgba(0, 56, 65, 0.18);
+    --bader-pdp-surface: rgba(255, 255, 255, 0.96);
+    --bader-pdp-shadow: 0 28px 54px rgba(0, 56, 65, 0.12);
+    --bader-pdp-shadow-soft: 0 16px 30px rgba(0, 56, 65, 0.08);
+    background:
+        radial-gradient(circle at top left, rgba(112, 212, 75, 0.12), transparent 22%),
+        radial-gradient(circle at top right, rgba(0, 56, 65, 0.08), transparent 18%),
+        linear-gradient(180deg, #f5faf7 0%, #ffffff 24%, #f8fbfa 100%);
+    color: var(--bader-pdp-text);
+    display: grid;
+    grid-template-columns: minmax(0, 1.03fr) minmax(0, 0.97fr);
+    column-gap: clamp(28px, 5vw, 72px);
+    padding: clamp(22px, 3vw, 44px) 0 88px;
+
+    > * {
+        grid-column: 1 / -1;
+    }
+
+    > #bader_app_gallery_support {
+        grid-column: 1 / 2;
+        margin-top: 18px;
+    }
+
+    #product_detail_main {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1.03fr) minmax(0, 0.97fr);
+        gap: clamp(28px, 5vw, 72px);
+        align-items: start;
+        margin: 0;
+    }
+
+    #product_detail_main::before,
+    #product_detail_main::after {
+        display: none;
+    }
+
+    #product_detail_main > [class*='col-'] {
+        width: auto;
+        max-width: none;
+        min-width: 0;
+        padding: 0;
+        margin: 0 !important;
+        float: none;
+    }
+
+    .oe_website_sale.tx-editor,
+    span[itemprop='url'],
+    span[itemprop='image'],
+    #product_details > h1.d-none {
+        display: none !important;
+    }
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-column,
+#product_detail.bader-product-detail .bader-app-info-column {
+    min-width: 0;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-column {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+#product_detail.bader-product-detail .o_wsale_product_images {
+    position: relative;
+}
+
+#product_detail.bader-product-detail #o-carousel-product {
+    display: grid !important;
+    gap: 16px;
+    top: auto !important;
+    position: relative !important;
+    margin: 0;
+}
+
+#product_detail.bader-product-detail #o-carousel-product .o_carousel_product_indicators {
+    order: 2;
+    width: 100%;
+}
+
+#product_detail.bader-product-detail #o-carousel-product .o_carousel_product_outer {
+    order: 1;
+    position: relative;
+    overflow: hidden;
+    border-radius: 34px;
+    border: 1px solid var(--bader-pdp-border);
+    background:
+        radial-gradient(circle at top right, rgba(112, 212, 75, 0.18), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(0, 56, 65, 0.08), transparent 22%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 250, 248, 0.96));
+    box-shadow: var(--bader-pdp-shadow);
+}
+
+#product_detail.bader-product-detail #o-carousel-product .o_carousel_product_outer::before,
+#product_detail.bader-product-detail #o-carousel-product .o_carousel_product_outer::after {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    border-radius: 999px;
+    pointer-events: none;
+}
+
+#product_detail.bader-product-detail #o-carousel-product .o_carousel_product_outer::before {
+    width: 220px;
+    height: 220px;
+    top: -96px;
+    right: -84px;
+    background: rgba(112, 212, 75, 0.18);
+}
+
+#product_detail.bader-product-detail #o-carousel-product .o_carousel_product_outer::after {
+    width: 180px;
+    height: 180px;
+    left: -78px;
+    bottom: -76px;
+    background: rgba(0, 56, 65, 0.07);
+}
+
+#product_detail.bader-product-detail #o-carousel-product .carousel-inner {
+    position: relative;
+    z-index: 1;
+    min-height: clamp(420px, 46vw, 680px);
+    aspect-ratio: 1;
+}
+
+#product_detail.bader-product-detail #o-carousel-product .carousel-item,
+#product_detail.bader-product-detail #o-carousel-product .carousel-item > div,
+#product_detail.bader-product-detail #o-carousel-product .carousel-inner > .active {
+    min-height: inherit;
+    height: 100%;
+}
+
+#product_detail.bader-product-detail #o-carousel-product .carousel-item img,
+#product_detail.bader-product-detail #o-carousel-product .carousel-inner img[itemprop='image'] {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: clamp(30px, 5vw, 54px);
+    transition: transform 0.35s ease;
+    position: relative;
+    z-index: 1;
+}
+
+#product_detail.bader-product-detail #o-carousel-product .carousel-inner:hover img[itemprop='image'],
+#product_detail.bader-product-detail #o-carousel-product .carousel-item:hover img {
+    transform: scale(1.04);
+}
+
+#product_detail.bader-product-detail #o-carousel-product .carousel-control-prev,
+#product_detail.bader-product-detail #o-carousel-product .carousel-control-next {
+    width: 56px;
+    height: 56px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0 18px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(0, 56, 65, 0.08);
+    box-shadow: 0 12px 22px rgba(0, 56, 65, 0.12);
+    opacity: 1;
+}
+
+#product_detail.bader-product-detail #o-carousel-product .o_not_editable {
+    display: none !important;
+}
+
+#product_detail.bader-product-detail #o-carousel-product .carousel-indicators {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0;
+    margin: 0;
+    position: static;
+}
+
+#product_detail.bader-product-detail #o-carousel-product .carousel-indicators::-webkit-scrollbar {
+    height: 0;
+}
+
+#product_detail.bader-product-detail #o-carousel-product .carousel-indicators li,
+#product_detail.bader-product-detail #o-carousel-product .carousel-indicators button {
+    width: 90px !important;
+    height: 90px !important;
+    flex: 0 0 auto;
+    margin: 0 !important;
+    border-radius: 22px;
+    border: 1px solid var(--bader-pdp-border);
+    background: #ffffff;
+    box-shadow: var(--bader-pdp-shadow-soft);
+    overflow: hidden;
+    opacity: 1;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#product_detail.bader-product-detail #o-carousel-product .carousel-indicators li.active,
+#product_detail.bader-product-detail #o-carousel-product .carousel-indicators button.active,
+#product_detail.bader-product-detail #o-carousel-product .carousel-indicators li[aria-current='true'],
+#product_detail.bader-product-detail #o-carousel-product .carousel-indicators button[aria-current='true'] {
+    border-color: rgba(112, 212, 75, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 18px 28px rgba(0, 56, 65, 0.14);
+}
+
+#product_detail.bader-product-detail #o-carousel-product .carousel-indicators img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 10px;
+}
+
+#product_detail.bader-product-detail .product-detail-attributes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0;
+}
+
+#product_detail.bader-product-detail .product-detail-attributes:empty {
+    display: none;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-support {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-support__card {
+    min-height: 164px;
+    padding: 18px;
+    border-radius: 24px;
+    border: 1px solid var(--bader-pdp-border);
+    background: var(--bader-pdp-surface);
+    box-shadow: var(--bader-pdp-shadow-soft);
+    display: flex;
+    gap: 14px;
+
+    strong {
+        display: block;
+        margin: 0 0 8px;
+        font-family: 'Bader Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 18px;
+        line-height: 1.05;
+        color: var(--bader-pdp-text);
+    }
+
+    p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.65;
+        color: var(--bader-pdp-muted);
+    }
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-support__icon {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: linear-gradient(145deg, rgba(112, 212, 75, 0.18), rgba(112, 212, 75, 0.3));
+    color: var(--bader-pdp-deep);
+    font-size: 20px;
+}
+
+#product_detail.bader-product-detail #product_details {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    position: static;
+    top: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+#product_detail.bader-product-detail .bader-app-meta-row,
+#product_detail.bader-product-detail .bader-app-sku-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+#product_detail.bader-product-detail .bader-app-category-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+#product_detail.bader-product-detail .bader-app-pill,
+#product_detail.bader-product-detail .bader-app-experience-pill,
+#product_detail.bader-product-detail .bader-app-sku {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 34px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 56, 65, 0.08);
+    background: rgba(255, 255, 255, 0.88);
+    color: var(--bader-pdp-text);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+#product_detail.bader-product-detail .bader-app-experience-pill {
+    background: rgba(112, 212, 75, 0.16);
+    color: var(--bader-pdp-deep);
+}
+
+#product_detail.bader-product-detail .bader-app-sku {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+#product_detail.bader-product-detail .bader-app-rating-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: linear-gradient(145deg, rgba(255, 243, 199, 0.88), rgba(255, 247, 223, 0.96));
+    color: #8b5e12;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+#product_detail.bader-product-detail .bader-app-rating-stars {
+    display: inline-flex;
+    gap: 3px;
+    color: #f5a623;
+}
+
+#product_detail.bader-product-detail #product_details > h1[itemprop='name'] {
+    margin: 0;
+    font-family: 'Bader Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: clamp(34px, 3.8vw, 54px);
+    line-height: 0.94;
+    letter-spacing: -0.05em;
+    color: var(--bader-pdp-text);
+}
+
+#product_detail.bader-product-detail .bader-app-summary {
+    margin: 0;
+    max-width: 58ch;
+    font-size: 18px;
+    line-height: 1.75;
+    color: var(--bader-pdp-muted);
+}
+
+#product_detail.bader-product-detail .bader-app-fit-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+#product_detail.bader-product-detail .bader-app-fit-card {
+    min-height: 118px;
+    padding: 18px;
+    border-radius: 22px;
+    border: 1px solid var(--bader-pdp-border);
+    background: var(--bader-pdp-surface);
+    box-shadow: var(--bader-pdp-shadow-soft);
+
+    strong {
+        display: block;
+        margin-bottom: 8px;
+        font-family: 'Bader Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 18px;
+        line-height: 1.02;
+    }
+
+    span {
+        display: block;
+        font-size: 14px;
+        line-height: 1.65;
+        color: var(--bader-pdp-muted);
+    }
+}
+
+#product_detail.bader-product-detail #product_details form {
+    margin: 0;
+}
+
+#product_detail.bader-product-detail #product_details .js_product {
+    display: grid;
+    gap: 16px;
+}
+
+#product_detail.bader-product-detail #product_details .js_product > div:first-child {
+    display: grid;
+    gap: 14px;
+    padding: 26px;
+    border-radius: 30px;
+    border: 1px solid var(--bader-pdp-border);
+    background: linear-gradient(180deg, rgba(246, 250, 248, 0.98), rgba(255, 255, 255, 0.98));
+    box-shadow: var(--bader-pdp-shadow-soft);
+}
+
+#product_detail.bader-product-detail #product_details .product_price {
+    display: block !important;
+    margin: 0 !important;
+}
+
+#product_detail.bader-product-detail #product_details .product_price h3 {
+    margin: 0;
+}
+
+#product_detail.bader-product-detail #product_details .product_price .css_non_editable_mode_hidden {
+    display: none !important;
+}
+
+#product_detail.bader-product-detail #product_details .product_price .oe_price {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 4px;
+    font-family: 'Bader Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: clamp(40px, 4vw, 58px) !important;
+    line-height: 0.95;
+    letter-spacing: -0.05em;
+    color: var(--bader-pdp-deep) !important;
+}
+
+#product_detail.bader-product-detail #product_details .product_price .oe_currency_value {
+    font-size: inherit !important;
+    line-height: inherit;
+    color: inherit !important;
+}
+
+#product_detail.bader-product-detail #product_details .product_price .oe_default_price {
+    display: inline-flex !important;
+    align-items: center;
+    margin-left: 10px !important;
+    color: #9aa9b2 !important;
+    font-size: 22px !important;
+    text-decoration-thickness: 2px;
+}
+
+#product_detail.bader-product-detail .bader-app-price-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#product_detail.bader-product-detail .bader-app-discount-pill,
+#product_detail.bader-product-detail .bader-price-note,
+#product_detail.bader-product-detail .bader-price-installment-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 34px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+#product_detail.bader-product-detail .bader-app-discount-pill {
+    background: linear-gradient(145deg, rgba(255, 95, 95, 0.12), rgba(255, 133, 133, 0.16));
+    color: #c0392b;
+}
+
+#product_detail.bader-product-detail .bader-price-note {
+    background: rgba(0, 56, 65, 0.06);
+    color: var(--bader-pdp-muted);
+}
+
+#product_detail.bader-product-detail .bader-price-installment-note {
+    background: rgba(112, 212, 75, 0.16);
+    color: var(--bader-pdp-deep);
+}
+
+#product_detail.bader-product-detail .bader-app-stock-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    width: fit-content;
+    min-height: 44px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+#product_detail.bader-product-detail .bader-app-stock-pill.is-in {
+    background: rgba(34, 197, 94, 0.12);
+    color: #14803d;
+}
+
+#product_detail.bader-product-detail .bader-app-stock-pill.is-out {
+    background: rgba(239, 68, 68, 0.12);
+    color: #c0392b;
+}
+
+#product_detail.bader-product-detail .bader-app-stock-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: currentColor;
+}
+
+#product_detail.bader-product-detail .bader-app-highlight-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+#product_detail.bader-product-detail .bader-app-highlight-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 10px 12px;
+    border-radius: 18px;
+    border: 1px solid rgba(0, 56, 65, 0.08);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--bader-pdp-text);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+
+    i {
+        color: var(--bader-pdp-deep);
+    }
+}
+
+#product_detail.bader-product-detail #o_wsale_cta_wrapper {
+    display: flex !important;
+    align-items: stretch !important;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin: 0 !important;
+}
+
+#product_detail.bader-product-detail #o_wsale_cta_wrapper .css_quantity {
+    flex: 0 0 162px;
+    min-width: 162px;
+    display: inline-flex !important;
+    align-items: center;
+    padding: 6px;
+    border-radius: 20px;
+    border: 1px solid var(--bader-pdp-border);
+    background: rgba(244, 248, 246, 0.98);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+#product_detail.bader-product-detail #o_wsale_cta_wrapper .css_quantity .input-group-prepend,
+#product_detail.bader-product-detail #o_wsale_cta_wrapper .css_quantity .input-group-append {
+    display: contents;
+}
+
+#product_detail.bader-product-detail #o_wsale_cta_wrapper .css_quantity a,
+#product_detail.bader-product-detail #o_wsale_cta_wrapper .css_quantity button {
+    width: 46px;
+    height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 14px !important;
+    background: #ffffff;
+    color: var(--bader-pdp-deep);
+    box-shadow: 0 8px 16px rgba(0, 56, 65, 0.08);
+}
+
+#product_detail.bader-product-detail #o_wsale_cta_wrapper .css_quantity input {
+    min-width: 56px;
+    border: 0;
+    background: transparent;
+    box-shadow: none !important;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--bader-pdp-text);
+}
+
+#product_detail.bader-product-detail #add_to_cart_wrap {
+    flex: 1 1 280px;
+    margin: 0 !important;
+}
+
+#product_detail.bader-product-detail #add_to_cart,
+#product_detail.bader-product-detail .a-submit {
+    width: 100%;
+    min-height: 58px;
+    border: 0;
+    border-radius: 20px;
+    background: linear-gradient(145deg, var(--bader-pdp-deep), var(--bader-pdp-deep-soft));
+    box-shadow: 0 20px 34px rgba(0, 56, 65, 0.18);
+    color: #ffffff !important;
+    font-size: 18px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+#product_detail.bader-product-detail #add_to_cart:hover,
+#product_detail.bader-product-detail .a-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 24px 38px rgba(0, 56, 65, 0.22);
+}
+
+#product_detail.bader-product-detail #add_to_cart.bader-added,
+#product_detail.bader-product-detail .a-submit.bader-added {
+    background: linear-gradient(145deg, #22c55e, #16a34a);
+}
+
+#product_detail.bader-product-detail #product_option_block {
+    display: none !important;
+}
+
+#product_detail.bader-product-detail .bader-app-secondary-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 12px;
+}
+
+#product_detail.bader-product-detail .bader-app-buy-now,
+#product_detail.bader-product-detail .bader-app-icon-button {
+    min-height: 54px;
+    border: 1px solid var(--bader-pdp-border);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.94);
+    color: var(--bader-pdp-deep);
+    font-size: 16px;
+    font-weight: 700;
+    box-shadow: var(--bader-pdp-shadow-soft);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+#product_detail.bader-product-detail .bader-app-buy-now {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(145deg, rgba(112, 212, 75, 0.96), rgba(132, 218, 79, 0.92));
+    color: var(--bader-pdp-deep);
+    border-color: rgba(112, 212, 75, 0.5);
+}
+
+#product_detail.bader-product-detail .bader-app-buy-now.is-loading {
+    opacity: 0.8;
+}
+
+#product_detail.bader-product-detail .bader-app-icon-button {
+    width: 54px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+}
+
+#product_detail.bader-product-detail .bader-app-buy-now:hover,
+#product_detail.bader-product-detail .bader-app-icon-button:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0, 56, 65, 0.22);
+    box-shadow: 0 18px 30px rgba(0, 56, 65, 0.14);
+}
+
+#product_detail.bader-product-detail .bader-app-icon-button.is-active {
+    background: rgba(112, 212, 75, 0.14);
+    border-color: rgba(112, 212, 75, 0.4);
+}
+
+#product_detail.bader-product-detail .bader-app-trust-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+#product_detail.bader-product-detail .bader-app-trust-card {
+    display: flex;
+    gap: 14px;
+    min-height: 118px;
+    padding: 18px;
+    border-radius: 22px;
+    border: 1px solid var(--bader-pdp-border);
+    background: var(--bader-pdp-surface);
+    box-shadow: var(--bader-pdp-shadow-soft);
+
+    strong {
+        display: block;
+        margin: 0 0 6px;
+        font-family: 'Bader Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 18px;
+        line-height: 1.04;
+    }
+
+    p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.65;
+        color: var(--bader-pdp-muted);
+    }
+}
+
+#product_detail.bader-product-detail .bader-app-trust-card__icon {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: linear-gradient(145deg, rgba(0, 56, 65, 0.08), rgba(112, 212, 75, 0.16));
+    color: var(--bader-pdp-deep);
+    font-size: 20px;
+}
+
+#product_detail.bader-product-detail #o_product_terms_and_share {
+    margin: 0 !important;
+    padding: 0 4px;
+    color: var(--bader-pdp-muted);
+    font-size: 14px;
+    line-height: 1.7;
+
+    a {
+        color: var(--bader-pdp-deep);
+        font-weight: 700;
+        text-decoration: none;
+    }
+}
+
+#product_detail.bader-product-detail .bader-app-detail-section,
+#product_detail.bader-product-detail .bader-app-faq-shell,
+#product_detail.bader-product-detail .bader-app-related-shell {
+    margin-top: 58px;
+    padding: clamp(24px, 3vw, 38px);
+    border-radius: 34px;
+    border: 1px solid var(--bader-pdp-border);
+    background:
+        radial-gradient(circle at top right, rgba(112, 212, 75, 0.12), transparent 24%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(246, 250, 248, 0.96));
+    box-shadow: var(--bader-pdp-shadow);
+}
+
+#product_detail.bader-product-detail .bader-app-section-heading,
+#product_detail.bader-product-detail .bader-app-related-head {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+#product_detail.bader-product-detail .bader-app-section-heading__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    min-height: 30px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(112, 212, 75, 0.14);
+    color: var(--bader-pdp-deep);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+#product_detail.bader-product-detail .bader-app-section-heading h2,
+#product_detail.bader-product-detail .bader-app-related-head h2,
+#product_detail.bader-product-detail .bader-app-faq-head h2 {
+    margin: 0;
+    max-width: 14ch;
+    font-family: 'Bader Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: clamp(32px, 3.6vw, 50px);
+    line-height: 0.96;
+    letter-spacing: -0.05em;
+    color: var(--bader-pdp-text);
+}
+
+#product_detail.bader-product-detail .bader-app-section-heading p,
+#product_detail.bader-product-detail .bader-app-related-head p,
+#product_detail.bader-product-detail .bader-app-faq-head p {
+    margin: 0;
+    max-width: 64ch;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--bader-pdp-muted);
+}
+
+#product_detail.bader-product-detail .bader-app-tablist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 8px;
+    border: 0;
+    border-radius: 22px;
+    background: rgba(0, 56, 65, 0.06);
+}
+
+#product_detail.bader-product-detail .bader-app-tablist .nav-item {
+    margin: 0;
+}
+
+#product_detail.bader-product-detail .bader-app-tablist .nav-link {
+    min-height: 48px;
+    padding: 12px 20px;
+    border: 0 !important;
+    border-radius: 16px;
+    background: transparent;
+    color: var(--bader-pdp-muted);
+    font-size: 14px;
+    font-weight: 700;
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#product_detail.bader-product-detail .bader-app-tablist .nav-link.active {
+    background: #ffffff;
+    color: var(--bader-pdp-deep);
+    box-shadow: var(--bader-pdp-shadow-soft);
+}
+
+#product_detail.bader-product-detail .bader-app-tab-content {
+    margin-top: 20px;
+}
+
+#product_detail.bader-product-detail .bader-app-detail-card {
+    padding: 28px;
+    border-radius: 28px;
+    border: 1px solid rgba(0, 56, 65, 0.08);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: var(--bader-pdp-shadow-soft);
+}
+
+#product_detail.bader-product-detail .bader-app-detail-card__header {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 20px;
+
+    h3 {
+        margin: 0;
+        font-family: 'Bader Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 30px;
+        line-height: 0.98;
+        letter-spacing: -0.04em;
+    }
+
+    p {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.7;
+        color: var(--bader-pdp-muted);
+    }
+}
+
+#product_detail.bader-product-detail .bader-app-description-body,
+#product_detail.bader-product-detail .bader-app-description-body__fallback {
+    color: var(--bader-pdp-muted);
+    font-size: 15px;
+    line-height: 1.8;
+
+    p,
+    li {
+        color: inherit;
+    }
+
+    p:last-child {
+        margin-bottom: 0;
+    }
+}
+
+#product_detail.bader-product-detail .bader-app-feature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 24px;
+}
+
+#product_detail.bader-product-detail .bader-app-feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 64px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: rgba(245, 249, 247, 0.98);
+    border: 1px solid rgba(0, 56, 65, 0.06);
+    color: var(--bader-pdp-text);
+    font-size: 14px;
+    font-weight: 600;
+
+    i {
+        width: 28px;
+        height: 28px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        background: rgba(112, 212, 75, 0.18);
+        color: var(--bader-pdp-deep);
+    }
+}
+
+#product_detail.bader-product-detail .bader-app-spec-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+#product_detail.bader-product-detail .bader-app-spec-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 76px;
+    padding: 16px 18px;
+    border-radius: 18px;
+    background: rgba(245, 249, 247, 0.98);
+    border: 1px solid rgba(0, 56, 65, 0.06);
+
+    span,
+    strong {
+        display: block;
+    }
+
+    span {
+        color: var(--bader-pdp-muted);
+        font-size: 14px;
+    }
+
+    strong {
+        text-align: right;
+        color: var(--bader-pdp-text);
+        font-size: 15px;
+    }
+}
+
+#product_detail.bader-product-detail .bader-app-info-panels {
+    display: grid;
+    gap: 16px;
+}
+
+#product_detail.bader-product-detail .bader-app-info-panel {
+    display: flex;
+    gap: 16px;
+    padding: 22px;
+    border-radius: 24px;
+    border: 1px solid transparent;
+
+    strong {
+        display: block;
+        margin-bottom: 6px;
+        font-family: 'Bader Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 22px;
+        line-height: 1.02;
+        letter-spacing: -0.03em;
+    }
+
+    p {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.72;
+    }
+}
+
+#product_detail.bader-product-detail .bader-app-info-panel__icon {
+    width: 56px;
+    height: 56px;
+    flex: 0 0 56px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    font-size: 24px;
+    color: #ffffff;
+}
+
+#product_detail.bader-product-detail .bader-app-info-panel--emerald {
+    background: linear-gradient(145deg, rgba(16, 185, 129, 0.12), rgba(209, 250, 229, 0.88));
+    border-color: rgba(16, 185, 129, 0.18);
+    color: #0f766e;
+
+    .bader-app-info-panel__icon {
+        background: #10b981;
+    }
+}
+
+#product_detail.bader-product-detail .bader-app-info-panel--blue {
+    background: linear-gradient(145deg, rgba(59, 130, 246, 0.12), rgba(219, 234, 254, 0.88));
+    border-color: rgba(59, 130, 246, 0.18);
+    color: #1d4ed8;
+
+    .bader-app-info-panel__icon {
+        background: #3b82f6;
+    }
+}
+
+#product_detail.bader-product-detail .bader-app-info-panel--purple {
+    background: linear-gradient(145deg, rgba(168, 85, 247, 0.12), rgba(243, 232, 255, 0.88));
+    border-color: rgba(168, 85, 247, 0.18);
+    color: #7c3aed;
+
+    .bader-app-info-panel__icon {
+        background: #a855f7;
+    }
+}
+
+#product_detail.bader-product-detail .bader-app-info-panel--orange {
+    background: linear-gradient(145deg, rgba(249, 115, 22, 0.12), rgba(255, 237, 213, 0.88));
+    border-color: rgba(249, 115, 22, 0.18);
+    color: #c2410c;
+
+    .bader-app-info-panel__icon {
+        background: #f97316;
+    }
+}
+
+#product_detail.bader-product-detail .bader-app-faq-shell {
+    margin-top: 0;
+}
+
+#product_detail.bader-product-detail .bader-app-faq-head {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+#product_detail.bader-product-detail .bader-app-faq-head__icon {
+    width: 58px;
+    height: 58px;
+    flex: 0 0 58px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    background: linear-gradient(145deg, var(--bader-pdp-primary), var(--bader-pdp-deep));
+    color: #ffffff;
+    font-size: 26px;
+    box-shadow: 0 18px 30px rgba(0, 56, 65, 0.16);
+}
+
+#product_detail.bader-product-detail .bader-app-faq-list {
+    display: grid;
+    gap: 14px;
+}
+
+#product_detail.bader-product-detail .bader-app-faq-item {
+    padding: 22px;
+    border-radius: 22px;
+    border: 1px solid rgba(0, 56, 65, 0.08);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: var(--bader-pdp-shadow-soft);
+
+    h3 {
+        margin: 0 0 10px;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        font-family: 'Bader Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 24px;
+        line-height: 1.04;
+        letter-spacing: -0.03em;
+    }
+
+    h3 span {
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        background: rgba(112, 212, 75, 0.18);
+        color: var(--bader-pdp-deep);
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    p {
+        margin: 0;
+        padding-left: 46px;
+        font-size: 15px;
+        line-height: 1.75;
+        color: var(--bader-pdp-muted);
+    }
+}
+
+#product_detail.bader-product-detail .bader-app-faq-cta {
+    margin-top: 22px;
+    padding: 22px 24px;
+    border-radius: 24px;
+    border: 1px solid rgba(112, 212, 75, 0.2);
+    background: linear-gradient(145deg, rgba(112, 212, 75, 0.12), rgba(0, 56, 65, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+#product_detail.bader-product-detail .bader-app-faq-cta__copy {
+    strong {
+        display: block;
+        margin-bottom: 6px;
+        font-family: 'Bader Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 26px;
+        line-height: 1;
+        letter-spacing: -0.04em;
+        color: var(--bader-pdp-text);
+    }
+
+    p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.7;
+        color: var(--bader-pdp-muted);
+    }
+}
+
+#product_detail.bader-product-detail .bader-app-faq-cta__button {
+    min-width: 148px;
+    min-height: 52px;
+    padding: 12px 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: linear-gradient(145deg, var(--bader-pdp-deep), var(--bader-pdp-deep-soft));
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 18px 28px rgba(0, 56, 65, 0.18);
+}
+
+#product_detail.bader-product-detail .bader-app-related-shell {
+    margin-top: 0;
+    background:
+        radial-gradient(circle at top right, rgba(112, 212, 75, 0.16), transparent 24%),
+        radial-gradient(circle at bottom left, rgba(0, 56, 65, 0.08), transparent 18%),
+        linear-gradient(180deg, rgba(244, 249, 247, 0.98), rgba(255, 255, 255, 0.98));
+}
+
+#product_detail.bader-product-detail .bader-app-related-grid {
+    row-gap: 18px;
+}
+
+#product_detail.bader-product-detail .bader-app-related-card {
+    height: 100%;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    border-radius: 24px;
+    border: 1px solid var(--bader-pdp-border);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: var(--bader-pdp-shadow-soft);
+    text-decoration: none;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+#product_detail.bader-product-detail .bader-app-related-card:hover,
+#product_detail.bader-product-detail .bader-app-related-card:focus-visible {
+    transform: translateY(-5px);
+    border-color: rgba(112, 212, 75, 0.45);
+    box-shadow: 0 24px 36px rgba(0, 56, 65, 0.14);
+    outline: 0;
+}
+
+#product_detail.bader-product-detail .bader-app-related-card__tag {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    min-height: 28px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: rgba(0, 56, 65, 0.06);
+    color: var(--bader-pdp-deep);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+#product_detail.bader-product-detail .bader-app-related-card__image {
+    display: block;
+    aspect-ratio: 1;
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(245, 249, 247, 0.96), rgba(255, 255, 255, 0.94));
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 18px;
+        transition: transform 0.35s ease;
+    }
+}
+
+#product_detail.bader-product-detail .bader-app-related-card:hover .bader-app-related-card__image img {
+    transform: scale(1.06);
+}
+
+#product_detail.bader-product-detail .bader-app-related-card__name {
+    min-height: 52px;
+    color: var(--bader-pdp-text);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+#product_detail.bader-product-detail .bader-app-related-card__price-row {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+#product_detail.bader-product-detail .bader-app-related-card__price {
+    color: var(--bader-pdp-deep);
+    font-family: 'Bader Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 26px;
+    line-height: 1;
+    letter-spacing: -0.04em;
+}
+
+#product_detail.bader-product-detail .bader-app-related-card__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 56, 65, 0.08);
+    background: rgba(0, 56, 65, 0.05);
+    color: var(--bader-pdp-deep);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+#product_detail.bader-product-detail .bader-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 12000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(7, 22, 26, 0.92);
+    backdrop-filter: blur(8px);
+    cursor: zoom-out;
+}
+
+#product_detail.bader-product-detail .bader-lightbox__content {
+    position: relative;
+    max-width: 92vw;
+    max-height: 92vh;
+
+    img {
+        max-width: 92vw;
+        max-height: 90vh;
+        border-radius: 24px;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.28);
+        background: #ffffff;
+    }
+}
+
+#product_detail.bader-product-detail .bader-lightbox__close {
+    position: absolute;
+    top: -46px;
+    right: 0;
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+    font-size: 26px;
+    line-height: 1;
+}
+
+@media (max-width: 1200px) {
+    #product_detail.bader-product-detail #product_detail_main {
+        gap: 32px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-highlight-grid,
+    #product_detail.bader-product-detail .bader-app-fit-grid,
+    #product_detail.bader-product-detail .bader-app-gallery-support {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 991px) {
+    #product_detail.bader-product-detail {
+        grid-template-columns: 1fr;
+        column-gap: 0;
+    }
+
+    #product_detail.bader-product-detail > #bader_app_gallery_support {
+        grid-column: 1 / -1;
+    }
+
+    #product_detail.bader-product-detail #product_detail_main {
+        grid-template-columns: 1fr;
+    }
+
+    #product_detail.bader-product-detail #o-carousel-product .carousel-inner {
+        min-height: 520px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-support,
+    #product_detail.bader-product-detail .bader-app-trust-grid,
+    #product_detail.bader-product-detail .bader-app-feature-grid,
+    #product_detail.bader-product-detail .bader-app-spec-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #product_detail.bader-product-detail .bader-app-faq-cta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 767px) {
+    #product_detail.bader-product-detail {
+        padding-bottom: 66px;
+    }
+
+    #product_detail.bader-product-detail #product_detail_main {
+        gap: 24px;
+    }
+
+    #product_detail.bader-product-detail #o-carousel-product .o_carousel_product_outer {
+        border-radius: 24px;
+    }
+
+    #product_detail.bader-product-detail #o-carousel-product .carousel-inner {
+        min-height: 360px;
+    }
+
+    #product_detail.bader-product-detail #o-carousel-product .carousel-item img,
+    #product_detail.bader-product-detail #o-carousel-product .carousel-inner img[itemprop='image'] {
+        padding: 24px;
+    }
+
+    #product_detail.bader-product-detail #o-carousel-product .carousel-indicators li,
+    #product_detail.bader-product-detail #o-carousel-product .carousel-indicators button {
+        width: 74px !important;
+        height: 74px !important;
+        border-radius: 18px;
+    }
+
+    #product_detail.bader-product-detail #product_details > h1[itemprop='name'],
+    #product_detail.bader-product-detail .bader-app-section-heading h2,
+    #product_detail.bader-product-detail .bader-app-related-head h2,
+    #product_detail.bader-product-detail .bader-app-faq-head h2 {
+        font-size: 32px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-summary {
+        font-size: 16px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-fit-grid,
+    #product_detail.bader-product-detail .bader-app-highlight-grid,
+    #product_detail.bader-product-detail .bader-app-secondary-actions,
+    #product_detail.bader-product-detail .bader-app-trust-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #product_detail.bader-product-detail #o_wsale_cta_wrapper .css_quantity {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+
+    #product_detail.bader-product-detail #add_to_cart_wrap {
+        flex-basis: 100%;
+    }
+
+    #product_detail.bader-product-detail .bader-app-detail-section,
+    #product_detail.bader-product-detail .bader-app-faq-shell,
+    #product_detail.bader-product-detail .bader-app-related-shell,
+    #product_detail.bader-product-detail .bader-app-detail-card {
+        padding: 18px;
+        border-radius: 24px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-detail-card__header h3,
+    #product_detail.bader-product-detail .bader-app-faq-item h3,
+    #product_detail.bader-product-detail .bader-app-info-panel strong,
+    #product_detail.bader-product-detail .bader-app-faq-cta__copy strong {
+        font-size: 24px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-faq-item p {
+        padding-left: 0;
+    }
+}

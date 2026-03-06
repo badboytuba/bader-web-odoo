@@ -4,479 +4,459 @@
     <template id="bader_product_detail_page"
               inherit_id="website_sale.product"
               name="Bader Product Detail Page"
-              priority="30">
+              priority="40">
         <xpath expr="//*[@id='product_detail']" position="attributes">
             <attribute name="t-attf-class">container py-4 oe_website_sale bader-product-detail #{'discount' if combination_info['has_discounted_price'] else ''}</attribute>
         </xpath>
 
+        <xpath expr="//div[@id='product_detail_main']" position="attributes">
+            <attribute name="class" add="bader-app-hero-grid" separator=" "/>
+        </xpath>
+
         <xpath expr="//div[@id='product_details']/h1[@itemprop='name']" position="before">
-            <div class="bader-product-meta">
-                <span class="bader-product-sku" t-if="product_variant and product_variant.default_code">
-                    SKU: <t t-esc="product_variant.default_code"/>
+            <div class="bader-app-meta-row">
+                <div class="bader-app-category-pills">
+                    <t t-if="product.public_categ_ids">
+                        <t t-foreach="product.public_categ_ids[:2]" t-as="categ">
+                            <span class="bader-app-pill" t-esc="categ.name"/>
+                        </t>
+                    </t>
+                    <span class="bader-app-pill" t-else="">Equipamiento Profesional</span>
+                </div>
+                <div class="bader-app-rating-pill" aria-label="Valoracion del producto">
+                    <span class="bader-app-rating-stars">
+                        <i class="fa fa-star"/>
+                        <i class="fa fa-star"/>
+                        <i class="fa fa-star"/>
+                        <i class="fa fa-star"/>
+                        <i class="fa fa-star"/>
+                    </span>
+                    <span>(4.9)</span>
+                </div>
+            </div>
+            <div class="bader-app-sku-row">
+                <span class="bader-app-sku" t-if="product_variant and product_variant.default_code">
+                    SKU <t t-esc="product_variant.default_code"/>
                 </span>
-                <span class="bader-product-category" t-if="product.public_categ_ids">
-                    <t t-esc="product.public_categ_ids[0].name"/>
-                </span>
-                <span class="bader-pdp-origin-pill">
-                    <i class="fa fa-bolt"/>
-                    Decision Studio
+                <span class="bader-app-experience-pill">
+                    <i class="fa fa-mobile"/>
+                    Inspirado en Bader-AR
                 </span>
             </div>
         </xpath>
 
         <xpath expr="//div[@id='product_details']/h1[@itemprop='name'][last()]" position="after">
-            <p class="bader-pdp-hook">
-                Una ficha pensada para decidir rapido: primero encaje por perfil, despues validacion tecnica y cierre comercial.
+            <t t-set="summary_text" t-value="(product.description_sale or product.description or '').replace('\n', ' ').strip()"/>
+            <p class="bader-app-summary">
+                <t t-if="summary_text">
+                    <t t-esc="summary_text[:240] + ('...' if len(summary_text) > 240 else '')"/>
+                </t>
+                <t t-else="">Equipo odontologico profesional con respaldo Bader, garantia oficial y soporte tecnico especializado.</t>
             </p>
+            <div class="bader-app-fit-grid" role="list" aria-label="Perfiles de compra">
+                <article class="bader-app-fit-card" role="listitem">
+                    <strong>Clinicas</strong>
+                    <span>Atencion fluida, percepcion premium y menos friccion en la compra.</span>
+                </article>
+                <article class="bader-app-fit-card" role="listitem">
+                    <strong>Laboratorios</strong>
+                    <span>Validacion tecnica clara para operar con continuidad y precision.</span>
+                </article>
+                <article class="bader-app-fit-card" role="listitem">
+                    <strong>Estudiantes</strong>
+                    <span>Lectura simple, cuotas visibles y una primera compra menos intimidante.</span>
+                </article>
+                <article class="bader-app-fit-card" role="listitem">
+                    <strong>Mayoristas</strong>
+                    <span>Argumentario corto, visual fuerte y mejor narrativa para venderlo.</span>
+                </article>
+            </div>
         </xpath>
 
         <xpath expr="//div[@id='product_details']//t[@t-call='website_sale.product_price']" position="after">
-            <div class="bader-price-note">IVA incluido</div>
-            <div class="bader-stock-status bader-stock-status--in">
-                <span class="bader-stock-dot"/>
-                <span>En stock</span>
+            <div class="bader-app-price-meta">
+                <t t-if="'compare_list_price' in product._fields and product.compare_list_price and product.compare_list_price > product.list_price">
+                    <span class="bader-app-discount-pill">
+                        <i class="fa fa-bolt"/>
+                        <t t-esc="int(round(((product.compare_list_price - product.list_price) / product.compare_list_price) * 100))"/>% OFF
+                    </span>
+                </t>
+                <span class="bader-price-note">IVA incluido</span>
+                <span class="bader-price-installment-note" data-bader-installment-note="1">12x sin interes</span>
             </div>
-            <div class="bader-highlight-strip" role="list" aria-label="Beneficios clave">
-                <span class="bader-highlight-pill" role="listitem">
-                    <i class="fa fa-bolt"/>
-                    Entrega 48-72h
+            <t t-set="bader_in_stock" t-value="True"/>
+            <div t-attf-class="bader-app-stock-pill #{'is-in' if bader_in_stock else 'is-out'}">
+                <span class="bader-app-stock-dot"/>
+                <span t-if="bader_in_stock">En stock - Envio inmediato</span>
+                <span t-else="">Consulta disponibilidad</span>
+            </div>
+            <div class="bader-app-highlight-grid" role="list" aria-label="Beneficios del producto">
+                <span class="bader-app-highlight-pill" role="listitem">
+                    <i class="fa fa-truck"/>
+                    Envio rapido
                 </span>
-                <span class="bader-highlight-pill" role="listitem">
+                <span class="bader-app-highlight-pill" role="listitem">
                     <i class="fa fa-credit-card"/>
                     12 cuotas
                 </span>
-                <span class="bader-highlight-pill" role="listitem">
+                <span class="bader-app-highlight-pill" role="listitem">
                     <i class="fa fa-headphones"/>
                     Soporte experto
                 </span>
             </div>
-            <t t-set="bader_pdp_default_audience"
-               t-value="(request.params.get('audience') or request.params.get('persona') or request.session.get('bader_home_persona') or '').lower()"/>
-            <div class="bader-pdp-audience"
-                 id="bader_pdp_audience_stage"
-                 data-bader-audience-stage="1"
-                 t-att-data-bader-default-audience="bader_pdp_default_audience">
-                <div class="bader-pdp-audience__intro">
-                    <span class="bader-pdp-audience__eyebrow">Elige tu mirada de compra</span>
-                    <p>
-                        Tu usuario no decide igual si compra para atender, producir, aprender o revender.
-                    </p>
-                </div>
-                <div class="bader-pdp-audience__nav" role="tablist" aria-label="Perfiles de compra">
-                    <button type="button"
-                            class="bader-pdp-audience__btn is-active"
-                            data-bader-audience-btn="clinica"
-                            id="bader_pdp_tab_clinica"
-                            role="tab"
-                            aria-controls="bader_pdp_panel_clinica"
-                            aria-selected="true">
-                        <i class="fa fa-medkit"/>
-                        Clinica
-                    </button>
-                    <button type="button"
-                            class="bader-pdp-audience__btn"
-                            data-bader-audience-btn="laboratorio"
-                            id="bader_pdp_tab_laboratorio"
-                            role="tab"
-                            aria-controls="bader_pdp_panel_laboratorio"
-                            aria-selected="false">
-                        <i class="fa fa-flask"/>
-                        Laboratorio
-                    </button>
-                    <button type="button"
-                            class="bader-pdp-audience__btn"
-                            data-bader-audience-btn="estudiantes"
-                            id="bader_pdp_tab_estudiantes"
-                            role="tab"
-                            aria-controls="bader_pdp_panel_estudiantes"
-                            aria-selected="false">
-                        <i class="fa fa-graduation-cap"/>
-                        Estudiantes
-                    </button>
-                    <button type="button"
-                            class="bader-pdp-audience__btn"
-                            data-bader-audience-btn="mayoristas"
-                            id="bader_pdp_tab_mayoristas"
-                            role="tab"
-                            aria-controls="bader_pdp_panel_mayoristas"
-                            aria-selected="false">
-                        <i class="fa fa-suitcase"/>
-                        Mayoristas
-                    </button>
-                </div>
-                <div class="bader-pdp-audience__panels">
-                    <article class="bader-pdp-audience__panel is-active"
-                             data-bader-audience-panel="clinica"
-                             id="bader_pdp_panel_clinica"
-                             role="tabpanel"
-                             aria-labelledby="bader_pdp_tab_clinica">
-                        <div class="bader-pdp-audience__copy">
-                            <span class="bader-pdp-audience__kicker">Clinica Dental</span>
-                            <h3>Menos ruido visual. Mas sensacion de control en cada box.</h3>
-                            <p>
-                                Esta lectura prioriza confianza del paciente, orden operativo y continuidad de atencion
-                                para que la compra no se mida solo por ficha tecnica.
-                            </p>
-                        </div>
-                        <ul class="bader-pdp-audience__signals">
-                            <li>Flujo limpio para consultorio</li>
-                            <li>Compra guiada sin friccion</li>
-                            <li>Soporte cercano para instalacion y uso</li>
-                        </ul>
-                    </article>
-                    <article class="bader-pdp-audience__panel"
-                             data-bader-audience-panel="laboratorio"
-                             id="bader_pdp_panel_laboratorio"
-                             role="tabpanel"
-                             aria-labelledby="bader_pdp_tab_laboratorio"
-                             hidden="hidden">
-                        <div class="bader-pdp-audience__copy">
-                            <span class="bader-pdp-audience__kicker">Laboratorio Dental</span>
-                            <h3>Continuidad, ritmo y lectura tecnica sin perder tiempo.</h3>
-                            <p>
-                                Si el criterio de compra es estabilidad operativa y mantenimiento claro, la pagina
-                                te lleva directo a lo que necesitas validar para trabajar con menos interrupciones.
-                            </p>
-                        </div>
-                        <ul class="bader-pdp-audience__signals">
-                            <li>Revision tecnica escalonada</li>
-                            <li>Menos freno en la operacion diaria</li>
-                            <li>Argumentos utiles para comparar rapido</li>
-                        </ul>
-                    </article>
-                    <article class="bader-pdp-audience__panel"
-                             data-bader-audience-panel="estudiantes"
-                             id="bader_pdp_panel_estudiantes"
-                             role="tabpanel"
-                             aria-labelledby="bader_pdp_tab_estudiantes"
-                             hidden="hidden">
-                        <div class="bader-pdp-audience__copy">
-                            <span class="bader-pdp-audience__kicker">Estudiantes</span>
-                            <h3>Tu primera compra debe sentirse clara, no intimidante.</h3>
-                            <p>
-                                La experiencia baja la complejidad: idea general, ventajas concretas y datos tecnicos
-                                para comparar con seguridad aunque aun estes formando criterio profesional.
-                            </p>
-                        </div>
-                        <ul class="bader-pdp-audience__signals">
-                            <li>Curva de lectura mas simple</li>
-                            <li>Financiacion visible desde el inicio</li>
-                            <li>Compra con menos incertidumbre</li>
-                        </ul>
-                    </article>
-                    <article class="bader-pdp-audience__panel"
-                             data-bader-audience-panel="mayoristas"
-                             id="bader_pdp_panel_mayoristas"
-                             role="tabpanel"
-                             aria-labelledby="bader_pdp_tab_mayoristas"
-                             hidden="hidden">
-                        <div class="bader-pdp-audience__copy">
-                            <span class="bader-pdp-audience__kicker">Mayoristas</span>
-                            <h3>No solo debe verse bien: debe venderse bien.</h3>
-                            <p>
-                                Para cartera comercial la prioridad cambia: respaldo de marca, narrativa clara y
-                                soporte que facilite explicar valor y acelerar rotacion.
-                            </p>
-                        </div>
-                        <ul class="bader-pdp-audience__signals">
-                            <li>Argumentario comercial mas fuerte</li>
-                            <li>Confianza de marca y respaldo</li>
-                            <li>Mas facil de presentar al cliente final</li>
-                        </ul>
-                    </article>
-                </div>
-            </div>
         </xpath>
 
         <xpath expr="//a[@id='add_to_cart']/span" position="replace">
-            <span style="font-weight: bold">Agregar al carrito</span>
+            <span>Agregar al carrito</span>
         </xpath>
 
-        <xpath expr="//div[@id='o_product_terms_and_share']" position="before">
-            <div class="bader-product-benefits">
-                <div class="bader-benefit">
-                    <i class="fa fa-truck"/>
-                    <span>Envio gratis a todo el pais</span>
-                </div>
-                <div class="bader-benefit">
-                    <i class="fa fa-shield"/>
-                    <span>Garantia europea oficial</span>
-                </div>
-                <div class="bader-benefit">
-                    <i class="fa fa-credit-card"/>
-                    <span>Hasta 12 cuotas sin interes</span>
-                </div>
+        <xpath expr="//div[@id='o_wsale_cta_wrapper']" position="after">
+            <div class="bader-app-secondary-actions">
+                <button type="button" class="bader-app-buy-now" data-bader-buy-now="1">
+                    <i class="fa fa-bolt"/>
+                    Comprar ahora
+                </button>
+                <button type="button"
+                        class="bader-app-icon-button"
+                        data-bader-wishlist="1"
+                        aria-label="Agregar a favoritos"
+                        title="Agregar a favoritos">
+                    <i class="fa fa-heart-o"/>
+                </button>
+                <button type="button"
+                        class="bader-app-icon-button"
+                        data-bader-share="1"
+                        aria-label="Compartir producto"
+                        title="Compartir producto">
+                    <i class="fa fa-share-alt"/>
+                </button>
             </div>
         </xpath>
 
-        <xpath expr="//div[@id='product_full_description']" position="replace">
-            <section id="product_full_description" class="bader-detail-tabs mt-5">
-                <div class="bader-detail-tabs__hero">
-                    <div class="bader-detail-tabs__intro">
-                        <span class="bader-detail-tabs__eyebrow">Decision architecture</span>
-                        <h2>La parte tecnica ahora tambien se siente premium.</h2>
-                        <p>
-                            Bajamos el ruido habitual de una ficha y organizamos la informacion para que el usuario
-                            valide encaje, prestaciones y condiciones comerciales sin perder ritmo.
-                        </p>
+        <xpath expr="//div[@id='o_product_terms_and_share']" position="before">
+            <section class="bader-app-trust-grid" aria-label="Pruebas de confianza">
+                <article class="bader-app-trust-card">
+                    <span class="bader-app-trust-card__icon">
+                        <i class="fa fa-truck"/>
+                    </span>
+                    <div>
+                        <strong>Envio gratis</strong>
+                        <p>A todo el pais con seguimiento comercial.</p>
                     </div>
-                    <div class="bader-detail-tabs__stats" role="list" aria-label="Datos clave del producto">
-                        <span class="bader-detail-tabs__stat" role="listitem">
-                            <strong>Marca</strong>
-                            <small>Bader Europa</small>
-                        </span>
-                        <span class="bader-detail-tabs__stat" role="listitem">
-                            <strong>Garantia</strong>
-                            <small>12 meses oficial</small>
-                        </span>
-                        <span class="bader-detail-tabs__stat" role="listitem">
-                            <strong>Soporte</strong>
-                            <small>Comercial + tecnico</small>
-                        </span>
+                </article>
+                <article class="bader-app-trust-card">
+                    <span class="bader-app-trust-card__icon">
+                        <i class="fa fa-shield"/>
+                    </span>
+                    <div>
+                        <strong>Garantia europea</strong>
+                        <p>12 meses oficiales con respaldo Bader.</p>
                     </div>
-                </div>
-
-                <div class="bader-detail-tabs__layout">
-                    <div class="bader-detail-tabs__main">
-                        <ul class="nav nav-tabs bader-tab-headers" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link active" id="bader_tab_desc_btn" data-bs-toggle="tab" href="#bader_tab_desc" role="tab">Descripcion</a>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link" id="bader_tab_specs_btn" data-bs-toggle="tab" href="#bader_tab_specs" role="tab">Especificaciones</a>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link" id="bader_tab_ship_btn" data-bs-toggle="tab" href="#bader_tab_ship" role="tab">Envio</a>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link" id="bader_tab_warranty_btn" data-bs-toggle="tab" href="#bader_tab_warranty" role="tab">Garantia</a>
-                            </li>
-                        </ul>
-
-                        <div class="tab-content bader-tab-content">
-                            <div class="tab-pane fade show active bader-tab-description" id="bader_tab_desc" role="tabpanel" aria-labelledby="bader_tab_desc_btn">
-                                <div class="bader-tab-description-body" t-if="product.website_description" t-field="product.website_description"/>
-                                <p t-elif="product.description_sale" t-field="product.description_sale"/>
-                                <p t-else="">Producto profesional Bader con calidad europea y soporte tecnico especializado.</p>
-                            </div>
-
-                            <div class="tab-pane fade bader-tab-specs" id="bader_tab_specs" role="tabpanel" aria-labelledby="bader_tab_specs_btn">
-                                <table class="table table-sm">
-                                    <tbody>
-                                        <tr>
-                                            <th>Categoria</th>
-                                            <td>
-                                                <span t-if="product.public_categ_ids" t-esc="product.public_categ_ids[0].name"/>
-                                                <span t-else="">General</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Codigo</th>
-                                            <td>
-                                                <span t-if="product_variant and product_variant.default_code" t-esc="product_variant.default_code"/>
-                                                <span t-else="">BAD-<t t-esc="product.id"/></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Marca</th>
-                                            <td>BADER</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Origen</th>
-                                            <td>Europa</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Garantia</th>
-                                            <td>12 meses oficial</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div class="tab-pane fade bader-tab-shipping" id="bader_tab_ship" role="tabpanel" aria-labelledby="bader_tab_ship_btn">
-                                <h3>Envio nacional</h3>
-                                <ul>
-                                    <li>Envio gratis a todo el pais.</li>
-                                    <li>Entrega estimada de 3 a 10 dias habiles segun zona.</li>
-                                    <li>Seguimiento de envio con soporte comercial.</li>
-                                </ul>
-                            </div>
-
-                            <div class="tab-pane fade bader-tab-shipping" id="bader_tab_warranty" role="tabpanel" aria-labelledby="bader_tab_warranty_btn">
-                                <h3>Garantia y soporte</h3>
-                                <ul>
-                                    <li>Garantia oficial europea por 12 meses.</li>
-                                    <li>Asistencia tecnica para instalacion y uso.</li>
-                                    <li>Repuestos y mantenimiento con red Bader.</li>
-                                </ul>
-                            </div>
-                        </div>
+                </article>
+                <article class="bader-app-trust-card">
+                    <span class="bader-app-trust-card__icon">
+                        <i class="fa fa-credit-card"/>
+                    </span>
+                    <div>
+                        <strong>Financiacion</strong>
+                        <p>Hasta 12 cuotas sin interes segun medio de pago.</p>
                     </div>
-
-                    <aside class="bader-detail-tabs__aside" aria-label="Guia de decision">
-                        <article class="bader-detail-tabs__aside-card">
-                            <span class="bader-detail-tabs__aside-kicker">Decision notes</span>
-                            <h3>Una ficha que acompana al cierre, no solo a la exploracion.</h3>
-                            <p>
-                                Primero contexto. Despues validacion tecnica. Al final, seguridad comercial y accion.
-                            </p>
-                        </article>
-                        <article class="bader-detail-tabs__aside-card bader-detail-tabs__aside-card--accent">
-                            <strong>Checklist comercial</strong>
-                            <ul>
-                                <li>Lectura clara para clinica, laboratorio, estudiantes y mayoristas.</li>
-                                <li>Condiciones de envio y garantia visibles antes de salir de la pagina.</li>
-                                <li>Mas orden visual para comparar con criterio y decidir mas rapido.</li>
-                            </ul>
-                        </article>
-                    </aside>
-                </div>
+                </article>
+                <article class="bader-app-trust-card">
+                    <span class="bader-app-trust-card__icon">
+                        <i class="fa fa-refresh"/>
+                    </span>
+                    <div>
+                        <strong>Devolucion</strong>
+                        <p>30 dias para resolver cualquier friccion post compra.</p>
+                    </div>
+                </article>
             </section>
         </xpath>
 
-        <xpath expr="//div[@id='product_detail_main']" position="after">
-            <section class="bader-pdp-visual-brief" aria-label="Lectura visual del producto">
-                <div class="bader-pdp-visual-brief__hero">
-                    <span class="bader-pdp-visual-brief__eyebrow">Visual confidence</span>
-                    <h2>La imagen deja de ser un tramite y pasa a ser argumento de venta.</h2>
+        <xpath expr="//div[@id='product_full_description']" position="replace">
+            <section id="product_full_description" class="bader-app-detail-section mt-5">
+                <div class="bader-app-section-heading">
+                    <span class="bader-app-section-heading__eyebrow">Detalles del producto</span>
+                    <h2>Todo lo que necesitas validar antes de comprar.</h2>
                     <p>
-                        Esta columna no solo muestra el producto: construye escala, detalle y sensacion de respaldo
-                        para que la decision tenga menos friccion desde el primer scroll.
+                        Reorganizamos la ficha con la misma logica del app: descripcion util, especificaciones claras,
+                        envio y garantia en tarjetas limpias.
                     </p>
                 </div>
-                <div class="bader-pdp-visual-brief__grid">
-                    <article class="bader-pdp-visual-brief__card">
-                        <strong>Lectura inmediata</strong>
-                        <p>Vista principal limpia para entender forma, tamano y presencia en segundos.</p>
-                    </article>
-                    <article class="bader-pdp-visual-brief__card">
-                        <strong>Detalle real</strong>
-                        <p>Miniaturas ordenadas para revisar acabados, piezas y puntos de uso sin perderte.</p>
-                    </article>
-                    <article class="bader-pdp-visual-brief__card">
-                        <strong>Marca presente</strong>
-                        <p>La fotografia se integra al relato comercial y transmite mas confianza que una galeria plana.</p>
-                    </article>
-                </div>
-            </section>
 
-            <section class="bader-pdp-journey" id="bader_pdp_journey">
-                <nav class="bader-pdp-journey__nav" aria-label="Navegacion de producto">
-                    <a href="#bader_pdp_audience_stage" data-bader-anchor-link="1">Encaje por perfil</a>
-                    <a href="#product_full_description" data-bader-anchor-link="1">Ficha tecnica</a>
-                    <a href="#bader_pdp_faq" data-bader-anchor-link="1">Preguntas</a>
-                    <a href="#bader_pdp_related" data-bader-anchor-link="1">Relacionados</a>
-                </nav>
-                <div class="bader-pdp-journey__hint">
-                    <strong>Lectura de alta conversion</strong>
-                    <p>
-                        Primero decide si encaja con tu contexto. Despues valida datos tecnicos, soporte y cierre comercial.
-                    </p>
+                <ul class="nav nav-tabs bader-app-tablist" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="bader_app_tab_desc_btn" data-bs-toggle="tab" href="#bader_app_tab_desc" role="tab">Descripcion</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="bader_app_tab_specs_btn" data-bs-toggle="tab" href="#bader_app_tab_specs" role="tab">Especificaciones</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="bader_app_tab_shipping_btn" data-bs-toggle="tab" href="#bader_app_tab_shipping" role="tab">Envio</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="bader_app_tab_warranty_btn" data-bs-toggle="tab" href="#bader_app_tab_warranty" role="tab">Garantia</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content bader-app-tab-content">
+                    <div class="tab-pane fade show active" id="bader_app_tab_desc" role="tabpanel" aria-labelledby="bader_app_tab_desc_btn">
+                        <article class="bader-app-detail-card">
+                            <div class="bader-app-detail-card__header">
+                                <h3>Acerca de este producto</h3>
+                                <p>Una lectura mas clara para entender valor, uso y respaldo antes de la decision.</p>
+                            </div>
+                            <div class="bader-app-description-body" t-if="product.website_description" t-field="product.website_description"/>
+                            <p class="bader-app-description-body__fallback" t-elif="product.description_sale" t-field="product.description_sale"/>
+                            <p class="bader-app-description-body__fallback" t-else="">Producto profesional Bader con calidad europea y soporte tecnico especializado.</p>
+
+                            <div class="bader-app-feature-grid" role="list" aria-label="Caracteristicas principales">
+                                <div class="bader-app-feature-item" role="listitem">
+                                    <i class="fa fa-check"/>
+                                    <span>Calidad europea certificada</span>
+                                </div>
+                                <div class="bader-app-feature-item" role="listitem">
+                                    <i class="fa fa-check"/>
+                                    <span>Garantia oficial incluida</span>
+                                </div>
+                                <div class="bader-app-feature-item" role="listitem">
+                                    <i class="fa fa-check"/>
+                                    <span>Soporte tecnico especializado</span>
+                                </div>
+                                <div class="bader-app-feature-item" role="listitem">
+                                    <i class="fa fa-check"/>
+                                    <span>Envio nacional con seguimiento</span>
+                                </div>
+                                <div class="bader-app-feature-item" role="listitem">
+                                    <i class="fa fa-check"/>
+                                    <span>Repuestos y postventa Bader</span>
+                                </div>
+                                <div class="bader-app-feature-item" role="listitem">
+                                    <i class="fa fa-check"/>
+                                    <span>Lectura pensada para compra profesional</span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="tab-pane fade" id="bader_app_tab_specs" role="tabpanel" aria-labelledby="bader_app_tab_specs_btn">
+                        <article class="bader-app-detail-card">
+                            <div class="bader-app-detail-card__header">
+                                <h3>Especificaciones tecnicas</h3>
+                                <p>Los datos esenciales quedan visibles sin obligar al usuario a descifrar una tabla pesada.</p>
+                            </div>
+                            <div class="bader-app-spec-grid" role="list" aria-label="Especificaciones tecnicas">
+                                <div class="bader-app-spec-item" role="listitem">
+                                    <span>Categoria</span>
+                                    <strong>
+                                        <span t-if="product.public_categ_ids" t-esc="product.public_categ_ids[0].name"/>
+                                        <span t-else="">General</span>
+                                    </strong>
+                                </div>
+                                <div class="bader-app-spec-item" role="listitem">
+                                    <span>Codigo</span>
+                                    <strong>
+                                        <span t-if="product_variant and product_variant.default_code" t-esc="product_variant.default_code"/>
+                                        <span t-else="">BAD-<t t-esc="product.id"/></span>
+                                    </strong>
+                                </div>
+                                <div class="bader-app-spec-item" role="listitem">
+                                    <span>Marca</span>
+                                    <strong>BADER</strong>
+                                </div>
+                                <div class="bader-app-spec-item" role="listitem">
+                                    <span>Origen</span>
+                                    <strong>Europa</strong>
+                                </div>
+                                <div class="bader-app-spec-item" role="listitem">
+                                    <span>Garantia</span>
+                                    <strong>12 meses</strong>
+                                </div>
+                                <div class="bader-app-spec-item" role="listitem">
+                                    <span>Soporte</span>
+                                    <strong>Comercial + tecnico</strong>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="tab-pane fade" id="bader_app_tab_shipping" role="tabpanel" aria-labelledby="bader_app_tab_shipping_btn">
+                        <article class="bader-app-detail-card">
+                            <div class="bader-app-detail-card__header">
+                                <h3>Informacion de envio</h3>
+                                <p>El usuario valida despacho y coordinacion sin salir del flujo de compra.</p>
+                            </div>
+                            <div class="bader-app-info-panels">
+                                <article class="bader-app-info-panel bader-app-info-panel--emerald">
+                                    <span class="bader-app-info-panel__icon">
+                                        <i class="fa fa-truck"/>
+                                    </span>
+                                    <div>
+                                        <strong>Envio gratis a todo el pais</strong>
+                                        <p>Entrega estimada de 3 a 10 dias habiles segun zona y tipo de producto.</p>
+                                    </div>
+                                </article>
+                                <article class="bader-app-info-panel bader-app-info-panel--blue">
+                                    <span class="bader-app-info-panel__icon">
+                                        <i class="fa fa-map-marker"/>
+                                    </span>
+                                    <div>
+                                        <strong>Coordinacion comercial</strong>
+                                        <p>Seguimiento personalizado para retiro, entrega y puesta en marcha cuando aplica.</p>
+                                    </div>
+                                </article>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="tab-pane fade" id="bader_app_tab_warranty" role="tabpanel" aria-labelledby="bader_app_tab_warranty_btn">
+                        <article class="bader-app-detail-card">
+                            <div class="bader-app-detail-card__header">
+                                <h3>Garantia y soporte</h3>
+                                <p>La postventa se presenta tan clara como el producto, igual que en la experiencia del app.</p>
+                            </div>
+                            <div class="bader-app-info-panels">
+                                <article class="bader-app-info-panel bader-app-info-panel--purple">
+                                    <span class="bader-app-info-panel__icon">
+                                        <i class="fa fa-shield"/>
+                                    </span>
+                                    <div>
+                                        <strong>Garantia europea oficial</strong>
+                                        <p>Cobertura de 12 meses por defectos de fabricacion y respaldo directo de marca.</p>
+                                    </div>
+                                </article>
+                                <article class="bader-app-info-panel bader-app-info-panel--orange">
+                                    <span class="bader-app-info-panel__icon">
+                                        <i class="fa fa-headphones"/>
+                                    </span>
+                                    <div>
+                                        <strong>Soporte tecnico especializado</strong>
+                                        <p>Acompanamiento para instalacion, uso, mantenimiento y continuidad operativa.</p>
+                                    </div>
+                                </article>
+                            </div>
+                        </article>
+                    </div>
                 </div>
             </section>
         </xpath>
 
         <xpath expr="//section[@id='product_full_description']" position="after">
-            <section class="bader-pdp-pattern-break">
-                <div class="bader-pdp-pattern-break__lead">
-                    <span class="bader-pdp-pattern-break__eyebrow">Pattern Break</span>
-                    <h2>La mayoria de fichas hablan del producto. Esta tambien habla de la decision.</h2>
-                    <p>
-                        Rompemos la lectura plana con una pagina que ordena percepcion, tecnica y conversion
-                        para clinicas, laboratorios, estudiantes y equipos comerciales.
-                    </p>
-                </div>
-                <div class="bader-pdp-pattern-break__grid">
-                    <article class="bader-pdp-pattern-break__card">
-                        <strong>Atencion</strong>
-                        <p>La informacion clave aparece antes de que el usuario se fatigue o compare mal.</p>
-                    </article>
-                    <article class="bader-pdp-pattern-break__card">
-                        <strong>Operacion</strong>
-                        <p>El recorrido baja friccion: contexto, ficha tecnica, seguridad y accion.</p>
-                    </article>
-                    <article class="bader-pdp-pattern-break__card">
-                        <strong>Conversion</strong>
-                        <p>Mas claridad para decidir, mas confianza para agregar al carrito o pedir asesoria.</p>
-                    </article>
-                </div>
-            </section>
-
-            <section class="bader-faq-section mt-5" id="bader_pdp_faq">
-                <div class="bader-section-heading">
-                    <span class="bader-section-heading__eyebrow">Objeciones resueltas</span>
-                    <h2>Preguntas frecuentes antes del cierre</h2>
-                    <p>
-                        Reunimos las dudas que mas frenan una compra profesional para que la conversion no se rompa
-                        por falta de contexto.
-                    </p>
-                </div>
-                <div class="bader-faq-list">
-                    <article class="bader-faq-item">
-                        <h3>1. Este producto tiene garantia oficial?</h3>
-                        <p>Si. Todos los equipos Bader cuentan con garantia oficial y soporte tecnico especializado.</p>
-                    </article>
-                    <article class="bader-faq-item">
-                        <h3>2. El envio esta incluido?</h3>
-                        <p>Si. Ofrecemos envio sin cargo a todo el pais en compras desde el catalogo web.</p>
-                    </article>
-                    <article class="bader-faq-item">
-                        <h3>3. Se puede financiar en cuotas?</h3>
-                        <p>Si. Dispones de financiacion hasta 12 cuotas segun el medio de pago habilitado.</p>
-                    </article>
-                    <article class="bader-faq-item">
-                        <h3>4. Puedo recibir asesoria antes de comprar?</h3>
-                        <p>Si. Nuestro equipo comercial y tecnico puede ayudarte a elegir la mejor opcion para tu caso.</p>
-                    </article>
-                </div>
-            </section>
-
-            <t t-set="related_products" t-value="request.env['product.template'].sudo().search([('website_published', '=', True), ('id', '!=', product.id), ('public_categ_ids', 'in', product.public_categ_ids.ids)], limit=8)"/>
-            <t t-set="display_currency" t-value="request.website.get_current_pricelist().currency_id"/>
-            <section class="bader-related-products" id="bader_pdp_related" t-if="related_products">
-                <div class="bader-section-heading">
-                    <span class="bader-section-heading__eyebrow">Continuidad de compra</span>
-                    <h2>Tambien te puede interesar</h2>
-                    <p>
-                        Productos relacionados para seguir navegando sin sentir que entraste en otra pagina distinta.
-                    </p>
-                </div>
-                <div class="row g-3">
-                    <t t-foreach="related_products" t-as="rel">
-                        <div class="col-6 col-lg-3">
-                            <a t-att-href="rel.website_url" class="bader-related-card">
-                                <span class="bader-related-card__label">Ver alternativa</span>
-                                <span class="bader-related-card__image">
-                                    <img t-att-src="website.image_url(rel, 'image_512')" t-att-alt="rel.name"/>
-                                </span>
-                                <span class="bader-related-card__name" t-esc="rel.name"/>
-                                <span class="bader-related-card__footer">
-                                    <span class="bader-related-card__price" t-field="rel.list_price" t-options='{"widget": "monetary", "display_currency": display_currency}'/>
-                                    <span class="bader-related-card__cta">Explorar</span>
-                                </span>
-                            </a>
+            <section class="bader-app-faq-section" id="bader_pdp_faq">
+                <article class="bader-app-faq-shell">
+                    <div class="bader-app-faq-head">
+                        <span class="bader-app-faq-head__icon">
+                            <i class="fa fa-comments-o"/>
+                        </span>
+                        <div>
+                            <h2>Preguntas frecuentes</h2>
+                            <p>Todo lo que normalmente frena una compra profesional, resuelto en la misma pagina.</p>
                         </div>
-                    </t>
-                </div>
+                    </div>
+
+                    <div class="bader-app-faq-list">
+                        <article class="bader-app-faq-item">
+                            <h3><span>1</span>Este producto tiene garantia oficial?</h3>
+                            <p>Si. Todos los equipos Bader cuentan con garantia oficial y soporte tecnico especializado.</p>
+                        </article>
+                        <article class="bader-app-faq-item">
+                            <h3><span>2</span>El envio esta incluido?</h3>
+                            <p>Si. Ofrecemos envio sin cargo y coordinacion comercial para que la entrega no genere friccion.</p>
+                        </article>
+                        <article class="bader-app-faq-item">
+                            <h3><span>3</span>Se puede financiar en cuotas?</h3>
+                            <p>Si. Puedes acceder a financiacion de hasta 12 cuotas segun el medio de pago habilitado.</p>
+                        </article>
+                        <article class="bader-app-faq-item">
+                            <h3><span>4</span>Puedo recibir asesoria antes de comprar?</h3>
+                            <p>Si. Nuestro equipo comercial y tecnico te ayuda a validar si este producto encaja con tu caso.</p>
+                        </article>
+                    </div>
+
+                    <div class="bader-app-faq-cta">
+                        <div class="bader-app-faq-cta__copy">
+                            <strong>Tienes mas preguntas?</strong>
+                            <p>Te acompanamos antes del cierre para comparar, validar y decidir con mas claridad.</p>
+                        </div>
+                        <a class="bader-app-faq-cta__button"
+                           href="https://wa.me/5491124522097?text=Hola!%20Necesito%20asesoria%20sobre%20este%20producto"
+                           target="_blank"
+                           rel="noopener">
+                            Contactar
+                        </a>
+                    </div>
+                </article>
             </section>
 
-            <section class="bader-help-cta">
-                <div class="bader-help-cta__content">
-                    <span class="bader-help-cta__eyebrow">Cierre asistido</span>
-                    <h3>Si este producto encaja, cerramos la decision contigo.</h3>
-                    <p>
-                        Asesoria real para clinicas, laboratorios, estudiantes y distribuidores que necesitan avanzar
-                        con criterio, soporte y rapidez.
-                    </p>
+            <t t-set="related_products"
+               t-value="request.env['product.template'].sudo().search([('website_published', '=', True), ('id', '!=', product.id), ('public_categ_ids', 'in', product.public_categ_ids.ids)], limit=8)"/>
+            <t t-set="display_currency" t-value="request.website.get_current_pricelist().currency_id"/>
+            <section class="bader-app-related-section" id="bader_pdp_related" t-if="related_products">
+                <div class="bader-app-related-shell">
+                    <div class="bader-app-related-head">
+                        <div>
+                            <span class="bader-app-section-heading__eyebrow">Venta cruzada</span>
+                            <h2>Tambien te puede interesar</h2>
+                            <p>Productos complementarios con la misma logica visual y la misma sensacion de app.</p>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 bader-app-related-grid">
+                        <t t-foreach="related_products" t-as="rel">
+                            <div class="col-12 col-sm-6 col-xl-3">
+                                <a t-att-href="rel.website_url" class="bader-app-related-card">
+                                    <span class="bader-app-related-card__tag">
+                                        <span t-if="rel.public_categ_ids" t-esc="rel.public_categ_ids[0].name"/>
+                                        <span t-else="">Producto</span>
+                                    </span>
+                                    <span class="bader-app-related-card__image">
+                                        <img t-att-src="website.image_url(rel, 'image_512')" t-att-alt="rel.name"/>
+                                    </span>
+                                    <span class="bader-app-related-card__name" t-esc="rel.name"/>
+                                    <span class="bader-app-related-card__price-row">
+                                        <span class="bader-app-related-card__price"
+                                              t-field="rel.list_price"
+                                              t-options='{"widget": "monetary", "display_currency": display_currency}'/>
+                                        <span class="bader-app-related-card__cta">Explorar</span>
+                                    </span>
+                                </a>
+                            </div>
+                        </t>
+                    </div>
                 </div>
-                <div class="bader-help-cta__signals" role="list" aria-label="Beneficios de asesoria">
-                    <span role="listitem">Respuesta humana</span>
-                    <span role="listitem">Validacion tecnica</span>
-                    <span role="listitem">Orientacion comercial</span>
-                </div>
-                <a class="bader-help-cta__button" href="https://wa.me/5491124522097?text=Hola!%20Necesito%20asesoria%20sobre%20este%20producto" target="_blank" rel="noopener">
-                    Contactar por WhatsApp
-                </a>
+            </section>
+        </xpath>
+
+        <xpath expr="//div[@id='product_detail_main']" position="after">
+            <section class="bader-app-gallery-support" id="bader_app_gallery_support" aria-label="Beneficios visuales del producto">
+                <article class="bader-app-gallery-support__card">
+                    <span class="bader-app-gallery-support__icon">
+                        <i class="fa fa-search-plus"/>
+                    </span>
+                    <div>
+                        <strong>Vista principal clara</strong>
+                        <p>Imagen square con foco total en escala, forma y presencia del equipo.</p>
+                    </div>
+                </article>
+                <article class="bader-app-gallery-support__card">
+                    <span class="bader-app-gallery-support__icon">
+                        <i class="fa fa-clone"/>
+                    </span>
+                    <div>
+                        <strong>Lectura por detalle</strong>
+                        <p>Miniaturas ordenadas para revisar acabados, piezas y componentes sin perder ritmo.</p>
+                    </div>
+                </article>
+                <article class="bader-app-gallery-support__card">
+                    <span class="bader-app-gallery-support__icon">
+                        <i class="fa fa-shield"/>
+                    </span>
+                    <div>
+                        <strong>Confianza de marca</strong>
+                        <p>La galeria ya no se rompe: ahora vende respaldo, precision y calidad Bader.</p>
+                    </div>
+                </article>
             </section>
         </xpath>
     </template>
