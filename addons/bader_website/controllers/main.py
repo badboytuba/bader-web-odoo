@@ -331,6 +331,97 @@ class BaderWebsite(Website):
             return 'clinica'
         return ''
 
+    def _normalize_catalog_token(self, raw_value):
+        """Normalize category/query token to ASCII words for tolerant matching."""
+        token = self._normalize_search_text(raw_value or '')
+        token = re.sub(r'[^a-z0-9]+', ' ', token).strip()
+        return token
+
+    def _category_niche_keywords(self, raw_niche):
+        """Return normalized niche keywords used to disambiguate category matches."""
+        niche = self._normalize_catalog_token(raw_niche or '')
+        if niche in ('clinica dental', 'clinica', 'clinic'):
+            return ['clinica', 'odont']
+        if niche in ('laboratorio dental', 'laboratorio', 'lab'):
+            return ['laboratorio', 'lab']
+        if niche in ('estudiantes', 'estudiante', 'student'):
+            return ['estudiante', 'alumno']
+        return []
+
+    def _category_matches_niche(self, category, niche_keywords):
+        """Check whether a category or any parent matches niche keywords."""
+        if not niche_keywords or not category:
+            return True
+        current = category
+        depth = 0
+        while current and depth < 12:
+            cat_name = self._normalize_catalog_token(current.name)
+            if any(keyword in cat_name for keyword in niche_keywords):
+                return True
+            current = current.parent_id
+            depth += 1
+        return False
+
+    def _resolve_catalog_category(self, raw_category, raw_niche=''):
+        """Resolve numeric id / slug / free-text category token to product.public.category."""
+        category_model = request.env['product.public.category'].sudo().with_context(lang='es_ES')
+        token_raw = (raw_category or '').strip()
+        if not token_raw:
+            return category_model.browse()
+
+        # 1) Pure numeric id
+        if token_raw.isdigit():
+            rec = category_model.browse(int(token_raw))
+            return rec if rec.exists() else category_model.browse()
+
+        # 2) Slug-like value ending with "-<id>"
+        match = re.search(r'-(\d+)$', token_raw)
+        if match:
+            rec = category_model.browse(int(match.group(1)))
+            if rec.exists():
+                return rec
+
+        token = self._normalize_catalog_token(token_raw)
+        if not token:
+            return category_model.browse()
+
+        # 3) Name-based fuzzy resolution (supports links like category=sillones)
+        candidates = category_model.search([('name', 'ilike', token)], limit=40, order='sequence, id')
+        if not candidates and ' ' in token:
+            first_word = token.split(' ')[0]
+            if first_word:
+                candidates = category_model.search([('name', 'ilike', first_word)], limit=40, order='sequence, id')
+        if not candidates:
+            return category_model.browse()
+
+        niche_keywords = self._category_niche_keywords(raw_niche)
+        token_words = [word for word in token.split(' ') if word]
+
+        def score(candidate):
+            name_norm = self._normalize_catalog_token(candidate.name)
+            points = 0
+            if name_norm == token:
+                points += 120
+            elif name_norm.startswith(token):
+                points += 80
+            elif token in name_norm:
+                points += 45
+            for word in token_words:
+                if word == name_norm:
+                    points += 18
+                elif word in name_norm:
+                    points += 8
+            if self._category_matches_niche(candidate, niche_keywords):
+                points += 22
+            # Prefer more specific nodes over root buckets when score is tied.
+            if candidate.parent_id:
+                points += 5
+            return points
+
+        ranked = sorted(candidates, key=score, reverse=True)
+        best = ranked[0] if ranked else category_model.browse()
+        return best if best and best.exists() else category_model.browse()
+
     def _persona_from_partner(self, partner):
         """Infer homepage persona from partner fields/tags without custom model changes."""
         if not partner:
@@ -1408,9 +1499,38 @@ class BaderWebsite(Website):
     ], type='http', auth='public', website=True, sitemap=True)
     def productos(self, page=0, category=None, search='', ppg=False, **post):
         """Serve product catalog on /productos to match Bader-AR public URLs."""
+        post = dict(post or {})
+        category_model = request.env['product.public.category'].sudo()
+        category_param = (post.get('category') or '').strip()
+        niche_param = (post.get('niche') or post.get('persona') or '').strip()
+        resolved_category = category
+
+        # Query string params can bind directly to `category` argument as plain text.
+        # Normalize everything into either a category recordset or an empty recordset.
+        if isinstance(resolved_category, str):
+            route_category_token = resolved_category.strip()
+            if route_category_token:
+                category_param = route_category_token
+            resolved_category = category_model.browse()
+        elif isinstance(resolved_category, int):
+            resolved_category = category_model.browse(int(resolved_category))
+        elif resolved_category and getattr(resolved_category, '_name', '') != 'product.public.category':
+            resolved_category = category_model.browse()
+
+        # website_sale expects numeric category ids in query params.
+        # Our mega-menu sends textual tokens (e.g. "sillones"), so resolve before delegating.
+        if not resolved_category and category_param:
+            resolved_category = self._resolve_catalog_category(category_param, niche_param)
+            # Never pass raw string category down to WebsiteSale.shop (it crashes on int()).
+            post.pop('category', None)
+
+            if not resolved_category and not search:
+                # Fallback to keyword search when category token has no Odoo category match.
+                search = self._normalize_catalog_token(category_param)
+
         return BaderWebsiteSale().shop(
             page=page,
-            category=category,
+            category=resolved_category,
             search=search,
             ppg=ppg,
             **post

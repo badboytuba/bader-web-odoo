@@ -1,5 +1,5 @@
 // ============================================
-// Bader Layout — Header Styling + Mega Menu
+// Bader Layout - Header Styling + Mega Menu
 // ============================================
 // NUCLEAR override: targets #wrapwrap > header#top
 // to beat ANY Odoo theme/color system specificity.
@@ -13,7 +13,7 @@
 }
 
 // -----------------------------------------------
-// 2. Main Header — Maximum Specificity Override
+// 2. Main Header - Maximum Specificity Override
 // -----------------------------------------------
 #wrapwrap {
 
@@ -62,7 +62,7 @@
             }
         }
 
-        // Logo — green like reference
+        // Logo - green like reference
         .navbar-brand {
             margin-right: 40px;
             display: inline-flex;
@@ -101,7 +101,7 @@
         }
 
         // -----------------------------------------------
-        // Nav Links — Clean, minimal style
+        // Nav Links - Clean, minimal style
         // -----------------------------------------------
         .navbar-nav .nav-link,
         .top_menu>li>a,
@@ -205,7 +205,7 @@
             margin-left: auto;
         }
 
-        // ----- AI Search Pill — White border like reference -----
+        // ----- AI Search Pill - White border like reference -----
         .bader-search-pill {
             display: inline-flex;
             align-items: center;
@@ -278,7 +278,7 @@
         }
 
         // -----------------------------------------------
-        // Cart & User Icons — Match reference design
+        // Cart & User Icons - Match reference design
         // -----------------------------------------------
         .o_wsale_my_cart,
         .o_shopping_cart,
@@ -298,7 +298,7 @@
             display: none !important;
         }
 
-        // "TU CUENTA" style — green text like reference
+        // "TU CUENTA" style - green text like reference
         .o_header_call_to_action a,
         a[href^="/web/login"],
         a.bader-auth-trigger[data-bader-auth-open="login"],
@@ -310,7 +310,7 @@
             letter-spacing: 0.05em;
         }
 
-        // Hide the default "Contáctenos" call-to-action button
+        // Hide the default "Contactenos" call-to-action button
         .o_header_call_to_action .btn-primary,
         .navbar .btn-primary {
             display: none !important;
@@ -369,7 +369,7 @@ html.o_connected_user #wrapwrap>header#top {
 
 
 // -----------------------------------------------
-// 3. MEGA MENU – Bader Productos Dropdown
+// 3. MEGA MENU - Bader Productos Dropdown
 // -----------------------------------------------
 .bader-mega {
     position: fixed;
@@ -377,11 +377,12 @@ html.o_connected_user #wrapwrap>header#top {
     left: 0;
     right: 0;
     z-index: $z-header - 1;
-    background: $white;
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.08);
-    border-top: 3px solid $bader-green;
+    background: linear-gradient(180deg, #ffffff 0%, #f7fafb 100%);
+    box-shadow: 0 14px 44px rgba(1, 33, 41, 0.22), 0 4px 14px rgba(1, 33, 41, 0.10);
+    border-top: 2px solid rgba($bader-green, 0.95);
+    border-bottom: 1px solid rgba(130, 150, 170, 0.18);
     padding: 0;
-    // Hidden by default — use CSS class instead of inline display
+    // Hidden by default - use CSS class instead of inline display
     display: none;
     opacity: 0;
     transform: translateY(-8px);
@@ -398,46 +399,62 @@ html.o_connected_user #wrapwrap>header#top {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 24px 0 16px;
+        padding: 22px 0 14px;
         border-bottom: 1px solid $gray-100;
     }
 
     &__title {
-        font-size: 1.15rem;
+        font-size: 1.18rem;
         font-weight: 700;
         color: $bader-dark;
+        letter-spacing: 0.01em;
         margin: 0;
     }
 
     &__view-all {
-        font-size: 0.82rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.80rem;
         font-weight: 600;
         color: $bader-green;
         text-decoration: none;
-        transition: color $transition-fast;
+        border: 1px solid rgba($bader-green, 0.32);
+        border-radius: $radius-pill;
+        padding: 0.4rem 0.72rem;
+        background: rgba($bader-green, 0.07);
+        transition: color $transition-fast, background $transition-fast, border-color $transition-fast;
 
         &:hover {
             color: darken($bader-green, 10%);
+            border-color: rgba($bader-green, 0.48);
+            background: rgba($bader-green, 0.13);
         }
 
         .fa {
-            margin-left: 4px;
-            font-size: 0.7rem;
+            font-size: 0.68rem;
         }
     }
 
     &__grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 0;
-        padding: 20px 0 28px;
+        gap: 12px;
+        padding: 18px 0 24px;
     }
 
     &__col {
-        padding: 0 24px;
+        padding: 14px 16px 12px;
+        border: 1px solid rgba(130, 150, 170, 0.20);
+        border-radius: $radius-lg;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 4px 12px rgba(2, 48, 58, 0.05);
+        transition: transform $transition-fast, box-shadow $transition-fast, border-color $transition-fast;
 
-        &:not(:last-child) {
-            border-right: 1px solid $gray-100;
+        &:hover {
+            transform: translateY(-2px);
+            border-color: rgba($bader-green, 0.45);
+            box-shadow: 0 8px 18px rgba(2, 48, 58, 0.10);
         }
     }
 
@@ -451,7 +468,7 @@ html.o_connected_user #wrapwrap>header#top {
     &__icon {
         width: 42px;
         height: 42px;
-        border-radius: 50%;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -497,27 +514,30 @@ html.o_connected_user #wrapwrap>header#top {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 7px 8px;
+            padding: 7px 10px;
             color: $gray-600;
             font-size: 0.84rem;
             font-weight: 400;
             text-decoration: none;
+            border: 1px solid transparent;
             border-radius: $radius-sm;
-            transition: background $transition-fast, color $transition-fast;
+            transition: background $transition-fast, color $transition-fast, border-color $transition-fast;
 
             .fa-chevron-right {
                 font-size: 0.55rem;
                 color: $bader-green;
                 opacity: 0;
-                transition: opacity $transition-fast;
+                transition: opacity $transition-fast, transform $transition-fast;
             }
 
             &:hover {
-                background: rgba(132, 204, 22, 0.07);
+                background: rgba(132, 204, 22, 0.08);
+                border-color: rgba($bader-green, 0.24);
                 color: $bader-dark;
 
                 .fa-chevron-right {
                     opacity: 1;
+                    transform: translateX(2px);
                 }
             }
         }
@@ -531,12 +551,15 @@ html.o_connected_user #wrapwrap>header#top {
         font-weight: 600;
         color: $bader-green;
         text-decoration: none;
-        padding: 4px 8px;
+        padding: 0.36rem 0.62rem;
         border-radius: $radius-sm;
-        transition: background $transition-fast;
+        border: 1px solid rgba($bader-green, 0.22);
+        background: rgba($bader-green, 0.06);
+        transition: background $transition-fast, border-color $transition-fast;
 
         &:hover {
-            background: rgba(132, 204, 22, 0.1);
+            background: rgba(132, 204, 22, 0.12);
+            border-color: rgba($bader-green, 0.35);
         }
 
         .fa {
@@ -558,7 +581,7 @@ html.o_connected_user #wrapwrap>header#top {
 }
 
 // -----------------------------------------------
-// 4. Responsive — Mobile
+// 4. Responsive - Mobile
 // -----------------------------------------------
 @include mobile {
     body.bader-mobile-menu-open {
