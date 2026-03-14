@@ -21,6 +21,8 @@ desktop.ini
 
 # Node (if any frontend tooling)
 node_modules/
+package-lock.json
+.qa-artifacts/
 
 # IDE
 .vscode/

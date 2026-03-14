@@ -4549,3 +4549,960 @@
         font-size: 13px;
     }
 }
+
+/* PDP stabilization overrides */
+#product_detail.bader-product-detail .bader-app-detail-section,
+#product_detail.bader-product-detail .bader-app-faq-section,
+#product_detail.bader-product-detail .bader-app-related-section,
+#product_detail.bader-product-detail .bader-app-help-cta {
+    content-visibility: visible;
+    contain-intrinsic-size: auto;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell {
+    padding: clamp(18px, 2vw, 24px);
+    border-radius: 30px;
+    background:
+        radial-gradient(circle at top right, rgba(112, 212, 75, 0.22), transparent 24%),
+        linear-gradient(160deg, #0b4852 0%, #0e5963 52%, #114850 100%);
+    box-shadow: 0 28px 56px rgba(0, 56, 65, 0.14);
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell::before {
+    border-radius: 29px;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell__intro {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell__copy {
+    display: grid;
+    gap: 6px;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell__eyebrow {
+    margin: 0;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell__copy h2 {
+    margin: 0;
+    max-width: 15ch;
+    font-size: clamp(26px, 2vw, 34px);
+    line-height: 0.96;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell__copy p {
+    margin: 0;
+    max-width: 38ch;
+    font-size: 14px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell__stats {
+    grid-template-columns: repeat(3, minmax(88px, 1fr));
+    gap: 10px;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell__stat {
+    min-height: 76px;
+    padding: 12px 14px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell__stat strong {
+    font-size: 18px;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell__stat small {
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell__single-note {
+    min-height: 48px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product {
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 14px;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .o_carousel_product_indicators {
+    width: 88px;
+    min-width: 88px;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators {
+    gap: 10px;
+    max-height: clamp(320px, 35vw, 500px);
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators li,
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators button {
+    width: 78px !important;
+    height: 78px !important;
+    border-radius: 18px;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .o_carousel_product_outer {
+    border-radius: 28px;
+    box-shadow: 0 22px 40px rgba(0, 0, 0, 0.14);
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-inner {
+    min-height: clamp(360px, 38vw, 520px);
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-item img,
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-inner img[itemprop='image'] {
+    padding: clamp(22px, 3vw, 34px);
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell .bader-app-gallery-support {
+    margin-top: 14px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell .bader-app-gallery-support__card {
+    min-height: 0;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: none;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 12px;
+    contain: none;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell .bader-app-gallery-support__card strong {
+    margin: 1px 0 5px;
+    max-width: none;
+    font-size: 16px;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell .bader-app-gallery-support__card p {
+    max-width: none;
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-line-clamp: 2;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell .bader-app-gallery-support__icon {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border-radius: 14px;
+}
+
+#product_detail.bader-product-detail .bader-app-summary {
+    max-width: 54ch;
+    font-size: 17px;
+    line-height: 1.68;
+}
+
+#product_detail.bader-product-detail .bader-app-fit-grid,
+#product_detail.bader-product-detail .bader-app-trust-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+#product_detail.bader-product-detail .bader-app-fit-card,
+#product_detail.bader-product-detail .bader-app-trust-card {
+    min-height: 120px;
+    padding: 18px;
+    border-radius: 20px;
+}
+
+#product_detail.bader-product-detail .bader-app-fit-card span,
+#product_detail.bader-product-detail .bader-app-trust-card p {
+    -webkit-line-clamp: 3;
+}
+
+#product_detail.bader-product-detail .bader-app-section-heading h2,
+#product_detail.bader-product-detail .bader-app-related-head h2,
+#product_detail.bader-product-detail .bader-app-faq-head h2 {
+    max-width: 18ch;
+    font-size: clamp(30px, 3vw, 40px);
+}
+
+#product_detail.bader-product-detail .bader-app-detail-card {
+    padding: 24px;
+    border-radius: 24px;
+}
+
+#product_detail.bader-product-detail .bader-app-detail-card__header h3 {
+    font-size: 28px;
+}
+
+#product_detail.bader-product-detail .bader-app-description-wrap {
+    position: relative;
+    overflow: hidden;
+    max-height: 540px;
+}
+
+#product_detail.bader-product-detail .bader-app-description-wrap.is-expanded,
+#product_detail.bader-product-detail .bader-app-description-wrap.is-short {
+    max-height: none;
+}
+
+#product_detail.bader-product-detail .bader-app-description-wrap:not(.is-expanded):not(.is-short)::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 108px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.98) 62%);
+    pointer-events: none;
+}
+
+#product_detail.bader-product-detail .bader-app-description-toggle {
+    margin-top: 16px;
+    min-height: 44px;
+    padding: 10px 16px;
+    border: 1px solid rgba(0, 56, 65, 0.08);
+    border-radius: 999px;
+    background: rgba(0, 56, 65, 0.04);
+    color: var(--bader-pdp-deep);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+#product_detail.bader-product-detail .bader-app-description-body,
+#product_detail.bader-product-detail .bader-app-description-body__fallback {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+
+    img,
+    iframe,
+    table,
+    pre,
+    code {
+        max-width: 100% !important;
+    }
+
+    table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    pre,
+    code {
+        white-space: pre-wrap;
+    }
+}
+
+#product_detail.bader-product-detail .bader-app-faq-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+#product_detail.bader-product-detail .bader-app-faq-item {
+    height: 100%;
+    padding: 20px;
+    border-radius: 20px;
+}
+
+#product_detail.bader-product-detail .bader-app-faq-item h3 {
+    font-size: 22px;
+}
+
+#product_detail.bader-product-detail .bader-app-related-grid {
+    row-gap: 20px;
+}
+
+#product_detail.bader-product-detail .bader-app-related-grid>[class*='col-'] {
+    display: flex;
+}
+
+#product_detail.bader-product-detail .bader-app-related-card {
+    width: 100%;
+    min-width: 0;
+    min-height: 100%;
+    gap: 14px;
+    padding: 18px;
+    border-radius: 22px;
+}
+
+#product_detail.bader-product-detail .bader-app-related-card__image {
+    min-height: 220px;
+    display: grid;
+    place-items: center;
+    border-radius: 18px;
+}
+
+#product_detail.bader-product-detail .bader-app-related-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 14px;
+}
+
+#product_detail.bader-product-detail .bader-app-related-card__name {
+    min-height: 44px;
+}
+
+#product_detail.bader-product-detail .bader-app-related-card__price {
+    font-size: 22px;
+}
+
+@media (max-width: 991px) {
+    #product_detail.bader-product-detail .bader-app-gallery-shell {
+        padding: 16px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell__head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell__stats {
+        width: 100%;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product {
+        grid-template-columns: 1fr;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .o_carousel_product_indicators {
+        width: 100%;
+        min-width: 0;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators {
+        flex-direction: row;
+        max-height: none;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-right: 0;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell .bader-app-gallery-support,
+    #product_detail.bader-product-detail .bader-app-fit-grid,
+    #product_detail.bader-product-detail .bader-app-trust-grid,
+    #product_detail.bader-product-detail .bader-app-faq-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767px) {
+    #product_detail.bader-product-detail .bader-app-gallery-shell__intro {
+        align-items: flex-start;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell__copy h2 {
+        max-width: 12ch;
+        font-size: 26px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell__stats,
+    #product_detail.bader-product-detail .bader-app-highlight-grid,
+    #product_detail.bader-product-detail .bader-app-gallery-quickbar {
+        grid-template-columns: 1fr;
+    }
+
+    #product_detail.bader-product-detail .bader-app-section-heading h2,
+    #product_detail.bader-product-detail .bader-app-related-head h2,
+    #product_detail.bader-product-detail .bader-app-faq-head h2 {
+        font-size: 30px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-detail-section,
+    #product_detail.bader-product-detail .bader-app-faq-shell,
+    #product_detail.bader-product-detail .bader-app-related-shell {
+        padding: 22px 18px;
+        border-radius: 26px;
+    }
+}
+
+/* PDP lower sections live outside #product_detail, so they need global styling too */
+.oe_website_sale {
+    --bader-pdp-primary: #70d44b;
+    --bader-pdp-deep: #003841;
+    --bader-pdp-deep-soft: #0d525d;
+    --bader-pdp-text: #152430;
+    --bader-pdp-muted: #5e707b;
+    --bader-pdp-border: rgba(0, 56, 65, 0.12);
+    --bader-pdp-surface: rgba(255, 255, 255, 0.96);
+    --bader-pdp-shadow: 0 28px 54px rgba(0, 56, 65, 0.12);
+    --bader-pdp-shadow-soft: 0 16px 30px rgba(0, 56, 65, 0.08);
+}
+
+.bader-app-detail-section,
+.bader-app-faq-shell,
+.bader-app-related-shell {
+    margin-top: 58px;
+    padding: clamp(24px, 3vw, 38px);
+    border-radius: 34px;
+    border: 1px solid var(--bader-pdp-border);
+    background:
+        radial-gradient(circle at top right, rgba(112, 212, 75, 0.12), transparent 24%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(246, 250, 248, 0.96));
+    box-shadow: var(--bader-pdp-shadow);
+}
+
+.bader-app-section-heading,
+.bader-app-related-head {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.bader-app-faq-head {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+.bader-app-section-heading h2,
+.bader-app-related-head h2,
+.bader-app-faq-head h2 {
+    margin: 0;
+    max-width: 18ch;
+    font-family: 'Bader Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: clamp(30px, 3vw, 40px);
+    line-height: 0.98;
+    letter-spacing: -0.05em;
+    color: var(--bader-pdp-text);
+}
+
+.bader-app-section-heading p,
+.bader-app-related-head p,
+.bader-app-faq-head p {
+    margin: 0;
+    max-width: 64ch;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--bader-pdp-muted);
+}
+
+.bader-app-tablist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 8px;
+    border: 0;
+    border-radius: 22px;
+    background: rgba(0, 56, 65, 0.06);
+}
+
+.bader-app-tablist .nav-item {
+    margin: 0;
+}
+
+.bader-app-tablist .nav-link {
+    min-height: 48px;
+    padding: 12px 20px;
+    border: 0 !important;
+    border-radius: 16px;
+    background: transparent;
+    color: var(--bader-pdp-muted);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.bader-app-tablist .nav-link.active {
+    background: #ffffff;
+    color: var(--bader-pdp-deep);
+    box-shadow: var(--bader-pdp-shadow-soft);
+}
+
+.bader-app-tab-content {
+    margin-top: 20px;
+}
+
+.bader-app-detail-card {
+    padding: 24px;
+    border-radius: 24px;
+    border: 1px solid var(--bader-pdp-border);
+    background: var(--bader-pdp-surface);
+    box-shadow: var(--bader-pdp-shadow-soft);
+}
+
+.bader-app-detail-card__header {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.bader-app-detail-card__header h3 {
+    margin: 0;
+    font-family: 'Bader Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 28px;
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    color: var(--bader-pdp-text);
+}
+
+.bader-app-detail-card__header p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--bader-pdp-muted);
+}
+
+.bader-app-description-wrap {
+    position: relative;
+    overflow: hidden;
+    max-height: 540px;
+}
+
+.bader-app-description-wrap.is-expanded,
+.bader-app-description-wrap.is-short {
+    max-height: none;
+}
+
+.bader-app-description-wrap:not(.is-expanded):not(.is-short)::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 108px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.98) 62%);
+    pointer-events: none;
+}
+
+.bader-app-description-toggle {
+    margin-top: 16px;
+    min-height: 44px;
+    padding: 10px 16px;
+    border: 1px solid rgba(0, 56, 65, 0.08);
+    border-radius: 999px;
+    background: rgba(0, 56, 65, 0.04);
+    color: var(--bader-pdp-deep);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.bader-app-description-body,
+.bader-app-description-body__fallback {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    color: var(--bader-pdp-muted);
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.bader-app-description-body img,
+.bader-app-description-body iframe,
+.bader-app-description-body table,
+.bader-app-description-body pre,
+.bader-app-description-body code,
+.bader-app-description-body__fallback img,
+.bader-app-description-body__fallback iframe,
+.bader-app-description-body__fallback table,
+.bader-app-description-body__fallback pre,
+.bader-app-description-body__fallback code {
+    max-width: 100% !important;
+}
+
+.bader-app-description-body table,
+.bader-app-description-body__fallback table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.bader-app-description-body pre,
+.bader-app-description-body code,
+.bader-app-description-body__fallback pre,
+.bader-app-description-body__fallback code {
+    white-space: pre-wrap;
+}
+
+.bader-app-feature-grid,
+.bader-app-spec-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 24px;
+}
+
+.bader-app-feature-item,
+.bader-app-spec-item {
+    min-height: 72px;
+    padding: 16px 18px;
+    border-radius: 18px;
+    border: 1px solid rgba(0, 56, 65, 0.06);
+    background: rgba(245, 249, 247, 0.98);
+}
+
+.bader-app-feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--bader-pdp-text);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.bader-app-feature-item i {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: rgba(112, 212, 75, 0.18);
+    color: var(--bader-pdp-deep);
+}
+
+.bader-app-spec-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.bader-app-spec-item span {
+    color: var(--bader-pdp-muted);
+    font-size: 14px;
+}
+
+.bader-app-spec-item strong {
+    text-align: right;
+    color: var(--bader-pdp-text);
+    font-size: 15px;
+}
+
+.bader-app-info-panels {
+    display: grid;
+    gap: 16px;
+}
+
+.bader-app-info-panel {
+    display: flex;
+    gap: 16px;
+    padding: 22px;
+    border-radius: 24px;
+    border: 1px solid transparent;
+}
+
+.bader-app-info-panel strong {
+    display: block;
+    margin-bottom: 6px;
+    font-family: 'Bader Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 22px;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+}
+
+.bader-app-info-panel p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.72;
+}
+
+.bader-app-info-panel__icon {
+    width: 56px;
+    height: 56px;
+    flex: 0 0 56px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    font-size: 24px;
+    color: #ffffff;
+}
+
+.bader-app-info-panel--emerald {
+    background: linear-gradient(145deg, rgba(16, 185, 129, 0.12), rgba(209, 250, 229, 0.88));
+    border-color: rgba(16, 185, 129, 0.18);
+    color: #0f766e;
+}
+
+.bader-app-info-panel--emerald .bader-app-info-panel__icon {
+    background: #10b981;
+}
+
+.bader-app-info-panel--blue {
+    background: linear-gradient(145deg, rgba(59, 130, 246, 0.12), rgba(219, 234, 254, 0.88));
+    border-color: rgba(59, 130, 246, 0.18);
+    color: #1d4ed8;
+}
+
+.bader-app-info-panel--blue .bader-app-info-panel__icon {
+    background: #3b82f6;
+}
+
+.bader-app-info-panel--purple {
+    background: linear-gradient(145deg, rgba(168, 85, 247, 0.12), rgba(243, 232, 255, 0.88));
+    border-color: rgba(168, 85, 247, 0.18);
+    color: #7c3aed;
+}
+
+.bader-app-info-panel--purple .bader-app-info-panel__icon {
+    background: #a855f7;
+}
+
+.bader-app-info-panel--orange {
+    background: linear-gradient(145deg, rgba(249, 115, 22, 0.12), rgba(255, 237, 213, 0.88));
+    border-color: rgba(249, 115, 22, 0.18);
+    color: #c2410c;
+}
+
+.bader-app-info-panel--orange .bader-app-info-panel__icon {
+    background: #f97316;
+}
+
+.bader-app-faq-head__icon {
+    width: 58px;
+    height: 58px;
+    flex: 0 0 58px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    background: linear-gradient(145deg, var(--bader-pdp-primary), var(--bader-pdp-deep));
+    color: #ffffff;
+    font-size: 26px;
+    box-shadow: 0 18px 30px rgba(0, 56, 65, 0.16);
+}
+
+.bader-app-faq-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.bader-app-faq-item {
+    height: 100%;
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 56, 65, 0.08);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: var(--bader-pdp-shadow-soft);
+}
+
+.bader-app-faq-item h3 {
+    margin: 0 0 10px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-family: 'Bader Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 22px;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    color: var(--bader-pdp-text);
+}
+
+.bader-app-faq-item h3 span {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: rgba(112, 212, 75, 0.18);
+    color: var(--bader-pdp-deep);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.bader-app-faq-item p {
+    margin: 0;
+    padding-left: 46px;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--bader-pdp-muted);
+}
+
+.bader-app-faq-cta {
+    margin-top: 22px;
+    padding: 22px 24px;
+    border-radius: 24px;
+    border: 1px solid rgba(112, 212, 75, 0.2);
+    background: linear-gradient(145deg, rgba(112, 212, 75, 0.12), rgba(0, 56, 65, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.bader-app-faq-cta__copy strong {
+    display: block;
+    margin-bottom: 6px;
+    font-family: 'Bader Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 26px;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--bader-pdp-text);
+}
+
+.bader-app-faq-cta__copy p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--bader-pdp-muted);
+}
+
+.bader-app-faq-cta__button {
+    min-width: 148px;
+    min-height: 52px;
+    padding: 12px 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: linear-gradient(145deg, var(--bader-pdp-deep), var(--bader-pdp-deep-soft));
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 18px 28px rgba(0, 56, 65, 0.18);
+}
+
+.bader-app-related-grid {
+    row-gap: 20px;
+}
+
+.bader-app-related-grid>[class*='col-'] {
+    display: flex;
+}
+
+.bader-app-related-card {
+    width: 100%;
+    min-width: 0;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px;
+    border-radius: 22px;
+    border: 1px solid var(--bader-pdp-border);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: var(--bader-pdp-shadow-soft);
+    text-decoration: none;
+}
+
+.bader-app-related-card__tag {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    min-height: 28px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: rgba(0, 56, 65, 0.06);
+    color: var(--bader-pdp-deep);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.bader-app-related-card__image {
+    min-height: 220px;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(245, 249, 247, 0.96), rgba(255, 255, 255, 0.94));
+    overflow: hidden;
+}
+
+.bader-app-related-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 14px;
+}
+
+.bader-app-related-card__name {
+    min-height: 44px;
+    color: var(--bader-pdp-text);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.bader-app-related-card__price-row {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.bader-app-related-card__price {
+    color: var(--bader-pdp-deep);
+    font-family: 'Bader Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 22px;
+    line-height: 1;
+    letter-spacing: -0.04em;
+}
+
+.bader-app-related-card__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 56, 65, 0.08);
+    background: rgba(0, 56, 65, 0.05);
+    color: var(--bader-pdp-deep);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+@media (max-width: 991px) {
+    .bader-app-feature-grid,
+    .bader-app-spec-grid,
+    .bader-app-faq-list {
+        grid-template-columns: 1fr;
+    }
+
+    .bader-app-faq-cta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 767px) {
+    .bader-app-detail-section,
+    .bader-app-faq-shell,
+    .bader-app-related-shell {
+        padding: 22px 18px;
+        border-radius: 26px;
+    }
+
+    .bader-app-section-heading h2,
+    .bader-app-related-head h2,
+    .bader-app-faq-head h2 {
+        font-size: 30px;
+    }
+
+    .bader-app-related-grid>[class*='col-'] {
+        flex: 0 0 82vw;
+        max-width: 82vw;
+    }
+}

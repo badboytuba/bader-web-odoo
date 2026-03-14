@@ -30,32 +30,32 @@
                      t-att-data-gallery-count="len(gallery_images)"
                      aria-label="Galeria visual del producto">
                 <div class="bader-app-gallery-shell__head">
-                    <div class="bader-app-gallery-shell__copy">
-                        <span class="bader-app-gallery-shell__eyebrow">Decision visual</span>
-                        <h2 t-if="len(gallery_images) > 1">Inspecciona el equipo con lectura de showroom.</h2>
-                        <h2 t-else="">Vista tecnica del producto.</h2>
-                        <p t-if="len(gallery_images) > 1 and pdp_persona_copy and pdp_persona_copy.get('market_focus') and pdp_persona_copy.get('market_focus', {}).get('text')"
-                           t-esc="pdp_persona_copy.get('market_focus', {}).get('text')"/>
-                        <p t-elif="len(gallery_images) > 1">Vista principal limpia, miniaturas ordenadas y una lectura mas clara para validar forma, escala y acabados antes de comprar.</p>
-                        <p t-else="">Ficha visual compacta para validar forma, compatibilidad y referencia del producto sin una galeria sobredimensionada.</p>
+                    <div class="bader-app-gallery-shell__intro">
+                        <span class="bader-app-gallery-shell__eyebrow">Galeria Bader</span>
+                        <div class="bader-app-gallery-shell__copy">
+                            <h2 t-if="len(gallery_images) > 1">Galeria lista para decidir.</h2>
+                            <h2 t-else="">Imagen principal clara.</h2>
+                            <p t-if="len(gallery_images) > 1">Miniaturas ordenadas, zoom rapido y una lectura limpia para validar acabados sin ruido visual.</p>
+                            <p t-else="">Vista compacta con zoom activo y referencia visible para revisar el producto sin una galeria sobredimensionada.</p>
+                        </div>
                     </div>
                     <div t-if="len(gallery_images) > 1" class="bader-app-gallery-shell__stats" role="list" aria-label="Indicadores de navegacion visual">
                         <span class="bader-app-gallery-shell__stat" role="listitem">
                             <strong t-esc="len(gallery_images)"/>
-                            <small>vistas</small>
+                            <small>vistas utiles</small>
                         </span>
                         <span class="bader-app-gallery-shell__stat" role="listitem">
-                            <strong>Zoom</strong>
+                            <strong>Zoom HD</strong>
                             <small>tap o click</small>
                         </span>
                         <span class="bader-app-gallery-shell__stat" role="listitem">
-                            <strong>Orden</strong>
+                            <strong>Secuencia</strong>
                             <small>navegacion clara</small>
                         </span>
                     </div>
                     <div t-else="" class="bader-app-gallery-shell__single-note">
                         <i class="fa fa-search-plus"/>
-                        <span>Imagen principal en alta definicion. Click para ampliar.</span>
+                        <span>Imagen principal en alta definicion con zoom activo.</span>
                     </div>
                 </div>
                 <div class="bader-app-gallery-shell__stage">
@@ -67,8 +67,8 @@
                             <i class="fa fa-search-plus"/>
                         </span>
                         <div>
-                            <strong>Vista general</strong>
-                            <p>La foto principal deja validar forma, escala y presencia del equipo.</p>
+                            <strong>Escala real</strong>
+                            <p>La foto principal ayuda a validar forma y presencia del producto.</p>
                         </div>
                     </article>
                     <article class="bader-app-gallery-support__card">
@@ -76,8 +76,8 @@
                             <i class="fa fa-clone"/>
                         </span>
                         <div>
-                            <strong>Detalles utiles</strong>
-                            <p>Las miniaturas sirven para revisar piezas y acabados sin perder contexto.</p>
+                            <strong>Piezas y angulos</strong>
+                            <p>Las miniaturas ordenadas dejan revisar detalles sin perder contexto.</p>
                         </div>
                     </article>
                     <article class="bader-app-gallery-support__card">
@@ -85,8 +85,8 @@
                             <i class="fa fa-shield"/>
                         </span>
                         <div>
-                            <strong>Decision rapida</strong>
-                            <p>Zoom, referencia y navegacion clara reducen friccion antes de comprar.</p>
+                            <strong>Referencia rapida</strong>
+                            <p>Zoom y navegacion clara reducen friccion antes de comprar.</p>
                         </div>
                     </article>
                 </section>
@@ -180,6 +180,8 @@
                 </t>
             </div>
         </xpath>
+
+        <xpath expr="//div[@id='product_details']/p[hasclass('text-muted') and hasclass('my-2')]" position="replace"/>
 
         <xpath expr="//div[@id='product_details']//t[@t-call='website_sale.product_price']" position="after">
             <div class="bader-app-price-meta">
@@ -338,9 +340,17 @@
                                 <h3>Acerca de este producto</h3>
                                 <p>Una lectura mas clara para entender valor, uso y respaldo antes de la decision.</p>
                             </div>
-                            <div class="bader-app-description-body" t-if="product.website_description" t-field="product.website_description"/>
-                            <p class="bader-app-description-body__fallback" t-elif="product.description_sale" t-field="product.description_sale"/>
-                            <p class="bader-app-description-body__fallback" t-else="">Producto profesional Bader con calidad europea y soporte tecnico especializado.</p>
+                            <div class="bader-app-description-wrap" data-bader-description-wrap="1">
+                                <div class="bader-app-description-body" t-if="product.website_description" t-field="product.website_description"/>
+                                <p class="bader-app-description-body__fallback" t-elif="product.description_sale" t-field="product.description_sale"/>
+                                <p class="bader-app-description-body__fallback" t-else="">Producto profesional Bader con calidad europea y soporte tecnico especializado.</p>
+                            </div>
+                            <button type="button"
+                                    class="bader-app-description-toggle"
+                                    data-bader-description-toggle="1"
+                                    aria-expanded="false">
+                                Ver descripcion completa
+                            </button>
 
                             <div class="bader-app-feature-grid" role="list" aria-label="Caracteristicas principales">
                                 <div class="bader-app-feature-item" role="listitem">

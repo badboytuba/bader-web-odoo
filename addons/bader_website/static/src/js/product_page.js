@@ -32,8 +32,24 @@
             if (!normalized) return null;
             normalized = normalized.replace(/[^\d.,]/g, '');
             if (!normalized) return null;
-            if (normalized.indexOf(',') !== -1) {
-                normalized = normalized.replace(/\./g, '').replace(',', '.');
+
+            var lastComma = normalized.lastIndexOf(',');
+            var lastDot = normalized.lastIndexOf('.');
+
+            if (lastComma !== -1 && lastDot !== -1) {
+                if (lastComma > lastDot) {
+                    normalized = normalized.replace(/\./g, '').replace(',', '.');
+                } else {
+                    normalized = normalized.replace(/,/g, '');
+                }
+            } else if (lastComma !== -1) {
+                var commaDecimals = normalized.length - lastComma - 1;
+                normalized = commaDecimals <= 2
+                    ? normalized.replace(/\./g, '').replace(',', '.')
+                    : normalized.replace(/,/g, '');
+            } else if (lastDot !== -1) {
+                var dotDecimals = normalized.length - lastDot - 1;
+                normalized = dotDecimals <= 2 ? normalized : normalized.replace(/\./g, '');
             }
             var parsed = parseFloat(normalized);
             return isNaN(parsed) ? null : parsed;
@@ -193,6 +209,38 @@
                 maximumFractionDigits: 2,
             });
             note.textContent = 'o 12x ' + symbol + installment + ' sin interes';
+        }
+
+        function initDescriptionToggle() {
+            var wrap = productRoot.querySelector('[data-bader-description-wrap="1"]');
+            var button = productRoot.querySelector('[data-bader-description-toggle="1"]');
+            if (!wrap || !button || button.getAttribute('data-bader-ready') === '1') {
+                return;
+            }
+
+            var collapsedLabel = 'Ver descripcion completa';
+            var expandedLabel = 'Ver descripcion resumida';
+
+            function syncExpandedState(isExpanded) {
+                wrap.classList.toggle('is-expanded', !!isExpanded);
+                button.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+                button.textContent = isExpanded ? expandedLabel : collapsedLabel;
+            }
+
+            var shouldClamp = wrap.scrollHeight > 760;
+            if (!shouldClamp) {
+                wrap.classList.add('is-short');
+                button.hidden = true;
+                button.setAttribute('data-bader-ready', '1');
+                return;
+            }
+
+            syncExpandedState(false);
+            button.addEventListener('click', function () {
+                var isExpanded = button.getAttribute('aria-expanded') === 'true';
+                syncExpandedState(!isExpanded);
+            });
+            button.setAttribute('data-bader-ready', '1');
         }
 
         function readStoredPersona() {
@@ -499,6 +547,7 @@
             initGalleryLightbox();
             initQtyControls();
             initInstallmentNote();
+            initDescriptionToggle();
             initMobileDock();
             initSecondaryActions();
         }
@@ -509,21 +558,7 @@
             return;
         }
         applyEnhancements();
-        window.setTimeout(applyEnhancements, 300);
-        window.setTimeout(applyEnhancements, 1000);
-        window.setTimeout(applyEnhancements, 2000);
-
-        if ('MutationObserver' in window) {
-            var observer = new MutationObserver(function () {
-                applyEnhancements();
-            });
-            observer.observe(productRoot, { childList: true, subtree: true });
-            window.setTimeout(function () {
-                if (observer && observer.disconnect) {
-                    observer.disconnect();
-                }
-            }, 25000);
-        }
+        window.setTimeout(applyEnhancements, 400);
     }
 
     if (startIfReady()) return;
