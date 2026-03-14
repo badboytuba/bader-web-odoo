@@ -16,6 +16,75 @@
             <attribute name="class" add="bader-app-hero-grid" separator=" "/>
         </xpath>
 
+        <xpath expr="//div[@id='product_detail_main']/div[t[@t-call='website_sale.shop_product_images']]" position="attributes">
+            <attribute name="class" add="bader-app-gallery-column" separator=" "/>
+        </xpath>
+
+        <xpath expr="//div[@id='product_details']" position="attributes">
+            <attribute name="class" add="bader-app-info-column" separator=" "/>
+        </xpath>
+
+        <xpath expr="//div[@id='product_detail_main']//t[@t-call='website_sale.shop_product_images']" position="replace">
+            <t t-set="gallery_images" t-value="product_variant._get_images() if product_variant else product._get_images()"/>
+            <section class="bader-app-gallery-shell" aria-label="Galeria visual del producto">
+                <div class="bader-app-gallery-shell__head">
+                    <div class="bader-app-gallery-shell__copy">
+                        <span class="bader-app-gallery-shell__eyebrow">Decision visual</span>
+                        <h2>Inspecciona el equipo con lectura de showroom.</h2>
+                        <p t-if="pdp_persona_copy and pdp_persona_copy.get('market_focus') and pdp_persona_copy.get('market_focus', {}).get('text')"
+                           t-esc="pdp_persona_copy.get('market_focus', {}).get('text')"/>
+                        <p t-else="">Vista principal limpia, miniaturas ordenadas y una lectura mas clara para validar forma, escala y acabados antes de comprar.</p>
+                    </div>
+                    <div class="bader-app-gallery-shell__stats" role="list" aria-label="Indicadores de navegacion visual">
+                        <span class="bader-app-gallery-shell__stat" role="listitem">
+                            <strong t-esc="len(gallery_images)"/>
+                            <small>vistas</small>
+                        </span>
+                        <span class="bader-app-gallery-shell__stat" role="listitem">
+                            <strong>Zoom</strong>
+                            <small>tap o click</small>
+                        </span>
+                        <span class="bader-app-gallery-shell__stat" role="listitem">
+                            <strong>Orden</strong>
+                            <small>navegacion clara</small>
+                        </span>
+                    </div>
+                </div>
+                <div class="bader-app-gallery-shell__stage">
+                    <t t-call="website_sale.shop_product_images"/>
+                </div>
+                <section class="bader-app-gallery-support" aria-label="Beneficios visuales del producto">
+                    <article class="bader-app-gallery-support__card">
+                        <span class="bader-app-gallery-support__icon">
+                            <i class="fa fa-search-plus"/>
+                        </span>
+                        <div>
+                            <strong>Vista principal clara</strong>
+                            <p>La imagen central gana presencia y deja respirar el producto sin ruido visual.</p>
+                        </div>
+                    </article>
+                    <article class="bader-app-gallery-support__card">
+                        <span class="bader-app-gallery-support__icon">
+                            <i class="fa fa-clone"/>
+                        </span>
+                        <div>
+                            <strong>Detalle por secuencia</strong>
+                            <p>Las miniaturas quedan ordenadas para revisar piezas, acabados y angulos sin perder contexto.</p>
+                        </div>
+                    </article>
+                    <article class="bader-app-gallery-support__card">
+                        <span class="bader-app-gallery-support__icon">
+                            <i class="fa fa-shield"/>
+                        </span>
+                        <div>
+                            <strong>Percepcion premium</strong>
+                            <p>El bloque completo transmite mas respaldo, precision tecnica y calidad de marca.</p>
+                        </div>
+                    </article>
+                </section>
+            </section>
+        </xpath>
+
         <xpath expr="//div[@id='product_details']/h1[@itemprop='name']" position="before">
             <div class="bader-app-meta-row">
                 <div class="bader-app-category-pills">
@@ -469,38 +538,6 @@
                         </t>
                     </div>
                 </div>
-            </section>
-        </xpath>
-
-        <xpath expr="//div[@id='product_detail_main']" position="after">
-            <section class="bader-app-gallery-support" id="bader_app_gallery_support" aria-label="Beneficios visuales del producto">
-                <article class="bader-app-gallery-support__card">
-                    <span class="bader-app-gallery-support__icon">
-                        <i class="fa fa-search-plus"/>
-                    </span>
-                    <div>
-                        <strong>Vista principal clara</strong>
-                        <p>Imagen square con foco total en escala, forma y presencia del equipo.</p>
-                    </div>
-                </article>
-                <article class="bader-app-gallery-support__card">
-                    <span class="bader-app-gallery-support__icon">
-                        <i class="fa fa-clone"/>
-                    </span>
-                    <div>
-                        <strong>Lectura por detalle</strong>
-                        <p>Miniaturas ordenadas para revisar acabados, piezas y componentes sin perder ritmo.</p>
-                    </div>
-                </article>
-                <article class="bader-app-gallery-support__card">
-                    <span class="bader-app-gallery-support__icon">
-                        <i class="fa fa-shield"/>
-                    </span>
-                    <div>
-                        <strong>Confianza de marca</strong>
-                        <p>La galeria ya no se rompe: ahora vende respaldo, precision y calidad Bader.</p>
-                    </div>
-                </article>
             </section>
         </xpath>
 

@@ -166,14 +166,6 @@
             });
         }
 
-        function mountGallerySupport() {
-            var support = document.querySelector('#bader_app_gallery_support');
-            var galleryColumn = productRoot.querySelector('.o_wsale_product_images');
-            if (!support || !galleryColumn) return;
-            if (support.parentNode === galleryColumn) return;
-            galleryColumn.appendChild(support);
-        }
-
         function initQtyControls() {
             var qtyControl = productRoot.querySelector('#o_wsale_cta_wrapper .css_quantity');
             if (!qtyControl) return;
@@ -504,7 +496,6 @@
         }
 
         function applyEnhancements() {
-            mountGallerySupport();
             initGalleryLightbox();
             initQtyControls();
             initInstallmentNote();
