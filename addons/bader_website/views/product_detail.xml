@@ -459,6 +459,27 @@
                 </article>
             </section>
         </xpath>
+
+        <xpath expr="//section[@id='bader_pdp_related']" position="after">
+            <section class="bader-app-help-cta" id="bader_pdp_help_cta" aria-label="Contacto de ayuda">
+                <div class="bader-app-help-cta__content">
+                    <span class="bader-app-help-cta__icon">
+                        <i class="fa fa-comments"/>
+                    </span>
+                    <div class="bader-app-help-cta__text">
+                        <h3>Tienes dudas sobre este producto?</h3>
+                        <p>Nuestros especialistas estan listos para ayudarte</p>
+                    </div>
+                </div>
+                <a class="bader-app-help-cta__button"
+                   href="https://wa.me/5491124522097?text=Hola!%20Necesito%20asesoria%20sobre%20este%20producto"
+                   target="_blank"
+                   rel="noopener">
+                    <i class="fa fa-whatsapp"/>
+                    Chatear por WhatsApp
+                </a>
+            </section>
+        </xpath>
     </template>
 
 </odoo>

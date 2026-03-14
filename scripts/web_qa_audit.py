@@ -276,6 +276,14 @@ def host_from_url(url: str) -> str:
     return (urlparse(url).hostname or "").lower()
 
 
+def get_csp_directive_value(csp_value: str, directive: str) -> str:
+    for chunk in (csp_value or "").split(";"):
+        normalized = chunk.strip()
+        if normalized.lower().startswith(directive.lower() + " "):
+            return normalized
+    return ""
+
+
 def is_forbidden_link(url: str, forbidden_domains: Tuple[str, ...]) -> bool:
     host = host_from_url(url)
     if not host:
@@ -374,11 +382,12 @@ def audit_pages(
         missing_required = [h for h in REQUIRED_SECURITY_HEADERS if h not in headers]
         missing_recommended = [h for h in RECOMMENDED_SECURITY_HEADERS if h not in headers]
         csp_value = headers.get("content-security-policy", "").lower()
+        script_src_value = get_csp_directive_value(csp_value, "script-src")
         csp_weak_flags: List[str] = []
-        if "'unsafe-inline'" in csp_value:
-            csp_weak_flags.append("unsafe-inline")
-        if "'unsafe-eval'" in csp_value:
-            csp_weak_flags.append("unsafe-eval")
+        if "'unsafe-inline'" in script_src_value:
+            csp_weak_flags.append("script-src unsafe-inline")
+        if "'unsafe-eval'" in script_src_value:
+            csp_weak_flags.append("script-src unsafe-eval")
 
         if idx == 0:
             baseline_headers = headers
