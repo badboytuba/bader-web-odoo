@@ -4228,6 +4228,25 @@
     text-transform: uppercase;
 }
 
+#product_detail.bader-product-detail .bader-app-gallery-shell__single-note {
+    min-height: 54px;
+    padding: 14px 18px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell__single-note i {
+    font-size: 16px;
+    color: #70d44b;
+}
+
 #product_detail.bader-product-detail .bader-app-gallery-shell__stage {
     position: relative;
     z-index: 1;
@@ -4352,6 +4371,62 @@
     color: #ffffff;
 }
 
+#product_detail.bader-product-detail .bader-app-gallery-shell.is-single-shot .bader-app-gallery-shell__head {
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell.is-single-shot #o-carousel-product {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell.is-single-shot #o-carousel-product .o_carousel_product_indicators {
+    display: none !important;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell.is-single-shot #o-carousel-product .o_carousel_product_outer {
+    border-radius: 30px;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell.is-single-shot #o-carousel-product .carousel-inner {
+    min-height: clamp(340px, 34vw, 520px);
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell.is-single-shot #o-carousel-product .carousel-item img,
+#product_detail.bader-product-detail .bader-app-gallery-shell.is-single-shot #o-carousel-product .carousel-inner img[itemprop='image'] {
+    padding: clamp(20px, 3vw, 32px);
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-quickbar {
+    position: relative;
+    z-index: 1;
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-quickbar__item {
+    min-height: 52px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-quickbar__item i {
+    color: #70d44b;
+    font-size: 14px;
+}
+
 @media (max-width: 1199px) {
     #product_detail.bader-product-detail .bader-app-gallery-shell__head {
         grid-template-columns: 1fr;
@@ -4363,6 +4438,10 @@
 
     #product_detail.bader-product-detail .bader-app-gallery-shell .bader-app-gallery-support {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-quickbar {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 
@@ -4402,6 +4481,10 @@
     #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-inner {
         min-height: clamp(360px, 76vw, 560px);
     }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell.is-single-shot #o-carousel-product .carousel-inner {
+        min-height: clamp(320px, 70vw, 460px);
+    }
 }
 
 @media (max-width: 767px) {
@@ -4414,12 +4497,17 @@
     }
 
     #product_detail.bader-product-detail .bader-app-gallery-shell__stats,
-    #product_detail.bader-product-detail .bader-app-gallery-shell .bader-app-gallery-support {
+    #product_detail.bader-product-detail .bader-app-gallery-shell .bader-app-gallery-support,
+    #product_detail.bader-product-detail .bader-app-gallery-quickbar {
         grid-template-columns: 1fr;
     }
 
     #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-item img,
     #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-inner img[itemprop='image'] {
         padding: 22px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell__single-note {
+        font-size: 13px;
     }
 }

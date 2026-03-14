@@ -26,16 +26,20 @@
 
         <xpath expr="//div[@id='product_detail_main']//t[@t-call='website_sale.shop_product_images']" position="replace">
             <t t-set="gallery_images" t-value="product_variant._get_images() if product_variant else product._get_images()"/>
-            <section class="bader-app-gallery-shell" aria-label="Galeria visual del producto">
+            <section t-attf-class="bader-app-gallery-shell #{'is-single-shot' if len(gallery_images) &lt;= 1 else 'is-multi-shot'}"
+                     t-att-data-gallery-count="len(gallery_images)"
+                     aria-label="Galeria visual del producto">
                 <div class="bader-app-gallery-shell__head">
                     <div class="bader-app-gallery-shell__copy">
                         <span class="bader-app-gallery-shell__eyebrow">Decision visual</span>
-                        <h2>Inspecciona el equipo con lectura de showroom.</h2>
-                        <p t-if="pdp_persona_copy and pdp_persona_copy.get('market_focus') and pdp_persona_copy.get('market_focus', {}).get('text')"
+                        <h2 t-if="len(gallery_images) > 1">Inspecciona el equipo con lectura de showroom.</h2>
+                        <h2 t-else="">Vista tecnica del producto.</h2>
+                        <p t-if="len(gallery_images) > 1 and pdp_persona_copy and pdp_persona_copy.get('market_focus') and pdp_persona_copy.get('market_focus', {}).get('text')"
                            t-esc="pdp_persona_copy.get('market_focus', {}).get('text')"/>
-                        <p t-else="">Vista principal limpia, miniaturas ordenadas y una lectura mas clara para validar forma, escala y acabados antes de comprar.</p>
+                        <p t-elif="len(gallery_images) > 1">Vista principal limpia, miniaturas ordenadas y una lectura mas clara para validar forma, escala y acabados antes de comprar.</p>
+                        <p t-else="">Ficha visual compacta para validar forma, compatibilidad y referencia del producto sin una galeria sobredimensionada.</p>
                     </div>
-                    <div class="bader-app-gallery-shell__stats" role="list" aria-label="Indicadores de navegacion visual">
+                    <div t-if="len(gallery_images) > 1" class="bader-app-gallery-shell__stats" role="list" aria-label="Indicadores de navegacion visual">
                         <span class="bader-app-gallery-shell__stat" role="listitem">
                             <strong t-esc="len(gallery_images)"/>
                             <small>vistas</small>
@@ -49,11 +53,15 @@
                             <small>navegacion clara</small>
                         </span>
                     </div>
+                    <div t-else="" class="bader-app-gallery-shell__single-note">
+                        <i class="fa fa-search-plus"/>
+                        <span>Imagen principal en alta definicion. Click para ampliar.</span>
+                    </div>
                 </div>
                 <div class="bader-app-gallery-shell__stage">
                     <t t-call="website_sale.shop_product_images"/>
                 </div>
-                <section class="bader-app-gallery-support" aria-label="Beneficios visuales del producto">
+                <section t-if="len(gallery_images) > 1" class="bader-app-gallery-support" aria-label="Beneficios visuales del producto">
                     <article class="bader-app-gallery-support__card">
                         <span class="bader-app-gallery-support__icon">
                             <i class="fa fa-search-plus"/>
@@ -82,6 +90,20 @@
                         </div>
                     </article>
                 </section>
+                <div t-else="" class="bader-app-gallery-quickbar" role="list" aria-label="Claves visuales del producto">
+                    <span class="bader-app-gallery-quickbar__item" role="listitem">
+                        <i class="fa fa-image"/>
+                        Imagen clara
+                    </span>
+                    <span class="bader-app-gallery-quickbar__item" role="listitem">
+                        <i class="fa fa-expand"/>
+                        Zoom activo
+                    </span>
+                    <span class="bader-app-gallery-quickbar__item" role="listitem">
+                        <i class="fa fa-tag"/>
+                        Referencia visible
+                    </span>
+                </div>
             </section>
         </xpath>
 
