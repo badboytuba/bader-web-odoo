@@ -20,6 +20,8 @@
     }
 
     function initBaderProductPage(productRoot) {
+        var PDP_PERSONA_STORAGE_KEY = 'baderPdpPersona';
+
         function parseIntSafe(rawValue, fallback) {
             var parsed = parseInt(String(rawValue || '').replace(/[^\d-]/g, ''), 10);
             return isNaN(parsed) ? fallback : parsed;
@@ -199,6 +201,64 @@
                 maximumFractionDigits: 2,
             });
             note.textContent = 'o 12x ' + symbol + installment + ' sin interes';
+        }
+
+        function readStoredPersona() {
+            try {
+                return window.localStorage ? window.localStorage.getItem(PDP_PERSONA_STORAGE_KEY) || '' : '';
+            } catch (err) {
+                return '';
+            }
+        }
+
+        function writeStoredPersona(persona) {
+            if (!persona) return;
+            try {
+                if (window.localStorage) {
+                    window.localStorage.setItem(PDP_PERSONA_STORAGE_KEY, persona);
+                }
+            } catch (err) {
+                // Ignore storage failures.
+            }
+        }
+
+        function initPersonaSwitcher() {
+            var switcher = productRoot.querySelector('.bader-app-persona-switch__list');
+            if (!switcher || switcher.getAttribute('data-bader-ready') === '1') {
+                return false;
+            }
+
+            var chips = switcher.querySelectorAll('.bader-app-persona-switch__chip[data-persona-key]');
+            if (!chips.length) {
+                switcher.setAttribute('data-bader-ready', '1');
+                return false;
+            }
+
+            var activePersona = switcher.getAttribute('data-active-persona') || '';
+            var storedPersona = readStoredPersona();
+            var isPersonaPath = /\/shop\/persona\/[^/]+\//.test(window.location.pathname || '');
+
+            if (isPersonaPath && activePersona) {
+                writeStoredPersona(activePersona);
+            } else if (storedPersona && storedPersona !== activePersona) {
+                var targetChip = switcher.querySelector(
+                    '.bader-app-persona-switch__chip[data-persona-key="' + storedPersona + '"]'
+                );
+                var targetHref = targetChip ? targetChip.getAttribute('href') : '';
+                if (targetHref) {
+                    window.location.replace(targetHref);
+                    return true;
+                }
+            }
+
+            chips.forEach(function (chip) {
+                chip.addEventListener('click', function () {
+                    writeStoredPersona(chip.getAttribute('data-persona-key') || '');
+                });
+            });
+
+            switcher.setAttribute('data-bader-ready', '1');
+            return false;
         }
 
         function initSecondaryActions() {
@@ -392,6 +452,9 @@
 
         initAddToCartFeedback();
         syncHeaderCartBadge();
+        if (initPersonaSwitcher()) {
+            return;
+        }
         applyEnhancements();
         window.setTimeout(applyEnhancements, 300);
         window.setTimeout(applyEnhancements, 1000);

@@ -5,6 +5,9 @@
               inherit_id="website_sale.product"
               name="Bader Product Detail Page"
               priority="40">
+        <xpath expr="//t[@t-cache='pricelist,product']" position="attributes">
+            <attribute name="t-cache" add="pdp_persona" separator=","/>
+        </xpath>
         <xpath expr="//*[@id='product_detail']" position="attributes">
             <attribute name="t-attf-class">container py-4 oe_website_sale bader-product-detail #{'discount' if combination_info['has_discounted_price'] else ''}</attribute>
         </xpath>
@@ -43,33 +46,47 @@
                     Inspirado en Bader-AR
                 </span>
             </div>
+            <div class="bader-app-persona-switch" t-if="pdp_persona_options">
+                <span class="bader-app-persona-switch__label">Ver como:</span>
+                <div class="bader-app-persona-switch__list"
+                     role="tablist"
+                     aria-label="Vista por nicho"
+                     t-att-data-active-persona="pdp_persona or ''"
+                     t-att-data-default-href="pdp_default_href or ''">
+                    <t t-foreach="pdp_persona_options" t-as="persona_option">
+                        <a t-att-href="persona_option.get('href')"
+                           t-attf-class="bader-app-persona-switch__chip #{'is-active' if persona_option.get('active') else ''}"
+                           t-att-aria-pressed="'true' if persona_option.get('active') else 'false'"
+                           t-att-data-persona-key="persona_option.get('key')">
+                            <t t-esc="persona_option.get('label')"/>
+                        </a>
+                    </t>
+                </div>
+            </div>
         </xpath>
 
         <xpath expr="//div[@id='product_details']/h1[@itemprop='name'][last()]" position="after">
             <t t-set="summary_text" t-value="(product.description_sale or product.description or '').replace('\n', ' ').strip()"/>
             <p class="bader-app-summary">
-                <t t-if="summary_text">
+                <t t-if="pdp_persona_copy and pdp_persona_copy.get('summary')">
+                    <t t-esc="pdp_persona_copy.get('summary')"/>
+                </t>
+                <t t-elif="summary_text">
                     <t t-esc="summary_text[:240] + ('...' if len(summary_text) > 240 else '')"/>
                 </t>
                 <t t-else="">Equipo odontologico profesional con respaldo Bader, garantia oficial y soporte tecnico especializado.</t>
             </p>
-            <div class="bader-app-fit-grid" role="list" aria-label="Perfiles de compra">
-                <article class="bader-app-fit-card" role="listitem">
-                    <strong>Clinicas</strong>
-                    <span>Atencion fluida, percepcion premium y menos friccion en la compra.</span>
-                </article>
-                <article class="bader-app-fit-card" role="listitem">
-                    <strong>Laboratorios</strong>
-                    <span>Validacion tecnica clara para operar con continuidad y precision.</span>
-                </article>
-                <article class="bader-app-fit-card" role="listitem">
-                    <strong>Estudiantes</strong>
-                    <span>Lectura simple, cuotas visibles y una primera compra menos intimidante.</span>
-                </article>
-                <article class="bader-app-fit-card" role="listitem">
-                    <strong>Mayoristas</strong>
-                    <span>Argumentario corto, visual fuerte y mejor narrativa para venderlo.</span>
-                </article>
+            <p class="bader-app-persona-caption" t-if="pdp_persona_copy and pdp_persona_copy.get('market_focus')">
+                <strong t-esc="pdp_persona_copy.get('eyebrow') or 'Vista activa'"/>
+                <span t-esc="pdp_persona_copy.get('market_focus', {}).get('text')"/>
+            </p>
+            <div class="bader-app-fit-grid" role="list" aria-label="Enfoque de compra por nicho">
+                <t t-foreach="(pdp_persona_copy or {}).get('cards', [])" t-as="persona_card">
+                    <article class="bader-app-fit-card" role="listitem">
+                        <strong t-esc="persona_card.get('title')"/>
+                        <span t-esc="persona_card.get('description')"/>
+                    </article>
+                </t>
             </div>
         </xpath>
 
@@ -351,7 +368,7 @@
                         </span>
                         <div>
                             <h2>Preguntas frecuentes</h2>
-                            <p>Todo lo que normalmente frena una compra profesional, resuelto en la misma pagina.</p>
+                            <p t-esc="(pdp_persona_copy or {}).get('faq_intro') or 'Todo lo que normalmente frena una compra profesional, resuelto en la misma pagina.'"/>
                         </div>
                     </div>
 
@@ -376,14 +393,14 @@
 
                     <div class="bader-app-faq-cta">
                         <div class="bader-app-faq-cta__copy">
-                            <strong>Tienes mas preguntas?</strong>
-                            <p>Te acompanamos antes del cierre para comparar, validar y decidir con mas claridad.</p>
+                            <strong t-esc="(pdp_persona_copy or {}).get('faq_cta_title') or 'Tienes mas preguntas?'"/>
+                            <p t-esc="(pdp_persona_copy or {}).get('faq_cta_body') or 'Te acompanamos antes del cierre para comparar, validar y decidir con mas claridad.'"/>
                         </div>
                         <a class="bader-app-faq-cta__button"
-                           href="https://wa.me/5491124522097?text=Hola!%20Necesito%20asesoria%20sobre%20este%20producto"
+                           t-att-href="pdp_whatsapp_url"
                            target="_blank"
                            rel="noopener">
-                            Contactar
+                            <t t-esc="(pdp_persona_copy or {}).get('faq_cta_button') or 'Contactar'"/>
                         </a>
                     </div>
                 </article>
@@ -467,16 +484,16 @@
                         <i class="fa fa-comments"/>
                     </span>
                     <div class="bader-app-help-cta__text">
-                        <h3>Tienes dudas sobre este producto?</h3>
-                        <p>Nuestros especialistas estan listos para ayudarte</p>
+                        <h3 t-esc="(pdp_persona_copy or {}).get('help_title') or 'Tienes dudas sobre este producto?'"/>
+                        <p t-esc="(pdp_persona_copy or {}).get('help_body') or 'Nuestros especialistas estan listos para ayudarte'"/>
                     </div>
                 </div>
                 <a class="bader-app-help-cta__button"
-                   href="https://wa.me/5491124522097?text=Hola!%20Necesito%20asesoria%20sobre%20este%20producto"
+                   t-att-href="pdp_whatsapp_url"
                    target="_blank"
                    rel="noopener">
                     <i class="fa fa-whatsapp"/>
-                    Chatear por WhatsApp
+                    <t t-esc="(pdp_persona_copy or {}).get('faq_cta_button') or 'Chatear por WhatsApp'"/>
                 </a>
             </section>
         </xpath>

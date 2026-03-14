@@ -14,6 +14,7 @@ from urllib.request import Request, urlopen
 
 DEFAULT_BASE_URL = "https://qas.bader4business.com"
 DEFAULT_PATH = "/shop/09070084-compresor-25l-16182"
+DEFAULT_PERSONA = "mayorista"
 
 REQUIRED_HTML_MARKERS = (
     "bader-app-hero-grid",
@@ -91,13 +92,26 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Smoke-check a Bader product detail page.")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="Base URL to request.")
     parser.add_argument("--path", default=DEFAULT_PATH, help="Relative PDP path to validate.")
+    parser.add_argument("--persona", default=DEFAULT_PERSONA, help="Persona key to validate on the persona-specific PDP route.")
     parser.add_argument("--timeout", type=int, default=20, help="HTTP timeout in seconds.")
     return parser.parse_args()
+
+
+def build_persona_path(path: str, persona: str) -> str:
+    persona = (persona or "").strip().lower()
+    path = (path or "").strip()
+    if not persona or not path.startswith("/shop/"):
+        return path
+    if path.startswith("/shop/persona/"):
+        return path
+    return "/shop/persona/%s/%s" % (persona, path[len("/shop/"):].lstrip("/"))
 
 
 def main() -> int:
     args = parse_args()
     url = urljoin(args.base_url.rstrip("/") + "/", args.path.lstrip("/"))
+    persona_path = build_persona_path(args.path, args.persona)
+    persona_url = urljoin(args.base_url.rstrip("/") + "/", persona_path.lstrip("/"))
     status, headers, body = fetch(url, args.timeout)
 
     failures: list[str] = []
@@ -131,6 +145,14 @@ def main() -> int:
     if parser.title:
         notes.append(f"title={parser.title}")
     notes.append(f"inline_scripts={parser.inline_scripts}")
+
+    persona_status, _persona_headers, persona_body = fetch(persona_url, args.timeout)
+    if persona_status != 200:
+        failures.append(f"unexpected persona status={persona_status}")
+    if ('data-active-persona="%s"' % args.persona) not in persona_body:
+        failures.append(f"persona route did not activate {args.persona}")
+    else:
+        notes.append(f"persona_route={persona_path}")
 
     if failures:
         print(f"FAIL {url}")

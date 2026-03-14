@@ -246,6 +246,416 @@ def _is_same_origin_request():
 class BaderWebsiteSale(WebsiteSale):
     """WebsiteSale behavior tuned for /productos public catalog UX."""
 
+    @http.route('/bader/pdp/set_persona', type='http', auth='public', website=True, sitemap=False)
+    def set_pdp_persona(self, persona=None, redirect=None, **kw):
+        normalized = self._normalize_pdp_persona(persona or kw.get('persona'))
+        redirect_target = (redirect or kw.get('redirect') or request.httprequest.referrer or '/shop').strip()
+        if not redirect_target.startswith('/'):
+            redirect_target = '/shop'
+        if normalized:
+            request.session['bader_pdp_persona'] = normalized
+            if normalized in ('clinica', 'laboratorio', 'estudiantes'):
+                request.session['bader_home_persona'] = normalized
+            if hasattr(request.session, 'modified'):
+                request.session.modified = True
+            redirect_target = self._build_pdp_persona_path(redirect_target, normalized)
+        return request.redirect(redirect_target)
+
+    @http.route([
+        '/shop/<model("product.template"):product>',
+        '/shop/persona/<string:pdp_persona_key>/<model("product.template"):product>',
+    ], type='http', auth='public', website=True, sitemap=True)
+    def product(self, product, category='', search='', pdp_persona_key='', **kwargs):
+        query_persona = self._normalize_pdp_persona(
+            kwargs.get('persona')
+            or kwargs.get('perfil')
+            or kwargs.get('niche')
+            or request.params.get('persona')
+            or request.params.get('perfil')
+            or request.params.get('niche')
+        )
+        route_persona = self._normalize_pdp_persona(pdp_persona_key)
+        if query_persona and not route_persona:
+            return request.redirect(self._build_pdp_persona_path('/shop/%s' % slug(product), query_persona))
+        values = self._prepare_product_values(product, category, search, persona=route_persona, **kwargs)
+        return request.render('website_sale.product', values)
+
+    @http.route(['/shop/product/<model("product.template"):product>'], type='http', auth='public', website=True, sitemap=False)
+    def old_product(self, product, category='', search='', **kwargs):
+        return request.redirect('/shop/%s' % slug(product), code=301)
+
+    def _normalize_pdp_text(self, raw_text):
+        text = unicodedata.normalize('NFKD', raw_text or '')
+        text = text.encode('ascii', 'ignore').decode('ascii')
+        return re.sub(r'[^a-z0-9]+', ' ', text.lower()).strip()
+
+    def _normalize_pdp_persona(self, raw_value):
+        token = self._normalize_pdp_text(raw_value or '')
+        if not token:
+            return ''
+
+        aliases = {
+            'clinica': 'clinica',
+            'clinica dental': 'clinica',
+            'clinic': 'clinica',
+            'odontologo': 'clinica',
+            'odontologa': 'clinica',
+            'laboratorio': 'laboratorio',
+            'laboratorio dental': 'laboratorio',
+            'lab': 'laboratorio',
+            'estudiantes': 'estudiantes',
+            'estudiante': 'estudiantes',
+            'student': 'estudiantes',
+            'students': 'estudiantes',
+            'mayorista': 'mayorista',
+            'mayoristas': 'mayorista',
+            'wholesale': 'mayorista',
+            'distribuidor': 'mayorista',
+            'distribuidores': 'mayorista',
+        }
+        if token in aliases:
+            return aliases[token]
+        if 'laborat' in token:
+            return 'laboratorio'
+        if 'estudian' in token or 'alumno' in token:
+            return 'estudiantes'
+        if 'mayor' in token or 'distribu' in token or 'wholesale' in token:
+            return 'mayorista'
+        if 'clinic' in token or 'odont' in token:
+            return 'clinica'
+        return ''
+
+    def _build_pdp_persona_href(self, product, persona=''):
+        normalized = self._normalize_pdp_persona(persona)
+        base_path = '/shop/%s' % slug(product)
+        if not normalized:
+            return base_path
+        return '/shop/persona/%s/%s' % (normalized, slug(product))
+
+    def _build_pdp_persona_path(self, raw_path, persona=''):
+        normalized = self._normalize_pdp_persona(persona)
+        path = (raw_path or '').strip()
+        if not normalized or not path.startswith('/'):
+            return path or '/shop'
+
+        split_index = path.find('?')
+        path_only = path if split_index < 0 else path[:split_index]
+        query_string = '' if split_index < 0 else path[split_index:]
+
+        lang_prefix = ''
+        localized_match = re.match(r'^/([a-z]{2}_[A-Z]{2})(/.*)$', path_only)
+        if localized_match:
+            lang_prefix = '/%s' % localized_match.group(1)
+            path_only = localized_match.group(2)
+
+        persona_match = re.match(r'^/shop/persona/[^/]+/(.+)$', path_only)
+        if persona_match:
+            product_slug = persona_match.group(1).lstrip('/')
+            return '%s/shop/persona/%s/%s%s' % (
+                lang_prefix,
+                normalized,
+                product_slug,
+                query_string,
+            )
+
+        base_match = re.match(r'^/shop/(.+)$', path_only)
+        if base_match and not path_only.startswith('/shop/cart') and not path_only.startswith('/shop/checkout'):
+            product_slug = base_match.group(1).lstrip('/')
+            return '%s/shop/persona/%s/%s%s' % (
+                lang_prefix,
+                normalized,
+                product_slug,
+                query_string,
+            )
+
+        return '%s%s' % (lang_prefix, path_only or '/shop')
+
+    def _pdp_partner_candidates(self, partner):
+        if not partner:
+            return []
+
+        candidates = []
+        candidate_fields = [
+            'bader_persona',
+            'x_niche',
+            'x_studio_niche',
+            'x_profile_niche',
+            'x_perfil',
+            'x_studio_perfil',
+            'x_profesion',
+            'x_studio_profesion',
+            'x_profession',
+            'function',
+            'title',
+            'comment',
+            'company_name',
+            'name',
+        ]
+        for field_name in candidate_fields:
+            if field_name not in partner._fields:
+                continue
+            value = partner[field_name]
+            if hasattr(value, 'name'):
+                value = value.name
+            if value:
+                candidates.append(value)
+
+        if 'category_id' in partner._fields:
+            candidates.extend(tag.name for tag in partner.category_id if tag.name)
+        return candidates
+
+    def _infer_pdp_persona_from_product(self, product):
+        product_text = self._normalize_pdp_text(' '.join([
+            product.name or '',
+            ' '.join(product.public_categ_ids.mapped('name')),
+        ]))
+        if any(keyword in product_text for keyword in ('laboratorio', 'zirconia', 'cad cam', 'articulador', 'arenadora')):
+            return 'laboratorio'
+        if any(keyword in product_text for keyword in ('estudiante', 'tipodonto', 'fantoma', 'simulador', 'kit')):
+            return 'estudiantes'
+        if any(keyword in product_text for keyword in ('pack', 'combo', 'distribuidor', 'mayorista')):
+            return 'mayorista'
+        return 'clinica'
+
+    def _infer_pdp_market_segment(self, product):
+        product_text = self._normalize_pdp_text(' '.join([
+            product.name or '',
+            ' '.join(product.public_categ_ids.mapped('name')),
+        ]))
+        if any(keyword in product_text for keyword in ('compresor', 'autoclave', 'sillon', 'rayos', 'lampara', 'motor', 'equipo')):
+            return 'equipamiento'
+        if any(keyword in product_text for keyword in ('acoplamiento', 'repuesto', 'valvula', 'boquilla', 'filtro', 'manguera')):
+            return 'reposicion'
+        if any(keyword in product_text for keyword in ('tipodonto', 'fantoma', 'simulador', 'kit', 'estudiante')):
+            return 'formacion'
+        if any(keyword in product_text for keyword in ('mesa', 'cajonera', 'mobiliario', 'bandeja')):
+            return 'infraestructura'
+        return 'general'
+
+    def _resolve_pdp_persona(self, product, route_persona, kwargs):
+        httprequest = getattr(request, 'httprequest', None)
+        explicit_persona = self._normalize_pdp_persona(route_persona)
+        if explicit_persona:
+            request.session['bader_pdp_persona'] = explicit_persona
+            if explicit_persona in ('clinica', 'laboratorio', 'estudiantes'):
+                request.session['bader_home_persona'] = explicit_persona
+            if hasattr(request.session, 'modified'):
+                request.session.modified = True
+            return explicit_persona, 'route'
+
+        query_persona = self._normalize_pdp_persona(
+            kwargs.get('persona')
+            or kwargs.get('perfil')
+            or kwargs.get('niche')
+            or (httprequest.args.get('persona') if httprequest else '')
+            or (httprequest.args.get('perfil') if httprequest else '')
+            or (httprequest.args.get('niche') if httprequest else '')
+            or request.params.get('persona')
+            or request.params.get('perfil')
+            or request.params.get('niche')
+        )
+        if query_persona:
+            request.session['bader_pdp_persona'] = query_persona
+            if query_persona in ('clinica', 'laboratorio', 'estudiantes'):
+                request.session['bader_home_persona'] = query_persona
+            if hasattr(request.session, 'modified'):
+                request.session.modified = True
+            return query_persona, 'query'
+
+        session_persona = self._normalize_pdp_persona(
+            request.session.get('bader_pdp_persona') or request.session.get('bader_home_persona')
+        )
+        if session_persona:
+            return session_persona, 'session'
+
+        if not request.website.is_public_user():
+            partner = request.env.user.partner_id.commercial_partner_id
+            for candidate in self._pdp_partner_candidates(partner):
+                persona = self._normalize_pdp_persona(candidate)
+                if persona:
+                    request.session['bader_pdp_persona'] = persona
+                    if persona in ('clinica', 'laboratorio', 'estudiantes'):
+                        request.session['bader_home_persona'] = persona
+                    if hasattr(request.session, 'modified'):
+                        request.session.modified = True
+                    return persona, 'profile'
+
+        inferred_persona = self._infer_pdp_persona_from_product(product)
+        request.session['bader_pdp_persona'] = inferred_persona
+        if hasattr(request.session, 'modified'):
+            request.session.modified = True
+        return inferred_persona, 'product'
+
+    def _build_pdp_persona_context(self, product, persona):
+        category_label = (product.public_categ_ids[:1].name or 'equipamiento Bader').strip()
+        market_segment = self._infer_pdp_market_segment(product)
+        market_focus = {
+            'equipamiento': {
+                'title': 'Enfoque de compra',
+                'text': 'Instalacion, continuidad operativa y soporte postventa pesan mas que una ficha tecnica larga.',
+            },
+            'reposicion': {
+                'title': 'Enfoque de compra',
+                'text': 'Compatibilidad, disponibilidad y reposicion rapida son la prioridad para cerrar sin friccion.',
+            },
+            'formacion': {
+                'title': 'Enfoque de compra',
+                'text': 'La ficha debe simplificar la primera compra y dejar claras cuotas, uso y acompanamiento.',
+            },
+            'infraestructura': {
+                'title': 'Enfoque de compra',
+                'text': 'El usuario valida integracion con su espacio, tiempos de entrega y respaldo comercial.',
+            },
+            'general': {
+                'title': 'Enfoque de compra',
+                'text': 'Priorizamos argumentos cortos, confianza de marca y claridad comercial antes del cierre.',
+            },
+        }
+        persona_map = {
+            'clinica': {
+                'label': 'Clinicas',
+                'eyebrow': 'Vista activa: Clinicas',
+                'summary': 'Pensado para clinicas que priorizan continuidad operativa, tiempos de respuesta rapidos y una compra sin friccion comercial.',
+                'cards': [
+                    {
+                        'title': 'Continuidad del servicio',
+                        'description': 'Stock, garantia y soporte quedan visibles para decidir sin poner en riesgo la agenda del consultorio.',
+                    },
+                    {
+                        'title': 'Compra mas rapida',
+                        'description': 'Precio, cuotas y envio aparecen primero para reducir vueltas internas antes de aprobar.',
+                    },
+                    {
+                        'title': 'Compatibilidad clinica',
+                        'description': 'La lectura pone foco en como este %s encaja en una operacion clinica real.' % category_label.lower(),
+                    },
+                ],
+                'faq_intro': 'Resolvemos las dudas que mas frenan a una clinica antes de aprobar una compra tecnica.',
+                'faq_cta_title': 'Quieres validarlo para tu clinica?',
+                'faq_cta_body': 'Te ayudamos a revisar compatibilidad, instalacion, cuotas y tiempos de entrega.',
+                'faq_cta_button': 'Hablar con asesor clinico',
+                'help_title': 'Un especialista puede ayudarte a cerrar esta compra para tu clinica',
+                'help_body': 'Te acompaniamos en compatibilidad, puesta en marcha y soporte comercial antes del pago.',
+                'whatsapp_message': 'Hola, necesito asesoria para evaluar este producto en una clinica dental.',
+            },
+            'laboratorio': {
+                'label': 'Laboratorios',
+                'eyebrow': 'Vista activa: Laboratorios',
+                'summary': 'Ficha orientada a laboratorios que necesitan validar precision, continuidad tecnica y respaldo comercial antes de incorporar equipo.',
+                'cards': [
+                    {
+                        'title': 'Validacion tecnica directa',
+                        'description': 'La lectura baja el ruido y deja visibles los puntos criticos para procesos continuos y estables.',
+                    },
+                    {
+                        'title': 'Menos friccion operativa',
+                        'description': 'Soporte, garantia y reposicion aparecen como parte de la decision, no como nota al pie.',
+                    },
+                    {
+                        'title': 'Compra con criterio de flujo',
+                        'description': 'Pensado para revisar como este %s impacta tiempos, precision y continuidad del laboratorio.' % category_label.lower(),
+                    },
+                ],
+                'faq_intro': 'La ficha responde primero lo que un laboratorio necesita validar para operar con seguridad.',
+                'faq_cta_title': 'Quieres revisarlo con foco tecnico?',
+                'faq_cta_body': 'Podemos ayudarte a confirmar compatibilidad, carga de trabajo y soporte postventa.',
+                'faq_cta_button': 'Hablar con asesor tecnico',
+                'help_title': 'Te ayudamos a validar este producto para tu flujo de laboratorio',
+                'help_body': 'Revisamos compatibilidad, reposicion y soporte para que la compra no genere cuellos de botella.',
+                'whatsapp_message': 'Hola, necesito una validacion tecnica/comercial de este producto para laboratorio dental.',
+            },
+            'estudiantes': {
+                'label': 'Estudiantes',
+                'eyebrow': 'Vista activa: Estudiantes',
+                'summary': 'Presentamos la ficha para una primera compra mas segura: lectura simple, cuotas visibles y acompanamiento antes de decidir.',
+                'cards': [
+                    {
+                        'title': 'Primera compra mas clara',
+                        'description': 'La pagina simplifica lo importante para que el producto no se sienta intimidante ni confuso.',
+                    },
+                    {
+                        'title': 'Cuotas y respaldo visibles',
+                        'description': 'Precio, financiacion y garantia aparecen temprano para facilitar una decision mas tranquila.',
+                    },
+                    {
+                        'title': 'Acompaniamiento real',
+                        'description': 'Ordenamos la informacion para entender si este %s encaja en tu etapa de formacion.' % category_label.lower(),
+                    },
+                ],
+                'faq_intro': 'Contestamos primero lo que un estudiante necesita para comprar con menos riesgo y mas seguridad.',
+                'faq_cta_title': 'Necesitas una guia antes de comprar?',
+                'faq_cta_body': 'Te ayudamos a validar si este producto es adecuado para tu etapa y presupuesto.',
+                'faq_cta_button': 'Hablar con asesor academico',
+                'help_title': 'Te acompanamos para que tu primera compra sea mas segura',
+                'help_body': 'Podemos orientarte en cuotas, uso esperado y nivel recomendado antes de cerrar.',
+                'whatsapp_message': 'Hola, soy estudiante y necesito ayuda para saber si este producto me conviene.',
+            },
+            'mayorista': {
+                'label': 'Mayoristas',
+                'eyebrow': 'Vista activa: Mayoristas',
+                'summary': 'Enfoque comercial para mayoristas: argumento corto, beneficios visibles y mas claridad para mover stock o vender mejor la linea.',
+                'cards': [
+                    {
+                        'title': 'Argumentario mas corto',
+                        'description': 'La ficha resume rapidamente valor, respaldo y confianza para usarla tambien como apoyo de venta.',
+                    },
+                    {
+                        'title': 'Rotacion con menos friccion',
+                        'description': 'Precio, entrega y garantia aparecen en una narrativa mas comercial y menos tecnica.',
+                    },
+                    {
+                        'title': 'Mejor historia de producto',
+                        'description': 'Ordenamos esta ficha para que el %s se explique facil a un cliente final o canal.' % category_label.lower(),
+                    },
+                ],
+                'faq_intro': 'Priorizamos las preguntas que ayudan a vender mejor el producto o evaluarlo como parte de un catalogo.',
+                'faq_cta_title': 'Quieres mover este producto en tu canal?',
+                'faq_cta_body': 'Podemos ayudarte con disponibilidad, respaldo comercial y argumentos de venta.',
+                'faq_cta_button': 'Hablar con asesor comercial',
+                'help_title': 'Podemos ayudarte a posicionar este producto en tu cartera',
+                'help_body': 'Te compartimos contexto comercial, disponibilidad y narrativa util para canal o reventa.',
+                'whatsapp_message': 'Hola, necesito informacion comercial de este producto para canal mayorista/distribucion.',
+            },
+        }
+        persona_copy = dict(persona_map.get(persona, persona_map['clinica']))
+        persona_copy['market_focus'] = market_focus.get(market_segment, market_focus['general'])
+        persona_copy['market_segment'] = market_segment
+        return persona_copy
+
+    def _build_pdp_persona_options(self, product, active_persona):
+        options = [
+            ('clinica', 'Clinicas'),
+            ('laboratorio', 'Laboratorios'),
+            ('estudiantes', 'Estudiantes'),
+            ('mayorista', 'Mayoristas'),
+        ]
+        return [{
+            'key': key,
+            'label': label,
+            'active': key == active_persona,
+            'href': self._build_pdp_persona_href(product, key),
+        } for key, label in options]
+
+    def _prepare_product_values(self, product, category, search, **kwargs):
+        values = super(BaderWebsiteSale, self)._prepare_product_values(
+            product, category, search, **kwargs
+        )
+        persona, persona_source = self._resolve_pdp_persona(product, kwargs.get('persona'), kwargs)
+        persona_copy = self._build_pdp_persona_context(product, persona)
+        values.update({
+            'pdp_persona': persona,
+            'pdp_persona_source': persona_source,
+            'pdp_persona_label': persona_copy.get('label'),
+            'pdp_persona_copy': persona_copy,
+            'pdp_persona_options': self._build_pdp_persona_options(product, persona),
+            'pdp_default_href': self._build_pdp_persona_href(product, ''),
+            'pdp_whatsapp_url': 'https://wa.me/5491124522097?text=%s' % quote(
+                persona_copy.get('whatsapp_message', 'Hola, necesito ayuda con este producto.'),
+                safe='',
+            ),
+        })
+        return values
+
     def _get_search_domain(self, search, category, attrib_values, search_in_description=True):
         # Keep search relevance strict on catalog pages: match by product identity fields.
         return super(BaderWebsiteSale, self)._get_search_domain(
