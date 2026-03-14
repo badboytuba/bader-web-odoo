@@ -50,10 +50,6 @@
         </xpath>
 
         <xpath expr="//div[@id='product_details']/h1[@itemprop='name']" position="before">
-            <t t-set="product_name_source"
-               t-value="(product.with_context(lang='es_ES', display_default_code=False).name or product.name or '').strip()"/>
-            <t t-set="product_name_clean"
-               t-value="product_name_source.split('] ', 1)[1].strip() if product_name_source.startswith('[') and '] ' in product_name_source else product_name_source"/>
             <div class="bader-app-meta-row">
                 <div class="bader-app-category-pills">
                     <t t-if="product.public_categ_ids">
@@ -82,17 +78,15 @@
         </xpath>
 
         <xpath expr="//div[@id='product_details']/h1[@itemprop='name']" position="before">
-            <h1 itemprop="name" class="bader-pdp-title" t-esc="product_name_clean or product_name_source">Product Name</h1>
+            <h1 itemprop="name" class="bader-pdp-title" t-esc="pdp_product_name_clean or product.name">Product Name</h1>
         </xpath>
 
         <xpath expr="//div[@id='product_details']/h1[@itemprop='name'][last()]" position="replace"/>
 
         <xpath expr="//div[@id='product_details']/h1[@itemprop='name'][last()]" position="after">
-            <t t-set="summary_text"
-               t-value="((product.with_context(lang='es_ES').description_sale or product.with_context(lang='es_ES').description or '').replace('\n', ' ').strip())"/>
             <p class="bader-app-summary">
-                <t t-if="summary_text">
-                    <t t-esc="summary_text[:240] + ('...' if len(summary_text) > 240 else '')"/>
+                <t t-if="pdp_summary_text">
+                    <t t-esc="pdp_summary_text"/>
                 </t>
                 <t t-else="">Equipo odontologico profesional con respaldo Bader, garantia oficial y soporte tecnico especializado.</t>
             </p>
@@ -255,8 +249,19 @@
                                 <p>Informacion comercial y tecnica del producto.</p>
                             </div>
                             <div class="bader-app-description-wrap" data-bader-description-wrap="1">
-                                <div class="bader-app-description-body" t-if="product.website_description" t-field="product.website_description"/>
-                                <p class="bader-app-description-body__fallback" t-elif="product.description_sale" t-field="product.description_sale"/>
+                                <div class="bader-app-description-body" t-if="pdp_description_paragraphs or pdp_feature_points">
+                                    <t t-foreach="pdp_description_paragraphs" t-as="paragraph">
+                                        <p t-esc="paragraph"/>
+                                    </t>
+                                    <div class="bader-app-description-specs" t-if="pdp_feature_points">
+                                        <h4>Caracteristicas destacadas</h4>
+                                        <ul>
+                                            <t t-foreach="pdp_feature_points" t-as="point">
+                                                <li t-esc="point"/>
+                                            </t>
+                                        </ul>
+                                    </div>
+                                </div>
                                 <p class="bader-app-description-body__fallback" t-else="">Producto profesional Bader con calidad europea y soporte tecnico especializado.</p>
                             </div>
                             <button type="button"
@@ -267,30 +272,12 @@
                             </button>
 
                             <div class="bader-app-feature-grid" role="list" aria-label="Caracteristicas principales">
-                                <div class="bader-app-feature-item" role="listitem">
-                                    <i class="fa fa-check"/>
-                                    <span>Calidad europea certificada</span>
-                                </div>
-                                <div class="bader-app-feature-item" role="listitem">
-                                    <i class="fa fa-check"/>
-                                    <span>Garantia oficial incluida</span>
-                                </div>
-                                <div class="bader-app-feature-item" role="listitem">
-                                    <i class="fa fa-check"/>
-                                    <span>Soporte tecnico especializado</span>
-                                </div>
-                                <div class="bader-app-feature-item" role="listitem">
-                                    <i class="fa fa-check"/>
-                                    <span>Envio nacional con seguimiento</span>
-                                </div>
-                                <div class="bader-app-feature-item" role="listitem">
-                                    <i class="fa fa-check"/>
-                                    <span>Repuestos y postventa Bader</span>
-                                </div>
-                                <div class="bader-app-feature-item" role="listitem">
-                                    <i class="fa fa-check"/>
-                                    <span>Asesoramiento comercial disponible</span>
-                                </div>
+                                <t t-foreach="pdp_highlight_points" t-as="point">
+                                    <div class="bader-app-feature-item" role="listitem">
+                                        <i class="fa fa-check"/>
+                                        <span t-esc="point"/>
+                                    </div>
+                                </t>
                             </div>
                         </article>
                     </div>
@@ -332,6 +319,14 @@
                                     <span>Soporte</span>
                                     <strong>Comercial + tecnico</strong>
                                 </div>
+                            </div>
+                            <div class="bader-app-spec-list" t-if="pdp_feature_points">
+                                <h4>Ficha rapida</h4>
+                                <ul>
+                                    <t t-foreach="pdp_feature_points" t-as="point">
+                                        <li t-esc="point"/>
+                                    </t>
+                                </ul>
                             </div>
                         </article>
                     </div>

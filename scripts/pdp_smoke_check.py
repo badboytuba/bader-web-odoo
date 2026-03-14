@@ -32,6 +32,10 @@ SKU_PREFIX_RE = re.compile(r"^\[[^\]]+\]\s*")
 
 SCRIPT_SRC_UNSAFE_INLINE_RE = re.compile(r"(?:^|;)\s*script-src[^;]*'unsafe-inline'", re.IGNORECASE)
 SCRIPT_SRC_NONCE_RE = re.compile(r"(?:^|;)\s*script-src[^;]*'nonce-[^']+'", re.IGNORECASE)
+DESCRIPTION_MULTILANG_RE = re.compile(
+    r'<div class="bader-app-description-body"[^>]*>.*?(?:ESPAÑOL:|INGL[ÉE]S:|ENGLISH:|PORTUGU[ÉE]S:)',
+    re.IGNORECASE | re.DOTALL,
+)
 
 
 class ProductHtmlInspector(HTMLParser):
@@ -164,6 +168,9 @@ def main() -> int:
     for marker in DISALLOWED_HTML_MARKERS:
         if marker in body:
             failures.append(f"unexpected marker: {marker}")
+
+    if DESCRIPTION_MULTILANG_RE.search(body):
+        failures.append("description body still renders multilingual source content")
 
     if parser.inline_scripts_without_nonce:
         failures.append(

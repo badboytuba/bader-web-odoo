@@ -5129,6 +5129,40 @@
     line-height: 1.8;
 }
 
+.bader-app-description-body p {
+    margin: 0 0 16px;
+}
+
+.bader-app-description-body ul,
+.bader-app-spec-list ul {
+    margin: 14px 0 0;
+    padding-left: 20px;
+}
+
+.bader-app-description-body li,
+.bader-app-spec-list li {
+    margin-bottom: 10px;
+    color: var(--bader-pdp-muted);
+    line-height: 1.75;
+}
+
+.bader-app-description-specs,
+.bader-app-spec-list {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 56, 65, 0.08);
+}
+
+.bader-app-description-specs h4,
+.bader-app-spec-list h4 {
+    margin: 0;
+    font-family: 'Bader Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--bader-pdp-text);
+}
+
 .bader-app-description-body img,
 .bader-app-description-body iframe,
 .bader-app-description-body table,

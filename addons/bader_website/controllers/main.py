@@ -658,12 +658,242 @@ class BaderWebsiteSale(WebsiteSale):
             )
         return related[:limit]
 
+    def _pdp_strip_sku_prefix(self, value):
+        text = _clean_text_line(value, max_len=300)
+        if text.startswith('[') and '] ' in text:
+            return text.split('] ', 1)[1].strip()
+        return text
+
+    def _pdp_description_plaintext(self, raw_value):
+        if not raw_value:
+            return ''
+        try:
+            text = html2plaintext(raw_value)
+        except Exception:
+            text = str(raw_value)
+        text = text.replace('\r\n', '\n').replace('\r', '\n')
+        text = re.sub(r'[^\S\n]+', ' ', text)
+        text = '\n'.join(line.strip() for line in text.split('\n'))
+        text = re.sub(r'\n{3,}', '\n\n', text)
+        return text.strip()[:18000]
+
+    def _pdp_detect_language_marker(self, line):
+        token = self._normalize_pdp_text((line or '').replace(':', ' '))
+        if token in ('es', 'espanol', 'spanish', 'idioma espanol', 'idioma spanish'):
+            return 'es'
+        if token in ('en', 'ingles', 'english', 'idioma ingles', 'idioma english'):
+            return 'en'
+        if token in ('pt', 'portugues', 'portuguese', 'idioma portugues', 'idioma portuguese'):
+            return 'pt'
+        return ''
+
+    def _pdp_extract_language_block(self, text, preferred='es'):
+        blocks = []
+        current_lang = 'generic'
+        current_lines = []
+        found_markers = False
+
+        for raw_line in (text or '').replace('\r\n', '\n').replace('\r', '\n').split('\n'):
+            line = raw_line.strip()
+            if not line:
+                if current_lines and current_lines[-1] != '':
+                    current_lines.append('')
+                continue
+
+            marker = self._pdp_detect_language_marker(line)
+            if marker:
+                found_markers = True
+                while current_lines and current_lines[-1] == '':
+                    current_lines.pop()
+                if current_lines:
+                    blocks.append((current_lang, current_lines))
+                current_lang = marker
+                current_lines = []
+                continue
+
+            current_lines.append(line)
+
+        while current_lines and current_lines[-1] == '':
+            current_lines.pop()
+        if current_lines:
+            blocks.append((current_lang, current_lines))
+
+        if found_markers:
+            preferred_lines = []
+            for lang, lines in blocks:
+                if lang != preferred or not lines:
+                    continue
+                if preferred_lines and preferred_lines[-1] != '':
+                    preferred_lines.append('')
+                preferred_lines.extend(lines)
+            preferred_text = '\n'.join(preferred_lines).strip()
+            if preferred_text:
+                return preferred_text
+
+        if blocks:
+            return '\n'.join(line for _lang, lines in blocks for line in lines).strip()
+        return (text or '').strip()
+
+    def _pdp_is_feature_heading(self, line):
+        token = self._normalize_pdp_text((line or '').strip().strip('*').strip(':'))
+        return token in (
+            'caracteristicas',
+            'caracteristicas tecnicas',
+            'especificaciones',
+            'especificaciones tecnicas',
+            'ficha tecnica',
+            'datos tecnicos',
+        )
+
+    def _pdp_should_skip_line(self, line, product_name=''):
+        raw_line = (line or '').strip()
+        if not raw_line:
+            return True
+        if self._pdp_detect_language_marker(raw_line):
+            return True
+
+        token = self._normalize_pdp_text(raw_line.strip('*').strip('-').strip())
+        if not token:
+            return True
+        if token in ('bader', 'bader r', 'features'):
+            return True
+
+        product_token = self._normalize_pdp_text(product_name or '')
+        if product_token:
+            if token == product_token:
+                return True
+            if token.startswith(product_token):
+                extra_token = token[len(product_token):].strip()
+                if extra_token in ('', 'bader', 'bader r'):
+                    return True
+        return False
+
+    def _pdp_unique_items(self, items, limit=None):
+        seen = set()
+        unique_items = []
+        for item in items or []:
+            clean_item = _clean_text_line(item, max_len=280)
+            token = self._normalize_pdp_text(clean_item)
+            if not clean_item or not token or token in seen:
+                continue
+            seen.add(token)
+            unique_items.append(clean_item)
+            if limit and len(unique_items) >= limit:
+                break
+        return unique_items
+
+    def _pdp_split_feature_line(self, line):
+        raw_line = _clean_text_line(line, max_len=1200)
+        if not raw_line:
+            return []
+
+        clean_line = re.sub(r'^[\-\*\u2022]+\s*', '', raw_line).strip().rstrip(' ;')
+        token = self._normalize_pdp_text(clean_line)
+        colon_count = clean_line.count(':')
+        should_split = colon_count >= 2 or token.startswith(('garantia', 'peso', 'pantalla', 'conexion'))
+        if not should_split:
+            return []
+
+        parts = re.split(r'(?<=[\.\?!])\s+(?=[A-ZÁÉÍÓÚÜÑ\*])', clean_line)
+        items = []
+        for part in parts:
+            candidate = re.sub(r'^[\-\*\u2022]+\s*', '', part).strip().rstrip(' ;')
+            candidate_token = self._normalize_pdp_text(candidate)
+            if not candidate or not candidate_token:
+                continue
+            if self._pdp_detect_language_marker(candidate):
+                continue
+            if candidate_token in ('caracteristicas', 'features', 'bader', 'bader r'):
+                continue
+            items.append(candidate)
+        return items
+
+    def _build_pdp_content_payload(self, product):
+        localized_product = product.with_context(lang='es_ES', display_default_code=False)
+        product_name = self._pdp_strip_sku_prefix(localized_product.name or product.name or '')
+
+        detail_source = (
+            localized_product.website_description
+            or product.website_description
+            or localized_product.description_sale
+            or product.description_sale
+            or localized_product.description
+            or product.description
+            or ''
+        )
+        plain_detail = self._pdp_description_plaintext(detail_source)
+        preferred_detail = self._pdp_extract_language_block(plain_detail, preferred='es')
+
+        paragraphs = []
+        feature_points = []
+        feature_mode = False
+
+        for raw_line in (preferred_detail or '').split('\n'):
+            line = raw_line.strip()
+            if self._pdp_should_skip_line(line, product_name=product_name):
+                continue
+
+            if self._pdp_is_feature_heading(line):
+                feature_mode = True
+                continue
+
+            if feature_mode:
+                parsed_feature_points = self._pdp_split_feature_line(line)
+                if parsed_feature_points:
+                    feature_points.extend(parsed_feature_points)
+                    continue
+                if re.match(r'^[\-\*\u2022]+\s*', line):
+                    feature_points.append(re.sub(r'^[\-\*\u2022]+\s*', '', line).strip().rstrip(' ;'))
+                    continue
+                feature_mode = False
+
+            paragraph = _clean_text_line(line.strip('*').strip(), max_len=1200)
+            if paragraph:
+                paragraphs.append(paragraph)
+
+        paragraphs = self._pdp_unique_items(paragraphs, limit=8)
+        feature_points = self._pdp_unique_items(feature_points, limit=12)
+
+        highlight_points = []
+        for point in feature_points:
+            if len(point) > 74:
+                continue
+            if self._normalize_pdp_text(point).startswith('dimensiones'):
+                continue
+            highlight_points.append(point.rstrip('.'))
+        highlight_points = self._pdp_unique_items(highlight_points, limit=6)
+        if not highlight_points:
+            highlight_points = [
+                'Calidad europea certificada',
+                'Garantia oficial segun referencia',
+                'Soporte tecnico especializado',
+                'Envio nacional con seguimiento',
+                'Repuestos y postventa Bader',
+                'Asesoria comercial disponible',
+            ]
+
+        summary_source = paragraphs[0] if paragraphs else ''
+        summary_text = summary_source[:240].rstrip()
+        if summary_source and len(summary_source) > 240:
+            summary_text += '...'
+        if not summary_text:
+            summary_text = 'Producto profesional Bader con respaldo oficial, envio coordinado y soporte tecnico especializado.'
+
+        return {
+            'product_name': product_name,
+            'summary_text': summary_text,
+            'description_paragraphs': paragraphs,
+            'feature_points': feature_points,
+            'highlight_points': highlight_points,
+        }
+
     def _prepare_product_values(self, product, category, search, **kwargs):
         values = super(BaderWebsiteSale, self)._prepare_product_values(
             product, category, search, **kwargs
         )
         persona, persona_source = self._resolve_pdp_persona(product, kwargs.get('persona'), kwargs)
         persona_copy = self._build_pdp_persona_context(product, persona)
+        pdp_content = self._build_pdp_content_payload(product)
         values.update({
             'pdp_persona': persona,
             'pdp_persona_source': persona_source,
@@ -677,6 +907,11 @@ class BaderWebsiteSale(WebsiteSale):
                 persona_copy.get('whatsapp_message', 'Hola, necesito ayuda con este producto.'),
                 safe='',
             ),
+            'pdp_product_name_clean': pdp_content.get('product_name'),
+            'pdp_summary_text': pdp_content.get('summary_text'),
+            'pdp_description_paragraphs': pdp_content.get('description_paragraphs') or [],
+            'pdp_feature_points': pdp_content.get('feature_points') or [],
+            'pdp_highlight_points': pdp_content.get('highlight_points') or [],
         })
         return values
 
