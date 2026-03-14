@@ -3813,6 +3813,27 @@
     animation: bader-cart-success 0.4s ease;
 }
 
+#product_detail.bader-product-detail .bader-app-detail-section,
+#product_detail.bader-product-detail .bader-app-faq-section,
+#product_detail.bader-product-detail .bader-app-related-section,
+#product_detail.bader-product-detail .bader-app-help-cta {
+    content-visibility: auto;
+}
+
+#product_detail.bader-product-detail .bader-app-detail-section,
+#product_detail.bader-product-detail .bader-app-faq-section,
+#product_detail.bader-product-detail .bader-app-related-section {
+    contain-intrinsic-size: 900px;
+}
+
+#product_detail.bader-product-detail .bader-app-help-cta {
+    contain-intrinsic-size: 240px;
+}
+
+#product_detail.bader-product-detail .bader-app-mobile-dock {
+    display: none;
+}
+
 // --- WhatsApp Help CTA Section ---
 #product_detail.bader-product-detail .bader-app-help-cta {
     grid-column: 1 / -1;
@@ -3913,8 +3934,8 @@
     }
 
     >[class*='col-'] {
-        flex: 0 0 280px;
-        max-width: 280px;
+        flex: 0 0 312px;
+        max-width: 312px;
         scroll-snap-align: start;
         padding: 0;
     }
@@ -3922,7 +3943,85 @@
 
 @media (max-width: 767px) {
     #product_detail.bader-product-detail {
-        padding-bottom: 66px;
+        padding-bottom: 138px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-mobile-dock {
+        position: fixed;
+        left: 12px;
+        right: 12px;
+        bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+        z-index: 30;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px;
+        border-radius: 24px;
+        border: 1px solid rgba(0, 56, 65, 0.1);
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(18px);
+        box-shadow: 0 24px 48px rgba(0, 56, 65, 0.18);
+    }
+
+    #product_detail.bader-product-detail .bader-app-mobile-dock__price-block {
+        display: grid;
+        gap: 4px;
+        min-width: 0;
+    }
+
+    #product_detail.bader-product-detail .bader-app-mobile-dock__eyebrow {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--bader-pdp-muted);
+    }
+
+    #product_detail.bader-product-detail .bader-app-mobile-dock__price {
+        color: var(--bader-pdp-deep);
+        font-family: 'Bader Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 22px;
+        line-height: 1;
+        letter-spacing: -0.04em;
+        white-space: nowrap;
+    }
+
+    #product_detail.bader-product-detail .bader-app-mobile-dock__actions {
+        display: grid;
+        grid-template-columns: auto auto;
+        gap: 10px;
+        margin-left: auto;
+    }
+
+    #product_detail.bader-product-detail .bader-app-mobile-dock__assist,
+    #product_detail.bader-product-detail .bader-app-mobile-dock__cta {
+        min-height: 46px;
+        padding: 0 16px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        border: 1px solid transparent;
+    }
+
+    #product_detail.bader-product-detail .bader-app-mobile-dock__assist {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 56, 65, 0.06);
+        border-color: rgba(0, 56, 65, 0.08);
+        color: var(--bader-pdp-text);
+    }
+
+    #product_detail.bader-product-detail .bader-app-mobile-dock__cta {
+        background: linear-gradient(135deg, #70d44b, #49b92a);
+        color: #04262c;
+        box-shadow: 0 16px 30px rgba(73, 185, 42, 0.24);
+    }
+
+    #product_detail.bader-product-detail .bader-app-mobile-dock__cta.is-loading {
+        opacity: 0.72;
     }
 
     #product_detail.bader-product-detail .bader-app-help-cta {
@@ -3946,8 +4045,8 @@
     }
 
     #product_detail.bader-product-detail .bader-app-related-grid>[class*='col-'] {
-        flex: 0 0 240px;
-        max-width: 240px;
+        flex: 0 0 82vw;
+        max-width: 82vw;
     }
 
     #product_detail.bader-product-detail #product_detail_main {

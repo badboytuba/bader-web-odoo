@@ -636,6 +636,28 @@ class BaderWebsiteSale(WebsiteSale):
             'href': self._build_pdp_persona_href(product, key),
         } for key, label in options]
 
+    def _build_pdp_related_products(self, product, limit=6):
+        product_template_model = request.env['product.template'].sudo()
+        base_domain = [
+            ('website_published', '=', True),
+            ('id', '!=', product.id),
+        ]
+        related = product_template_model.browse()
+        categ_ids = product.public_categ_ids.ids
+        if categ_ids:
+            related = product_template_model.search(
+                base_domain + [('public_categ_ids', 'in', categ_ids)],
+                limit=limit,
+                order='id desc',
+            )
+        if len(related) < limit:
+            related |= product_template_model.search(
+                base_domain + [('id', 'not in', related.ids)],
+                limit=max(0, limit - len(related)),
+                order='id desc',
+            )
+        return related[:limit]
+
     def _prepare_product_values(self, product, category, search, **kwargs):
         values = super(BaderWebsiteSale, self)._prepare_product_values(
             product, category, search, **kwargs
@@ -649,6 +671,8 @@ class BaderWebsiteSale(WebsiteSale):
             'pdp_persona_copy': persona_copy,
             'pdp_persona_options': self._build_pdp_persona_options(product, persona),
             'pdp_default_href': self._build_pdp_persona_href(product, ''),
+            'pdp_related_products': self._build_pdp_related_products(product),
+            'pdp_related_currency': request.website.get_current_pricelist().currency_id,
             'pdp_whatsapp_url': 'https://wa.me/5491124522097?text=%s' % quote(
                 persona_copy.get('whatsapp_message', 'Hola, necesito ayuda con este producto.'),
                 safe='',

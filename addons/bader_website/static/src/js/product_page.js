@@ -261,6 +261,67 @@
             return false;
         }
 
+        function initMobileDock() {
+            var dock = productRoot.querySelector('[data-bader-mobile-dock="1"]');
+            if (!dock || dock.getAttribute('data-bader-ready') === '1') {
+                return;
+            }
+
+            var form = productRoot.querySelector('#product_details form');
+            var mainAddButton = productRoot.querySelector('#add_to_cart, .a-submit');
+            var priceOutput = dock.querySelector('[data-bader-mobile-dock-price]');
+            var addButton = dock.querySelector('[data-bader-mobile-add]');
+            var priceContainer = productRoot.querySelector('#product_details .product_price, #product_details [itemprop="offers"]');
+            var mainPriceValue = productRoot.querySelector('#product_details .oe_price .oe_currency_value, #product_details [itemprop="price"], #product_details .oe_currency_value');
+
+            function syncDockPrice() {
+                if (!priceOutput || !priceContainer || !mainPriceValue) return;
+                var price = parsePriceSafe(mainPriceValue.textContent || '');
+                if (!price || price <= 0) return;
+                priceOutput.textContent = moneySymbolFromPriceContainer(priceContainer) + price.toLocaleString('es-AR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                });
+            }
+
+            if (addButton) {
+                addButton.addEventListener('click', function () {
+                    if (!form) return;
+                    addButton.disabled = true;
+                    addButton.classList.add('is-loading');
+                    addToCartJson(form)
+                        .then(function () {
+                            addButton.textContent = 'Agregado';
+                            window.setTimeout(function () {
+                                addButton.textContent = 'Agregar';
+                            }, 1600);
+                        })
+                        .catch(function () {
+                            if (mainAddButton && typeof mainAddButton.click === 'function') {
+                                mainAddButton.click();
+                            }
+                        })
+                        .finally(function () {
+                            addButton.disabled = false;
+                            addButton.classList.remove('is-loading');
+                        });
+                });
+            }
+
+            syncDockPrice();
+            dock.setAttribute('data-bader-ready', '1');
+
+            if ('MutationObserver' in window && mainPriceValue) {
+                var priceObserver = new MutationObserver(syncDockPrice);
+                priceObserver.observe(mainPriceValue, { childList: true, characterData: true, subtree: true });
+                window.setTimeout(function () {
+                    if (priceObserver && priceObserver.disconnect) {
+                        priceObserver.disconnect();
+                    }
+                }, 25000);
+            }
+        }
+
         function initSecondaryActions() {
             var actions = productRoot.querySelector('.bader-app-secondary-actions');
             if (!actions || actions.getAttribute('data-bader-ready') === '1') {
@@ -447,6 +508,7 @@
             initGalleryLightbox();
             initQtyControls();
             initInstallmentNote();
+            initMobileDock();
             initSecondaryActions();
         }
 

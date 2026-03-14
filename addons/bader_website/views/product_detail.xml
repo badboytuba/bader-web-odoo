@@ -150,6 +150,29 @@
             </div>
         </xpath>
 
+        <xpath expr="//div[@id='o_product_terms_and_share']" position="after">
+            <section class="bader-app-mobile-dock" data-bader-mobile-dock="1" aria-label="Acciones rapidas de compra">
+                <div class="bader-app-mobile-dock__price-block">
+                    <span class="bader-app-mobile-dock__eyebrow">Compra rapida</span>
+                    <span class="bader-app-mobile-dock__price" data-bader-mobile-dock-price="1">
+                        <t t-esc="combination_info['price']"
+                           t-options='{"widget": "monetary", "display_currency": pricelist.currency_id}'/>
+                    </span>
+                </div>
+                <div class="bader-app-mobile-dock__actions">
+                    <a class="bader-app-mobile-dock__assist"
+                       t-att-href="pdp_whatsapp_url"
+                       target="_blank"
+                       rel="noopener">
+                        Asesoria
+                    </a>
+                    <button type="button" class="bader-app-mobile-dock__cta" data-bader-mobile-add="1">
+                        Agregar
+                    </button>
+                </div>
+            </section>
+        </xpath>
+
         <xpath expr="//div[@id='o_product_terms_and_share']" position="before">
             <section class="bader-app-trust-grid" aria-label="Pruebas de confianza">
                 <article class="bader-app-trust-card">
@@ -406,10 +429,7 @@
                 </article>
             </section>
 
-            <t t-set="related_products"
-               t-value="request.env['product.template'].sudo().search([('website_published', '=', True), ('id', '!=', product.id), ('public_categ_ids', 'in', product.public_categ_ids.ids)], limit=8)"/>
-            <t t-set="display_currency" t-value="request.website.get_current_pricelist().currency_id"/>
-            <section class="bader-app-related-section" id="bader_pdp_related" t-if="related_products">
+            <section class="bader-app-related-section" id="bader_pdp_related" t-if="pdp_related_products">
                 <div class="bader-app-related-shell">
                     <div class="bader-app-related-head">
                         <div>
@@ -420,21 +440,28 @@
                     </div>
 
                     <div class="row g-4 bader-app-related-grid">
-                        <t t-foreach="related_products" t-as="rel">
-                            <div class="col-12 col-sm-6 col-xl-3">
+                        <t t-foreach="pdp_related_products" t-as="rel">
+                            <div class="col-12 col-sm-6 col-xl-4">
                                 <a t-att-href="rel.website_url" class="bader-app-related-card">
                                     <span class="bader-app-related-card__tag">
                                         <span t-if="rel.public_categ_ids" t-esc="rel.public_categ_ids[0].name"/>
                                         <span t-else="">Producto</span>
                                     </span>
                                     <span class="bader-app-related-card__image">
-                                        <img t-att-src="website.image_url(rel, 'image_512')" t-att-alt="rel.name"/>
+                                        <img t-att-src="website.image_url(rel, 'image_256')"
+                                             t-att-srcset="'%s 256w, %s 512w' % (website.image_url(rel, 'image_256'), website.image_url(rel, 'image_512'))"
+                                             sizes="(max-width: 575px) 78vw, (max-width: 1199px) 44vw, 24vw"
+                                             t-att-alt="rel.name"
+                                             loading="lazy"
+                                             decoding="async"
+                                             width="256"
+                                             height="256"/>
                                     </span>
                                     <span class="bader-app-related-card__name" t-esc="rel.name"/>
                                     <span class="bader-app-related-card__price-row">
                                         <span class="bader-app-related-card__price"
                                               t-field="rel.list_price"
-                                              t-options='{"widget": "monetary", "display_currency": display_currency}'/>
+                                              t-options='{"widget": "monetary", "display_currency": pdp_related_currency}'/>
                                         <span class="bader-app-related-card__cta">Explorar</span>
                                     </span>
                                 </a>
@@ -496,6 +523,59 @@
                     <t t-esc="(pdp_persona_copy or {}).get('faq_cta_button') or 'Chatear por WhatsApp'"/>
                 </a>
             </section>
+        </xpath>
+    </template>
+
+    <template id="bader_shop_product_carousel_loading"
+              inherit_id="website_sale.shop_product_carousel"
+              name="Bader Product Carousel Loading"
+              priority="40">
+        <xpath expr="//div[hasclass('carousel-inner')]" position="replace">
+            <div class="carousel-inner h-100">
+                <t t-foreach="product_images" t-as="product_image">
+                    <div t-attf-class="carousel-item h-100#{' active' if product_image_first else ''}">
+                        <div t-if="product_image._name == 'product.image' and product_image.embed_code"
+                             class="d-flex align-items-center justify-content-center h-100 ratio ratio-16x9">
+                            <t t-out="product_image.embed_code"/>
+                        </div>
+                        <div t-else="" class="d-flex align-items-center justify-content-center h-100 oe_unmovable">
+                            <img class="oe_unmovable product_detail_img mh-100"
+                                 t-att-src="website.image_url(product_image, 'image_1024')"
+                                 t-att-srcset="'%s 512w, %s 1024w, %s 1920w' % (website.image_url(product_image, 'image_512'), website.image_url(product_image, 'image_1024'), website.image_url(product_image, 'image_1920'))"
+                                 sizes="(max-width: 767px) 92vw, (max-width: 1199px) 56vw, 42vw"
+                                 t-att-alt="product_image.name or product.name"
+                                 t-att-loading="'eager' if product_image_first else 'lazy'"
+                                 t-att-decoding="'sync' if product_image_first else 'async'"
+                                 t-att-fetchpriority="'high' if product_image_first else 'low'"
+                                 width="1024"
+                                 height="1024"/>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="bader_carousel_product_indicators_loading"
+              inherit_id="website_sale.carousel_product_indicators"
+              name="Bader Carousel Indicators Loading"
+              priority="40">
+        <xpath expr="//ol" position="replace">
+            <ol t-if="len(product_images) > 1" t-attf-class="carousel-indicators {{indicators_list_class}} position-static pt-2 pt-lg-0 mx-auto my-0 text-start">
+                <li t-foreach="product_images" t-as="product_image"
+                    t-attf-class="align-top position-relative {{'active' if product_image_first else ''}}"
+                    data-bs-target="#o-carousel-product"
+                    t-att-data-bs-slide-to="str(product_image_index)">
+                    <img t-att-src="website.image_url(product_image, 'image_128')"
+                         t-att-alt="product_image.name or product.name"
+                         class="o_image_64_cover"
+                         loading="lazy"
+                         decoding="async"
+                         width="96"
+                         height="96"/>
+                    <i t-if="product_image._name == 'product.image' and product_image.embed_code" class="fa fa-2x fa-play-circle o_product_video_thumb bg-black-50 text-center"/>
+                </li>
+            </ol>
         </xpath>
     </template>
 
