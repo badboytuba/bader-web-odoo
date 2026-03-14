@@ -67,8 +67,8 @@
                             <i class="fa fa-search-plus"/>
                         </span>
                         <div>
-                            <strong>Vista principal clara</strong>
-                            <p>La imagen central gana presencia y deja respirar el producto sin ruido visual.</p>
+                            <strong>Vista general</strong>
+                            <p>La foto principal deja validar forma, escala y presencia del equipo.</p>
                         </div>
                     </article>
                     <article class="bader-app-gallery-support__card">
@@ -76,8 +76,8 @@
                             <i class="fa fa-clone"/>
                         </span>
                         <div>
-                            <strong>Detalle por secuencia</strong>
-                            <p>Las miniaturas quedan ordenadas para revisar piezas, acabados y angulos sin perder contexto.</p>
+                            <strong>Detalles utiles</strong>
+                            <p>Las miniaturas sirven para revisar piezas y acabados sin perder contexto.</p>
                         </div>
                     </article>
                     <article class="bader-app-gallery-support__card">
@@ -85,8 +85,8 @@
                             <i class="fa fa-shield"/>
                         </span>
                         <div>
-                            <strong>Percepcion premium</strong>
-                            <p>El bloque completo transmite mas respaldo, precision tecnica y calidad de marca.</p>
+                            <strong>Decision rapida</strong>
+                            <p>Zoom, referencia y navegacion clara reducen friccion antes de comprar.</p>
                         </div>
                     </article>
                 </section>
