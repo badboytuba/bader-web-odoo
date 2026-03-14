@@ -5506,3 +5506,149 @@
         max-width: 82vw;
     }
 }
+
+@media (max-width: 767px) {
+    #product_detail.bader-product-detail {
+        padding-bottom: 118px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell {
+        padding: 14px;
+        border-radius: 24px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell__head {
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell__intro {
+        gap: 8px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell__copy h2 {
+        max-width: 10ch;
+        font-size: 22px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell__copy p {
+        max-width: none;
+        font-size: 12px;
+        line-height: 1.45;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell__stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell__stat {
+        min-height: 0;
+        padding: 10px 8px;
+        border-radius: 14px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell__stat strong {
+        font-size: 14px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell__stat small {
+        font-size: 9px;
+        line-height: 1.25;
+        letter-spacing: 0.05em;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators li,
+    #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators button {
+        width: 58px !important;
+        height: 58px !important;
+        border-radius: 14px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-inner {
+        min-height: 272px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-item img,
+    #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-inner img[itemprop='image'] {
+        padding: 16px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell .bader-app-gallery-support {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell .bader-app-gallery-support__card {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+        padding: 10px 8px;
+        border-radius: 14px;
+        gap: 8px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell .bader-app-gallery-support__card strong {
+        margin: 0;
+        font-size: 11px;
+        line-height: 1.2;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell .bader-app-gallery-support__card p {
+        display: none;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell .bader-app-gallery-support__icon {
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+        border-radius: 12px;
+        font-size: 14px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-mobile-dock {
+        left: 8px;
+        right: 8px;
+        bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+        gap: 6px;
+        padding: 8px 10px;
+        border-radius: 16px;
+        backdrop-filter: none;
+        box-shadow: 0 12px 24px rgba(0, 56, 65, 0.14);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(14px);
+        transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+    }
+
+    #product_detail.bader-product-detail .bader-app-mobile-dock.is-visible {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateY(0);
+    }
+
+    #product_detail.bader-product-detail .bader-app-mobile-dock__price-block {
+        gap: 1px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-mobile-dock__eyebrow {
+        display: none;
+    }
+
+    #product_detail.bader-product-detail .bader-app-mobile-dock__price {
+        font-size: 17px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-mobile-dock__actions {
+        gap: 6px;
+    }
+
+    #product_detail.bader-product-detail .bader-app-mobile-dock__assist,
+    #product_detail.bader-product-detail .bader-app-mobile-dock__cta {
+        min-height: 36px;
+        padding: 0 12px;
+        font-size: 11px;
+    }
+}

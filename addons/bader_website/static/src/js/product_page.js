@@ -309,10 +309,34 @@
 
             var form = productRoot.querySelector('#product_details form');
             var mainAddButton = productRoot.querySelector('#add_to_cart, .a-submit');
+            var actionAnchor = productRoot.querySelector('#o_wsale_cta_wrapper');
             var priceOutput = dock.querySelector('[data-bader-mobile-dock-price]');
             var addButton = dock.querySelector('[data-bader-mobile-add]');
             var priceContainer = productRoot.querySelector('#product_details .product_price, #product_details [itemprop="offers"]');
             var mainPriceValue = productRoot.querySelector('#product_details .oe_price .oe_currency_value, #product_details [itemprop="price"], #product_details .oe_currency_value');
+            var actionAnchorVisible = false;
+            var scrollTicking = false;
+            var dockRevealOffset = 240;
+
+            function setDockVisible(isVisible) {
+                dock.classList.toggle('is-visible', !!isVisible);
+                dock.setAttribute('aria-hidden', isVisible ? 'false' : 'true');
+            }
+
+            function refreshDockVisibility() {
+                var isMobileViewport = window.matchMedia ? window.matchMedia('(max-width: 767px)').matches : window.innerWidth <= 767;
+                var isPastIntro = (window.scrollY || window.pageYOffset || 0) > dockRevealOffset;
+                setDockVisible(isMobileViewport && isPastIntro && !actionAnchorVisible);
+            }
+
+            function queueDockRefresh() {
+                if (scrollTicking) return;
+                scrollTicking = true;
+                window.requestAnimationFrame(function () {
+                    scrollTicking = false;
+                    refreshDockVisibility();
+                });
+            }
 
             function syncDockPrice() {
                 if (!priceOutput || !priceContainer || !mainPriceValue) return;
@@ -350,6 +374,7 @@
 
             syncDockPrice();
             dock.setAttribute('data-bader-ready', '1');
+            refreshDockVisibility();
 
             if ('MutationObserver' in window && mainPriceValue) {
                 var priceObserver = new MutationObserver(syncDockPrice);
@@ -360,6 +385,22 @@
                     }
                 }, 25000);
             }
+
+            if ('IntersectionObserver' in window && actionAnchor) {
+                var visibilityObserver = new IntersectionObserver(function (entries) {
+                    var entry = entries && entries[0];
+                    if (!entry) return;
+                    actionAnchorVisible = !!entry.isIntersecting;
+                    refreshDockVisibility();
+                }, {
+                    threshold: 0.2,
+                    rootMargin: '0px 0px -84px 0px',
+                });
+                visibilityObserver.observe(actionAnchor);
+            }
+
+            window.addEventListener('scroll', queueDockRefresh, { passive: true });
+            window.addEventListener('resize', queueDockRefresh);
         }
 
         function initSecondaryActions() {
