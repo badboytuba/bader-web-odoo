@@ -4580,6 +4580,10 @@
     margin-bottom: 16px;
 }
 
+#product_detail.bader-product-detail .bader-app-gallery-shell__head--simple {
+    display: block;
+}
+
 #product_detail.bader-product-detail .bader-app-gallery-shell__intro {
     display: flex;
     align-items: center;
@@ -4601,6 +4605,11 @@
     max-width: 15ch;
     font-size: clamp(26px, 2vw, 34px);
     line-height: 0.96;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell__head--simple .bader-app-gallery-shell__copy h2 {
+    max-width: none;
+    font-size: clamp(24px, 1.9vw, 30px);
 }
 
 #product_detail.bader-product-detail .bader-app-gallery-shell__copy p {
@@ -4633,6 +4642,8 @@
 }
 
 #product_detail.bader-product-detail .bader-app-gallery-shell__single-note {
+    width: 100%;
+    margin-top: 14px;
     min-height: 48px;
     padding: 12px 14px;
     border-radius: 16px;

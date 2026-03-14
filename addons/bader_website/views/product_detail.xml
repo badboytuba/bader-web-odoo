@@ -28,81 +28,23 @@
             <t t-set="gallery_images" t-value="product_variant._get_images() if product_variant else product._get_images()"/>
             <section t-attf-class="bader-app-gallery-shell #{'is-single-shot' if len(gallery_images) &lt;= 1 else 'is-multi-shot'}"
                      t-att-data-gallery-count="len(gallery_images)"
-                     aria-label="Galeria visual del producto">
-                <div class="bader-app-gallery-shell__head">
-                    <div class="bader-app-gallery-shell__intro">
-                        <span class="bader-app-gallery-shell__eyebrow">Galeria Bader</span>
-                        <div class="bader-app-gallery-shell__copy">
-                            <h2 t-if="len(gallery_images) > 1">Galeria lista para decidir.</h2>
-                            <h2 t-else="">Imagen principal clara.</h2>
-                            <p t-if="len(gallery_images) > 1">Miniaturas ordenadas, zoom rapido y una lectura limpia para validar acabados sin ruido visual.</p>
-                            <p t-else="">Vista compacta con zoom activo y referencia visible para revisar el producto sin una galeria sobredimensionada.</p>
-                        </div>
-                    </div>
-                    <div t-if="len(gallery_images) > 1" class="bader-app-gallery-shell__stats" role="list" aria-label="Indicadores de navegacion visual">
-                        <span class="bader-app-gallery-shell__stat" role="listitem">
-                            <strong t-esc="len(gallery_images)"/>
-                            <small>vistas utiles</small>
-                        </span>
-                        <span class="bader-app-gallery-shell__stat" role="listitem">
-                            <strong>Zoom HD</strong>
-                            <small>tap o click</small>
-                        </span>
-                        <span class="bader-app-gallery-shell__stat" role="listitem">
-                            <strong>Secuencia</strong>
-                            <small>navegacion clara</small>
-                        </span>
-                    </div>
-                    <div t-else="" class="bader-app-gallery-shell__single-note">
-                        <i class="fa fa-search-plus"/>
-                        <span>Imagen principal en alta definicion con zoom activo.</span>
+                     aria-label="Fotos del producto">
+                <div class="bader-app-gallery-shell__head bader-app-gallery-shell__head--simple">
+                    <div class="bader-app-gallery-shell__copy">
+                        <h2>Fotos del producto</h2>
+                        <p t-if="len(gallery_images) > 1">
+                            <t t-esc="len(gallery_images)"/> imagenes disponibles para revisar el producto desde distintos angulos.
+                        </p>
+                        <p t-else="">Imagen principal del producto con zoom para revisar detalles.</p>
                     </div>
                 </div>
                 <div class="bader-app-gallery-shell__stage">
                     <t t-call="website_sale.shop_product_images"/>
                 </div>
-                <section t-if="len(gallery_images) > 1" class="bader-app-gallery-support" aria-label="Beneficios visuales del producto">
-                    <article class="bader-app-gallery-support__card">
-                        <span class="bader-app-gallery-support__icon">
-                            <i class="fa fa-search-plus"/>
-                        </span>
-                        <div>
-                            <strong>Escala real</strong>
-                            <p>La foto principal ayuda a validar forma y presencia del producto.</p>
-                        </div>
-                    </article>
-                    <article class="bader-app-gallery-support__card">
-                        <span class="bader-app-gallery-support__icon">
-                            <i class="fa fa-clone"/>
-                        </span>
-                        <div>
-                            <strong>Piezas y angulos</strong>
-                            <p>Las miniaturas ordenadas dejan revisar detalles sin perder contexto.</p>
-                        </div>
-                    </article>
-                    <article class="bader-app-gallery-support__card">
-                        <span class="bader-app-gallery-support__icon">
-                            <i class="fa fa-shield"/>
-                        </span>
-                        <div>
-                            <strong>Referencia rapida</strong>
-                            <p>Zoom y navegacion clara reducen friccion antes de comprar.</p>
-                        </div>
-                    </article>
-                </section>
-                <div t-else="" class="bader-app-gallery-quickbar" role="list" aria-label="Claves visuales del producto">
-                    <span class="bader-app-gallery-quickbar__item" role="listitem">
-                        <i class="fa fa-image"/>
-                        Imagen clara
-                    </span>
-                    <span class="bader-app-gallery-quickbar__item" role="listitem">
-                        <i class="fa fa-expand"/>
-                        Zoom activo
-                    </span>
-                    <span class="bader-app-gallery-quickbar__item" role="listitem">
-                        <i class="fa fa-tag"/>
-                        Referencia visible
-                    </span>
+                <div class="bader-app-gallery-shell__single-note">
+                    <i class="fa fa-search-plus"/>
+                    <span t-if="len(gallery_images) > 1">Usa las miniaturas para cambiar de vista y ampliar la imagen cuando necesites mas detalle.</span>
+                    <span t-else="">Amplia la imagen para revisar el producto con mas detalle.</span>
                 </div>
             </section>
         </xpath>
@@ -132,13 +74,9 @@
                 <span class="bader-app-sku" t-if="product_variant and product_variant.default_code">
                     SKU <t t-esc="product_variant.default_code"/>
                 </span>
-                <span class="bader-app-experience-pill">
-                    <i class="fa fa-mobile"/>
-                    Inspirado en Bader-AR
-                </span>
             </div>
             <div class="bader-app-persona-switch" t-if="pdp_persona_options">
-                <span class="bader-app-persona-switch__label">Ver como:</span>
+                <span class="bader-app-persona-switch__label">Perfil:</span>
                 <div class="bader-app-persona-switch__list"
                      role="tablist"
                      aria-label="Vista por nicho"
@@ -166,10 +104,6 @@
                     <t t-esc="summary_text[:240] + ('...' if len(summary_text) > 240 else '')"/>
                 </t>
                 <t t-else="">Equipo odontologico profesional con respaldo Bader, garantia oficial y soporte tecnico especializado.</t>
-            </p>
-            <p class="bader-app-persona-caption" t-if="pdp_persona_copy and pdp_persona_copy.get('market_focus')">
-                <strong t-esc="pdp_persona_copy.get('eyebrow') or 'Vista activa'"/>
-                <span t-esc="pdp_persona_copy.get('market_focus', {}).get('text')"/>
             </p>
             <div class="bader-app-fit-grid" role="list" aria-label="Enfoque de compra por nicho">
                 <t t-foreach="(pdp_persona_copy or {}).get('cards', [])" t-as="persona_card">
@@ -273,8 +207,8 @@
                         <i class="fa fa-truck"/>
                     </span>
                     <div>
-                        <strong>Envio gratis</strong>
-                        <p>A todo el pais con seguimiento comercial.</p>
+                        <strong>Envio y coordinacion</strong>
+                        <p>Gestion de entrega segun zona, tipo de producto y necesidad de instalacion.</p>
                     </div>
                 </article>
                 <article class="bader-app-trust-card">
@@ -282,8 +216,8 @@
                         <i class="fa fa-shield"/>
                     </span>
                     <div>
-                        <strong>Garantia europea</strong>
-                        <p>12 meses oficiales con respaldo Bader.</p>
+                        <strong>Garantia oficial</strong>
+                        <p>Respaldo Bader en equipos, instrumental y postventa segun la referencia.</p>
                     </div>
                 </article>
                 <article class="bader-app-trust-card">
@@ -292,16 +226,16 @@
                     </span>
                     <div>
                         <strong>Financiacion</strong>
-                        <p>Hasta 12 cuotas sin interes segun medio de pago.</p>
+                        <p>Consulta medios de pago y cuotas disponibles para este producto.</p>
                     </div>
                 </article>
                 <article class="bader-app-trust-card">
                     <span class="bader-app-trust-card__icon">
-                        <i class="fa fa-refresh"/>
+                        <i class="fa fa-headphones"/>
                     </span>
                     <div>
-                        <strong>Devolucion</strong>
-                        <p>30 dias para resolver cualquier friccion post compra.</p>
+                        <strong>Soporte Bader</strong>
+                        <p>Asistencia comercial y tecnica antes y despues de la compra.</p>
                     </div>
                 </article>
             </section>
@@ -310,12 +244,9 @@
         <xpath expr="//div[@id='product_full_description']" position="replace">
             <section id="product_full_description" class="bader-app-detail-section mt-5">
                 <div class="bader-app-section-heading">
-                    <span class="bader-app-section-heading__eyebrow">Detalles del producto</span>
-                    <h2>Todo lo que necesitas validar antes de comprar.</h2>
-                    <p>
-                        Reorganizamos la ficha con la misma logica del app: descripcion util, especificaciones claras,
-                        envio y garantia en tarjetas limpias.
-                    </p>
+                    <span class="bader-app-section-heading__eyebrow">Informacion del producto</span>
+                    <h2>Descripcion, especificaciones, envio y garantia</h2>
+                    <p>Consulta aqui la informacion comercial y tecnica disponible para este producto.</p>
                 </div>
 
                 <ul class="nav nav-tabs bader-app-tablist" role="tablist">
@@ -338,7 +269,7 @@
                         <article class="bader-app-detail-card">
                             <div class="bader-app-detail-card__header">
                                 <h3>Acerca de este producto</h3>
-                                <p>Una lectura mas clara para entender valor, uso y respaldo antes de la decision.</p>
+                                <p>Informacion comercial y tecnica del producto.</p>
                             </div>
                             <div class="bader-app-description-wrap" data-bader-description-wrap="1">
                                 <div class="bader-app-description-body" t-if="product.website_description" t-field="product.website_description"/>
@@ -375,7 +306,7 @@
                                 </div>
                                 <div class="bader-app-feature-item" role="listitem">
                                     <i class="fa fa-check"/>
-                                    <span>Lectura pensada para compra profesional</span>
+                                    <span>Asesoramiento comercial disponible</span>
                                 </div>
                             </div>
                         </article>
@@ -385,7 +316,7 @@
                         <article class="bader-app-detail-card">
                             <div class="bader-app-detail-card__header">
                                 <h3>Especificaciones tecnicas</h3>
-                                <p>Los datos esenciales quedan visibles sin obligar al usuario a descifrar una tabla pesada.</p>
+                                <p>Datos base para identificar el producto y su respaldo comercial.</p>
                             </div>
                             <div class="bader-app-spec-grid" role="list" aria-label="Especificaciones tecnicas">
                                 <div class="bader-app-spec-item" role="listitem">
@@ -426,7 +357,7 @@
                         <article class="bader-app-detail-card">
                             <div class="bader-app-detail-card__header">
                                 <h3>Informacion de envio</h3>
-                                <p>El usuario valida despacho y coordinacion sin salir del flujo de compra.</p>
+                                <p>Condiciones generales de envio y coordinacion.</p>
                             </div>
                             <div class="bader-app-info-panels">
                                 <article class="bader-app-info-panel bader-app-info-panel--emerald">
@@ -455,7 +386,7 @@
                         <article class="bader-app-detail-card">
                             <div class="bader-app-detail-card__header">
                                 <h3>Garantia y soporte</h3>
-                                <p>La postventa se presenta tan clara como el producto, igual que en la experiencia del app.</p>
+                                <p>Cobertura, postventa y asistencia disponible.</p>
                             </div>
                             <div class="bader-app-info-panels">
                                 <article class="bader-app-info-panel bader-app-info-panel--purple">
@@ -492,7 +423,7 @@
                         </span>
                         <div>
                             <h2>Preguntas frecuentes</h2>
-                            <p t-esc="(pdp_persona_copy or {}).get('faq_intro') or 'Todo lo que normalmente frena una compra profesional, resuelto en la misma pagina.'"/>
+                            <p t-esc="(pdp_persona_copy or {}).get('faq_intro') or 'Respuestas rapidas sobre compra, envio, garantia y soporte.'"/>
                         </div>
                     </div>
 
@@ -517,8 +448,8 @@
 
                     <div class="bader-app-faq-cta">
                         <div class="bader-app-faq-cta__copy">
-                            <strong t-esc="(pdp_persona_copy or {}).get('faq_cta_title') or 'Tienes mas preguntas?'"/>
-                            <p t-esc="(pdp_persona_copy or {}).get('faq_cta_body') or 'Te acompanamos antes del cierre para comparar, validar y decidir con mas claridad.'"/>
+                            <strong t-esc="(pdp_persona_copy or {}).get('faq_cta_title') or 'Necesitas ayuda con este producto?'"/>
+                            <p t-esc="(pdp_persona_copy or {}).get('faq_cta_body') or 'Escribenos y te ayudamos con stock, compatibilidad y condiciones comerciales.'"/>
                         </div>
                         <a class="bader-app-faq-cta__button"
                            t-att-href="pdp_whatsapp_url"
@@ -534,9 +465,9 @@
                 <div class="bader-app-related-shell">
                     <div class="bader-app-related-head">
                         <div>
-                            <span class="bader-app-section-heading__eyebrow">Venta cruzada</span>
-                            <h2>Tambien te puede interesar</h2>
-                            <p>Productos complementarios con la misma logica visual y la misma sensacion de app.</p>
+                            <span class="bader-app-section-heading__eyebrow">Productos relacionados</span>
+                            <h2>Complementa tu compra</h2>
+                            <p>Accesorios, repuestos y equipos vinculados a este producto.</p>
                         </div>
                     </div>
 
@@ -580,8 +511,8 @@
                         <i class="fa fa-comments"/>
                     </span>
                     <div class="bader-app-help-cta__text">
-                        <h3 t-esc="(pdp_persona_copy or {}).get('help_title') or 'Tienes dudas sobre este producto?'"/>
-                        <p t-esc="(pdp_persona_copy or {}).get('help_body') or 'Nuestros especialistas estan listos para ayudarte'"/>
+                        <h3 t-esc="(pdp_persona_copy or {}).get('help_title') or 'Necesitas ayuda para elegir?'"/>
+                        <p t-esc="(pdp_persona_copy or {}).get('help_body') or 'Te ayudamos con compatibilidad, stock, financiacion y entrega.'"/>
                     </div>
                 </div>
                 <a class="bader-app-help-cta__button"
