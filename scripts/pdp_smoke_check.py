@@ -24,6 +24,11 @@ REQUIRED_HTML_MARKERS = (
     "bader-app-related-section",
     "bader-app-help-cta",
 )
+DISALLOWED_HTML_MARKERS = (
+    "bader-app-persona-switch",
+    "bader-app-fit-grid",
+)
+SKU_PREFIX_RE = re.compile(r"^\[[^\]]+\]\s*")
 
 SCRIPT_SRC_UNSAFE_INLINE_RE = re.compile(r"(?:^|;)\s*script-src[^;]*'unsafe-inline'", re.IGNORECASE)
 SCRIPT_SRC_NONCE_RE = re.compile(r"(?:^|;)\s*script-src[^;]*'nonce-[^']+'", re.IGNORECASE)
@@ -35,7 +40,9 @@ class ProductHtmlInspector(HTMLParser):
         self.inline_scripts = 0
         self.inline_scripts_without_nonce = 0
         self.title_parts: list[str] = []
+        self.h1_parts: list[str] = []
         self.in_title = False
+        self.in_product_h1 = False
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attr_map = {key.lower(): (value or "") for key, value in attrs}
@@ -43,6 +50,15 @@ class ProductHtmlInspector(HTMLParser):
 
         if tag == "title":
             self.in_title = True
+            return
+
+        class_name = attr_map.get("class", "").strip().lower()
+        if (
+            tag == "h1"
+            and attr_map.get("itemprop", "").strip().lower() == "name"
+            and "d-none" not in class_name.split()
+        ):
+            self.in_product_h1 = True
             return
 
         if tag != "script":
@@ -57,16 +73,25 @@ class ProductHtmlInspector(HTMLParser):
             self.inline_scripts_without_nonce += 1
 
     def handle_endtag(self, tag: str) -> None:
-        if tag.lower() == "title":
+        lowered = tag.lower()
+        if lowered == "title":
             self.in_title = False
+        elif lowered == "h1":
+            self.in_product_h1 = False
 
     def handle_data(self, data: str) -> None:
         if self.in_title and data.strip():
             self.title_parts.append(data.strip())
+        if self.in_product_h1 and data.strip():
+            self.h1_parts.append(data.strip())
 
     @property
     def title(self) -> str:
         return " ".join(self.title_parts).strip()
+
+    @property
+    def product_h1(self) -> str:
+        return " ".join(self.h1_parts).strip()
 
 
 def fetch(url: str, timeout: int) -> tuple[int, dict[str, str], str]:
@@ -136,6 +161,10 @@ def main() -> int:
         if marker not in body:
             failures.append(f"missing marker: {marker}")
 
+    for marker in DISALLOWED_HTML_MARKERS:
+        if marker in body:
+            failures.append(f"unexpected marker: {marker}")
+
     if parser.inline_scripts_without_nonce:
         failures.append(
             f"found {parser.inline_scripts_without_nonce} inline script(s) without nonce "
@@ -144,13 +173,15 @@ def main() -> int:
 
     if parser.title:
         notes.append(f"title={parser.title}")
+    if parser.product_h1:
+        notes.append(f"h1={parser.product_h1}")
+        if SKU_PREFIX_RE.match(parser.product_h1):
+            failures.append("product H1 still contains SKU prefix")
     notes.append(f"inline_scripts={parser.inline_scripts}")
 
     persona_status, _persona_headers, persona_body = fetch(persona_url, args.timeout)
     if persona_status != 200:
         failures.append(f"unexpected persona status={persona_status}")
-    if ('data-active-persona="%s"' % args.persona) not in persona_body:
-        failures.append(f"persona route did not activate {args.persona}")
     else:
         notes.append(f"persona_route={persona_path}")
 

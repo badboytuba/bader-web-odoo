@@ -2684,6 +2684,14 @@
     color: var(--bader-pdp-text);
 }
 
+#product_detail.bader-product-detail #product_details>h1.bader-pdp-title[itemprop='name'] {
+    display: block !important;
+}
+
+#product_detail.bader-product-detail #product_details>h1.d-none[itemprop='name'] {
+    display: none !important;
+}
+
 #product_detail.bader-product-detail .bader-app-summary {
     margin: 0;
     max-width: 58ch;

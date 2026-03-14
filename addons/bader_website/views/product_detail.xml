@@ -50,6 +50,10 @@
         </xpath>
 
         <xpath expr="//div[@id='product_details']/h1[@itemprop='name']" position="before">
+            <t t-set="product_name_source"
+               t-value="(product.with_context(lang='es_ES', display_default_code=False).name or product.name or '').strip()"/>
+            <t t-set="product_name_clean"
+               t-value="product_name_source.split('] ', 1)[1].strip() if product_name_source.startswith('[') and '] ' in product_name_source else product_name_source"/>
             <div class="bader-app-meta-row">
                 <div class="bader-app-category-pills">
                     <t t-if="product.public_categ_ids">
@@ -75,44 +79,23 @@
                     SKU <t t-esc="product_variant.default_code"/>
                 </span>
             </div>
-            <div class="bader-app-persona-switch" t-if="pdp_persona_options">
-                <span class="bader-app-persona-switch__label">Perfil:</span>
-                <div class="bader-app-persona-switch__list"
-                     role="tablist"
-                     aria-label="Vista por nicho"
-                     t-att-data-active-persona="pdp_persona or ''"
-                     t-att-data-default-href="pdp_default_href or ''">
-                    <t t-foreach="pdp_persona_options" t-as="persona_option">
-                        <a t-att-href="persona_option.get('href')"
-                           t-attf-class="bader-app-persona-switch__chip #{'is-active' if persona_option.get('active') else ''}"
-                           t-att-aria-pressed="'true' if persona_option.get('active') else 'false'"
-                           t-att-data-persona-key="persona_option.get('key')">
-                            <t t-esc="persona_option.get('label')"/>
-                        </a>
-                    </t>
-                </div>
-            </div>
         </xpath>
 
+        <xpath expr="//div[@id='product_details']/h1[@itemprop='name']" position="before">
+            <h1 itemprop="name" class="bader-pdp-title" t-esc="product_name_clean or product_name_source">Product Name</h1>
+        </xpath>
+
+        <xpath expr="//div[@id='product_details']/h1[@itemprop='name'][last()]" position="replace"/>
+
         <xpath expr="//div[@id='product_details']/h1[@itemprop='name'][last()]" position="after">
-            <t t-set="summary_text" t-value="(product.description_sale or product.description or '').replace('\n', ' ').strip()"/>
+            <t t-set="summary_text"
+               t-value="((product.with_context(lang='es_ES').description_sale or product.with_context(lang='es_ES').description or '').replace('\n', ' ').strip())"/>
             <p class="bader-app-summary">
-                <t t-if="pdp_persona_copy and pdp_persona_copy.get('summary')">
-                    <t t-esc="pdp_persona_copy.get('summary')"/>
-                </t>
-                <t t-elif="summary_text">
+                <t t-if="summary_text">
                     <t t-esc="summary_text[:240] + ('...' if len(summary_text) > 240 else '')"/>
                 </t>
                 <t t-else="">Equipo odontologico profesional con respaldo Bader, garantia oficial y soporte tecnico especializado.</t>
             </p>
-            <div class="bader-app-fit-grid" role="list" aria-label="Enfoque de compra por nicho">
-                <t t-foreach="(pdp_persona_copy or {}).get('cards', [])" t-as="persona_card">
-                    <article class="bader-app-fit-card" role="listitem">
-                        <strong t-esc="persona_card.get('title')"/>
-                        <span t-esc="persona_card.get('description')"/>
-                    </article>
-                </t>
-            </div>
         </xpath>
 
         <xpath expr="//div[@id='product_details']/p[hasclass('text-muted') and hasclass('my-2')]" position="replace"/>
@@ -474,6 +457,10 @@
                     <div class="row g-4 bader-app-related-grid">
                         <t t-foreach="pdp_related_products" t-as="rel">
                             <div class="col-12 col-sm-6 col-xl-4">
+                                <t t-set="rel_name_source"
+                                   t-value="(rel.with_context(lang='es_ES', display_default_code=False).name or rel.name or '').strip()"/>
+                                <t t-set="rel_name_clean"
+                                   t-value="rel_name_source.split('] ', 1)[1].strip() if rel_name_source.startswith('[') and '] ' in rel_name_source else rel_name_source"/>
                                 <a t-att-href="rel.website_url" class="bader-app-related-card">
                                     <span class="bader-app-related-card__tag">
                                         <span t-if="rel.public_categ_ids" t-esc="rel.public_categ_ids[0].name"/>
@@ -483,13 +470,13 @@
                                         <img t-att-src="website.image_url(rel, 'image_256')"
                                              t-att-srcset="'%s 256w, %s 512w' % (website.image_url(rel, 'image_256'), website.image_url(rel, 'image_512'))"
                                              sizes="(max-width: 575px) 78vw, (max-width: 1199px) 44vw, 24vw"
-                                             t-att-alt="rel.name"
+                                             t-att-alt="rel_name_clean or rel_name_source"
                                              loading="lazy"
                                              decoding="async"
                                              width="256"
                                              height="256"/>
                                     </span>
-                                    <span class="bader-app-related-card__name" t-esc="rel.name"/>
+                                    <span class="bader-app-related-card__name" t-esc="rel_name_clean or rel_name_source"/>
                                     <span class="bader-app-related-card__price-row">
                                         <span class="bader-app-related-card__price"
                                               t-field="rel.list_price"
