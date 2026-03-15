@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import os
 import sys
@@ -37,6 +38,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-description-sale", action="store_true", help="Do not fill description_sale.")
     parser.add_argument("--skip-website-description", action="store_true", help="Do not normalize website_description.")
     parser.add_argument("--write", action="store_true", help="Apply changes instead of running a dry audit.")
+    parser.add_argument("--export-review-csv", help="Write the pending manual-review queue to a local CSV file.")
+    parser.add_argument("--export-review-json", help="Write the pending manual-review queue to a local JSON file.")
     return parser.parse_args()
 
 
@@ -126,6 +129,37 @@ def is_summary_safe(summary):
     return True
 
 
+def summary_quality_issues(summary):
+    text = (summary or '').strip()
+    issues = []
+    if not text:
+        issues.append('empty')
+        return issues
+    if text == GENERIC_SUMMARY:
+        issues.append('generic_fallback')
+    if len(text) < 20:
+        issues.append('too_short')
+    if len(text) > 180:
+        issues.append('too_long')
+    if text[:1].isdigit():
+        issues.append('starts_with_digit')
+    if text.endswith('...'):
+        issues.append('truncated')
+    if text.count(':') > 1:
+        issues.append('too_many_colons')
+
+    normalized = sale._normalize_pdp_text(text)
+    for flag in ('caca', 'lorem', 'test'):
+        if flag in normalized:
+            issues.append('blocked_token_%s' % flag)
+
+    digit_count = sum(1 for char in text if char.isdigit())
+    letter_count = sum(1 for char in text if char.isalpha())
+    if digit_count and letter_count and digit_count > (letter_count * 0.35):
+        issues.append('digit_heavy')
+    return issues
+
+
 stats = {
     'products_scanned': len(products),
     'description_sale_candidates': 0,
@@ -137,6 +171,7 @@ stats = {
     'products_without_real_copy': 0,
 }
 samples = []
+review_queue = []
 
 for product in products:
     payload = sale._build_pdp_content_payload(product)
@@ -151,6 +186,16 @@ for product in products:
 
     if not has_real_copy:
         stats['products_without_real_copy'] += 1
+        review_queue.append({
+            'id': product.id,
+            'sku': product.default_code or '',
+            'name': product.name or '',
+            'reason': 'missing_copy',
+            'quality_issues': [],
+            'current_description_sale': current_sale[:220],
+            'suggested_summary': '',
+            'source_preview': sale._pdp_description_plaintext(source_html or product.description or '')[:280],
+        })
 
     if (
         options.get('fill_description_sale')
@@ -158,12 +203,23 @@ for product in products:
         and summary_text
         and (not current_sale or current_sale == (product.name or '').strip())
     ):
+        quality_issues = summary_quality_issues(summary_text)
         if is_summary_safe(summary_text):
             stats['description_sale_candidates'] += 1
             if current_sale != summary_text:
                 updates['description_sale'] = summary_text
         else:
             stats['description_sale_skipped_quality'] += 1
+            review_queue.append({
+                'id': product.id,
+                'sku': product.default_code or '',
+                'name': product.name or '',
+                'reason': 'skipped_quality',
+                'quality_issues': quality_issues,
+                'current_description_sale': current_sale[:220],
+                'suggested_summary': summary_text[:220],
+                'source_preview': ((payload.get('description_paragraphs') or [''])[0])[:280],
+            })
 
     if (
         options.get('normalize_website_description')
@@ -198,6 +254,7 @@ print(json.dumps({
     'mode': 'write' if options.get('write') else 'dry-run',
     'stats': stats,
     'samples': samples,
+    'review_queue': review_queue,
 }, ensure_ascii=False, indent=2))
 PY"""
     return (
@@ -222,6 +279,43 @@ def run_remote(options: dict[str, object]) -> tuple[str, str, int]:
         client.close()
 
 
+def write_review_reports(payload: dict[str, object], csv_path: str | None, json_path: str | None) -> None:
+    review_queue = list(payload.get("review_queue") or [])
+    if json_path:
+        target = ROOT / json_path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(
+            json.dumps(review_queue, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+    if csv_path:
+        target = ROOT / csv_path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        fieldnames = [
+            "id",
+            "sku",
+            "name",
+            "reason",
+            "quality_issues",
+            "current_description_sale",
+            "suggested_summary",
+            "source_preview",
+        ]
+        with target.open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(handle, fieldnames=fieldnames)
+            writer.writeheader()
+            for row in review_queue:
+                normalized_row = dict(row)
+                normalized_row["quality_issues"] = "|".join(row.get("quality_issues") or [])
+                writer.writerow({key: normalized_row.get(key, "") for key in fieldnames})
+
+
+def emit_text(text: str, stream) -> None:
+    encoding = getattr(stream, "encoding", None) or "utf-8"
+    stream.write(text.encode(encoding, errors="replace").decode(encoding))
+    stream.write("\n")
+
+
 def main() -> int:
     args = parse_args()
     options = {
@@ -234,10 +328,14 @@ def main() -> int:
         "write": bool(args.write),
     }
     out, err, code = run_remote(options)
+    payload = None
     if out.strip():
-        print(out.strip())
+        payload = json.loads(out)
+        write_review_reports(payload, args.export_review_csv, args.export_review_json)
+    if out.strip():
+        emit_text(out.strip(), sys.stdout)
     if err.strip():
-        print(err.strip(), file=sys.stderr)
+        emit_text(err.strip(), sys.stderr)
     return code
 
 
