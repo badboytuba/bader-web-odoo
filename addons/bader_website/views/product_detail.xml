@@ -220,173 +220,283 @@
 
         <xpath expr="//div[@id='product_full_description']" position="replace">
             <section id="product_full_description" class="bader-app-detail-section mt-5">
-                <div class="bader-app-section-heading">
-                    <span class="bader-app-section-heading__eyebrow">Informacion del producto</span>
-                    <h2>Descripcion, especificaciones, envio y garantia</h2>
-                    <p>Consulta aqui la informacion comercial y tecnica disponible para este producto.</p>
-                </div>
-
-                <ul class="nav nav-tabs bader-app-tablist" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link active" id="bader_app_tab_desc_btn" data-bs-toggle="tab" href="#bader_app_tab_desc" role="tab">Descripcion</a>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="bader_app_tab_specs_btn" data-bs-toggle="tab" href="#bader_app_tab_specs" role="tab">Especificaciones</a>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="bader_app_tab_shipping_btn" data-bs-toggle="tab" href="#bader_app_tab_shipping" role="tab">Envio</a>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="bader_app_tab_warranty_btn" data-bs-toggle="tab" href="#bader_app_tab_warranty" role="tab">Garantia</a>
-                    </li>
-                </ul>
-
-                <div class="tab-content bader-app-tab-content">
-                    <div class="tab-pane fade show active" id="bader_app_tab_desc" role="tabpanel" aria-labelledby="bader_app_tab_desc_btn">
-                        <article class="bader-app-detail-card">
-                            <div class="bader-app-detail-card__header">
-                                <h3>Acerca de este producto</h3>
-                                <p>Informacion comercial y tecnica del producto.</p>
-                            </div>
-                            <div class="bader-app-description-wrap" data-bader-description-wrap="1">
-                                <div class="bader-app-description-body" t-if="pdp_description_paragraphs or pdp_feature_points">
-                                    <t t-foreach="pdp_description_paragraphs" t-as="paragraph">
-                                        <p t-esc="paragraph"/>
-                                    </t>
-                                    <div class="bader-app-description-specs" t-if="pdp_feature_points">
-                                        <h4>Caracteristicas destacadas</h4>
-                                        <ul>
-                                            <t t-foreach="pdp_feature_points" t-as="point">
-                                                <li t-esc="point"/>
-                                            </t>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <p class="bader-app-description-body__fallback" t-else="">Producto profesional Bader con calidad europea y soporte tecnico especializado.</p>
-                            </div>
-                            <button type="button"
-                                    class="bader-app-description-toggle"
-                                    data-bader-description-toggle="1"
-                                    aria-expanded="false">
-                                Ver descripcion completa
-                            </button>
-
-                            <div class="bader-app-feature-grid" role="list" aria-label="Caracteristicas principales">
-                                <t t-foreach="pdp_highlight_points" t-as="point">
-                                    <div class="bader-app-feature-item" role="listitem">
-                                        <i class="fa fa-check"/>
-                                        <span t-esc="point"/>
-                                    </div>
-                                </t>
-                            </div>
-                        </article>
-                    </div>
-
-                    <div class="tab-pane fade" id="bader_app_tab_specs" role="tabpanel" aria-labelledby="bader_app_tab_specs_btn">
-                        <article class="bader-app-detail-card">
-                            <div class="bader-app-detail-card__header">
-                                <h3>Especificaciones tecnicas</h3>
-                                <p>Datos base para identificar el producto y su respaldo comercial.</p>
-                            </div>
-                            <div class="bader-app-spec-grid" role="list" aria-label="Especificaciones tecnicas">
-                                <div class="bader-app-spec-item" role="listitem">
-                                    <span>Categoria</span>
-                                    <strong>
+                <div class="bader-app-detail-shell">
+                    <div class="bader-app-detail-intro">
+                        <div class="bader-app-section-heading">
+                            <span class="bader-app-section-heading__eyebrow">Informacion del producto</span>
+                            <h2>Informacion clara para evaluar el producto</h2>
+                            <p>Descripcion comercial, ficha tecnica, envio y garantia organizados en un bloque mas limpio y facil de revisar.</p>
+                        </div>
+                        <aside class="bader-app-detail-intro-card" aria-label="Resumen del producto">
+                            <span class="bader-app-detail-intro-card__eyebrow">Resumen rapido</span>
+                            <strong>Todo lo esencial reunido en una sola lectura</strong>
+                            <p t-esc="pdp_summary_text or 'Consulta aqui descripcion, datos base y condiciones comerciales del producto.'"/>
+                            <dl class="bader-app-detail-intro-meta">
+                                <div>
+                                    <dt>Categoria</dt>
+                                    <dd>
                                         <span t-if="product.public_categ_ids" t-esc="product.public_categ_ids[0].name"/>
                                         <span t-else="">General</span>
-                                    </strong>
+                                    </dd>
                                 </div>
-                                <div class="bader-app-spec-item" role="listitem">
-                                    <span>Codigo</span>
-                                    <strong>
+                                <div>
+                                    <dt>Codigo</dt>
+                                    <dd>
                                         <span t-if="product_variant and product_variant.default_code" t-esc="product_variant.default_code"/>
                                         <span t-else="">BAD-<t t-esc="product.id"/></span>
-                                    </strong>
+                                    </dd>
                                 </div>
-                                <div class="bader-app-spec-item" role="listitem">
-                                    <span>Marca</span>
-                                    <strong>BADER</strong>
+                                <div>
+                                    <dt>Marca</dt>
+                                    <dd>BADER</dd>
                                 </div>
-                                <div class="bader-app-spec-item" role="listitem">
-                                    <span>Origen</span>
-                                    <strong>Europa</strong>
-                                </div>
-                                <div class="bader-app-spec-item" role="listitem">
-                                    <span>Garantia</span>
-                                    <strong>12 meses</strong>
-                                </div>
-                                <div class="bader-app-spec-item" role="listitem">
-                                    <span>Soporte</span>
-                                    <strong>Comercial + tecnico</strong>
-                                </div>
-                            </div>
-                            <div class="bader-app-spec-list" t-if="pdp_feature_points">
-                                <h4>Ficha rapida</h4>
-                                <ul>
-                                    <t t-foreach="pdp_feature_points" t-as="point">
-                                        <li t-esc="point"/>
-                                    </t>
-                                </ul>
-                            </div>
-                        </article>
+                            </dl>
+                        </aside>
                     </div>
 
-                    <div class="tab-pane fade" id="bader_app_tab_shipping" role="tabpanel" aria-labelledby="bader_app_tab_shipping_btn">
-                        <article class="bader-app-detail-card">
-                            <div class="bader-app-detail-card__header">
-                                <h3>Informacion de envio</h3>
-                                <p>Condiciones generales de envio y coordinacion.</p>
-                            </div>
-                            <div class="bader-app-info-panels">
-                                <article class="bader-app-info-panel bader-app-info-panel--emerald">
-                                    <span class="bader-app-info-panel__icon">
-                                        <i class="fa fa-truck"/>
-                                    </span>
-                                    <div>
-                                        <strong>Envio gratis a todo el pais</strong>
-                                        <p>Entrega estimada de 3 a 10 dias habiles segun zona y tipo de producto.</p>
-                                    </div>
-                                </article>
-                                <article class="bader-app-info-panel bader-app-info-panel--blue">
-                                    <span class="bader-app-info-panel__icon">
-                                        <i class="fa fa-map-marker"/>
-                                    </span>
-                                    <div>
-                                        <strong>Coordinacion comercial</strong>
-                                        <p>Seguimiento personalizado para retiro, entrega y puesta en marcha cuando aplica.</p>
-                                    </div>
-                                </article>
-                            </div>
-                        </article>
+                    <div class="bader-app-tab-shell">
+                        <ul class="nav nav-tabs bader-app-tablist" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" id="bader_app_tab_desc_btn" data-bs-toggle="tab" href="#bader_app_tab_desc" role="tab">Descripcion</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="bader_app_tab_specs_btn" data-bs-toggle="tab" href="#bader_app_tab_specs" role="tab">Especificaciones</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="bader_app_tab_shipping_btn" data-bs-toggle="tab" href="#bader_app_tab_shipping" role="tab">Envio</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="bader_app_tab_warranty_btn" data-bs-toggle="tab" href="#bader_app_tab_warranty" role="tab">Garantia</a>
+                            </li>
+                        </ul>
                     </div>
 
-                    <div class="tab-pane fade" id="bader_app_tab_warranty" role="tabpanel" aria-labelledby="bader_app_tab_warranty_btn">
-                        <article class="bader-app-detail-card">
-                            <div class="bader-app-detail-card__header">
-                                <h3>Garantia y soporte</h3>
-                                <p>Cobertura, postventa y asistencia disponible.</p>
+                    <div class="tab-content bader-app-tab-content">
+                        <div class="tab-pane fade show active" id="bader_app_tab_desc" role="tabpanel" aria-labelledby="bader_app_tab_desc_btn">
+                            <div class="bader-app-detail-panel-grid">
+                                <article class="bader-app-detail-card bader-app-detail-card--main">
+                                    <div class="bader-app-detail-card__header">
+                                        <h3>Descripcion del producto</h3>
+                                        <p>Informacion comercial y compatibilidades disponibles para este articulo.</p>
+                                    </div>
+                                    <div class="bader-app-description-wrap" data-bader-description-wrap="1">
+                                        <div class="bader-app-description-body" t-if="pdp_description_paragraphs or pdp_feature_points">
+                                            <t t-foreach="pdp_description_paragraphs" t-as="paragraph">
+                                                <p t-esc="paragraph"/>
+                                            </t>
+                                            <div class="bader-app-description-specs" t-if="pdp_feature_points">
+                                                <h4>Caracteristicas destacadas</h4>
+                                                <ul>
+                                                    <t t-foreach="pdp_feature_points" t-as="point">
+                                                        <li t-esc="point"/>
+                                                    </t>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <p class="bader-app-description-body__fallback" t-else="">Producto profesional Bader con calidad europea y soporte tecnico especializado.</p>
+                                    </div>
+                                    <button type="button"
+                                            class="bader-app-description-toggle"
+                                            data-bader-description-toggle="1"
+                                            aria-expanded="false">
+                                        Ver descripcion completa
+                                    </button>
+                                </article>
+
+                                <aside class="bader-app-detail-rail">
+                                    <article class="bader-app-detail-rail-card">
+                                        <span class="bader-app-detail-rail-card__eyebrow">Resumen comercial</span>
+                                        <h4>Lo esencial del producto</h4>
+                                        <p t-esc="pdp_summary_text or 'Informacion comercial y tecnica disponible para este producto.'"/>
+                                    </article>
+                                    <article class="bader-app-detail-rail-card" t-if="pdp_highlight_points">
+                                        <span class="bader-app-detail-rail-card__eyebrow">Puntos clave</span>
+                                        <h4>Aspectos a revisar antes de comprar</h4>
+                                        <ul class="bader-app-detail-rail-list">
+                                            <t t-foreach="pdp_highlight_points" t-as="point">
+                                                <li t-if="point_index &lt; 4">
+                                                    <span t-esc="point"/>
+                                                </li>
+                                            </t>
+                                        </ul>
+                                    </article>
+                                    <a t-if="pdp_whatsapp_url"
+                                       class="bader-app-detail-rail-cta"
+                                       t-att-href="pdp_whatsapp_url"
+                                       rel="noopener"
+                                       target="_blank">
+                                        Consultar este producto
+                                    </a>
+                                </aside>
                             </div>
-                            <div class="bader-app-info-panels">
-                                <article class="bader-app-info-panel bader-app-info-panel--purple">
-                                    <span class="bader-app-info-panel__icon">
-                                        <i class="fa fa-shield"/>
-                                    </span>
-                                    <div>
-                                        <strong>Garantia europea oficial</strong>
-                                        <p>Cobertura de 12 meses por defectos de fabricacion y respaldo directo de marca.</p>
+                        </div>
+
+                        <div class="tab-pane fade" id="bader_app_tab_specs" role="tabpanel" aria-labelledby="bader_app_tab_specs_btn">
+                            <div class="bader-app-detail-panel-grid">
+                                <article class="bader-app-detail-card bader-app-detail-card--main">
+                                    <div class="bader-app-detail-card__header">
+                                        <h3>Especificaciones tecnicas</h3>
+                                        <p>Datos base para identificar el producto y compararlo con rapidez.</p>
+                                    </div>
+                                    <div class="bader-app-spec-grid" role="list" aria-label="Especificaciones tecnicas">
+                                        <div class="bader-app-spec-item" role="listitem">
+                                            <span>Categoria</span>
+                                            <strong>
+                                                <span t-if="product.public_categ_ids" t-esc="product.public_categ_ids[0].name"/>
+                                                <span t-else="">General</span>
+                                            </strong>
+                                        </div>
+                                        <div class="bader-app-spec-item" role="listitem">
+                                            <span>Codigo</span>
+                                            <strong>
+                                                <span t-if="product_variant and product_variant.default_code" t-esc="product_variant.default_code"/>
+                                                <span t-else="">BAD-<t t-esc="product.id"/></span>
+                                            </strong>
+                                        </div>
+                                        <div class="bader-app-spec-item" role="listitem">
+                                            <span>Marca</span>
+                                            <strong>BADER</strong>
+                                        </div>
+                                        <div class="bader-app-spec-item" role="listitem">
+                                            <span>Origen</span>
+                                            <strong>Europa</strong>
+                                        </div>
+                                        <div class="bader-app-spec-item" role="listitem">
+                                            <span>Garantia</span>
+                                            <strong>12 meses</strong>
+                                        </div>
+                                        <div class="bader-app-spec-item" role="listitem">
+                                            <span>Soporte</span>
+                                            <strong>Comercial + tecnico</strong>
+                                        </div>
                                     </div>
                                 </article>
-                                <article class="bader-app-info-panel bader-app-info-panel--orange">
-                                    <span class="bader-app-info-panel__icon">
-                                        <i class="fa fa-headphones"/>
-                                    </span>
-                                    <div>
-                                        <strong>Soporte tecnico especializado</strong>
-                                        <p>Acompanamiento para instalacion, uso, mantenimiento y continuidad operativa.</p>
+
+                                <aside class="bader-app-detail-rail">
+                                    <article class="bader-app-detail-rail-card">
+                                        <span class="bader-app-detail-rail-card__eyebrow">Ficha rapida</span>
+                                        <h4>Datos destacados</h4>
+                                        <ul class="bader-app-detail-rail-list" t-if="pdp_feature_points">
+                                            <t t-foreach="pdp_feature_points" t-as="point">
+                                                <li t-if="point_index &lt; 6">
+                                                    <span t-esc="point"/>
+                                                </li>
+                                            </t>
+                                        </ul>
+                                        <p t-else="">Consulta esta ficha para revisar las referencias tecnicas principales del producto.</p>
+                                    </article>
+                                    <article class="bader-app-detail-rail-card">
+                                        <span class="bader-app-detail-rail-card__eyebrow">Respaldo</span>
+                                        <h4>Compra con soporte de marca</h4>
+                                        <ul class="bader-app-detail-rail-list">
+                                            <li>Marca Bader con respaldo comercial y tecnico.</li>
+                                            <li>Garantia oficial para defectos de fabricacion.</li>
+                                            <li>Atencion para consulta antes y despues de la compra.</li>
+                                        </ul>
+                                    </article>
+                                </aside>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="bader_app_tab_shipping" role="tabpanel" aria-labelledby="bader_app_tab_shipping_btn">
+                            <div class="bader-app-detail-panel-grid">
+                                <article class="bader-app-detail-card bader-app-detail-card--main">
+                                    <div class="bader-app-detail-card__header">
+                                        <h3>Informacion de envio</h3>
+                                        <p>Condiciones generales de entrega y coordinacion comercial.</p>
+                                    </div>
+                                    <div class="bader-app-info-panels">
+                                        <article class="bader-app-info-panel bader-app-info-panel--emerald">
+                                            <span class="bader-app-info-panel__icon">
+                                                <i class="fa fa-truck"/>
+                                            </span>
+                                            <div>
+                                                <strong>Envio gratis a todo el pais</strong>
+                                                <p>Entrega estimada de 3 a 10 dias habiles segun zona y tipo de producto.</p>
+                                            </div>
+                                        </article>
+                                        <article class="bader-app-info-panel bader-app-info-panel--blue">
+                                            <span class="bader-app-info-panel__icon">
+                                                <i class="fa fa-map-marker"/>
+                                            </span>
+                                            <div>
+                                                <strong>Coordinacion comercial</strong>
+                                                <p>Seguimiento personalizado para retiro, entrega y puesta en marcha cuando aplica.</p>
+                                            </div>
+                                        </article>
                                     </div>
                                 </article>
+
+                                <aside class="bader-app-detail-rail">
+                                    <article class="bader-app-detail-rail-card">
+                                        <span class="bader-app-detail-rail-card__eyebrow">Proceso de entrega</span>
+                                        <h4>Como coordinamos el envio</h4>
+                                        <ul class="bader-app-detail-rail-list">
+                                            <li>Confirmamos stock, direccion y condiciones de despacho.</li>
+                                            <li>Coordinamos salida y seguimiento segun la zona de entrega.</li>
+                                            <li>El equipo comercial acompana los casos que requieren gestion especial.</li>
+                                        </ul>
+                                    </article>
+                                    <a t-if="pdp_whatsapp_url"
+                                       class="bader-app-detail-rail-cta"
+                                       t-att-href="pdp_whatsapp_url"
+                                       rel="noopener"
+                                       target="_blank">
+                                        Consultar tiempos de entrega
+                                    </a>
+                                </aside>
                             </div>
-                        </article>
+                        </div>
+
+                        <div class="tab-pane fade" id="bader_app_tab_warranty" role="tabpanel" aria-labelledby="bader_app_tab_warranty_btn">
+                            <div class="bader-app-detail-panel-grid">
+                                <article class="bader-app-detail-card bader-app-detail-card--main">
+                                    <div class="bader-app-detail-card__header">
+                                        <h3>Garantia y soporte</h3>
+                                        <p>Cobertura, postventa y asistencia disponible para la compra profesional.</p>
+                                    </div>
+                                    <div class="bader-app-info-panels">
+                                        <article class="bader-app-info-panel bader-app-info-panel--purple">
+                                            <span class="bader-app-info-panel__icon">
+                                                <i class="fa fa-shield"/>
+                                            </span>
+                                            <div>
+                                                <strong>Garantia europea oficial</strong>
+                                                <p>Cobertura de 12 meses por defectos de fabricacion y respaldo directo de marca.</p>
+                                            </div>
+                                        </article>
+                                        <article class="bader-app-info-panel bader-app-info-panel--orange">
+                                            <span class="bader-app-info-panel__icon">
+                                                <i class="fa fa-headphones"/>
+                                            </span>
+                                            <div>
+                                                <strong>Soporte tecnico especializado</strong>
+                                                <p>Acompanamiento para instalacion, uso, mantenimiento y continuidad operativa.</p>
+                                            </div>
+                                        </article>
+                                    </div>
+                                </article>
+
+                                <aside class="bader-app-detail-rail">
+                                    <article class="bader-app-detail-rail-card">
+                                        <span class="bader-app-detail-rail-card__eyebrow">Cobertura general</span>
+                                        <h4>Postventa con respaldo</h4>
+                                        <ul class="bader-app-detail-rail-list">
+                                            <li>Garantia oficial sobre defectos de fabricacion.</li>
+                                            <li>Orientacion sobre uso, mantenimiento y continuidad operativa.</li>
+                                            <li>Atencion comercial y tecnica para consultas de postventa.</li>
+                                        </ul>
+                                    </article>
+                                    <a t-if="pdp_whatsapp_url"
+                                       class="bader-app-detail-rail-cta"
+                                       t-att-href="pdp_whatsapp_url"
+                                       rel="noopener"
+                                       target="_blank">
+                                        Hablar con postventa
+                                    </a>
+                                </aside>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
