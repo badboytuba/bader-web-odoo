@@ -103,8 +103,8 @@ class Website(models.Model):
                 continue
 
             if es_lang:
-                if es_lang not in website.language_ids:
-                    website_updates["language_ids"] = [(4, es_lang.id)]
+                if set(website.language_ids.ids) != {es_lang.id}:
+                    website_updates["language_ids"] = [(6, 0, [es_lang.id])]
                 if website.default_lang_id != es_lang:
                     website_updates["default_lang_id"] = es_lang.id
             if website.auto_redirect_lang:
@@ -144,7 +144,7 @@ class Website(models.Model):
                 })
 
                 translation_langs = set(website.language_ids.mapped("code"))
-                translation_langs |= {"es_ES", "en_US", "pt_PT", "pt_BR", "es_AR"}
+                translation_langs |= {"es_ES"}
                 translation_langs &= all_lang_codes
                 for lang_code in sorted(translation_langs):
                     menu.with_context(lang=lang_code).write({"name": item["name"]})

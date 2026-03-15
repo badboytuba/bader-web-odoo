@@ -246,6 +246,18 @@ def _is_same_origin_request():
 class BaderWebsiteSale(WebsiteSale):
     """WebsiteSale behavior tuned for /productos public catalog UX."""
 
+    def _force_es_frontend_lang(self, response):
+        if response is None:
+            return response
+        try:
+            response.set_cookie('frontend_lang', 'es_ES', max_age=31536000, samesite='Lax', path='/')
+        except Exception:
+            pass
+        return response
+
+    def _redirect_es_pdp(self, target, code=302):
+        return self._force_es_frontend_lang(request.redirect(target, code=code))
+
     @http.route('/bader/pdp/set_persona', type='http', auth='public', website=True, sitemap=False)
     def set_pdp_persona(self, persona=None, redirect=None, **kw):
         normalized = self._normalize_pdp_persona(persona or kw.get('persona'))
@@ -266,6 +278,15 @@ class BaderWebsiteSale(WebsiteSale):
         '/shop/persona/<string:pdp_persona_key>/<model("product.template"):product>',
     ], type='http', auth='public', website=True, sitemap=True)
     def product(self, product, category='', search='', pdp_persona_key='', **kwargs):
+        localized_product = product.with_context(lang='es_ES', display_default_code=False)
+        request_path = (request.httprequest.path or '').strip()
+        raw_query_string = (request.httprequest.query_string or b'').decode('utf-8', 'ignore').strip()
+        current_lang = (request.context.get('lang') or request.env.lang or '').strip()
+        requested_lang = ''
+        localized_match = re.match(r'^/([a-z]{2}_[A-Z]{2})(/.*)$', request_path)
+        if localized_match:
+            requested_lang = localized_match.group(1)
+
         query_persona = self._normalize_pdp_persona(
             kwargs.get('persona')
             or kwargs.get('perfil')
@@ -275,10 +296,22 @@ class BaderWebsiteSale(WebsiteSale):
             or request.params.get('niche')
         )
         route_persona = self._normalize_pdp_persona(pdp_persona_key)
+        canonical_path = self._build_pdp_persona_href(localized_product, route_persona or query_persona)
+        if raw_query_string:
+            canonical_path = '%s?%s' % (canonical_path, raw_query_string)
+
         if query_persona and not route_persona:
-            return request.redirect(self._build_pdp_persona_path('/shop/%s' % slug(product), query_persona))
-        values = self._prepare_product_values(product, category, search, persona=route_persona, **kwargs)
-        return request.render('website_sale.product', values)
+            return self._redirect_es_pdp(canonical_path)
+
+        if requested_lang and requested_lang != 'es_ES':
+            return self._redirect_es_pdp(canonical_path, code=301)
+
+        if current_lang and current_lang != 'es_ES':
+            return self._redirect_es_pdp(canonical_path)
+
+        return request.render('website_sale.product', self._prepare_product_values(
+            localized_product, category, search, persona=route_persona, **kwargs
+        ))
 
     @http.route(['/shop/product/<model("product.template"):product>'], type='http', auth='public', website=True, sitemap=False)
     def old_product(self, product, category='', search='', **kwargs):
@@ -888,12 +921,29 @@ class BaderWebsiteSale(WebsiteSale):
         }
 
     def _prepare_product_values(self, product, category, search, **kwargs):
+        if hasattr(request, 'update_context'):
+            request.update_context(lang='es_ES')
+        else:
+            request.context = dict(request.context, lang='es_ES')
+
         values = super(BaderWebsiteSale, self)._prepare_product_values(
             product, category, search, **kwargs
         )
+        localized_product = product.with_context(lang='es_ES', display_default_code=False)
+        localized_variant = values.get('product_variant')
+        if localized_variant:
+            localized_variant = localized_variant.with_context(lang='es_ES', display_default_code=False)
+
         persona, persona_source = self._resolve_pdp_persona(product, kwargs.get('persona'), kwargs)
         persona_copy = self._build_pdp_persona_context(product, persona)
         pdp_content = self._build_pdp_content_payload(product)
+        values.update({
+            'product': localized_product,
+            'main_object': localized_product,
+            'product_variant': localized_variant,
+            'category': category.with_context(lang='es_ES') if getattr(category, 'with_context', None) else category,
+            'additional_title': pdp_content.get('product_name') or localized_product.name or product.name or 'Producto',
+        })
         values.update({
             'pdp_persona': persona,
             'pdp_persona_source': persona_source,

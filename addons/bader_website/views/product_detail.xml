@@ -8,6 +8,9 @@
         <xpath expr="//t[@t-cache='pricelist,product']" position="attributes">
             <attribute name="t-cache" add="pdp_persona" separator=","/>
         </xpath>
+        <xpath expr="//t[@t-set='additional_title']" position="replace">
+            <t t-set="additional_title" t-value="pdp_product_name_clean or (product.with_context(lang='es_ES', display_default_code=False).name or product.name)"/>
+        </xpath>
         <xpath expr="//*[@id='product_detail']" position="attributes">
             <attribute name="t-attf-class">container py-4 oe_website_sale bader-product-detail #{'discount' if combination_info['has_discounted_price'] else ''}</attribute>
         </xpath>
