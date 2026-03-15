@@ -505,37 +505,53 @@
         <xpath expr="//section[@id='product_full_description']" position="after">
             <section class="bader-app-faq-section" id="bader_pdp_faq">
                 <article class="bader-app-faq-shell">
-                    <div class="bader-app-faq-head">
-                        <span class="bader-app-faq-head__icon">
-                            <i class="fa fa-comments-o"/>
-                        </span>
-                        <div>
-                            <h2>Preguntas frecuentes</h2>
+                    <div class="bader-app-studio-head bader-app-studio-head--faq">
+                        <div class="bader-app-studio-head__copy">
+                            <span class="bader-app-section-heading__eyebrow">Preguntas frecuentes</span>
+                            <h2>Respuestas para comprar con mas claridad</h2>
                             <p t-esc="(pdp_persona_copy or {}).get('faq_intro') or 'Respuestas rapidas sobre compra, envio, garantia y soporte.'"/>
                         </div>
+                        <aside class="bader-app-studio-summary">
+                            <span class="bader-app-studio-summary__eyebrow">Guia rapida</span>
+                            <strong>Objeciones resueltas antes de cerrar la compra</strong>
+                            <p>Garantia, envio, cuotas y asesoria reunidos en una sola lectura para reducir friccion comercial.</p>
+                        </aside>
                     </div>
 
                     <div class="bader-app-faq-list">
                         <article class="bader-app-faq-item">
-                            <h3><span>1</span>Este producto tiene garantia oficial?</h3>
-                            <p>Si. Todos los equipos Bader cuentan con garantia oficial y soporte tecnico especializado.</p>
+                            <span class="bader-app-faq-item__index">1</span>
+                            <div class="bader-app-faq-item__body">
+                                <h3>Este producto tiene garantia oficial?</h3>
+                                <p>Si. Todos los equipos Bader cuentan con garantia oficial y soporte tecnico especializado.</p>
+                            </div>
                         </article>
                         <article class="bader-app-faq-item">
-                            <h3><span>2</span>El envio esta incluido?</h3>
-                            <p>Si. Ofrecemos envio sin cargo y coordinacion comercial para que la entrega no genere friccion.</p>
+                            <span class="bader-app-faq-item__index">2</span>
+                            <div class="bader-app-faq-item__body">
+                                <h3>El envio esta incluido?</h3>
+                                <p>Si. Ofrecemos envio sin cargo y coordinacion comercial para que la entrega no genere friccion.</p>
+                            </div>
                         </article>
                         <article class="bader-app-faq-item">
-                            <h3><span>3</span>Se puede financiar en cuotas?</h3>
-                            <p>Si. Puedes acceder a financiacion de hasta 12 cuotas segun el medio de pago habilitado.</p>
+                            <span class="bader-app-faq-item__index">3</span>
+                            <div class="bader-app-faq-item__body">
+                                <h3>Se puede financiar en cuotas?</h3>
+                                <p>Si. Puedes acceder a financiacion de hasta 12 cuotas segun el medio de pago habilitado.</p>
+                            </div>
                         </article>
                         <article class="bader-app-faq-item">
-                            <h3><span>4</span>Puedo recibir asesoria antes de comprar?</h3>
-                            <p>Si. Nuestro equipo comercial y tecnico te ayuda a validar si este producto encaja con tu caso.</p>
+                            <span class="bader-app-faq-item__index">4</span>
+                            <div class="bader-app-faq-item__body">
+                                <h3>Puedo recibir asesoria antes de comprar?</h3>
+                                <p>Si. Nuestro equipo comercial y tecnico te ayuda a validar si este producto encaja con tu caso.</p>
+                            </div>
                         </article>
                     </div>
 
                     <div class="bader-app-faq-cta">
                         <div class="bader-app-faq-cta__copy">
+                            <span class="bader-app-studio-summary__eyebrow">Asesoria directa</span>
                             <strong t-esc="(pdp_persona_copy or {}).get('faq_cta_title') or 'Necesitas ayuda con este producto?'"/>
                             <p t-esc="(pdp_persona_copy or {}).get('faq_cta_body') or 'Escribenos y te ayudamos con stock, compatibilidad y condiciones comerciales.'"/>
                         </div>
@@ -551,12 +567,17 @@
 
             <section class="bader-app-related-section" id="bader_pdp_related" t-if="pdp_related_products">
                 <div class="bader-app-related-shell">
-                    <div class="bader-app-related-head">
-                        <div>
+                    <div class="bader-app-studio-head bader-app-studio-head--related">
+                        <div class="bader-app-studio-head__copy">
                             <span class="bader-app-section-heading__eyebrow">Productos relacionados</span>
                             <h2>Complementa tu compra</h2>
                             <p>Accesorios, repuestos y equipos vinculados a este producto.</p>
                         </div>
+                        <aside class="bader-app-studio-summary">
+                            <span class="bader-app-studio-summary__eyebrow">Seleccion vinculada</span>
+                            <strong>Referencias utiles para ampliar la compra</strong>
+                            <p>Accesorios, repuestos y equipos relacionados para completar instalacion, reposicion o venta cruzada.</p>
+                        </aside>
                     </div>
 
                     <div class="row g-4 bader-app-related-grid">
@@ -571,22 +592,26 @@
                                         <span t-if="rel.public_categ_ids" t-esc="rel.public_categ_ids[0].name"/>
                                         <span t-else="">Producto</span>
                                     </span>
-                                    <span class="bader-app-related-card__image">
-                                        <img t-att-src="website.image_url(rel, 'image_256')"
-                                             t-att-srcset="'%s 256w, %s 512w' % (website.image_url(rel, 'image_256'), website.image_url(rel, 'image_512'))"
-                                             sizes="(max-width: 575px) 78vw, (max-width: 1199px) 44vw, 24vw"
-                                             t-att-alt="rel_name_clean or rel_name_source"
-                                             loading="lazy"
-                                             decoding="async"
-                                             width="256"
-                                             height="256"/>
+                                    <span class="bader-app-related-card__media">
+                                        <span class="bader-app-related-card__image">
+                                            <img t-att-src="website.image_url(rel, 'image_256')"
+                                                 t-att-srcset="'%s 256w, %s 512w' % (website.image_url(rel, 'image_256'), website.image_url(rel, 'image_512'))"
+                                                 sizes="(max-width: 575px) 78vw, (max-width: 1199px) 44vw, 24vw"
+                                                 t-att-alt="rel_name_clean or rel_name_source"
+                                                 loading="lazy"
+                                                 decoding="async"
+                                                 width="256"
+                                                 height="256"/>
+                                        </span>
                                     </span>
-                                    <span class="bader-app-related-card__name" t-esc="rel_name_clean or rel_name_source"/>
-                                    <span class="bader-app-related-card__price-row">
-                                        <span class="bader-app-related-card__price"
-                                              t-field="rel.list_price"
-                                              t-options='{"widget": "monetary", "display_currency": pdp_related_currency}'/>
-                                        <span class="bader-app-related-card__cta">Explorar</span>
+                                    <span class="bader-app-related-card__body">
+                                        <span class="bader-app-related-card__name" t-esc="rel_name_clean or rel_name_source"/>
+                                        <span class="bader-app-related-card__price-row">
+                                            <span class="bader-app-related-card__price"
+                                                  t-field="rel.list_price"
+                                                  t-options='{"widget": "monetary", "display_currency": pdp_related_currency}'/>
+                                            <span class="bader-app-related-card__cta">Explorar</span>
+                                        </span>
                                     </span>
                                 </a>
                             </div>
@@ -598,22 +623,25 @@
 
         <xpath expr="//section[@id='bader_pdp_related']" position="after">
             <section class="bader-app-help-cta" id="bader_pdp_help_cta" aria-label="Contacto de ayuda">
-                <div class="bader-app-help-cta__content">
-                    <span class="bader-app-help-cta__icon">
-                        <i class="fa fa-comments"/>
-                    </span>
-                    <div class="bader-app-help-cta__text">
-                        <h3 t-esc="(pdp_persona_copy or {}).get('help_title') or 'Necesitas ayuda para elegir?'"/>
-                        <p t-esc="(pdp_persona_copy or {}).get('help_body') or 'Te ayudamos con compatibilidad, stock, financiacion y entrega.'"/>
+                <div class="bader-app-help-cta__shell">
+                    <div class="bader-app-help-cta__content">
+                        <span class="bader-app-section-heading__eyebrow">Asesoria comercial</span>
+                        <div class="bader-app-help-cta__text">
+                            <h3 t-esc="(pdp_persona_copy or {}).get('help_title') or 'Necesitas ayuda para elegir?'"/>
+                            <p t-esc="(pdp_persona_copy or {}).get('help_body') or 'Te ayudamos con compatibilidad, stock, financiacion y entrega.'"/>
+                        </div>
+                    </div>
+                    <div class="bader-app-help-cta__aside">
+                        <p class="bader-app-help-cta__note">Respuesta por WhatsApp con apoyo comercial y tecnico de Bader.</p>
+                        <a class="bader-app-help-cta__button"
+                           t-att-href="pdp_whatsapp_url"
+                           target="_blank"
+                           rel="noopener">
+                            <i class="fa fa-whatsapp"/>
+                            <t t-esc="(pdp_persona_copy or {}).get('faq_cta_button') or 'Hablar con asesor comercial'"/>
+                        </a>
                     </div>
                 </div>
-                <a class="bader-app-help-cta__button"
-                   t-att-href="pdp_whatsapp_url"
-                   target="_blank"
-                   rel="noopener">
-                    <i class="fa fa-whatsapp"/>
-                    <t t-esc="(pdp_persona_copy or {}).get('faq_cta_button') or 'Chatear por WhatsApp'"/>
-                </a>
             </section>
         </xpath>
     </template>
