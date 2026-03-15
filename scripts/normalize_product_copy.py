@@ -38,6 +38,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-description-sale", action="store_true", help="Do not fill description_sale.")
     parser.add_argument("--skip-website-description", action="store_true", help="Do not normalize website_description.")
     parser.add_argument("--write", action="store_true", help="Apply changes instead of running a dry audit.")
+    parser.add_argument(
+        "--second-pass-description-sale",
+        action="store_true",
+        help="Try a conservative rule-based recovery for skipped description_sale summaries.",
+    )
     parser.add_argument("--export-review-csv", help="Write the pending manual-review queue to a local CSV file.")
     parser.add_argument("--export-review-json", help="Write the pending manual-review queue to a local JSON file.")
     return parser.parse_args()
@@ -60,6 +65,7 @@ def remote_code(options: dict[str, object]) -> str:
     template = """sudo -u odoo /opt/odoo/.venv/bin/python /opt/odoo/src/odoo/odoo-bin shell -c /opt/odoo/conf/odoo-server.conf -d bader --no-http <<'PY'
 import html
 import json
+import re
 
 from odoo.addons.bader_website.controllers.main import BaderWebsiteSale
 
@@ -160,11 +166,168 @@ def summary_quality_issues(summary):
     return issues
 
 
+def sanitize_summary_candidate(text):
+    cleaned = sale._pdp_description_plaintext(text or '')
+    cleaned = cleaned.replace('·', '. ').replace('•', '. ')
+    cleaned = re.sub(r'\\s+', ' ', cleaned).strip(' -:;,.')
+    cleaned = re.sub(r'^(?:ref(?:erencia)?|sku|modelo)\\s*[:\\-]\\s*', '', cleaned, flags=re.I)
+    cleaned = re.sub(r'^\\[[^\\]]+\\]\\s*', '', cleaned)
+    cleaned = re.sub(r'^(?:image|imagen)\\s*\\[[^\\]]+\\]\\s*$', '', cleaned, flags=re.I)
+    cleaned = re.sub(r'^(?:ref\\.?\\s*)?[A-Z0-9\\-/]{2,20}\\s*[:\\-]\\s*', '', cleaned)
+    cleaned = cleaned.strip(' -:;,.')
+    return cleaned
+
+
+def word_count(text):
+    return len([part for part in re.split(r'\\s+', (text or '').strip()) if part])
+
+
+def prettify_product_name(text):
+    value = sanitize_summary_candidate(text)
+    if not value:
+        return ''
+    if value == value.upper():
+        value = value.title()
+        for source, target in (
+            (' De ', ' de '),
+            (' Del ', ' del '),
+            (' Y ', ' y '),
+            (' Con ', ' con '),
+            (' Sin ', ' sin '),
+            (' Para ', ' para '),
+        ):
+            value = value.replace(source, target)
+    return value
+
+
+def split_summary_fragments(text):
+    plain = sanitize_summary_candidate(text)
+    if not plain:
+        return []
+
+    fragments = [plain]
+    fragments.extend(re.split(r'(?<=[\\.!?])\\s+(?=[A-ZÁÉÍÓÚÜÑ])', plain))
+    fragments.extend(re.split(r'\\s+[;·•]\\s+', plain))
+    items = []
+    for fragment in fragments:
+        candidate = sanitize_summary_candidate(fragment)
+        if candidate:
+            items.append(candidate)
+    return items
+
+
+def summary_quality_score(summary, product_name):
+    text = (summary or '').strip()
+    issues = summary_quality_issues(text)
+    if not text:
+        return -999
+
+    score = 100
+    score -= len(issues) * 25
+    score -= abs(92 - len(text)) * 0.25
+    normalized = sale._normalize_pdp_text(text)
+    product_token = sale._normalize_pdp_text(product_name or '')
+    if product_token and normalized == product_token:
+        score -= 35
+    if product_token and product_token and product_token in normalized and len(text) < 28:
+        score -= 20
+    if text[-1:] not in '.!?':
+        score -= 6
+    return score
+
+
+def is_commercial_summary_safe(summary, min_len=20, min_words=3):
+    text = sanitize_summary_candidate(summary)
+    if not text or not is_summary_safe(text):
+        return False
+    if len(text) < min_len:
+        return False
+    if word_count(text) < min_words:
+        return False
+    if not text[:1].isalpha():
+        return False
+
+    normalized = sale._normalize_pdp_text(text)
+    if any(token in normalized for token in ('rpm', 'kgf', 'kpa', 'image 1')):
+        return False
+    if any(char in text for char in '[]'):
+        return False
+    if len(text) >= 70 and text[-1:].isalnum():
+        return False
+    return True
+
+
+def best_safe_summary(candidates, product_name, min_len=20, min_words=3):
+    unique_candidates = []
+    seen = set()
+    for raw in candidates:
+        candidate = sanitize_summary_candidate(raw)
+        token = sale._normalize_pdp_text(candidate)
+        if not candidate or not token or token in seen:
+            continue
+        seen.add(token)
+        unique_candidates.append(candidate)
+
+    safe_candidates = [
+        candidate for candidate in unique_candidates
+        if is_commercial_summary_safe(candidate, min_len=min_len, min_words=min_words)
+    ]
+    if not safe_candidates:
+        return ''
+
+    safe_candidates.sort(key=lambda item: summary_quality_score(item, product_name), reverse=True)
+    return safe_candidates[0]
+
+
+def feature_to_clause(feature):
+    candidate = sanitize_summary_candidate(feature)
+    if not candidate:
+        return ''
+    if ':' in candidate and candidate.count(':') == 1:
+        left, right = [part.strip() for part in candidate.split(':', 1)]
+        if right and len(right) >= 6:
+            candidate = right
+    candidate = candidate.strip(' -:;,.')
+    if not candidate:
+        return ''
+    token = sale._normalize_pdp_text(candidate)
+    if token.startswith(('compatible con', 'incluye', 'ideal para', 'para ')):
+        return candidate[0].lower() + candidate[1:] if candidate[:1].isupper() else candidate
+    if len(candidate) <= 72 and not any(char in candidate for char in '.!?'):
+        return "con %s" % (candidate[0].lower() + candidate[1:] if candidate[:1].isupper() else candidate)
+    return candidate
+
+
+def build_second_pass_summary(product, payload, current_summary):
+    product_name = (payload.get('product_name') or product.name or '').strip()
+    pretty_product_name = prettify_product_name(product_name)
+    paragraphs = list(payload.get('description_paragraphs') or [])
+
+    paragraph_candidates = []
+    if current_summary:
+        paragraph_candidates.extend(split_summary_fragments(current_summary))
+    for paragraph in paragraphs[:3]:
+        paragraph_candidates.extend(split_summary_fragments(paragraph))
+
+    best_direct = best_safe_summary(paragraph_candidates, product_name, min_len=42, min_words=6)
+    if best_direct:
+        return best_direct
+
+    generic_fallback = ''
+    label = pretty_product_name or sanitize_summary_candidate(product_name)
+    if label and word_count(label) >= 2:
+        generic_fallback = "%s para uso odontológico profesional." % label
+
+    return best_safe_summary([generic_fallback], product_name, min_len=34, min_words=5)
+
+
 stats = {
     'products_scanned': len(products),
     'description_sale_candidates': 0,
     'description_sale_updates': 0,
     'description_sale_skipped_quality': 0,
+    'description_sale_second_pass_candidates': 0,
+    'description_sale_second_pass_updates': 0,
     'website_description_candidates': 0,
     'website_description_updates': 0,
     'products_changed': 0,
@@ -209,17 +372,27 @@ for product in products:
             if current_sale != summary_text:
                 updates['description_sale'] = summary_text
         else:
-            stats['description_sale_skipped_quality'] += 1
-            review_queue.append({
-                'id': product.id,
-                'sku': product.default_code or '',
-                'name': product.name or '',
-                'reason': 'skipped_quality',
-                'quality_issues': quality_issues,
-                'current_description_sale': current_sale[:220],
-                'suggested_summary': summary_text[:220],
-                'source_preview': ((payload.get('description_paragraphs') or [''])[0])[:280],
-            })
+            second_pass_summary = ''
+            if options.get('second_pass_description_sale'):
+                second_pass_summary = build_second_pass_summary(product, payload, summary_text)
+            if second_pass_summary:
+                stats['description_sale_second_pass_candidates'] += 1
+                if current_sale != second_pass_summary:
+                    updates['description_sale'] = second_pass_summary
+                    stats['description_sale_second_pass_updates'] += 1
+                    summary_text = second_pass_summary
+            else:
+                stats['description_sale_skipped_quality'] += 1
+                review_queue.append({
+                    'id': product.id,
+                    'sku': product.default_code or '',
+                    'name': product.name or '',
+                    'reason': 'skipped_quality',
+                    'quality_issues': quality_issues,
+                    'current_description_sale': current_sale[:220],
+                    'suggested_summary': summary_text[:220],
+                    'source_preview': ((payload.get('description_paragraphs') or [''])[0])[:280],
+                })
 
     if (
         options.get('normalize_website_description')
@@ -325,6 +498,7 @@ def main() -> int:
         "include_unpublished": bool(args.include_unpublished),
         "fill_description_sale": not args.skip_description_sale,
         "normalize_website_description": not args.skip_website_description,
+        "second_pass_description_sale": bool(args.second_pass_description_sale),
         "write": bool(args.write),
     }
     out, err, code = run_remote(options)
