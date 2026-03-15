@@ -200,6 +200,30 @@ def prettify_product_name(text):
     return value
 
 
+def extract_pack_units(text):
+    match = re.search(r'(?:pack\\s*x?|x)\\s*(\\d+)\\s*uds?', text or '', flags=re.I)
+    if match:
+        return match.group(1)
+    return ''
+
+
+def extract_mm_value(text):
+    match = re.search(r'(\\d+(?:[.,]\\d+)?)\\s*mm', text or '', flags=re.I)
+    if match:
+        return match.group(1).replace('.', ',')
+    return ''
+
+
+def number_to_spanish_token(value):
+    mapping = {
+        '1': 'una',
+        '2': 'dos',
+        '5': 'cinco',
+        '10': 'diez',
+    }
+    return mapping.get(str(value or '').strip(), str(value or '').strip())
+
+
 def split_summary_fragments(text):
     plain = sanitize_summary_candidate(text)
     if not plain:
@@ -252,7 +276,7 @@ def is_commercial_summary_safe(summary, min_len=20, min_words=3):
         return False
     if any(char in text for char in '[]'):
         return False
-    if len(text) >= 70 and text[-1:].isalnum():
+    if len(text) >= 110 and text[-1:].isalnum():
         return False
     return True
 
@@ -298,6 +322,110 @@ def feature_to_clause(feature):
     return candidate
 
 
+def family_summary_candidates(product_name, current_summary):
+    normalized = sale._normalize_pdp_text(product_name or '')
+    units = extract_pack_units(product_name)
+    units_token = number_to_spanish_token(units)
+    candidates = []
+
+    if 'acoplamiento multiflex' in normalized:
+        candidates.append('Acoplamiento Multiflex sin regulador de spray ni luz para conexión odontológica profesional.')
+
+    if 'micromotor newmatic' in normalized:
+        candidates.append('Micromotor neumático sin luz para uso odontológico profesional.')
+
+    if 'placas de termoformado' in normalized:
+        hardness = 'blandas' if 'blandas' in normalized else 'duras'
+        pack_text = (' en pack de %s unidades' % units_token) if units_token else ''
+        candidates.append(
+            'Placas de termoformado %s%s para laboratorio dental.' % (
+                hardness,
+                pack_text,
+            )
+        )
+
+    if 'fresas diamante' in normalized:
+        handpiece = 'FG' if ' fg ' in (' %s ' % normalized) else ('HP' if ' hp ' in (' %s ' % normalized) else '')
+        handpiece_text = (' %s' % handpiece) if handpiece else ''
+        pack_text = (' en pack de %s unidades' % units_token) if units_token else ''
+        candidates.append(
+            'Fresas de diamante%s%s para preparación y desgaste odontológico.' % (
+                handpiece_text,
+                pack_text,
+            )
+        )
+
+    if 'disco de diamante 250 mm recortadora' in normalized:
+        candidates.append('Disco de repuesto para recortadora de modelos de yeso con corte preciso y alta durabilidad.')
+
+    if 'disco de diamante flex' in normalized:
+        flex_type = 'bicapa ' if 'bicapa' in normalized else ''
+        candidates.append('Disco de diamante %sflexible montado para trabajos de acabado en laboratorio dental.' % flex_type)
+
+    if 'pulidor rojizo' in normalized:
+        pack_text = (' en pack de %s unidades' % units_token) if units_token else ''
+        candidates.append('Pulidor rojizo medio%s para metales no preciosos y aleaciones dentales.' % pack_text)
+
+    if 'pulidor gris' in normalized:
+        pack_text = (' en pack de %s unidades' % units_token) if units_token else ''
+        candidates.append('Pulidor gris grueso%s para porcelana, acrílico y esmalte dental.' % pack_text)
+
+    if 'pulidor negro' in normalized:
+        pack_text = (' en pack de %s unidades' % units_token) if units_token else ''
+        candidates.append('Pulidor negro medio%s para suavizado de acrílico.' % pack_text)
+
+    if 'pulidor amarillo' in normalized:
+        pack_text = (' en pack de %s unidades' % units_token) if units_token else ''
+        candidates.append('Pulidor amarillo fino%s para acabado y pulido dental.' % pack_text)
+
+    if 'recortadora con electrovalvula' in normalized:
+        candidates.append('Recortadora con electroválvula y disco de carburo para laboratorio dental.')
+
+    if 'arenadora presurizada' in normalized:
+        candidates.append('Arenadora presurizada con reciclado para tratamiento superficial en laboratorio dental.')
+
+    if 'individualizadora recortadora de munones' in normalized:
+        candidates.append('Recortadora de muñones para laboratorio dental con corte preciso y mejor alineación.')
+
+    if 'tipodonto para implantologia' in normalized:
+        candidates.append('Tipodonto para implantología con articulador para entrenamiento y práctica clínica.')
+
+    if 'generador de agua para autoclaves' in normalized:
+        candidates.append('Generador de agua para autoclaves y sillones dentales con sistema de osmosis.')
+
+    if 'astillera de madera' in normalized:
+        candidates.append('Astillera de madera para puesto de trabajo y organización en laboratorio dental.')
+
+    if 'retractor para ortodoncia y fotografia' in normalized:
+        pack_text = (' en pack de %s unidades' % units_token) if units_token else ''
+        candidates.append('Retractor para ortodoncia y fotografía%s para toma clínica.' % pack_text)
+
+    if 'modelo para practica de sutura' in normalized:
+        candidates.append('Modelo siliconado para práctica de sutura con sensación realista en entrenamiento clínico.')
+
+    if 'indicador biologico' in normalized and 'vapor' in normalized:
+        pack_text = (' en pack de %s unidades' % units_token) if units_token else ''
+        candidates.append('Indicador biológico para esterilización por vapor%s.' % pack_text)
+
+    if 'llave torque insertos universal' in normalized:
+        candidates.append('Llave de torque universal para insertos compatibles con Satelec y EMS.')
+
+    if not candidates and 'disco de' in normalized:
+        candidates.append('Disco dental para laboratorio y trabajos de acabado profesional.')
+
+    if not candidates and 'pulidor' in normalized:
+        candidates.append('Pulidor dental para acabado y ajuste en laboratorio odontológico.')
+
+    if not candidates and 'fresas diamante' not in normalized and 'fresa' in normalized:
+        pack_text = (' en pack de %s unidades' % units) if units else ''
+        candidates.append('Fresa dental%s para uso odontológico profesional.' % pack_text)
+
+    if not candidates and current_summary:
+        candidates.extend(split_summary_fragments(current_summary))
+
+    return candidates
+
+
 def build_second_pass_summary(product, payload, current_summary):
     product_name = (payload.get('product_name') or product.name or '').strip()
     pretty_product_name = prettify_product_name(product_name)
@@ -309,16 +437,24 @@ def build_second_pass_summary(product, payload, current_summary):
     for paragraph in paragraphs[:3]:
         paragraph_candidates.extend(split_summary_fragments(paragraph))
 
+    family_candidates = family_summary_candidates(product_name, current_summary)
+    best_family = best_safe_summary(family_candidates, product_name, min_len=34, min_words=5)
+    if best_family:
+        return {'summary': best_family, 'strategy': 'family'}
+
     best_direct = best_safe_summary(paragraph_candidates, product_name, min_len=42, min_words=6)
     if best_direct:
-        return best_direct
+        return {'summary': best_direct, 'strategy': 'direct'}
 
     generic_fallback = ''
     label = pretty_product_name or sanitize_summary_candidate(product_name)
     if label and word_count(label) >= 2:
         generic_fallback = "%s para uso odontológico profesional." % label
 
-    return best_safe_summary([generic_fallback], product_name, min_len=34, min_words=5)
+    best_generic = best_safe_summary([generic_fallback], product_name, min_len=34, min_words=5)
+    if best_generic:
+        return {'summary': best_generic, 'strategy': 'generic'}
+    return {'summary': '', 'strategy': ''}
 
 
 stats = {
@@ -328,6 +464,8 @@ stats = {
     'description_sale_skipped_quality': 0,
     'description_sale_second_pass_candidates': 0,
     'description_sale_second_pass_updates': 0,
+    'description_sale_family_pass_candidates': 0,
+    'description_sale_family_pass_updates': 0,
     'website_description_candidates': 0,
     'website_description_updates': 0,
     'products_changed': 0,
@@ -373,13 +511,20 @@ for product in products:
                 updates['description_sale'] = summary_text
         else:
             second_pass_summary = ''
+            second_pass_strategy = ''
             if options.get('second_pass_description_sale'):
-                second_pass_summary = build_second_pass_summary(product, payload, summary_text)
+                second_pass_payload = build_second_pass_summary(product, payload, summary_text)
+                second_pass_summary = second_pass_payload.get('summary') or ''
+                second_pass_strategy = second_pass_payload.get('strategy') or ''
             if second_pass_summary:
                 stats['description_sale_second_pass_candidates'] += 1
+                if second_pass_strategy == 'family':
+                    stats['description_sale_family_pass_candidates'] += 1
                 if current_sale != second_pass_summary:
                     updates['description_sale'] = second_pass_summary
                     stats['description_sale_second_pass_updates'] += 1
+                    if second_pass_strategy == 'family':
+                        stats['description_sale_family_pass_updates'] += 1
                     summary_text = second_pass_summary
             else:
                 stats['description_sale_skipped_quality'] += 1
