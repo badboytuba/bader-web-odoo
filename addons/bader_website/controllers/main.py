@@ -1929,15 +1929,22 @@ class BaderWebsite(Website):
     def _predictive_search_context_queries(self, product, persona=''):
         product_name = self._pdp_strip_sku_prefix(product.name or '')
         category_label = _clean_text_line(product.public_categ_ids[:1].name or '', max_len=80)
+        category_search_base = (category_label or '').lower().strip()
+        for prefix in ('accesorios ', 'repuestos ', 'equipamiento '):
+            if category_search_base.startswith(prefix):
+                category_search_base = category_search_base[len(prefix):].strip()
+                break
+        if not category_search_base:
+            category_search_base = (category_label or '').lower().strip()
         payload = self._build_pdp_content_payload(product)
         detail_source = self._pdp_description_plaintext(
             (product.website_description or '') + '\n' + (product.description_sale or '')
         )
         suggestions = []
 
-        if category_label:
-            suggestions.append('Accesorios para %s' % category_label.lower())
-            suggestions.append('Repuestos para %s' % category_label.lower())
+        if category_search_base:
+            suggestions.append('Accesorios para %s' % category_search_base)
+            suggestions.append('Repuestos para %s' % category_search_base)
 
         compact_name = _clean_text_line(product_name, max_len=56)
         if compact_name and len(compact_name) <= 46:
