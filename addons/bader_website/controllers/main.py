@@ -922,12 +922,47 @@ class BaderWebsiteSale(WebsiteSale):
             'highlight_points': highlight_points,
         }
 
+    def _normalize_pdp_category(self, category, **kwargs):
+        """Normalize PDP category query params into a product.public.category recordset."""
+        category_model = request.env['product.public.category'].sudo().with_context(lang='es_ES')
+        resolved_category = category
+        raw_category = ''
+
+        if isinstance(resolved_category, str):
+            raw_category = resolved_category.strip()
+            resolved_category = category_model.browse()
+        elif isinstance(resolved_category, int):
+            resolved_category = category_model.browse(int(resolved_category))
+        elif resolved_category and getattr(resolved_category, '_name', '') == 'product.public.category':
+            resolved_category = resolved_category.with_context(lang='es_ES')
+        else:
+            resolved_category = category_model.browse()
+
+        if raw_category and not resolved_category:
+            if raw_category.isdigit():
+                resolved_category = category_model.browse(int(raw_category))
+            else:
+                match = re.search(r'-(\d+)$', raw_category)
+                if match:
+                    resolved_category = category_model.browse(int(match.group(1)))
+                if not resolved_category:
+                    token = re.sub(r'[^a-z0-9]+', ' ', self._normalize_search_text(raw_category or '')).strip()
+                    if token:
+                        resolved_category = category_model.search([('name', 'ilike', token)], limit=1)
+                        if not resolved_category and ' ' in token:
+                            resolved_category = category_model.search([('name', 'ilike', token.split(' ')[0])], limit=1)
+
+        if resolved_category and getattr(resolved_category, '_name', '') == 'product.public.category':
+            return resolved_category.with_context(lang='es_ES')
+        return category_model.browse()
+
     def _prepare_product_values(self, product, category, search, **kwargs):
         if hasattr(request, 'update_context'):
             request.update_context(lang='es_ES')
         else:
             request.context = dict(request.context, lang='es_ES')
 
+        category = self._normalize_pdp_category(category, **kwargs)
         values = super(BaderWebsiteSale, self)._prepare_product_values(
             product, category, search, **kwargs
         )
@@ -943,7 +978,7 @@ class BaderWebsiteSale(WebsiteSale):
             'product': localized_product,
             'main_object': localized_product,
             'product_variant': localized_variant,
-            'category': category.with_context(lang='es_ES') if getattr(category, 'with_context', None) else category,
+            'category': category,
             'additional_title': pdp_content.get('product_name') or localized_product.name or product.name or 'Producto',
         })
         values.update({
