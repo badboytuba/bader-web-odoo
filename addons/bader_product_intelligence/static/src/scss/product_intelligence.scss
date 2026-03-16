@@ -1,0 +1,310 @@
+@font-face {
+    font-family: "BaderSans";
+    src: url("/bader_website/static/src/font/BaderSans.otf") format("opentype");
+    font-display: swap;
+}
+
+$bpi-dark: #003841;
+$bpi-green: #70D44B;
+$bpi-bg: #f6faf8;
+$bpi-card: #ffffff;
+$bpi-border: #d9e7e1;
+$bpi-muted: #5d7b75;
+
+.bpi-app {
+    background: radial-gradient(circle at top right, rgba(112, 212, 75, 0.14), transparent 30%), linear-gradient(180deg, #f9fbfb 0%, #f3f8f6 100%);
+    min-height: 100%;
+    font-family: "BaderSans", "Helvetica Neue", Arial, sans-serif;
+
+    .bpi-shell {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 24px;
+    }
+
+    .bpi-header,
+    .bpi-panel__header,
+    .bpi-inline-actions,
+    .bpi-preview-grid,
+    .bpi-chat__composer,
+    .bpi-list__item {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .bpi-header__brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+    }
+
+    .bpi-header__logo {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: $bpi-dark;
+        padding: 6px;
+        box-shadow: 0 14px 28px rgba(0, 56, 65, 0.16);
+    }
+
+    h1,
+    h2,
+    h3 {
+        color: $bpi-dark;
+        margin: 0 0 8px;
+    }
+
+    p,
+    label,
+    span,
+    div {
+        color: #23443f;
+    }
+
+    .bpi-badge {
+        display: inline-flex;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(112, 212, 75, 0.18);
+        color: $bpi-dark;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .bpi-score-grid,
+    .bpi-grid,
+    .bpi-image-grid {
+        display: grid;
+        gap: 16px;
+    }
+
+    .bpi-score-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        margin: 20px 0 24px;
+    }
+
+    .bpi-score-card,
+    .bpi-card,
+    .bpi-panel,
+    .bpi-empty {
+        background: $bpi-card;
+        border: 1px solid $bpi-border;
+        border-radius: 22px;
+        box-shadow: 0 18px 44px rgba(0, 56, 65, 0.08);
+    }
+
+    .bpi-score-card {
+        padding: 18px 20px;
+
+        strong {
+            display: block;
+            font-size: 34px;
+            color: $bpi-dark;
+        }
+    }
+
+    .bpi-score-card__label {
+        display: block;
+        color: $bpi-muted;
+        font-size: 13px;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .bpi-tabs {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .bpi-tab {
+        border: 1px solid $bpi-border;
+        background: rgba(255, 255, 255, 0.84);
+        color: $bpi-dark;
+        padding: 12px 16px;
+        border-radius: 999px;
+        font-weight: 600;
+
+        &.is-active {
+            background: $bpi-dark;
+            border-color: $bpi-dark;
+            color: #fff;
+        }
+    }
+
+    .bpi-panel {
+        padding: 24px;
+    }
+
+    .bpi-card {
+        padding: 20px;
+        margin-bottom: 16px;
+    }
+
+    .bpi-grid--2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .bpi-grid--3,
+    .bpi-image-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .bpi-image-tile {
+        border: 1px solid $bpi-border;
+        border-radius: 18px;
+        padding: 10px;
+        background: #fff;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        transition: 0.25s ease;
+
+        img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: contain;
+            border-radius: 12px;
+            background: #f5f7f8;
+        }
+
+        &.is-selected {
+            border-color: $bpi-green;
+            box-shadow: 0 0 0 4px rgba(112, 212, 75, 0.2);
+        }
+    }
+
+    .bpi-image-tile--static button {
+        padding-left: 0;
+    }
+
+    .bpi-preview-image {
+        width: 100%;
+        max-width: 360px;
+        border-radius: 18px;
+        background: #f5f7f8;
+        border: 1px solid $bpi-border;
+    }
+
+    .bpi-list {
+        display: grid;
+        gap: 16px;
+    }
+
+    .bpi-list__item {
+        padding: 16px 18px;
+        border-radius: 18px;
+        background: rgba(112, 212, 75, 0.08);
+        border: 1px solid rgba(112, 212, 75, 0.3);
+    }
+
+    .bpi-faq-list {
+        display: grid;
+        gap: 12px;
+    }
+
+    .bpi-faq-item {
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: #f7fbf9;
+        border: 1px solid $bpi-border;
+    }
+
+    .bpi-chat {
+        display: grid;
+        gap: 16px;
+    }
+
+    .bpi-chat__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .bpi-chat__messages {
+        min-height: 360px;
+        max-height: 520px;
+        overflow: auto;
+        padding: 18px;
+        border-radius: 22px;
+        border: 1px solid $bpi-border;
+        background: linear-gradient(180deg, #ffffff 0%, #f7fbf9 100%);
+        display: grid;
+        gap: 12px;
+    }
+
+    .bpi-chat__message {
+        max-width: 78%;
+        padding: 14px 16px;
+        border-radius: 18px;
+        font-size: 14px;
+
+        &.is-user {
+            justify-self: end;
+            background: $bpi-dark;
+            color: #fff;
+        }
+
+        &.is-assistant {
+            background: rgba(112, 212, 75, 0.14);
+        }
+    }
+
+    .bpi-loading,
+    .bpi-empty {
+        margin: 32px;
+        padding: 32px;
+        text-align: center;
+    }
+}
+
+.bpi-website-shell {
+    margin: 32px 0;
+    padding: 28px;
+    border-radius: 28px;
+    background: linear-gradient(180deg, #ffffff 0%, #f6faf8 100%);
+    border: 1px solid $bpi-border;
+
+    .bpi-website-shell__eyebrow {
+        display: inline-flex;
+        font-size: 12px;
+        text-transform: uppercase;
+        color: $bpi-muted;
+        letter-spacing: 0.08em;
+        margin-bottom: 10px;
+    }
+
+    .bpi-website-shell__body--video iframe {
+        width: 100%;
+        min-height: 420px;
+        border: 0;
+        border-radius: 20px;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .bpi-app {
+        .bpi-score-grid,
+        .bpi-grid--2,
+        .bpi-grid--3,
+        .bpi-image-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .bpi-shell {
+            padding: 16px;
+        }
+    }
+
+    .bpi-website-shell .bpi-website-shell__body--video iframe {
+        min-height: 240px;
+    }
+}
