@@ -641,6 +641,7 @@
 
                             <section class="bader-ai-search__state" data-bader-search-state="results">
                                 <div class="bader-ai-search__categories" data-bader-search-categories="1"></div>
+                                <div class="bader-ai-search__query-context" data-bader-search-query-context="1" hidden="hidden"></div>
                                 <div class="bader-ai-search__hero-result" data-bader-search-hero="1"></div>
                                 <div class="bader-ai-search__product-grid" data-bader-search-products="1"></div>
                                 <div class="bader-ai-search__footer-actions">
@@ -663,6 +664,7 @@
                                         <p>Prueba con SKU, categoria, compatibilidad o entra al catalogo completo.</p>
                                     </div>
                                 </article>
+                                <div class="bader-ai-search__query-context bader-ai-search__query-context--empty" data-bader-search-empty-context="1" hidden="hidden"></div>
                                 <div class="bader-ai-search__related" data-bader-search-empty-related="1"></div>
                                 <a href="/productos"
                                    class="bader-ai-search__view-all bader-ai-search__view-all--ghost"

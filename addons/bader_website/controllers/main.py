@@ -2011,6 +2011,132 @@ class BaderWebsite(Website):
                 break
         return payloads
 
+    def _predictive_search_query_context_reason(self, normalized_query):
+        normalized_query = self._normalize_search_text(normalized_query)
+        if 'repuesto' in normalized_query:
+            return 'Repuesto desde esta ficha'
+        if 'accesor' in normalized_query:
+            return 'Accesorio desde esta ficha'
+        if 'compat' in normalized_query or 'kavo' in normalized_query or 'euronda' in normalized_query or 'cattani' in normalized_query:
+            return 'Compatibilidad desde esta ficha'
+        return 'Relacionado con esta ficha'
+
+    def _predictive_search_query_context_copy(self, normalized_query):
+        normalized_query = self._normalize_search_text(normalized_query)
+        if 'repuesto' in normalized_query:
+            return {
+                'title': 'Repuestos desde esta ficha',
+                'body': 'Tu busqueda toca reposicion y compatibilidades del producto que estas viendo.',
+            }
+        if 'accesor' in normalized_query:
+            return {
+                'title': 'Accesorios desde esta ficha',
+                'body': 'Tu consulta conecta con accesorios que ayudan a completar esta referencia.',
+            }
+        if 'compat' in normalized_query or 'kavo' in normalized_query or 'euronda' in normalized_query or 'cattani' in normalized_query:
+            return {
+                'title': 'Compatibilidades desde esta ficha',
+                'body': 'La consulta coincide con marcas, usos o conexiones vinculadas al producto actual.',
+            }
+        return {
+            'title': 'Seguir desde esta ficha',
+            'body': 'La consulta conecta con complementos y compatibilidades del producto que estas viendo.',
+        }
+
+    def _predictive_search_query_context(self, product, raw_query, pricelist, persona='', limit=3):
+        clean_query = _clean_text_line(raw_query, max_len=120)
+        normalized_query = self._normalize_search_text(clean_query)
+        tokens = [token for token in normalized_query.split() if len(token) >= 2][:6]
+        if not product or len(normalized_query) < 2:
+            return {}
+
+        focus_products = list(self._predictive_search_context_products(product, persona=persona, limit=max(limit + 2, 6)))
+        context_queries = self._predictive_search_context_queries(product, persona='')
+        context_blob_parts = [
+            self._build_product_search_blob(product),
+            self._normalize_search_text(' '.join(context_queries)),
+        ]
+        for candidate in focus_products:
+            context_blob_parts.append(self._build_product_search_blob(candidate))
+            context_blob_parts.append(self._normalize_search_text(candidate.public_categ_ids[:1].name or ''))
+
+        context_blob = ' '.join(part for part in context_blob_parts if part)
+        is_related = bool(normalized_query and normalized_query in context_blob)
+        if not is_related:
+            is_related = any(token in context_blob for token in tokens)
+        if not is_related:
+            return {}
+
+        matched_queries = []
+        for label in context_queries:
+            label_token = self._normalize_search_text(label)
+            if not label_token:
+                continue
+            if normalized_query in label_token or any(token in label_token for token in tokens):
+                matched_queries.append(label)
+        if not matched_queries:
+            matched_queries = context_queries[:4]
+
+        persona_category_ids = self._predictive_search_persona_category_ids(persona)
+        scored_products = []
+        for candidate in focus_products:
+            blob = self._build_product_search_blob(candidate)
+            if not blob:
+                continue
+            score, _reason = self._predictive_search_score(
+                candidate,
+                blob,
+                normalized_query,
+                tokens,
+                persona=persona,
+                persona_category_ids=persona_category_ids,
+            )
+            name_token = self._normalize_search_text(self._pdp_strip_sku_prefix(candidate.name or ''))
+            category_token = self._normalize_search_text(candidate.public_categ_ids[:1].name or '')
+            if normalized_query and normalized_query in name_token:
+                score += 48
+            if normalized_query and normalized_query in category_token:
+                score += 36
+            if any(token in name_token for token in tokens):
+                score += 22
+            if any(token in category_token for token in tokens):
+                score += 16
+            if 'repuesto' in normalized_query and 'repuesto' in blob:
+                score += 32
+            if 'accesor' in normalized_query and 'accesor' in blob:
+                score += 32
+            if score > 0:
+                scored_products.append((score, candidate.website_sequence or 0, candidate.id, candidate))
+
+        scored_products.sort(key=lambda item: (-item[0], item[1], -item[2]))
+        selected_products = [item[3] for item in scored_products[:limit]]
+        if not selected_products and focus_products:
+            selected_products = focus_products[:limit]
+
+        copy_payload = self._predictive_search_query_context_copy(normalized_query)
+        reason = self._predictive_search_query_context_reason(normalized_query)
+        return {
+            'has_context': bool(matched_queries or selected_products),
+            'title': copy_payload['title'],
+            'body': copy_payload['body'],
+            'current_product': self._predictive_search_product_payload(
+                product,
+                pricelist,
+                reason='Ficha actual',
+                persona=persona,
+            ),
+            'products': [
+                self._predictive_search_product_payload(
+                    candidate,
+                    pricelist,
+                    reason=reason,
+                    persona=persona,
+                )
+                for candidate in selected_products
+            ],
+            'queries': self._pdp_unique_items(matched_queries, limit=4),
+        }
+
     @http.route('/bader/search/context', type='http', auth='public', website=True, methods=['GET'], csrf=False, sitemap=False)
     def predictive_search_context(self, product_id=0, persona='', recent_ids='', limit=4, **kwargs):
         if hasattr(request, 'update_context'):
@@ -2120,6 +2246,7 @@ class BaderWebsite(Website):
             'categories': [],
             'products': [],
             'related_queries': [],
+            'query_context': {},
             'result_label': '',
             'has_results': False,
         }
@@ -2141,6 +2268,10 @@ class BaderWebsite(Website):
         )
         tokens = [token for token in normalized_query.split() if len(token) >= 2][:6]
         persona_category_ids = self._predictive_search_persona_category_ids(active_persona)
+        try:
+            current_product_id = int(kwargs.get('product_id') or 0)
+        except Exception:
+            current_product_id = 0
         base_domain = [
             ('website_published', '=', True),
             ('sale_ok', '=', True),
@@ -2211,6 +2342,13 @@ class BaderWebsite(Website):
             for _score, _sequence, _product_id, reason, product in selected_products
         ]
 
+        current_product = product_model.browse(current_product_id).exists() if current_product_id else product_model.browse()
+        if current_product and (
+            not getattr(current_product, 'website_published', False)
+            or not getattr(current_product, 'sale_ok', True)
+        ):
+            current_product = product_model.browse()
+
         suggestions = []
         seen_suggestions = set()
         for product_payload in product_payloads[:4]:
@@ -2235,6 +2373,13 @@ class BaderWebsite(Website):
                 active_persona,
                 categories=category_hits,
             ),
+            'query_context': self._predictive_search_query_context(
+                current_product,
+                clean_query,
+                pricelist,
+                persona=active_persona,
+                limit=3,
+            ) if current_product else {},
             'has_results': bool(product_payloads or category_hits),
             'result_label': '%s resultados sugeridos' % len(product_payloads) if product_payloads else '',
         })

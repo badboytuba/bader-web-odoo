@@ -4241,6 +4241,172 @@ body.bader-ai-search-open {
         box-shadow: 0 18px 30px rgba(7, 42, 49, 0.08);
     }
 
+    .bader-ai-search__query-context {
+        margin-bottom: 1rem;
+    }
+
+    .bader-ai-search__query-context-shell {
+        display: grid;
+        gap: 0.9rem;
+        border-radius: 28px;
+        border: 1px solid rgba(206, 226, 231, 0.92);
+        background:
+            radial-gradient(circle at top right, rgba(112, 212, 75, 0.12), transparent 32%),
+            linear-gradient(180deg, rgba(249, 252, 252, 0.98) 0%, rgba(243, 248, 249, 0.98) 100%);
+        padding: 1rem;
+        box-shadow: 0 20px 32px rgba(7, 42, 49, 0.08);
+    }
+
+    .bader-ai-search__query-context-head {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(260px, 0.88fr);
+        gap: 0.95rem;
+        align-items: end;
+
+        h4 {
+            margin: 0.22rem 0 0;
+            color: $bader-dark;
+            font-size: 1.22rem;
+            font-weight: 700;
+        }
+
+        p {
+            margin: 0;
+            color: $gray-600;
+            line-height: 1.52;
+        }
+    }
+
+    .bader-ai-search__query-context-grid {
+        display: grid;
+        grid-template-columns: minmax(260px, 0.92fr) minmax(0, 1.08fr);
+        gap: 0.9rem;
+        align-items: start;
+    }
+
+    .bader-ai-search__query-context-current-card {
+        display: grid;
+        grid-template-columns: 108px minmax(0, 1fr);
+        gap: 0.85rem;
+        align-items: center;
+        border-radius: 22px;
+        border: 1px solid rgba(206, 226, 231, 0.92);
+        background: #fff;
+        padding: 0.85rem;
+        box-shadow: 0 14px 24px rgba(7, 42, 49, 0.06);
+    }
+
+    .bader-ai-search__query-context-current-media {
+        min-height: 108px;
+        border-radius: 18px;
+        border: 1px solid rgba(206, 226, 231, 0.92);
+        background:
+            radial-gradient(circle at top right, rgba(112, 212, 75, 0.14), transparent 34%),
+            linear-gradient(180deg, #fbfcfc 0%, #f1f6f6 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.55rem;
+
+        img {
+            max-width: 100%;
+            max-height: 92px;
+            object-fit: contain;
+        }
+    }
+
+    .bader-ai-search__query-context-current-copy {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+
+        h5 {
+            margin: 0 0 0.4rem;
+            color: $bader-dark;
+            font-size: 1rem;
+            line-height: 1.12;
+            font-weight: 700;
+        }
+
+        p {
+            margin: 0;
+            color: $gray-600;
+            font-size: 0.84rem;
+            line-height: 1.5;
+        }
+
+        a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 38px;
+            margin-top: 0.75rem;
+            padding: 0 0.9rem;
+            border-radius: 999px;
+            background: linear-gradient(135deg, $bader-green 0%, lighten($bader-green, 8%) 100%);
+            color: $bader-dark;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 700;
+            align-self: flex-start;
+        }
+    }
+
+    .bader-ai-search__query-context-current-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        margin-bottom: 0.45rem;
+
+        span {
+            display: inline-flex;
+            align-items: center;
+            min-height: 28px;
+            padding: 0.3rem 0.64rem;
+            border-radius: 999px;
+            background: rgba($bader-green, 0.1);
+            color: $bader-green-dark;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+    }
+
+    .bader-ai-search__query-context-side {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.85rem;
+    }
+
+    .bader-ai-search__query-context-block {
+        border-radius: 22px;
+        border: 1px solid rgba(206, 226, 231, 0.92);
+        background: rgba(255, 255, 255, 0.98);
+        padding: 0.9rem;
+        box-shadow: 0 14px 26px rgba(7, 42, 49, 0.06);
+    }
+
+    .bader-ai-search__query-context .bader-ai-search__context-products {
+        grid-template-columns: 1fr;
+    }
+
+    .bader-ai-search__query-context .bader-ai-search__context-product {
+        grid-template-columns: 68px minmax(0, 1fr);
+    }
+
+    .bader-ai-search__query-context .bader-ai-search__context-product-media {
+        min-height: 68px;
+    }
+
+    .bader-ai-search__query-context .bader-ai-search__context-product-copy strong {
+        font-size: 0.8rem;
+        line-height: 1.26;
+    }
+
+    .bader-ai-search__query-context--empty {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
     .bader-ai-search__hero-media {
         border-radius: 22px;
         background:
@@ -4525,6 +4691,9 @@ body.bader-ai-search-open {
         .bader-ai-search__toolbar,
         .bader-ai-search__workspace,
         .bader-ai-search__spotlight,
+        .bader-ai-search__query-context-head,
+        .bader-ai-search__query-context-grid,
+        .bader-ai-search__query-context-side,
         .bader-ai-search__hero-card,
         .bader-ai-search__product-grid,
         .bader-ai-search__idle-grid {
@@ -4569,7 +4738,8 @@ body.bader-ai-search-open {
         .bader-ai-search__context-head,
         .bader-ai-search__context-current-card,
         .bader-ai-search__context-columns,
-        .bader-ai-search__context-products {
+        .bader-ai-search__context-products,
+        .bader-ai-search__query-context-side {
             grid-template-columns: 1fr;
         }
     }
@@ -4643,6 +4813,14 @@ body.bader-ai-search-open {
             a {
                 width: 100%;
             }
+        }
+
+        .bader-ai-search__query-context-current-card {
+            grid-template-columns: 1fr;
+        }
+
+        .bader-ai-search__query-context-current-media {
+            min-height: 154px;
         }
 
         .bader-ai-search__recent-product {

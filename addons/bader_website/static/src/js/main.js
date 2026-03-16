@@ -300,6 +300,7 @@ odoo.define('bader_website.main', function (require) {
             var desktopPill = document.getElementById('baderSearchPill');
             var mobilePill = document.getElementById('baderSearchPillMobile');
             var modal = document.getElementById('baderAiSearchModal');
+            var studioModal = document.getElementById('baderSearchStudioModal');
             var form = modal ? modal.querySelector('[data-bader-ai-form]') : null;
             var input = modal ? modal.querySelector('[data-bader-ai-input]') : null;
             var voiceBtn = modal ? modal.querySelector('[data-bader-ai-voice]') : null;
@@ -314,6 +315,14 @@ odoo.define('bader_website.main', function (require) {
                 laboratorio: 'equipos para laboratorio dental',
                 estudiantes: 'kit para estudiantes odontología',
             };
+
+            if (studioModal) {
+                if (modal) {
+                    modal.setAttribute('hidden', 'hidden');
+                    modal.setAttribute('aria-hidden', 'true');
+                }
+                return;
+            }
 
             function closeMobileDrawerIfNeeded() {
                 var collapse = document.getElementById('top_menu_collapse');
@@ -540,6 +549,8 @@ odoo.define('bader_website.main', function (require) {
             var contextCurrentEl = modal ? modal.querySelector('[data-bader-search-context-current]') : null;
             var contextProductsEl = modal ? modal.querySelector('[data-bader-search-context-products]') : null;
             var contextQueriesEl = modal ? modal.querySelector('[data-bader-search-context-queries]') : null;
+            var queryContextEl = modal ? modal.querySelector('[data-bader-search-query-context]') : null;
+            var emptyContextEl = modal ? modal.querySelector('[data-bader-search-empty-context]') : null;
             var activeFilter = '';
             var recognition = null;
             var isListening = false;
@@ -1038,6 +1049,90 @@ odoo.define('bader_website.main', function (require) {
                     '</div>';
             }
 
+            function renderQueryContext(payload, targetEl) {
+                if (!targetEl) return;
+                var contextData = payload || {};
+                var currentProduct = contextData.current_product || null;
+                var products = contextData.products || [];
+                var queries = contextData.queries || [];
+                if (!contextData.has_context || (!currentProduct && !products.length && !queries.length)) {
+                    targetEl.hidden = true;
+                    targetEl.innerHTML = '';
+                    return;
+                }
+
+                var productsMarkup = products.length ? products.map(function (product) {
+                    return (
+                        '<a href="' + escapeHtml(product.url || '/productos') + '" class="bader-ai-search__context-product" data-bader-search-nav="1">' +
+                        '<span class="bader-ai-search__context-product-media">' +
+                        '<img src="' + escapeHtml(product.image_url || '') + '" alt="' + escapeHtml(product.name || 'Producto') + '" loading="lazy"/>' +
+                        '</span>' +
+                        '<span class="bader-ai-search__context-product-copy">' +
+                        (product.category ? '<small>' + escapeHtml(product.category) + '</small>' : '') +
+                        '<strong>' + escapeHtml(product.name || 'Producto') + '</strong>' +
+                        '<em>' + escapeHtml(product.reason || formatPrice(product.price_value, product.currency_code, product.currency_symbol)) + '</em>' +
+                        '</span>' +
+                        '</a>'
+                    );
+                }).join('') : '<p class="bader-ai-search__hint">No hay productos vinculados para esta combinacion todavia.</p>';
+
+                var queriesMarkup = queries.length ? queries.map(function (label) {
+                    return (
+                        '<button type="button" class="bader-ai-search__context-query" data-bader-ai-query="' + escapeHtml(label) + '" data-bader-search-nav="1">' +
+                        escapeHtml(label) +
+                        '</button>'
+                    );
+                }).join('') : '<p class="bader-ai-search__hint">Prueba con una marca compatible o una familia de repuesto.</p>';
+
+                var currentMarkup = currentProduct ? (
+                    '<article class="bader-ai-search__query-context-current-card">' +
+                    '<span class="bader-ai-search__query-context-current-media">' +
+                    '<img src="' + escapeHtml(currentProduct.image_url || '') + '" alt="' + escapeHtml(currentProduct.name || 'Producto') + '" loading="lazy"/>' +
+                    '</span>' +
+                    '<div class="bader-ai-search__query-context-current-copy">' +
+                    '<div class="bader-ai-search__query-context-current-meta">' +
+                    '<span>Ficha actual</span>' +
+                    (currentProduct.category ? '<span>' + escapeHtml(currentProduct.category) + '</span>' : '') +
+                    '</div>' +
+                    '<h5>' + escapeHtml(currentProduct.name || 'Producto') + '</h5>' +
+                    '<p>' + escapeHtml(currentProduct.excerpt || '') + '</p>' +
+                    '<a href="' + escapeHtml(currentProduct.url || currentProductUrlFromPage() || '/productos') + '" data-bader-search-nav="1">Abrir ficha</a>' +
+                    '</div>' +
+                    '</article>'
+                ) : '';
+
+                targetEl.hidden = false;
+                targetEl.innerHTML =
+                    '<div class="bader-ai-search__query-context-shell">' +
+                    '<div class="bader-ai-search__query-context-head">' +
+                    '<div>' +
+                    '<span class="bader-ai-search__context-eyebrow">Contexto de la ficha</span>' +
+                    '<h4>' + escapeHtml(contextData.title || 'Seguir desde esta ficha') + '</h4>' +
+                    '</div>' +
+                    '<p>' + escapeHtml(contextData.body || 'Accesorios, repuestos y compatibilidades relacionados con el producto actual.') + '</p>' +
+                    '</div>' +
+                    '<div class="bader-ai-search__query-context-grid">' +
+                    currentMarkup +
+                    '<div class="bader-ai-search__query-context-side">' +
+                    '<article class="bader-ai-search__query-context-block">' +
+                    '<div class="bader-ai-search__context-block-head">' +
+                    '<h5>Productos vinculados</h5>' +
+                    '<span>En esta ficha</span>' +
+                    '</div>' +
+                    '<div class="bader-ai-search__context-products">' + productsMarkup + '</div>' +
+                    '</article>' +
+                    '<article class="bader-ai-search__query-context-block">' +
+                    '<div class="bader-ai-search__context-block-head">' +
+                    '<h5>Consultas listas</h5>' +
+                    '<span>Atajos utiles</span>' +
+                    '</div>' +
+                    '<div class="bader-ai-search__context-queries">' + queriesMarkup + '</div>' +
+                    '</article>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>';
+            }
+
             function resetResults() {
                 renderSuggestions([]);
                 renderRecentSearches();
@@ -1046,6 +1141,8 @@ odoo.define('bader_website.main', function (require) {
                 renderProductGrid([]);
                 renderRelatedQueries([], relatedEl);
                 renderRelatedQueries([], emptyRelatedEl);
+                renderQueryContext(null, queryContextEl);
+                renderQueryContext(null, emptyContextEl);
                 if (viewAllLink) viewAllLink.setAttribute('href', buildSearchUrl(input ? input.value : ''));
                 if (emptyViewAllLink) emptyViewAllLink.setAttribute('href', buildSearchUrl(input ? input.value : ''));
                 setState('idle');
@@ -1061,6 +1158,7 @@ odoo.define('bader_website.main', function (require) {
                 var products = payload && payload.products ? payload.products : [];
                 var categories = payload && payload.categories ? payload.categories : [];
                 var relatedQueries = payload && payload.related_queries ? payload.related_queries : [];
+                var queryContext = payload && payload.query_context ? payload.query_context : null;
 
                 renderSuggestions(payload && payload.suggestions ? payload.suggestions : []);
                 renderRecentSearches();
@@ -1079,6 +1177,8 @@ odoo.define('bader_website.main', function (require) {
                 }
 
                 if (products.length || categories.length) {
+                    renderQueryContext(queryContext, queryContextEl);
+                    renderQueryContext(null, emptyContextEl);
                     setState('results');
                     if (payload && payload.result_label) {
                         setStatus(payload.result_label);
@@ -1088,13 +1188,16 @@ odoo.define('bader_website.main', function (require) {
                     return;
                 }
 
+                renderQueryContext(null, queryContextEl);
+                renderQueryContext(queryContext, emptyContextEl);
                 setState('empty');
                 setStatus('No encontramos coincidencias claras. Prueba con SKU, categoria o compatibilidad.');
             }
 
             function requestResults(rawValue, immediate) {
                 var query = String(rawValue || '').trim();
-                var cacheKey = (activeFilter || 'general') + '|' + query.toLowerCase();
+                var currentProductId = currentProductIdFromPage();
+                var cacheKey = (activeFilter || 'general') + '|' + (currentProductId || 0) + '|' + query.toLowerCase();
                 if (query.length < 2) {
                     abortPendingRequest();
                     resetResults();
@@ -1127,6 +1230,7 @@ odoo.define('bader_website.main', function (require) {
                 var requestUrl = new URL('/bader/search/predictive', window.location.origin);
                 requestUrl.searchParams.set('q', query);
                 requestUrl.searchParams.set('limit', '7');
+                if (currentProductId) requestUrl.searchParams.set('product_id', String(currentProductId));
                 if (activeFilter) requestUrl.searchParams.set('persona', activeFilter);
 
                 var fetchOptions = {
