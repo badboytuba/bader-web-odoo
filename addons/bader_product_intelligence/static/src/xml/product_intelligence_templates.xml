@@ -322,7 +322,7 @@
                                             <label>Categoria</label>
                                             <select class="bpi-input" t-model="state.productForm.categoryId">
                                                 <option value="">Seleccionar categoria</option>
-                                                <option t-foreach="currentCategories()" t-as="category" t-key="category.id" t-att-value="String(category.id)" t-esc="category.completeName"/>
+                                                <option t-foreach="currentCategories()" t-as="category" t-key="category.id" t-att-value="templateString(category.id)" t-esc="category.completeName"/>
                                             </select>
                                             <div class="bpi-note" t-esc="product.dataLabel || 'Producto Bader'"/>
                                         </div>
@@ -371,7 +371,7 @@
                                             <strong t-esc="formatPercent(detailMargin())"/>
                                         </div>
                                         <div class="bpi-margin-card__aside">
-                                            <p t-esc="'Beneficio: ' + formatUSD((Number(product.priceUsd || 0) - Number(product.costUsd || 0)))"/>
+                                            <p t-esc="marginBenefitLabel()"/>
                                             <p t-esc="'PVP: ' + formatUSD(product.priceUsd || 0) + ' / Costo: ' + formatUSD(product.costUsd || 0)"/>
                                         </div>
                                     </div>

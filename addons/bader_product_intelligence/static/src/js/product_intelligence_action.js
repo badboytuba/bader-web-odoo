@@ -458,6 +458,16 @@ class ProductIntelligenceAction extends Component {
         return String(value);
     }
 
+    templateString(value) {
+        return this.toInput(value);
+    }
+
+    marginBenefitLabel() {
+        const product = this.currentProduct();
+        const benefit = (this.parseNumber(product.priceUsd) - this.parseNumber(product.costUsd));
+        return `Beneficio: ${this.formatUSD(benefit)}`;
+    }
+
     parseNumber(value) {
         if (value === "" || value === null || value === undefined) {
             return 0;
