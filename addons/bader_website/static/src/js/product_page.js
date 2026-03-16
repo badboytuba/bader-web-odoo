@@ -21,6 +21,7 @@
 
     function initBaderProductPage(productRoot) {
         var PDP_PERSONA_STORAGE_KEY = 'baderPdpPersona';
+        var RECENT_VIEWED_PRODUCTS_STORAGE_KEY = 'baderRecentViewedProductIdsV1';
 
         function parseIntSafe(rawValue, fallback) {
             var parsed = parseInt(String(rawValue || '').replace(/[^\d-]/g, ''), 10);
@@ -260,6 +261,48 @@
             } catch (err) {
                 // Ignore storage failures.
             }
+        }
+
+        function readRecentViewedProductIds() {
+            try {
+                if (!window.localStorage) return [];
+                var rawValue = window.localStorage.getItem(RECENT_VIEWED_PRODUCTS_STORAGE_KEY) || '';
+                if (!rawValue) return [];
+                var parsed = JSON.parse(rawValue);
+                if (!Array.isArray(parsed)) return [];
+                return parsed
+                    .map(function (item) {
+                        return parseIntSafe(item, 0);
+                    })
+                    .filter(function (item) {
+                        return item > 0;
+                    });
+            } catch (err) {
+                return [];
+            }
+        }
+
+        function writeRecentViewedProductIds(items) {
+            try {
+                if (!window.localStorage) return;
+                window.localStorage.setItem(
+                    RECENT_VIEWED_PRODUCTS_STORAGE_KEY,
+                    JSON.stringify((items || []).slice(0, 8))
+                );
+            } catch (err) {
+                // Ignore storage failures.
+            }
+        }
+
+        function storeCurrentProductContext() {
+            var productId = parseIntSafe(productRoot.getAttribute('data-bader-product-id'), 0);
+            if (!productId) return;
+
+            var next = readRecentViewedProductIds().filter(function (item) {
+                return item !== productId;
+            });
+            next.unshift(productId);
+            writeRecentViewedProductIds(next);
         }
 
         function initPersonaSwitcher() {
@@ -593,6 +636,7 @@
             initSecondaryActions();
         }
 
+        storeCurrentProductContext();
         initAddToCartFeedback();
         syncHeaderCartBadge();
         if (initPersonaSwitcher()) {

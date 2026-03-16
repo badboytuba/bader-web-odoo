@@ -506,6 +506,16 @@
 
                             <section class="bader-ai-search__block">
                                 <div class="bader-ai-search__block-head">
+                                    <h4>Vistos recientemente</h4>
+                                    <span>Productos abiertos hace poco</span>
+                                </div>
+                                <div class="bader-ai-search__recent-products" data-bader-search-recent-products="1">
+                                    <p class="bader-ai-search__hint">Todavia no abriste productos recientes en este navegador.</p>
+                                </div>
+                            </section>
+
+                            <section class="bader-ai-search__block">
+                                <div class="bader-ai-search__block-head">
                                     <h4>Explora por perfil</h4>
                                     <span>Atajos por nicho</span>
                                 </div>
@@ -562,6 +572,32 @@
 
                         <main class="bader-ai-search__results">
                             <section class="bader-ai-search__state is-active" data-bader-search-state="idle">
+                                <section class="bader-ai-search__context" data-bader-search-context="1" hidden="hidden">
+                                    <div class="bader-ai-search__context-head">
+                                        <div>
+                                            <span class="bader-ai-search__context-eyebrow">Contexto comercial</span>
+                                            <h4 data-bader-search-context-title="1">Complementa este producto</h4>
+                                        </div>
+                                        <p data-bader-search-context-body="1">Accesorios, repuestos y consultas utiles para seguir desde la ficha actual.</p>
+                                    </div>
+                                    <div class="bader-ai-search__context-current" data-bader-search-context-current="1"></div>
+                                    <div class="bader-ai-search__context-columns">
+                                        <article class="bader-ai-search__context-block">
+                                            <div class="bader-ai-search__context-block-head">
+                                                <h5>Complementos sugeridos</h5>
+                                                <span>Desde Odoo</span>
+                                            </div>
+                                            <div class="bader-ai-search__context-products" data-bader-search-context-products="1"></div>
+                                        </article>
+                                        <article class="bader-ai-search__context-block">
+                                            <div class="bader-ai-search__context-block-head">
+                                                <h5>Compatibilidades y repuestos</h5>
+                                                <span>Consultas listas</span>
+                                            </div>
+                                            <div class="bader-ai-search__context-queries" data-bader-search-context-queries="1"></div>
+                                        </article>
+                                    </div>
+                                </section>
                                 <article class="bader-ai-search__spotlight">
                                     <div class="bader-ai-search__spotlight-copy">
                                         <p class="bader-ai-search__spotlight-kicker">Busqueda comercial + tecnica</p>

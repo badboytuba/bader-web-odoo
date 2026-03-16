@@ -525,6 +525,7 @@ odoo.define('bader_website.main', function (require) {
             var collectionEls = modal ? modal.querySelectorAll('[data-bader-search-collection]') : [];
             var statusEl = modal ? modal.querySelector('[data-bader-search-status]') : null;
             var recentEl = modal ? modal.querySelector('[data-bader-search-recent]') : null;
+            var recentProductsEl = modal ? modal.querySelector('[data-bader-search-recent-products]') : null;
             var suggestionsEl = modal ? modal.querySelector('[data-bader-search-suggestions]') : null;
             var categoriesEl = modal ? modal.querySelector('[data-bader-search-categories]') : null;
             var heroEl = modal ? modal.querySelector('[data-bader-search-hero]') : null;
@@ -533,14 +534,22 @@ odoo.define('bader_website.main', function (require) {
             var emptyRelatedEl = modal ? modal.querySelector('[data-bader-search-empty-related]') : null;
             var viewAllLink = modal ? modal.querySelector('[data-bader-search-view-all]') : null;
             var emptyViewAllLink = modal ? modal.querySelector('[data-bader-search-empty-view-all]') : null;
+            var contextWrapEl = modal ? modal.querySelector('[data-bader-search-context]') : null;
+            var contextTitleEl = modal ? modal.querySelector('[data-bader-search-context-title]') : null;
+            var contextBodyEl = modal ? modal.querySelector('[data-bader-search-context-body]') : null;
+            var contextCurrentEl = modal ? modal.querySelector('[data-bader-search-context-current]') : null;
+            var contextProductsEl = modal ? modal.querySelector('[data-bader-search-context-products]') : null;
+            var contextQueriesEl = modal ? modal.querySelector('[data-bader-search-context-queries]') : null;
             var activeFilter = '';
             var recognition = null;
             var isListening = false;
             var pendingRequest = null;
             var debounceTimer = null;
             var searchCache = {};
+            var contextCache = {};
             var SEARCH_RECENT_STORAGE_KEY = 'baderSearchRecentV1';
             var SEARCH_PERSONA_STORAGE_KEY = 'baderSearchPersona';
+            var SEARCH_RECENT_VIEWED_STORAGE_KEY = 'baderRecentViewedProductIdsV1';
             var filterLabels = {
                 clinica: 'Clinicas',
                 laboratorio: 'Laboratorios',
@@ -646,6 +655,36 @@ odoo.define('bader_website.main', function (require) {
                 }).join('');
             }
 
+            function readRecentViewedProductIds() {
+                var raw = readStorage(SEARCH_RECENT_VIEWED_STORAGE_KEY);
+                if (!raw) return [];
+                try {
+                    var parsed = JSON.parse(raw);
+                    if (!Array.isArray(parsed)) return [];
+                    return parsed
+                        .map(function (item) {
+                            return parseInt(String(item || '').replace(/[^\d]/g, ''), 10);
+                        })
+                        .filter(function (item) {
+                            return !isNaN(item) && item > 0;
+                        });
+                } catch (err) {
+                    return [];
+                }
+            }
+
+            function currentProductIdFromPage() {
+                var productRoot = document.querySelector('#product_detail[data-bader-product-id]');
+                if (!productRoot) return 0;
+                var parsed = parseInt(String(productRoot.getAttribute('data-bader-product-id') || '').replace(/[^\d]/g, ''), 10);
+                return isNaN(parsed) ? 0 : parsed;
+            }
+
+            function currentProductUrlFromPage() {
+                var productRoot = document.querySelector('#product_detail[data-bader-product-url]');
+                return productRoot ? (productRoot.getAttribute('data-bader-product-url') || '') : '';
+            }
+
             function setState(name) {
                 stateEls.forEach(function (section) {
                     section.classList.toggle('is-active', section.getAttribute('data-bader-search-state') === name);
@@ -699,6 +738,7 @@ odoo.define('bader_website.main', function (require) {
                     requestResults(input.value, true);
                 } else {
                     resetResults();
+                    loadSearchContext(true);
                 }
             }
 
@@ -734,6 +774,162 @@ odoo.define('bader_website.main', function (require) {
                 } catch (err) {
                     return (currencySymbol || 'EUR') + ' ' + amount.toFixed(2).replace('.', ',');
                 }
+            }
+
+            function renderRecentProducts(items) {
+                if (!recentProductsEl) return;
+                if (!items || !items.length) {
+                    recentProductsEl.innerHTML = '<p class="bader-ai-search__hint">Todavia no abriste productos recientes en este navegador.</p>';
+                    return;
+                }
+                recentProductsEl.innerHTML = items.map(function (product) {
+                    return (
+                        '<a href="' + escapeHtml(product.url || '/productos') + '" class="bader-ai-search__recent-product" data-bader-search-nav="1">' +
+                        '<span class="bader-ai-search__recent-product-media">' +
+                        '<img src="' + escapeHtml(product.image_url || '') + '" alt="' + escapeHtml(product.name || 'Producto') + '" loading="lazy"/>' +
+                        '</span>' +
+                        '<span class="bader-ai-search__recent-product-copy">' +
+                        (product.category ? '<small>' + escapeHtml(product.category) + '</small>' : '') +
+                        '<strong>' + escapeHtml(product.name || 'Producto') + '</strong>' +
+                        '<em>' + escapeHtml(formatPrice(product.price_value, product.currency_code, product.currency_symbol)) + '</em>' +
+                        '</span>' +
+                        '</a>'
+                    );
+                }).join('');
+            }
+
+            function renderContextQueries(items) {
+                if (!contextQueriesEl) return;
+                if (!items || !items.length) {
+                    contextQueriesEl.innerHTML = '<p class="bader-ai-search__hint">Abrir una ficha tecnica mostrara repuestos y compatibilidades sugeridas aqui.</p>';
+                    return;
+                }
+                contextQueriesEl.innerHTML = items.map(function (label) {
+                    return (
+                        '<button type="button" class="bader-ai-search__context-query" data-bader-ai-query="' + escapeHtml(label) + '" data-bader-search-nav="1">' +
+                        escapeHtml(label) +
+                        '</button>'
+                    );
+                }).join('');
+            }
+
+            function renderContextProducts(items) {
+                if (!contextProductsEl) return;
+                if (!items || !items.length) {
+                    contextProductsEl.innerHTML = '<p class="bader-ai-search__hint">Sin complementos destacados todavia. Prueba con una busqueda por SKU o categoria.</p>';
+                    return;
+                }
+                contextProductsEl.innerHTML = items.map(function (product) {
+                    return (
+                        '<a href="' + escapeHtml(product.url || '/productos') + '" class="bader-ai-search__context-product" data-bader-search-nav="1">' +
+                        '<span class="bader-ai-search__context-product-media">' +
+                        '<img src="' + escapeHtml(product.image_url || '') + '" alt="' + escapeHtml(product.name || 'Producto') + '" loading="lazy"/>' +
+                        '</span>' +
+                        '<span class="bader-ai-search__context-product-copy">' +
+                        (product.category ? '<small>' + escapeHtml(product.category) + '</small>' : '') +
+                        '<strong>' + escapeHtml(product.name || 'Producto') + '</strong>' +
+                        '<em>' + escapeHtml(formatPrice(product.price_value, product.currency_code, product.currency_symbol)) + '</em>' +
+                        '</span>' +
+                        '</a>'
+                    );
+                }).join('');
+            }
+
+            function renderCurrentContext(product) {
+                if (!contextCurrentEl) return;
+                if (!product) {
+                    contextCurrentEl.innerHTML = '';
+                    return;
+                }
+                contextCurrentEl.innerHTML =
+                    '<article class="bader-ai-search__context-current-card">' +
+                    '<span class="bader-ai-search__context-current-media">' +
+                    '<img src="' + escapeHtml(product.image_url || '') + '" alt="' + escapeHtml(product.name || 'Producto') + '" loading="lazy"/>' +
+                    '</span>' +
+                    '<div class="bader-ai-search__context-current-copy">' +
+                    '<div class="bader-ai-search__context-current-meta">' +
+                    '<span>Ficha actual</span>' +
+                    (product.category ? '<span>' + escapeHtml(product.category) + '</span>' : '') +
+                    '</div>' +
+                    '<h5>' + escapeHtml(product.name || 'Producto') + '</h5>' +
+                    '<p>' + escapeHtml(product.excerpt || '') + '</p>' +
+                    '<div class="bader-ai-search__context-current-bottom">' +
+                    '<strong>' + escapeHtml(formatPrice(product.price_value, product.currency_code, product.currency_symbol)) + '</strong>' +
+                    '<a href="' + escapeHtml(product.url || currentProductUrlFromPage() || '/productos') + '" data-bader-search-nav="1">Abrir ficha</a>' +
+                    '</div>' +
+                    '</div>' +
+                    '</article>';
+            }
+
+            function renderContext(payload) {
+                var contextData = payload || {};
+                renderRecentProducts(contextData.recent_products || []);
+                renderCurrentContext(contextData.current_product || null);
+                renderContextProducts(contextData.focus_products || []);
+                renderContextQueries(contextData.compatibility_queries || []);
+
+                if (!contextWrapEl) return;
+                var hasProductContext = !!(
+                    contextData.current_product ||
+                    (contextData.focus_products && contextData.focus_products.length) ||
+                    (contextData.compatibility_queries && contextData.compatibility_queries.length)
+                );
+                contextWrapEl.hidden = !hasProductContext;
+                if (contextTitleEl) {
+                    contextTitleEl.textContent = contextData.context_title || 'Complementa este producto';
+                }
+                if (contextBodyEl) {
+                    contextBodyEl.textContent = contextData.context_body || 'Accesorios, repuestos y consultas utiles para seguir desde la ficha actual.';
+                }
+            }
+
+            function loadSearchContext(forceRefresh) {
+                var currentProductId = currentProductIdFromPage();
+                var recentIds = readRecentViewedProductIds().filter(function (item) {
+                    return item !== currentProductId;
+                }).slice(0, 6);
+
+                if (!currentProductId && !recentIds.length) {
+                    renderContext(null);
+                    return Promise.resolve(null);
+                }
+
+                if (!window.fetch) {
+                    renderContext(null);
+                    return Promise.resolve(null);
+                }
+
+                var cacheKey = [
+                    activeFilter || 'general',
+                    currentProductId || 0,
+                    recentIds.join(',')
+                ].join('|');
+
+                if (!forceRefresh && contextCache[cacheKey]) {
+                    renderContext(contextCache[cacheKey]);
+                    return Promise.resolve(contextCache[cacheKey]);
+                }
+
+                var requestUrl = new URL('/bader/search/context', window.location.origin);
+                if (currentProductId) requestUrl.searchParams.set('product_id', String(currentProductId));
+                if (activeFilter) requestUrl.searchParams.set('persona', activeFilter);
+                if (recentIds.length) requestUrl.searchParams.set('recent_ids', recentIds.join(','));
+                requestUrl.searchParams.set('limit', '4');
+
+                return window.fetch(requestUrl.toString(), {
+                    credentials: 'same-origin',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                }).then(function (response) {
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    return response.json();
+                }).then(function (payload) {
+                    contextCache[cacheKey] = payload || {};
+                    renderContext(payload || {});
+                    return payload || {};
+                }).catch(function () {
+                    renderContext(null);
+                    return null;
+                });
             }
 
             function renderSuggestions(items) {
@@ -844,6 +1040,7 @@ odoo.define('bader_website.main', function (require) {
 
             function resetResults() {
                 renderSuggestions([]);
+                renderRecentSearches();
                 renderCategories([]);
                 renderHeroResult(null);
                 renderProductGrid([]);
@@ -852,10 +1049,11 @@ odoo.define('bader_website.main', function (require) {
                 if (viewAllLink) viewAllLink.setAttribute('href', buildSearchUrl(input ? input.value : ''));
                 if (emptyViewAllLink) emptyViewAllLink.setAttribute('href', buildSearchUrl(input ? input.value : ''));
                 setState('idle');
+                loadSearchContext(false);
                 if (activeFilter) {
-                    setStatus('Explorando el perfil ' + (filterLabels[activeFilter] || activeFilter) + '. Ahora escribe tu consulta.');
+                    setStatus('Explorando el perfil ' + (filterLabels[activeFilter] || activeFilter) + '. Puedes buscar o aprovechar el contexto comercial disponible.');
                 } else {
-                    setStatus('Escribe al menos 2 letras para activar la busqueda predictiva.');
+                    setStatus('Escribe al menos 2 letras para activar la busqueda predictiva o usa el contexto del producto actual.');
                 }
             }
 
@@ -866,6 +1064,7 @@ odoo.define('bader_website.main', function (require) {
 
                 renderSuggestions(payload && payload.suggestions ? payload.suggestions : []);
                 renderRecentSearches();
+                if (contextWrapEl) contextWrapEl.hidden = true;
                 renderCategories(categories);
                 renderHeroResult(products.length ? products[0] : null);
                 renderProductGrid(products.slice(1));
@@ -1017,6 +1216,7 @@ odoo.define('bader_website.main', function (require) {
                         requestResults(input.value, true);
                     } else {
                         resetResults();
+                        loadSearchContext(true);
                     }
                 }
             }

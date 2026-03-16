@@ -1638,6 +1638,15 @@ class BaderWebsite(Website):
     def _pdp_should_skip_line(self, line, product_name=''):
         return BaderWebsiteSale()._pdp_should_skip_line(line, product_name=product_name)
 
+    def _pdp_unique_items(self, items, limit=None):
+        return BaderWebsiteSale()._pdp_unique_items(items, limit=limit)
+
+    def _build_pdp_related_products(self, product, limit=6):
+        return BaderWebsiteSale()._build_pdp_related_products(product, limit=limit)
+
+    def _build_pdp_content_payload(self, product):
+        return BaderWebsiteSale()._build_pdp_content_payload(product)
+
     def _predictive_search_persona_keywords(self, persona):
         normalized = self._normalize_pdp_persona(persona)
         keyword_map = {
@@ -1879,6 +1888,207 @@ class BaderWebsite(Website):
             if len(suggestions) >= 6:
                 break
         return suggestions[:6]
+
+    def _predictive_search_context_products(self, product, persona='', limit=4):
+        product_template_model = request.env['product.template'].sudo().with_context(
+            website_id=request.website.id,
+            lang='es_ES',
+            display_default_code=False,
+        )
+        seen_ids = {product.id}
+        ordered_ids = []
+
+        for field_name in ('accessory_product_ids', 'alternative_product_ids', 'optional_product_ids'):
+            if field_name not in product._fields:
+                continue
+            for candidate in product[field_name]:
+                candidate_tmpl = candidate
+                if getattr(candidate_tmpl, '_name', '') == 'product.product':
+                    candidate_tmpl = candidate_tmpl.product_tmpl_id
+                if not candidate_tmpl or candidate_tmpl.id in seen_ids:
+                    continue
+                if not getattr(candidate_tmpl, 'website_published', False) or not getattr(candidate_tmpl, 'sale_ok', True):
+                    continue
+                seen_ids.add(candidate_tmpl.id)
+                ordered_ids.append(candidate_tmpl.id)
+                if len(ordered_ids) >= limit:
+                    return product_template_model.browse(ordered_ids)
+
+        for candidate in self._build_pdp_related_products(product, limit=max(limit + 2, 6)):
+            if candidate.id in seen_ids:
+                continue
+            if not getattr(candidate, 'website_published', False) or not getattr(candidate, 'sale_ok', True):
+                continue
+            seen_ids.add(candidate.id)
+            ordered_ids.append(candidate.id)
+            if len(ordered_ids) >= limit:
+                break
+
+        return product_template_model.browse(ordered_ids[:limit])
+
+    def _predictive_search_context_queries(self, product, persona=''):
+        product_name = self._pdp_strip_sku_prefix(product.name or '')
+        category_label = _clean_text_line(product.public_categ_ids[:1].name or '', max_len=80)
+        payload = self._build_pdp_content_payload(product)
+        detail_source = self._pdp_description_plaintext(
+            (product.website_description or '') + '\n' + (product.description_sale or '')
+        )
+        suggestions = []
+
+        if category_label:
+            suggestions.append('Accesorios para %s' % category_label.lower())
+            suggestions.append('Repuestos para %s' % category_label.lower())
+
+        compact_name = _clean_text_line(product_name, max_len=56)
+        if compact_name and len(compact_name) <= 46:
+            suggestions.append('Compatible con %s' % compact_name)
+
+        compatibility_matches = re.findall(r'compatible con\s*:\s*([^\n\.]+)', detail_source, flags=re.IGNORECASE)
+        for raw_match in compatibility_matches[:2]:
+            for part in re.split(r',|/| y ', raw_match):
+                clean_part = _clean_text_line(part, max_len=40).strip('.')
+                if not clean_part:
+                    continue
+                suggestions.append('Compatible con %s' % clean_part)
+
+        for point in (payload.get('feature_points') or [])[:4]:
+            if len(point or '') > 54:
+                continue
+            suggestions.append(point.rstrip('.'))
+
+        suggestions.extend(self._predictive_search_related_queries(product_name, persona)[:3])
+        return self._pdp_unique_items(suggestions, limit=6)
+
+    def _predictive_search_recent_products(self, raw_recent_ids, pricelist, persona='', current_product_id=0, limit=4):
+        recent_ids = []
+        for raw_value in str(raw_recent_ids or '').split(','):
+            try:
+                product_id = int(str(raw_value or '').strip())
+            except Exception:
+                product_id = 0
+            if not product_id or product_id == current_product_id or product_id in recent_ids:
+                continue
+            recent_ids.append(product_id)
+            if len(recent_ids) >= 8:
+                break
+
+        if not recent_ids:
+            return []
+
+        product_model = request.env['product.template'].sudo().with_context(
+            website_id=request.website.id,
+            pricelist=pricelist.id,
+            lang='es_ES',
+            display_default_code=False,
+        )
+        products_by_id = {
+            product.id: product
+            for product in product_model.browse(recent_ids).exists()
+            if getattr(product, 'website_published', False) and getattr(product, 'sale_ok', True)
+        }
+
+        payloads = []
+        for product_id in recent_ids:
+            product = products_by_id.get(product_id)
+            if not product:
+                continue
+            payloads.append(
+                self._predictive_search_product_payload(
+                    product,
+                    pricelist,
+                    reason='Visto recientemente',
+                    persona=persona,
+                )
+            )
+            if len(payloads) >= limit:
+                break
+        return payloads
+
+    @http.route('/bader/search/context', type='http', auth='public', website=True, methods=['GET'], csrf=False, sitemap=False)
+    def predictive_search_context(self, product_id=0, persona='', recent_ids='', limit=4, **kwargs):
+        if hasattr(request, 'update_context'):
+            request.update_context(lang='es_ES')
+        else:
+            request.context = dict(request.context, lang='es_ES')
+
+        active_persona = self._normalize_pdp_persona(persona)
+        try:
+            product_id = int(product_id or 0)
+        except Exception:
+            product_id = 0
+        try:
+            limit = min(max(int(limit or 4), 1), 6)
+        except Exception:
+            limit = 4
+
+        pricelist = request.website.get_current_pricelist()
+        product_model = request.env['product.template'].sudo().with_context(
+            website_id=request.website.id,
+            pricelist=pricelist.id,
+            lang='es_ES',
+            display_default_code=False,
+        )
+        current_product = product_model.browse(product_id).exists() if product_id else product_model.browse()
+        if current_product and (
+            not getattr(current_product, 'website_published', False)
+            or not getattr(current_product, 'sale_ok', True)
+        ):
+            current_product = product_model.browse()
+
+        recent_payloads = self._predictive_search_recent_products(
+            recent_ids,
+            pricelist,
+            persona=active_persona,
+            current_product_id=current_product.id if current_product else 0,
+            limit=4,
+        )
+
+        payload = {
+            'persona': active_persona,
+            'current_product': None,
+            'focus_products': [],
+            'recent_products': recent_payloads,
+            'compatibility_queries': [],
+            'context_title': '',
+            'context_body': '',
+            'has_context': bool(recent_payloads),
+        }
+
+        if current_product:
+            payload.update({
+                'current_product': self._predictive_search_product_payload(
+                    current_product,
+                    pricelist,
+                    reason='Producto en vista',
+                    persona=active_persona,
+                ),
+                'focus_products': [
+                    self._predictive_search_product_payload(
+                        product,
+                        pricelist,
+                        reason='Complemento recomendado',
+                        persona=active_persona,
+                    )
+                    for product in self._predictive_search_context_products(
+                        current_product,
+                        persona=active_persona,
+                        limit=limit,
+                    )
+                ],
+                'compatibility_queries': self._predictive_search_context_queries(
+                    current_product,
+                    persona=active_persona,
+                ),
+                'context_title': 'Complementa este producto',
+                'context_body': 'Accesorios, repuestos y consultas utiles para seguir desde la ficha actual.',
+                'has_context': True,
+            })
+
+        response = request.make_response(
+            json.dumps(payload, ensure_ascii=False),
+            headers=[('Content-Type', 'application/json; charset=utf-8')],
+        )
+        return self._force_es_frontend_lang(response)
 
     @http.route('/bader/search/predictive', type='http', auth='public', website=True, methods=['GET'], csrf=False, sitemap=False)
     def predictive_search(self, q='', persona='', limit=7, **kwargs):

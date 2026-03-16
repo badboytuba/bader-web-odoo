@@ -13,6 +13,8 @@
         </xpath>
         <xpath expr="//*[@id='product_detail']" position="attributes">
             <attribute name="t-attf-class">container py-4 oe_website_sale bader-product-detail #{'discount' if combination_info['has_discounted_price'] else ''}</attribute>
+            <attribute name="t-att-data-bader-product-id">product.id</attribute>
+            <attribute name="t-att-data-bader-product-url">request.httprequest.path</attribute>
         </xpath>
 
         <xpath expr="//div[@id='product_detail_main']" position="attributes">
