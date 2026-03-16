@@ -3434,6 +3434,876 @@ body.bader-ai-search-open {
     }
 }
 
+#baderAiSearchModal[hidden] {
+    display: none !important;
+}
+
+.bader-ai-search--studio {
+    .bader-ai-search__panel {
+        width: clamp(320px, calc(100% - 2rem), 1180px);
+        max-height: calc(100vh - 4.75rem);
+        margin-top: 3.75rem;
+        padding: 1.35rem;
+        border-radius: 28px;
+        border: 1px solid rgba(194, 231, 238, 0.22);
+        background:
+            radial-gradient(circle at top left, rgba(112, 212, 75, 0.12), transparent 28%),
+            radial-gradient(circle at top right, rgba(58, 161, 186, 0.12), transparent 24%),
+            linear-gradient(180deg, rgba(6, 55, 66, 0.98), rgba(5, 40, 48, 0.98));
+        box-shadow: 0 42px 110px rgba(0, 0, 0, 0.45);
+    }
+
+    .bader-ai-search__eyebrow {
+        margin: 0 0 0.18rem;
+        font-size: 0.72rem;
+        line-height: 1;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(189, 234, 242, 0.7);
+        font-weight: 700;
+    }
+
+    .bader-ai-search__header {
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .bader-ai-search__header-note {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+
+        span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.55rem 0.85rem;
+            border-radius: 999px;
+            border: 1px solid rgba(194, 231, 238, 0.18);
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(236, 249, 252, 0.84);
+            font-size: 0.79rem;
+            font-weight: 600;
+        }
+
+        .fa {
+            color: $bader-green;
+        }
+    }
+
+    .bader-ai-search__form {
+        margin-top: 1rem;
+    }
+
+    .bader-ai-search__input-wrap {
+        min-height: 64px;
+        border-radius: 18px;
+        border-color: rgba($bader-green, 0.92);
+        background: rgba(255, 255, 255, 0.08);
+        padding: 0.38rem 0.4rem 0.38rem 0.9rem;
+        box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18);
+    }
+
+    .bader-ai-search__input-wrap input {
+        font-size: 1rem;
+    }
+
+    .bader-ai-search__toolbar {
+        margin-top: 0.95rem;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0.8rem;
+        align-items: center;
+    }
+
+    .bader-ai-search__status {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-end;
+        text-align: right;
+        color: rgba(230, 247, 250, 0.76);
+        font-size: 0.84rem;
+        line-height: 1.4;
+    }
+
+    .bader-ai-search__workspace {
+        margin-top: 1rem;
+        display: grid;
+        grid-template-columns: 320px minmax(0, 1fr);
+        gap: 1rem;
+        min-height: 520px;
+    }
+
+    .bader-ai-search__rail {
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+    }
+
+    .bader-ai-search__block {
+        border: 1px solid rgba(194, 231, 238, 0.18);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.06);
+        padding: 1rem;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .bader-ai-search__block-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+
+        h4 {
+            margin: 0;
+            font-size: 0.94rem;
+            color: $white;
+            font-weight: 700;
+        }
+
+        span {
+            color: rgba(220, 246, 251, 0.56);
+            font-size: 0.72rem;
+            line-height: 1.2;
+            text-align: right;
+        }
+    }
+
+    .bader-ai-search__recent,
+    .bader-ai-search__suggestions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+    }
+
+    .bader-ai-search__hint {
+        margin: 0;
+        color: rgba(220, 246, 251, 0.58);
+        font-size: 0.84rem;
+        line-height: 1.5;
+    }
+
+    .bader-ai-search__recent-chip,
+    .bader-ai-search__suggestion {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        border: 1px solid rgba(194, 231, 238, 0.16);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(239, 250, 252, 0.88);
+        padding: 0.72rem 0.82rem;
+        text-align: left;
+        transition: border-color $transition-fast, background $transition-fast, transform $transition-fast;
+
+        &:hover,
+        &:focus {
+            border-color: rgba($bader-green, 0.56);
+            background: rgba($bader-green, 0.12);
+            transform: translateY(-1px);
+            outline: none;
+        }
+
+        .fa {
+            color: rgba(219, 245, 250, 0.54);
+        }
+    }
+
+    .bader-ai-search__collections {
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+    }
+
+    .bader-ai-search__collection {
+        display: none;
+        border-radius: 18px;
+        border: 1px solid rgba(194, 231, 238, 0.12);
+        background: rgba(255, 255, 255, 0.05);
+        padding: 0.9rem;
+
+        &.is-active {
+            display: block;
+        }
+
+        >p {
+            margin: 0 0 0.7rem;
+            color: $white;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+    }
+
+    .bader-ai-search__collection-links {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.55rem;
+
+        a,
+        button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            border-radius: 12px;
+            border: 1px solid rgba(194, 231, 238, 0.16);
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(240, 250, 252, 0.9);
+            text-decoration: none;
+            padding: 0.6rem 0.7rem;
+            font-size: 0.82rem;
+            line-height: 1.3;
+            text-align: center;
+            transition: border-color $transition-fast, background $transition-fast, color $transition-fast;
+
+            &:hover,
+            &:focus {
+                border-color: rgba($bader-green, 0.56);
+                background: rgba($bader-green, 0.12);
+                color: $white;
+                outline: none;
+            }
+        }
+    }
+
+    .bader-ai-search__results {
+        border-radius: 26px;
+        background: linear-gradient(180deg, rgba(247, 250, 251, 0.98), rgba(237, 246, 247, 0.96));
+        border: 1px solid rgba(206, 226, 231, 0.88);
+        padding: 1rem;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(2, 48, 58, 0.14);
+    }
+
+    .bader-ai-search__state {
+        display: none;
+
+        &.is-active {
+            display: block;
+        }
+    }
+
+    .bader-ai-search__spotlight {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(250px, 0.8fr);
+        gap: 1rem;
+        padding: 1.1rem;
+        border-radius: 24px;
+        background:
+            radial-gradient(circle at top right, rgba(112, 212, 75, 0.16), transparent 32%),
+            linear-gradient(135deg, #0a4c59 0%, #0f6878 100%);
+        color: $white;
+        box-shadow: 0 26px 40px rgba(3, 55, 65, 0.22);
+    }
+
+    .bader-ai-search__spotlight-copy {
+        h4 {
+            margin: 0 0 0.45rem;
+            font-family: $font-display;
+            font-size: 1.7rem;
+            line-height: 1.02;
+            letter-spacing: -0.02em;
+        }
+
+        p {
+            margin: 0;
+            color: rgba(237, 250, 252, 0.84);
+            max-width: 38rem;
+        }
+    }
+
+    .bader-ai-search__spotlight-kicker {
+        margin-bottom: 0.35rem !important;
+        font-size: 0.76rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgba(208, 241, 248, 0.72) !important;
+        font-weight: 700;
+    }
+
+    .bader-ai-search__spotlight-stats {
+        display: grid;
+        gap: 0.7rem;
+
+        div {
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 0.9rem;
+        }
+
+        strong {
+            display: block;
+            margin-bottom: 0.25rem;
+            font-size: 0.96rem;
+        }
+
+        span {
+            display: block;
+            color: rgba(229, 247, 250, 0.8);
+            font-size: 0.82rem;
+            line-height: 1.45;
+        }
+    }
+
+    .bader-ai-search__idle-grid {
+        margin-top: 1rem;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.8rem;
+    }
+
+    .bader-ai-search__idle-card {
+        min-height: 184px;
+        border-radius: 22px;
+        border: 1px solid rgba(206, 226, 231, 0.92);
+        background: #fff;
+        padding: 1rem;
+        box-shadow: 0 16px 28px rgba(7, 42, 49, 0.08);
+
+        >span {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba($bader-green, 0.14);
+            color: $bader-green-dark;
+            font-size: 1rem;
+            margin-bottom: 0.85rem;
+        }
+
+        h5 {
+            margin: 0 0 0.45rem;
+            font-size: 1rem;
+            color: $bader-dark;
+            font-weight: 700;
+        }
+
+        p {
+            margin: 0;
+            color: $gray-600;
+            font-size: 0.9rem;
+            line-height: 1.56;
+        }
+    }
+
+    .bader-ai-search__loading-card,
+    .bader-ai-search__empty-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        min-height: 144px;
+        border-radius: 22px;
+        border: 1px solid rgba(206, 226, 231, 0.92);
+        background: #fff;
+        padding: 1.1rem 1.2rem;
+        box-shadow: 0 16px 28px rgba(7, 42, 49, 0.08);
+
+        strong,
+        h4 {
+            display: block;
+            margin: 0 0 0.3rem;
+            color: $bader-dark;
+            font-size: 1.18rem;
+            font-weight: 700;
+        }
+
+        p {
+            margin: 0;
+            color: $gray-600;
+            line-height: 1.5;
+        }
+    }
+
+    .bader-ai-search__empty-card {
+        span {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba($bader-green, 0.14);
+            color: $bader-green-dark;
+            font-size: 1.1rem;
+            flex: 0 0 auto;
+        }
+    }
+
+    .bader-ai-search__loader {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: 3px solid rgba($bader-green, 0.22);
+        border-top-color: $bader-green;
+        animation: baderSearchSpin 0.8s linear infinite;
+        flex: 0 0 auto;
+    }
+
+    .bader-ai-search__categories {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+        margin-bottom: 0.9rem;
+    }
+
+    .bader-ai-search__category-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        border-radius: 999px;
+        border: 1px solid rgba(188, 214, 220, 0.92);
+        background: #fff;
+        color: $bader-dark;
+        text-decoration: none;
+        padding: 0.68rem 0.94rem;
+        box-shadow: 0 10px 20px rgba(3, 35, 42, 0.06);
+        transition: transform $transition-fast, box-shadow $transition-fast, border-color $transition-fast;
+
+        &:hover,
+        &:focus {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 24px rgba(3, 35, 42, 0.1);
+            border-color: rgba($bader-green, 0.48);
+            outline: none;
+        }
+
+        strong {
+            color: $bader-green-dark;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+    }
+
+    .bader-ai-search__category-name {
+        font-size: 0.84rem;
+        font-weight: 700;
+    }
+
+    .bader-ai-search__hero-card {
+        display: grid;
+        grid-template-columns: 252px minmax(0, 1fr);
+        gap: 1rem;
+        border-radius: 26px;
+        border: 1px solid rgba(206, 226, 231, 0.92);
+        background: #fff;
+        padding: 1rem;
+        box-shadow: 0 18px 30px rgba(7, 42, 49, 0.08);
+    }
+
+    .bader-ai-search__hero-media {
+        border-radius: 22px;
+        background:
+            radial-gradient(circle at top left, rgba(112, 212, 75, 0.16), transparent 32%),
+            linear-gradient(180deg, #f7fafb, #eef5f7);
+        border: 1px solid rgba(206, 226, 231, 0.92);
+        min-height: 252px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+
+        img {
+            max-width: 88%;
+            max-height: 88%;
+            object-fit: contain;
+            display: block;
+        }
+    }
+
+    .bader-ai-search__hero-copy {
+        display: flex;
+        flex-direction: column;
+
+        h4 {
+            margin: 0 0 0.5rem;
+            color: $bader-dark;
+            font-family: $font-display;
+            font-size: 1.82rem;
+            line-height: 0.98;
+            letter-spacing: -0.03em;
+        }
+
+        p {
+            margin: 0;
+            color: $gray-600;
+            line-height: 1.58;
+        }
+    }
+
+    .bader-ai-search__hero-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.55rem;
+        margin-bottom: 0.75rem;
+
+        span {
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            padding: 0 0.8rem;
+            border-radius: 999px;
+            background: rgba($bader-green, 0.1);
+            color: $bader-green-dark;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+    }
+
+    .bader-ai-search__hero-bottom {
+        margin-top: auto;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+        padding-top: 1rem;
+    }
+
+    .bader-ai-search__hero-price {
+        font-family: $font-display;
+        font-size: 2rem;
+        line-height: 1;
+        color: $bader-dark;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+    }
+
+    .bader-ai-search__hero-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.6rem;
+    }
+
+    .bader-ai-search__reason {
+        color: $gray-500;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .bader-ai-search__cta,
+    .bader-ai-search__view-all {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        min-height: 48px;
+        border-radius: 999px;
+        padding: 0 1.1rem;
+        text-decoration: none;
+        font-weight: 700;
+        transition: transform $transition-fast, box-shadow $transition-fast, background $transition-fast;
+
+        &:hover,
+        &:focus {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 26px rgba(7, 42, 49, 0.12);
+            outline: none;
+        }
+    }
+
+    .bader-ai-search__cta {
+        background: linear-gradient(135deg, $bader-green 0%, lighten($bader-green, 8%) 100%);
+        color: $bader-dark;
+    }
+
+    .bader-ai-search__product-grid {
+        margin-top: 1rem;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.85rem;
+    }
+
+    .bader-ai-search__product-card {
+        display: grid;
+        grid-template-columns: 112px minmax(0, 1fr);
+        gap: 0.85rem;
+        align-items: stretch;
+        border-radius: 22px;
+        border: 1px solid rgba(206, 226, 231, 0.92);
+        background: #fff;
+        padding: 0.9rem;
+        text-decoration: none;
+        box-shadow: 0 14px 24px rgba(7, 42, 49, 0.06);
+        transition: transform $transition-fast, box-shadow $transition-fast, border-color $transition-fast;
+
+        &:hover,
+        &:focus {
+            transform: translateY(-1px);
+            box-shadow: 0 18px 28px rgba(7, 42, 49, 0.1);
+            border-color: rgba($bader-green, 0.46);
+            outline: none;
+        }
+    }
+
+    .bader-ai-search__product-thumb {
+        border-radius: 18px;
+        background:
+            radial-gradient(circle at top left, rgba(112, 212, 75, 0.14), transparent 32%),
+            linear-gradient(180deg, #f7fafb, #eef5f7);
+        border: 1px solid rgba(206, 226, 231, 0.92);
+        min-height: 112px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+
+        img {
+            max-width: 84%;
+            max-height: 84%;
+            object-fit: contain;
+            display: block;
+        }
+    }
+
+    .bader-ai-search__product-copy {
+        min-width: 0;
+
+        strong {
+            display: block;
+            margin: 0 0 0.45rem;
+            color: $bader-dark;
+            font-size: 1rem;
+            line-height: 1.18;
+            font-weight: 700;
+        }
+
+        p {
+            margin: 0;
+            color: $gray-600;
+            font-size: 0.88rem;
+            line-height: 1.55;
+        }
+    }
+
+    .bader-ai-search__product-category {
+        display: inline-flex;
+        margin-bottom: 0.55rem;
+        color: $bader-green-dark;
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .bader-ai-search__product-bottom {
+        margin-top: 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+    }
+
+    .bader-ai-search__product-price {
+        color: $bader-dark;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .bader-ai-search__product-link {
+        color: $bader-green-dark;
+        font-size: 0.82rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .bader-ai-search__footer-actions {
+        margin-top: 1rem;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .bader-ai-search__related {
+        flex: 1 1 auto;
+    }
+
+    .bader-ai-search__related-head {
+        margin-bottom: 0.45rem;
+        color: $gray-500;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .bader-ai-search__related-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.55rem;
+    }
+
+    .bader-ai-search__related-chip,
+    .bader-ai-search__view-all--ghost {
+        border: 1px solid rgba(188, 214, 220, 0.92);
+        background: #fff;
+        color: $bader-dark;
+    }
+
+    .bader-ai-search__related-chip {
+        min-height: 42px;
+        border-radius: 999px;
+        padding: 0 0.95rem;
+        font-size: 0.83rem;
+        font-weight: 700;
+        transition: border-color $transition-fast, background $transition-fast, transform $transition-fast;
+
+        &:hover,
+        &:focus {
+            border-color: rgba($bader-green, 0.46);
+            background: rgba($bader-green, 0.08);
+            transform: translateY(-1px);
+            outline: none;
+        }
+    }
+
+    .bader-ai-search__view-all {
+        flex: 0 0 auto;
+        background: linear-gradient(135deg, $bader-green 0%, lighten($bader-green, 8%) 100%);
+        color: $bader-dark;
+    }
+
+    @media (max-width: 1023px) {
+        .bader-ai-search__panel {
+            width: calc(100% - 1rem);
+            margin-top: 3.65rem;
+            max-height: calc(100vh - 4rem);
+            padding: 1rem;
+        }
+
+        .bader-ai-search__toolbar,
+        .bader-ai-search__workspace,
+        .bader-ai-search__spotlight,
+        .bader-ai-search__hero-card,
+        .bader-ai-search__product-grid,
+        .bader-ai-search__idle-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .bader-ai-search__header {
+            flex-wrap: wrap;
+        }
+
+        .bader-ai-search__header-note {
+            margin-left: 0;
+        }
+
+        .bader-ai-search__status {
+            justify-content: flex-start;
+            text-align: left;
+        }
+
+        .bader-ai-search__rail {
+            order: 2;
+        }
+
+        .bader-ai-search__results {
+            order: 1;
+        }
+
+        .bader-ai-search__collection-links {
+            grid-template-columns: 1fr;
+        }
+
+        .bader-ai-search__hero-bottom,
+        .bader-ai-search__footer-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .bader-ai-search__hero-actions {
+            align-items: stretch;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .bader-ai-search__panel {
+            padding: 0.85rem;
+            border-radius: 22px;
+        }
+
+        .bader-ai-search__header {
+            gap: 0.55rem;
+        }
+
+        .bader-ai-search__title-wrap h3 {
+            font-size: 1rem;
+        }
+
+        .bader-ai-search__title-wrap p:last-child {
+            font-size: 0.74rem;
+        }
+
+        .bader-ai-search__header-note {
+            display: none;
+        }
+
+        .bader-ai-search__input-wrap {
+            min-height: 56px;
+        }
+
+        .bader-ai-search__toolbar {
+            gap: 0.65rem;
+        }
+
+        .bader-ai-search__workspace {
+            min-height: auto;
+        }
+
+        .bader-ai-search__results,
+        .bader-ai-search__block {
+            padding: 0.85rem;
+        }
+
+        .bader-ai-search__hero-copy h4 {
+            font-size: 1.36rem;
+        }
+
+        .bader-ai-search__hero-price {
+            font-size: 1.55rem;
+        }
+
+        .bader-ai-search__product-card {
+            grid-template-columns: 92px minmax(0, 1fr);
+            padding: 0.8rem;
+        }
+
+        .bader-ai-search__product-thumb {
+            min-height: 92px;
+        }
+
+        .bader-ai-search__block-head {
+            margin-bottom: 0.6rem;
+
+            h4 {
+                font-size: 0.88rem;
+            }
+
+            span {
+                font-size: 0.68rem;
+            }
+        }
+    }
+}
+
+@keyframes baderSearchSpin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 // ============================================
 // AUTH MODAL (Clerk-like)
 // ============================================

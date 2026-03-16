@@ -512,6 +512,679 @@ odoo.define('bader_website.main', function (require) {
             });
         })();
 
+        (function initSearchStudio() {
+            var desktopPill = document.getElementById('baderSearchPill');
+            var mobilePill = document.getElementById('baderSearchPillMobile');
+            var legacyModal = document.getElementById('baderAiSearchModal');
+            var modal = document.getElementById('baderSearchStudioModal');
+            var form = modal ? modal.querySelector('[data-bader-ai-form]') : null;
+            var input = modal ? modal.querySelector('[data-bader-ai-input]') : null;
+            var voiceBtn = modal ? modal.querySelector('[data-bader-ai-voice]') : null;
+            var filterButtons = modal ? modal.querySelectorAll('[data-bader-ai-filter]') : [];
+            var stateEls = modal ? modal.querySelectorAll('[data-bader-search-state]') : [];
+            var collectionEls = modal ? modal.querySelectorAll('[data-bader-search-collection]') : [];
+            var statusEl = modal ? modal.querySelector('[data-bader-search-status]') : null;
+            var recentEl = modal ? modal.querySelector('[data-bader-search-recent]') : null;
+            var suggestionsEl = modal ? modal.querySelector('[data-bader-search-suggestions]') : null;
+            var categoriesEl = modal ? modal.querySelector('[data-bader-search-categories]') : null;
+            var heroEl = modal ? modal.querySelector('[data-bader-search-hero]') : null;
+            var productsEl = modal ? modal.querySelector('[data-bader-search-products]') : null;
+            var relatedEl = modal ? modal.querySelector('[data-bader-search-related]') : null;
+            var emptyRelatedEl = modal ? modal.querySelector('[data-bader-search-empty-related]') : null;
+            var viewAllLink = modal ? modal.querySelector('[data-bader-search-view-all]') : null;
+            var emptyViewAllLink = modal ? modal.querySelector('[data-bader-search-empty-view-all]') : null;
+            var activeFilter = '';
+            var recognition = null;
+            var isListening = false;
+            var pendingRequest = null;
+            var debounceTimer = null;
+            var searchCache = {};
+            var SEARCH_RECENT_STORAGE_KEY = 'baderSearchRecentV1';
+            var SEARCH_PERSONA_STORAGE_KEY = 'baderSearchPersona';
+            var filterLabels = {
+                clinica: 'Clinicas',
+                laboratorio: 'Laboratorios',
+                estudiantes: 'Estudiantes',
+                mayorista: 'Mayoristas',
+            };
+
+            if (!modal) return;
+
+            if (legacyModal) {
+                legacyModal.setAttribute('hidden', 'hidden');
+                legacyModal.setAttribute('aria-hidden', 'true');
+            }
+
+            function closeMobileDrawerIfNeeded() {
+                var collapse = document.getElementById('top_menu_collapse');
+                var toggler = document.querySelector('header#top .navbar-toggler');
+                if (!collapse || !collapse.classList.contains('show')) return;
+                collapse.classList.remove('show');
+                collapse.style.height = '';
+                if (toggler) {
+                    toggler.classList.add('collapsed');
+                    toggler.setAttribute('aria-expanded', 'false');
+                }
+                document.body.classList.remove('bader-mobile-menu-open');
+            }
+
+            function escapeHtml(value) {
+                return String(value || '')
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            function readStorage(key) {
+                try {
+                    return window.localStorage ? window.localStorage.getItem(key) || '' : '';
+                } catch (err) {
+                    return '';
+                }
+            }
+
+            function writeStorage(key, value) {
+                try {
+                    if (!window.localStorage) return;
+                    if (!value) {
+                        window.localStorage.removeItem(key);
+                        return;
+                    }
+                    window.localStorage.setItem(key, value);
+                } catch (err) {
+                    // Ignore storage failures.
+                }
+            }
+
+            function readRecentSearches() {
+                var raw = readStorage(SEARCH_RECENT_STORAGE_KEY);
+                if (!raw) return [];
+                try {
+                    var parsed = JSON.parse(raw);
+                    return Array.isArray(parsed) ? parsed : [];
+                } catch (err) {
+                    return [];
+                }
+            }
+
+            function writeRecentSearches(items) {
+                try {
+                    if (!window.localStorage) return;
+                    window.localStorage.setItem(SEARCH_RECENT_STORAGE_KEY, JSON.stringify(items || []));
+                } catch (err) {
+                    // Ignore storage failures.
+                }
+            }
+
+            function saveRecentSearch(query) {
+                var value = String(query || '').trim();
+                if (value.length < 2) return;
+                var next = readRecentSearches().filter(function (item) {
+                    return String(item || '').trim().toLowerCase() !== value.toLowerCase();
+                });
+                next.unshift(value);
+                writeRecentSearches(next.slice(0, 6));
+                renderRecentSearches();
+            }
+
+            function renderRecentSearches() {
+                if (!recentEl) return;
+                var recentSearches = readRecentSearches();
+                if (!recentSearches.length) {
+                    recentEl.innerHTML = '<p class="bader-ai-search__hint">Todavia no hay historial reciente.</p>';
+                    return;
+                }
+                recentEl.innerHTML = recentSearches.map(function (query) {
+                    return (
+                        '<button type="button" class="bader-ai-search__recent-chip" data-bader-ai-query="' + escapeHtml(query) + '" data-bader-search-nav="1">' +
+                        '<i class="fa fa-history"></i>' +
+                        '<span>' + escapeHtml(query) + '</span>' +
+                        '</button>'
+                    );
+                }).join('');
+            }
+
+            function setState(name) {
+                stateEls.forEach(function (section) {
+                    section.classList.toggle('is-active', section.getAttribute('data-bader-search-state') === name);
+                });
+            }
+
+            function setStatus(text) {
+                if (statusEl) statusEl.textContent = text || '';
+            }
+
+            function updateFilterButtons() {
+                filterButtons.forEach(function (btn) {
+                    var key = btn.getAttribute('data-bader-ai-filter') || '';
+                    var selected = key === activeFilter;
+                    btn.classList.toggle('is-active', selected);
+                    btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
+                });
+            }
+
+            function updateCollections() {
+                collectionEls.forEach(function (card) {
+                    var key = card.getAttribute('data-bader-search-collection') || '';
+                    var shouldShow = !activeFilter ? key === 'clinica' : key === activeFilter;
+                    card.classList.toggle('is-active', shouldShow);
+                });
+            }
+
+            function buildSearchUrl(rawValue) {
+                var query = String(rawValue || '').trim();
+                var url = new URL('/productos', window.location.origin);
+                if (query) url.searchParams.set('search', query);
+                if (activeFilter) url.searchParams.set('persona', activeFilter);
+                return query || activeFilter ? (url.pathname + url.search) : '/productos';
+            }
+
+            function setFilter(nextFilter, options) {
+                var settings = options || {};
+                if (!nextFilter) {
+                    activeFilter = '';
+                } else if (settings.force) {
+                    activeFilter = nextFilter;
+                } else {
+                    activeFilter = activeFilter === nextFilter ? '' : nextFilter;
+                }
+                writeStorage(SEARCH_PERSONA_STORAGE_KEY, activeFilter);
+                updateFilterButtons();
+                updateCollections();
+
+                if (settings.skipRefresh) return;
+                if (input && String(input.value || '').trim().length >= 2) {
+                    requestResults(input.value, true);
+                } else {
+                    resetResults();
+                }
+            }
+
+            function stopListening() {
+                if (!recognition || !isListening) return;
+                try {
+                    recognition.stop();
+                } catch (err) {
+                    // Ignore stop errors.
+                }
+            }
+
+            function abortPendingRequest() {
+                if (!pendingRequest || !pendingRequest.abort) return;
+                try {
+                    pendingRequest.abort();
+                } catch (err) {
+                    // Ignore abort errors.
+                }
+                pendingRequest = null;
+            }
+
+            function formatPrice(value, currencyCode, currencySymbol) {
+                var amount = parseFloat(value);
+                if (!isFinite(amount)) return '';
+                try {
+                    return new Intl.NumberFormat('es-ES', {
+                        style: 'currency',
+                        currency: currencyCode || 'EUR',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }).format(amount);
+                } catch (err) {
+                    return (currencySymbol || 'EUR') + ' ' + amount.toFixed(2).replace('.', ',');
+                }
+            }
+
+            function renderSuggestions(items) {
+                if (!suggestionsEl) return;
+                if (!items || !items.length) {
+                    suggestionsEl.innerHTML = '<p class="bader-ai-search__hint">Empieza a escribir para recibir sugerencias.</p>';
+                    return;
+                }
+                suggestionsEl.innerHTML = items.map(function (label) {
+                    return (
+                        '<button type="button" class="bader-ai-search__suggestion" data-bader-ai-query="' + escapeHtml(label) + '" data-bader-search-nav="1">' +
+                        '<i class="fa fa-search"></i>' +
+                        '<span>' + escapeHtml(label) + '</span>' +
+                        '</button>'
+                    );
+                }).join('');
+            }
+
+            function renderCategories(items) {
+                if (!categoriesEl) return;
+                if (!items || !items.length) {
+                    categoriesEl.innerHTML = '';
+                    return;
+                }
+                categoriesEl.innerHTML = items.map(function (item) {
+                    return (
+                        '<a href="' + escapeHtml(item.url || '/productos') + '" class="bader-ai-search__category-pill" data-bader-search-nav="1">' +
+                        '<span class="bader-ai-search__category-name">' + escapeHtml(item.label || 'Categoria') + '</span>' +
+                        '<strong>' + escapeHtml(String(item.product_count || 0)) + ' productos</strong>' +
+                        '</a>'
+                    );
+                }).join('');
+            }
+
+            function renderHeroResult(product) {
+                if (!heroEl) return;
+                if (!product) {
+                    heroEl.innerHTML = '';
+                    return;
+                }
+                heroEl.innerHTML =
+                    '<article class="bader-ai-search__hero-card">' +
+                    '<div class="bader-ai-search__hero-media">' +
+                    '<img src="' + escapeHtml(product.image_url || '') + '" alt="' + escapeHtml(product.name || 'Producto') + '" loading="lazy"/>' +
+                    '</div>' +
+                    '<div class="bader-ai-search__hero-copy">' +
+                    '<div class="bader-ai-search__hero-meta">' +
+                    (product.category ? '<span>' + escapeHtml(product.category) + '</span>' : '') +
+                    (product.sku ? '<span>SKU ' + escapeHtml(product.sku) + '</span>' : '') +
+                    '</div>' +
+                    '<h4>' + escapeHtml(product.name || 'Producto') + '</h4>' +
+                    '<p>' + escapeHtml(product.excerpt || '') + '</p>' +
+                    '<div class="bader-ai-search__hero-bottom">' +
+                    '<div class="bader-ai-search__hero-price">' + escapeHtml(formatPrice(product.price_value, product.currency_code, product.currency_symbol)) + '</div>' +
+                    '<div class="bader-ai-search__hero-actions">' +
+                    '<span class="bader-ai-search__reason">' + escapeHtml(product.reason || 'Resultado recomendado') + '</span>' +
+                    '<a href="' + escapeHtml(product.url || '/productos') + '" class="bader-ai-search__cta" data-bader-search-result-link="1" data-bader-search-nav="1">Ver producto</a>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</article>';
+            }
+
+            function renderProductGrid(items) {
+                if (!productsEl) return;
+                if (!items || !items.length) {
+                    productsEl.innerHTML = '';
+                    return;
+                }
+                productsEl.innerHTML = items.map(function (product) {
+                    return (
+                        '<a href="' + escapeHtml(product.url || '/productos') + '" class="bader-ai-search__product-card" data-bader-search-result-link="1" data-bader-search-nav="1">' +
+                        '<div class="bader-ai-search__product-thumb">' +
+                        '<img src="' + escapeHtml(product.image_url || '') + '" alt="' + escapeHtml(product.name || 'Producto') + '" loading="lazy"/>' +
+                        '</div>' +
+                        '<div class="bader-ai-search__product-copy">' +
+                        (product.category ? '<span class="bader-ai-search__product-category">' + escapeHtml(product.category) + '</span>' : '') +
+                        '<strong>' + escapeHtml(product.name || 'Producto') + '</strong>' +
+                        '<p>' + escapeHtml(product.excerpt || '') + '</p>' +
+                        '<div class="bader-ai-search__product-bottom">' +
+                        '<span class="bader-ai-search__product-price">' + escapeHtml(formatPrice(product.price_value, product.currency_code, product.currency_symbol)) + '</span>' +
+                        '<span class="bader-ai-search__product-link">Abrir <i class="fa fa-arrow-right"></i></span>' +
+                        '</div>' +
+                        '</div>' +
+                        '</a>'
+                    );
+                }).join('');
+            }
+
+            function renderRelatedQueries(items, targetEl) {
+                if (!targetEl) return;
+                if (!items || !items.length) {
+                    targetEl.innerHTML = '';
+                    return;
+                }
+                targetEl.innerHTML =
+                    '<div class="bader-ai-search__related-head">Consultas relacionadas</div>' +
+                    '<div class="bader-ai-search__related-list">' +
+                    items.map(function (label) {
+                        return (
+                            '<button type="button" class="bader-ai-search__related-chip" data-bader-ai-query="' + escapeHtml(label) + '" data-bader-search-nav="1">' +
+                            escapeHtml(label) +
+                            '</button>'
+                        );
+                    }).join('') +
+                    '</div>';
+            }
+
+            function resetResults() {
+                renderSuggestions([]);
+                renderCategories([]);
+                renderHeroResult(null);
+                renderProductGrid([]);
+                renderRelatedQueries([], relatedEl);
+                renderRelatedQueries([], emptyRelatedEl);
+                if (viewAllLink) viewAllLink.setAttribute('href', buildSearchUrl(input ? input.value : ''));
+                if (emptyViewAllLink) emptyViewAllLink.setAttribute('href', buildSearchUrl(input ? input.value : ''));
+                setState('idle');
+                if (activeFilter) {
+                    setStatus('Explorando el perfil ' + (filterLabels[activeFilter] || activeFilter) + '. Ahora escribe tu consulta.');
+                } else {
+                    setStatus('Escribe al menos 2 letras para activar la busqueda predictiva.');
+                }
+            }
+
+            function renderPayload(payload) {
+                var products = payload && payload.products ? payload.products : [];
+                var categories = payload && payload.categories ? payload.categories : [];
+                var relatedQueries = payload && payload.related_queries ? payload.related_queries : [];
+
+                renderSuggestions(payload && payload.suggestions ? payload.suggestions : []);
+                renderRecentSearches();
+                renderCategories(categories);
+                renderHeroResult(products.length ? products[0] : null);
+                renderProductGrid(products.slice(1));
+                renderRelatedQueries(relatedQueries, relatedEl);
+                renderRelatedQueries(relatedQueries, emptyRelatedEl);
+
+                if (viewAllLink) {
+                    viewAllLink.setAttribute('href', payload && payload.search_url ? payload.search_url : buildSearchUrl(input ? input.value : ''));
+                }
+                if (emptyViewAllLink) {
+                    emptyViewAllLink.setAttribute('href', payload && payload.search_url ? payload.search_url : buildSearchUrl(input ? input.value : ''));
+                }
+
+                if (products.length || categories.length) {
+                    setState('results');
+                    if (payload && payload.result_label) {
+                        setStatus(payload.result_label);
+                    } else if (categories.length) {
+                        setStatus('Categorias relacionadas para tu consulta.');
+                    }
+                    return;
+                }
+
+                setState('empty');
+                setStatus('No encontramos coincidencias claras. Prueba con SKU, categoria o compatibilidad.');
+            }
+
+            function requestResults(rawValue, immediate) {
+                var query = String(rawValue || '').trim();
+                var cacheKey = (activeFilter || 'general') + '|' + query.toLowerCase();
+                if (query.length < 2) {
+                    abortPendingRequest();
+                    resetResults();
+                    return;
+                }
+
+                if (searchCache[cacheKey]) {
+                    renderPayload(searchCache[cacheKey]);
+                    return;
+                }
+
+                if (!window.fetch) {
+                    setStatus('La busqueda predictiva no esta disponible en este navegador.');
+                    return;
+                }
+
+                if (!immediate) {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = window.setTimeout(function () {
+                        requestResults(query, true);
+                    }, 220);
+                    return;
+                }
+
+                clearTimeout(debounceTimer);
+                abortPendingRequest();
+                setState('loading');
+                setStatus('Buscando en tiempo real...');
+
+                var requestUrl = new URL('/bader/search/predictive', window.location.origin);
+                requestUrl.searchParams.set('q', query);
+                requestUrl.searchParams.set('limit', '7');
+                if (activeFilter) requestUrl.searchParams.set('persona', activeFilter);
+
+                var fetchOptions = {
+                    credentials: 'same-origin',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                };
+
+                if (window.AbortController) {
+                    pendingRequest = new window.AbortController();
+                    fetchOptions.signal = pendingRequest.signal;
+                }
+
+                window.fetch(requestUrl.toString(), fetchOptions)
+                    .then(function (response) {
+                        if (!response.ok) throw new Error('HTTP ' + response.status);
+                        return response.json();
+                    })
+                    .then(function (payload) {
+                        searchCache[cacheKey] = payload || {};
+                        renderPayload(payload || {});
+                    })
+                    .catch(function (err) {
+                        if (err && err.name === 'AbortError') return;
+                        setState('empty');
+                        setStatus('No pudimos completar la busqueda ahora mismo.');
+                        renderRelatedQueries([
+                            'Autoclave clase B',
+                            'Compresor oil free',
+                            'Tipodontos',
+                            'Repuestos Cattani',
+                        ], emptyRelatedEl);
+                    })
+                    .finally(function () {
+                        pendingRequest = null;
+                    });
+            }
+
+            function submitSearch(rawValue) {
+                var query = String(rawValue || (input ? input.value : '') || '').trim();
+                if (!query && !activeFilter) {
+                    if (input) {
+                        input.classList.add('is-invalid');
+                        input.focus();
+                    }
+                    return;
+                }
+                if (query) saveRecentSearch(query);
+                window.location.href = buildSearchUrl(query);
+            }
+
+            function prefillFromLocation() {
+                if (!input) return;
+                var params = new URLSearchParams(window.location.search || '');
+                var query = params.get('search') || '';
+                var persona = params.get('persona') || params.get('niche') || '';
+                if (query && !String(input.value || '').trim()) {
+                    input.value = query;
+                }
+                if (!activeFilter) {
+                    var storedFilter =
+                        readStorage(SEARCH_PERSONA_STORAGE_KEY) ||
+                        readStorage('baderPdpPersona') ||
+                        readStorage('bader_home_persona') ||
+                        persona;
+                    if (filterLabels[storedFilter]) {
+                        setFilter(storedFilter, { force: true, skipRefresh: true });
+                    }
+                }
+            }
+
+            function openSearch(e) {
+                if (e && typeof e.preventDefault === 'function') e.preventDefault();
+                closeMobileDrawerIfNeeded();
+                prefillFromLocation();
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('bader-ai-search-open');
+                renderRecentSearches();
+                updateFilterButtons();
+                updateCollections();
+                if (input) {
+                    window.setTimeout(function () {
+                        input.focus();
+                        input.select();
+                    }, 80);
+                    if (String(input.value || '').trim().length >= 2) {
+                        requestResults(input.value, true);
+                    } else {
+                        resetResults();
+                    }
+                }
+            }
+
+            function closeSearch() {
+                if (!modal.classList.contains('is-open')) return;
+                clearTimeout(debounceTimer);
+                abortPendingRequest();
+                stopListening();
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('bader-ai-search-open');
+            }
+
+            function getVisibleNavItems() {
+                var items = Array.prototype.slice.call(
+                    modal.querySelectorAll('[data-bader-search-nav], [data-bader-ai-query], [data-bader-ai-filter]')
+                );
+                return items.filter(function (item) {
+                    return !!(item.offsetWidth || item.offsetHeight || item.getClientRects().length);
+                });
+            }
+
+            if (input) {
+                input.addEventListener('input', function () {
+                    input.classList.remove('is-invalid');
+                    requestResults(input.value, false);
+                });
+            }
+
+            if (form) {
+                form.addEventListener('submit', function (ev) {
+                    ev.preventDefault();
+                    submitSearch();
+                });
+            }
+
+            if (desktopPill) desktopPill.addEventListener('click', openSearch);
+            if (mobilePill) mobilePill.addEventListener('click', openSearch);
+
+            modal.addEventListener('click', function (ev) {
+                if (ev.target === modal) {
+                    closeSearch();
+                    return;
+                }
+
+                var closeTrigger = ev.target.closest('[data-bader-ai-close]');
+                if (closeTrigger) {
+                    ev.preventDefault();
+                    closeSearch();
+                    return;
+                }
+
+                var filterTrigger = ev.target.closest('[data-bader-ai-filter]');
+                if (filterTrigger) {
+                    ev.preventDefault();
+                    setFilter(filterTrigger.getAttribute('data-bader-ai-filter') || '');
+                    return;
+                }
+
+                var queryTrigger = ev.target.closest('[data-bader-ai-query]');
+                if (queryTrigger) {
+                    ev.preventDefault();
+                    var query = queryTrigger.getAttribute('data-bader-ai-query') || '';
+                    if (input) {
+                        input.value = query;
+                        input.focus();
+                    }
+                    saveRecentSearch(query);
+                    requestResults(query, true);
+                    return;
+                }
+
+                var resultLink = ev.target.closest('[data-bader-search-result-link]');
+                if (resultLink) {
+                    saveRecentSearch(input ? input.value : '');
+                }
+            });
+
+            var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition && voiceBtn) {
+                voiceBtn.disabled = true;
+                voiceBtn.title = 'Busqueda por voz no disponible en este navegador';
+            }
+            if (SpeechRecognition && voiceBtn) {
+                recognition = new SpeechRecognition();
+                recognition.lang = 'es-ES';
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+
+                recognition.onstart = function () {
+                    isListening = true;
+                    voiceBtn.classList.add('is-listening');
+                };
+                recognition.onend = function () {
+                    isListening = false;
+                    voiceBtn.classList.remove('is-listening');
+                };
+                recognition.onerror = function () {
+                    isListening = false;
+                    voiceBtn.classList.remove('is-listening');
+                };
+                recognition.onresult = function (ev) {
+                    var transcript = '';
+                    if (ev && ev.results && ev.results[0] && ev.results[0][0]) {
+                        transcript = (ev.results[0][0].transcript || '').trim();
+                    }
+                    if (transcript) {
+                        if (input) input.value = transcript;
+                        saveRecentSearch(transcript);
+                        requestResults(transcript, true);
+                    }
+                };
+
+                voiceBtn.addEventListener('click', function () {
+                    if (!recognition) return;
+                    if (isListening) {
+                        stopListening();
+                        return;
+                    }
+                    try {
+                        recognition.start();
+                    } catch (err) {
+                        // Ignore duplicate starts.
+                    }
+                });
+            }
+
+            activeFilter = readStorage(SEARCH_PERSONA_STORAGE_KEY) || readStorage('baderPdpPersona') || readStorage('bader_home_persona');
+            if (!filterLabels[activeFilter]) activeFilter = '';
+            updateFilterButtons();
+            updateCollections();
+            renderRecentSearches();
+            resetResults();
+
+            document.addEventListener('keydown', function (e) {
+                var key = (e.key || '').toLowerCase();
+                var tag = (e.target && e.target.tagName ? e.target.tagName : '').toLowerCase();
+
+                if (key === 'escape' && modal.classList.contains('is-open')) {
+                    e.preventDefault();
+                    closeSearch();
+                    return;
+                }
+
+                if (key === 'arrowdown' || key === 'arrowup') {
+                    if (!modal.classList.contains('is-open')) return;
+                    if (!modal.contains(document.activeElement) && document.activeElement !== input) return;
+                    var items = getVisibleNavItems();
+                    if (!items.length) return;
+                    e.preventDefault();
+                    var currentIndex = items.indexOf(document.activeElement);
+                    if (currentIndex < 0) currentIndex = key === 'arrowdown' ? -1 : 0;
+                    var nextIndex = key === 'arrowdown'
+                        ? (currentIndex + 1) % items.length
+                        : (currentIndex - 1 + items.length) % items.length;
+                    items[nextIndex].focus();
+                    return;
+                }
+
+                if (key !== 'q' || e.ctrlKey || e.altKey || e.metaKey) return;
+                if (tag === 'input' || tag === 'textarea' || tag === 'select' || (e.target && e.target.isContentEditable)) return;
+                e.preventDefault();
+                openSearch(e);
+            });
+        })();
+
         (function initMobileDrawer() {
             var collapse = document.getElementById('top_menu_collapse');
             var toggler = document.querySelector('header#top .navbar-toggler');

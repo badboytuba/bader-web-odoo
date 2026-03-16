@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import logging
 import math
 import re
@@ -11,6 +12,7 @@ from odoo import http
 from odoo.tools import html2plaintext
 from odoo.http import request
 from odoo.exceptions import UserError
+from odoo.osv import expression
 from odoo.addons.auth_signup.controllers.main import AuthSignupHome
 from odoo.addons.website.controllers.main import Website
 from odoo.addons.website_sale.controllers.main import WebsiteSale
@@ -1605,6 +1607,426 @@ class BaderWebsite(Website):
         if 'public_categ_ids' in product._fields:
             parts.extend(product.public_categ_ids.mapped('name'))
         return self._normalize_search_text(' '.join(filter(None, parts)))
+
+    def _normalize_pdp_persona(self, raw_value):
+        return BaderWebsiteSale()._normalize_pdp_persona(raw_value)
+
+    def _build_pdp_persona_href(self, product, persona=''):
+        return BaderWebsiteSale()._build_pdp_persona_href(product, persona)
+
+    def _force_es_frontend_lang(self, response):
+        if response is None:
+            return response
+        try:
+            response.set_cookie('frontend_lang', 'es_ES', max_age=31536000, samesite='Lax', path='/')
+        except Exception:
+            pass
+        return response
+
+    def _pdp_strip_sku_prefix(self, value):
+        return BaderWebsiteSale()._pdp_strip_sku_prefix(value)
+
+    def _pdp_description_plaintext(self, raw_value):
+        return BaderWebsiteSale()._pdp_description_plaintext(raw_value)
+
+    def _pdp_extract_language_block(self, text, preferred='es'):
+        return BaderWebsiteSale()._pdp_extract_language_block(text, preferred=preferred)
+
+    def _pdp_is_feature_heading(self, line):
+        return BaderWebsiteSale()._pdp_is_feature_heading(line)
+
+    def _pdp_should_skip_line(self, line, product_name=''):
+        return BaderWebsiteSale()._pdp_should_skip_line(line, product_name=product_name)
+
+    def _predictive_search_persona_keywords(self, persona):
+        normalized = self._normalize_pdp_persona(persona)
+        keyword_map = {
+            'clinica': ['clinica', 'autoclave', 'compresor', 'rayos', 'sillon', 'rotatorio'],
+            'laboratorio': ['laboratorio', 'arenadora', 'articulador', 'termoformadora', 'repasado', 'mesa'],
+            'estudiantes': ['estudiante', 'kit', 'tipodonto', 'fantoma', 'simulador', 'diente'],
+            'mayorista': ['mayorista', 'distribuidor', 'combo', 'pack', 'repuesto', 'accesorio'],
+        }
+        return keyword_map.get(normalized, [])
+
+    def _predictive_search_persona_category_ids(self, persona):
+        normalized = self._normalize_pdp_persona(persona)
+        if normalized not in ('clinica', 'laboratorio', 'estudiantes'):
+            return []
+
+        category_model = request.env['product.public.category'].sudo().with_context(lang='es_ES')
+        keyword_map = {
+            'clinica': ['clinica'],
+            'laboratorio': ['laboratorio'],
+            'estudiantes': ['estudiante'],
+        }
+        search_terms = keyword_map.get(normalized, [])
+        if not search_terms:
+            return []
+
+        root_domain = expression.AND([
+            [('parent_id', '=', False)],
+            expression.OR([[('name', 'ilike', term)] for term in search_terms]),
+        ])
+        root = category_model.search(root_domain, order='sequence, id', limit=1)
+        if not root:
+            return []
+        return category_model.search([('id', 'child_of', root.id)]).ids
+
+    def _predictive_search_catalog_url(self, raw_query='', persona=''):
+        normalized_persona = self._normalize_pdp_persona(persona)
+        params = []
+        clean_query = _clean_text_line(raw_query, max_len=120)
+        if clean_query:
+            params.append('search=%s' % quote(clean_query, safe=''))
+        if normalized_persona:
+            params.append('persona=%s' % quote(normalized_persona, safe=''))
+        if not params:
+            return '/productos'
+        return '/productos?%s' % '&'.join(params)
+
+    def _predictive_search_excerpt(self, product):
+        detail_source = (
+            product.description_sale
+            or product.website_description
+            or product.description
+            or ''
+        )
+        plain_detail = self._pdp_description_plaintext(detail_source)
+        preferred_detail = self._pdp_extract_language_block(plain_detail, preferred='es')
+        lines = []
+        for raw_line in preferred_detail.split('\n'):
+            line = _clean_text_line(raw_line, max_len=220)
+            if not line:
+                continue
+            if self._pdp_should_skip_line(line, product.name or ''):
+                continue
+            if self._pdp_is_feature_heading(line):
+                continue
+            lines.append(line.rstrip(':'))
+            if len(lines) >= 2:
+                break
+
+        excerpt = ' '.join(lines).strip()
+        if not excerpt:
+            category_label = (product.public_categ_ids[:1].name or 'producto profesional').strip()
+            excerpt = 'Solucion Bader para %s con respaldo comercial y entrega coordinada.' % category_label.lower()
+        if len(excerpt) > 168:
+            excerpt = excerpt[:165].rstrip() + '...'
+        return excerpt
+
+    def _predictive_search_price(self, product, pricelist):
+        variant = product.product_variant_id or product.product_variant_ids[:1]
+        price = float(product.list_price or 0.0)
+        try:
+            if variant:
+                combination = variant._get_combination_info_variant(pricelist=pricelist)
+                price = float(combination.get('price', price) or price)
+        except Exception:
+            price = float(product.list_price or 0.0)
+        return price
+
+    def _predictive_search_score(self, product, blob, normalized_query, tokens, persona='', persona_category_ids=None):
+        clean_name = self._pdp_strip_sku_prefix(product.name or '')
+        name_token = self._normalize_search_text(clean_name)
+        sku_token = self._normalize_search_text(product.default_code or '')
+        category_tokens = [
+            self._normalize_search_text(name)
+            for name in product.public_categ_ids.mapped('name')
+            if name
+        ]
+        product_category_ids = set(product.public_categ_ids.ids)
+        persona_keywords = self._predictive_search_persona_keywords(persona)
+        persona_category_ids = set(persona_category_ids or [])
+
+        score = 0
+        reason = 'Coincide con tu busqueda'
+
+        if normalized_query and sku_token and sku_token == normalized_query:
+            score += 260
+            reason = 'Coincidencia por SKU'
+        if normalized_query and name_token == normalized_query:
+            score += 240
+            reason = 'Coincidencia exacta'
+        elif normalized_query and name_token.startswith(normalized_query):
+            score += 180
+            reason = 'Coincidencia por nombre'
+        elif normalized_query and normalized_query in name_token:
+            score += 130
+            reason = 'Coincidencia por nombre'
+
+        if normalized_query and normalized_query in blob:
+            score += 70
+
+        matched_tokens = 0
+        for token in tokens:
+            if token and token in name_token:
+                score += 28
+                matched_tokens += 1
+            elif token and token in blob:
+                score += 15
+                matched_tokens += 1
+            if token and any(token in category_token for category_token in category_tokens):
+                score += 24
+                reason = 'Categoria relacionada'
+
+        if tokens and matched_tokens == len(tokens):
+            score += 48
+
+        if persona_keywords and any(keyword in blob for keyword in persona_keywords):
+            score += 24
+
+        if persona_category_ids and product_category_ids.intersection(persona_category_ids):
+            score += 26
+            if reason == 'Coincide con tu busqueda':
+                reason = 'Alineado con el perfil elegido'
+
+        sequence_value = int(getattr(product, 'website_sequence', 0) or 0)
+        score -= min(sequence_value, 9999) / 10000.0
+        return score, reason
+
+    def _predictive_search_product_payload(self, product, pricelist, reason='', persona=''):
+        localized_product = product.with_context(lang='es_ES', display_default_code=False)
+        currency = pricelist.currency_id
+        return {
+            'id': localized_product.id,
+            'name': self._pdp_strip_sku_prefix(localized_product.name or product.name or 'Producto Bader'),
+            'sku': _clean_text_line(localized_product.default_code or product.default_code or '', max_len=80),
+            'category': (localized_product.public_categ_ids[:1].name or '').strip(),
+            'excerpt': self._predictive_search_excerpt(localized_product),
+            'reason': reason or 'Coincide con tu busqueda',
+            'image_url': '/web/image/product.template/%s/image_512' % localized_product.id,
+            'url': self._build_pdp_persona_href(localized_product, persona),
+            'price_value': self._predictive_search_price(localized_product, pricelist),
+            'currency_code': (currency.name or 'EUR').strip() or 'EUR',
+            'currency_symbol': (currency.symbol or '').strip(),
+        }
+
+    def _predictive_search_category_hits(self, raw_query, persona='', limit=4):
+        clean_query = _clean_text_line(raw_query, max_len=120)
+        if len(clean_query) < 2:
+            return []
+
+        category_model = request.env['product.public.category'].sudo().with_context(lang='es_ES')
+        product_model = request.env['product.template'].sudo()
+        persona_category_ids = set(self._predictive_search_persona_category_ids(persona))
+        categories = category_model.search([('name', 'ilike', clean_query)], order='sequence, id', limit=max(limit * 3, 12))
+        hits = []
+        for category in categories:
+            if persona_category_ids and category.id not in persona_category_ids:
+                continue
+            product_count = product_model.search_count([
+                ('website_published', '=', True),
+                ('sale_ok', '=', True),
+                ('public_categ_ids', 'child_of', category.id),
+            ])
+            if product_count <= 0:
+                continue
+            hits.append({
+                'id': category.id,
+                'label': category.name,
+                'url': '/productos/category/%s' % slug(category),
+                'product_count': product_count,
+            })
+            if len(hits) >= limit:
+                break
+        return hits
+
+    def _predictive_search_related_queries(self, raw_query, persona='', categories=None):
+        clean_query = self._normalize_search_text(raw_query)
+        persona_map = {
+            'clinica': [
+                'Autoclave clase B',
+                'Compresor oil free',
+                'Rayos X digital',
+                'Rotatorios clinica dental',
+            ],
+            'laboratorio': [
+                'Mesa de trabajo laboratorio dental',
+                'Arenadora laboratorio dental',
+                'Articuladores',
+                'Termoformadora dental',
+            ],
+            'estudiantes': [
+                'Kit para estudiantes odontologia',
+                'Tipodontos',
+                'Fantomas dentales',
+                'Dientes de reposicion',
+            ],
+            'mayorista': [
+                'Repuestos de alta rotacion',
+                'Accesorios para unidad dental',
+                'Combos para reventa',
+                'Productos con entrega rapida',
+            ],
+        }
+        suggestions = []
+        seen = set()
+
+        for category in categories or []:
+            label = _clean_text_line(category.get('label'), max_len=80)
+            token = self._normalize_search_text(label)
+            if not label or not token or token == clean_query or token in seen:
+                continue
+            seen.add(token)
+            suggestions.append(label)
+
+        for label in persona_map.get(self._normalize_pdp_persona(persona), []):
+            token = self._normalize_search_text(label)
+            if not token or token == clean_query or token in seen:
+                continue
+            seen.add(token)
+            suggestions.append(label)
+            if len(suggestions) >= 6:
+                break
+        return suggestions[:6]
+
+    @http.route('/bader/search/predictive', type='http', auth='public', website=True, methods=['GET'], csrf=False, sitemap=False)
+    def predictive_search(self, q='', persona='', limit=7, **kwargs):
+        if hasattr(request, 'update_context'):
+            request.update_context(lang='es_ES')
+        else:
+            request.context = dict(request.context, lang='es_ES')
+
+        clean_query = _clean_text_line(q, max_len=120)
+        normalized_query = self._normalize_search_text(clean_query)
+        active_persona = self._normalize_pdp_persona(persona)
+        try:
+            limit = min(max(int(limit or 7), 1), 10)
+        except Exception:
+            limit = 7
+
+        payload = {
+            'query': clean_query,
+            'persona': active_persona,
+            'search_url': self._predictive_search_catalog_url(clean_query, active_persona),
+            'suggestions': [],
+            'categories': [],
+            'products': [],
+            'related_queries': [],
+            'result_label': '',
+            'has_results': False,
+        }
+
+        if len(normalized_query) < 2:
+            response = request.make_response(
+                json.dumps(payload, ensure_ascii=False),
+                headers=[('Content-Type', 'application/json; charset=utf-8')],
+            )
+            return self._force_es_frontend_lang(response)
+
+        pricelist = request.website.get_current_pricelist()
+        product_model = request.env['product.template'].sudo().with_context(
+            website_id=request.website.id,
+            pricelist=pricelist.id,
+            lang='es_ES',
+            display_default_code=False,
+            partner=request.env.user.partner_id.id,
+        )
+        tokens = [token for token in normalized_query.split() if len(token) >= 2][:6]
+        persona_category_ids = self._predictive_search_persona_category_ids(active_persona)
+        base_domain = [
+            ('website_published', '=', True),
+            ('sale_ok', '=', True),
+        ]
+        search_clauses = [
+            [('name', 'ilike', clean_query)],
+            [('default_code', 'ilike', clean_query)],
+        ]
+        if len(normalized_query) >= 4:
+            search_clauses.append([('description_sale', 'ilike', clean_query)])
+
+        candidate_domain = expression.AND([base_domain, expression.OR(search_clauses)])
+        primary_candidates = product_model.search(candidate_domain, order='website_sequence asc, id desc', limit=max(limit * 4, 18))
+
+        candidate_ids = list(primary_candidates.ids)
+        if len(candidate_ids) < max(limit * 2, 12) and len(tokens) > 1:
+            token_clauses = []
+            for token in tokens:
+                token_clauses.append([('name', 'ilike', token)])
+                token_clauses.append([('default_code', 'ilike', token)])
+            fallback_domain = expression.AND([base_domain, expression.OR(token_clauses)])
+            fallback_candidates = product_model.search(
+                fallback_domain,
+                order='website_sequence asc, id desc',
+                limit=max(limit * 4, 24),
+            )
+            for candidate_id in fallback_candidates.ids:
+                if candidate_id not in candidate_ids:
+                    candidate_ids.append(candidate_id)
+
+        category_hits = self._predictive_search_category_hits(clean_query, active_persona, limit=4)
+        if not candidate_ids and category_hits:
+            fallback_products = product_model.search(
+                base_domain + [('public_categ_ids', 'child_of', category_hits[0]['id'])],
+                order='website_sequence asc, id desc',
+                limit=max(limit, 6),
+            )
+            candidate_ids.extend(fallback_products.ids)
+
+        scored_products = []
+        seen_product_names = set()
+        for product in product_model.browse(candidate_ids):
+            blob = self._build_product_search_blob(product)
+            if not blob:
+                continue
+            score, reason = self._predictive_search_score(
+                product,
+                blob,
+                normalized_query,
+                tokens,
+                persona=active_persona,
+                persona_category_ids=persona_category_ids,
+            )
+            if score <= 0:
+                continue
+            clean_name = self._pdp_strip_sku_prefix(product.name or '')
+            name_token = self._normalize_search_text(clean_name)
+            if name_token in seen_product_names:
+                continue
+            seen_product_names.add(name_token)
+            scored_products.append((score, product.website_sequence or 0, product.id, reason, product))
+
+        scored_products.sort(key=lambda item: (-item[0], item[1], -item[2]))
+        selected_products = scored_products[:limit]
+
+        product_payloads = [
+            self._predictive_search_product_payload(product, pricelist, reason=reason, persona=active_persona)
+            for _score, _sequence, _product_id, reason, product in selected_products
+        ]
+
+        suggestions = []
+        seen_suggestions = set()
+        for product_payload in product_payloads[:4]:
+            label = product_payload.get('name') or ''
+            token = self._normalize_search_text(label)
+            if label and token and token not in seen_suggestions and token != normalized_query:
+                seen_suggestions.add(token)
+                suggestions.append(label)
+        for category in category_hits[:2]:
+            label = category.get('label') or ''
+            token = self._normalize_search_text(label)
+            if label and token and token not in seen_suggestions and token != normalized_query:
+                seen_suggestions.add(token)
+                suggestions.append(label)
+
+        payload.update({
+            'suggestions': suggestions[:6],
+            'categories': category_hits,
+            'products': product_payloads,
+            'related_queries': self._predictive_search_related_queries(
+                clean_query,
+                active_persona,
+                categories=category_hits,
+            ),
+            'has_results': bool(product_payloads or category_hits),
+            'result_label': '%s resultados sugeridos' % len(product_payloads) if product_payloads else '',
+        })
+
+        response = request.make_response(
+            json.dumps(payload, ensure_ascii=False),
+            headers=[('Content-Type', 'application/json; charset=utf-8')],
+        )
+        return self._force_es_frontend_lang(response)
 
     def _build_persona_dashboard_products(self, persona):
         """Return persona-focused offer/recommended products for account dashboard."""

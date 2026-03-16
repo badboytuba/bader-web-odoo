@@ -392,6 +392,255 @@
                 </section>
             </div>
 
+            <div id="baderSearchStudioModal" class="bader-ai-search bader-ai-search--studio" aria-hidden="true">
+                <button type="button"
+                        class="bader-ai-search__backdrop"
+                        data-bader-ai-close="1"
+                        aria-label="Cerrar busqueda"/>
+
+                <section class="bader-ai-search__panel"
+                         role="dialog"
+                         aria-modal="true"
+                         aria-labelledby="baderSearchStudioTitle">
+                    <header class="bader-ai-search__header">
+                        <div class="bader-ai-search__title-wrap">
+                            <span class="bader-ai-search__title-icon"><i class="fa fa-magic"/></span>
+                            <div>
+                                <p class="bader-ai-search__eyebrow">Buscador integrado al catalogo</p>
+                                <h3 id="baderSearchStudioTitle">Encuentra el producto correcto mas rapido</h3>
+                                <p>Busca por nombre, categoria, uso, compatibilidad o SKU en tiempo real.</p>
+                            </div>
+                        </div>
+                        <div class="bader-ai-search__header-note">
+                            <span><i class="fa fa-bolt"/> Resultados en vivo</span>
+                            <span><i class="fa fa-tags"/> Productos y categorias</span>
+                        </div>
+                        <button type="button"
+                                class="bader-ai-search__close"
+                                data-bader-ai-close="1"
+                                aria-label="Cerrar">
+                            <i class="fa fa-times"/>
+                        </button>
+                    </header>
+
+                    <form class="bader-ai-search__form" data-bader-ai-form="1">
+                        <div class="bader-ai-search__input-wrap">
+                            <i class="fa fa-magic bader-ai-search__lead-icon"/>
+                            <input type="text"
+                                   data-bader-ai-input="1"
+                                   autocomplete="off"
+                                   placeholder="Ej: autoclave clase B, repuesto Cattani, kit para estudiantes"/>
+                            <button type="button"
+                                    class="bader-ai-search__voice"
+                                    data-bader-ai-voice="1"
+                                    aria-label="Busqueda por voz">
+                                <i class="fa fa-microphone"/>
+                            </button>
+                            <button type="submit" class="bader-ai-search__submit">
+                                <i class="fa fa-search"/>
+                                Buscar
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="bader-ai-search__toolbar">
+                        <div class="bader-ai-search__chips" data-bader-ai-filters="1">
+                            <button type="button" class="bader-ai-search__chip" data-bader-ai-filter="clinica">
+                                <i class="fa fa-hospital-o"/>
+                                Clinicas
+                            </button>
+                            <button type="button" class="bader-ai-search__chip" data-bader-ai-filter="laboratorio">
+                                <i class="fa fa-flask"/>
+                                Laboratorios
+                            </button>
+                            <button type="button" class="bader-ai-search__chip" data-bader-ai-filter="estudiantes">
+                                <i class="fa fa-graduation-cap"/>
+                                Estudiantes
+                            </button>
+                            <button type="button" class="bader-ai-search__chip" data-bader-ai-filter="mayorista">
+                                <i class="fa fa-briefcase"/>
+                                Mayoristas
+                            </button>
+                        </div>
+                        <div class="bader-ai-search__status" data-bader-search-status="1" aria-live="polite">
+                            Escribe al menos 2 letras para activar la busqueda predictiva.
+                        </div>
+                    </div>
+
+                    <div class="bader-ai-search__workspace">
+                        <aside class="bader-ai-search__rail">
+                            <section class="bader-ai-search__block">
+                                <div class="bader-ai-search__block-head">
+                                    <h4>Busquedas frecuentes</h4>
+                                    <span>Accesos rapidos</span>
+                                </div>
+                                <div class="bader-ai-search__chips bader-ai-search__chips--queries">
+                                    <button type="button" class="bader-ai-search__chip bader-ai-search__chip--query" data-bader-ai-query="Autoclave clase B">
+                                        <i class="fa fa-search"/>
+                                        Autoclave clase B
+                                    </button>
+                                    <button type="button" class="bader-ai-search__chip bader-ai-search__chip--query" data-bader-ai-query="Compresor oil free">
+                                        <i class="fa fa-search"/>
+                                        Compresor oil free
+                                    </button>
+                                    <button type="button" class="bader-ai-search__chip bader-ai-search__chip--query" data-bader-ai-query="Tipodontos">
+                                        <i class="fa fa-search"/>
+                                        Tipodontos
+                                    </button>
+                                    <button type="button" class="bader-ai-search__chip bader-ai-search__chip--query" data-bader-ai-query="Repuestos Cattani">
+                                        <i class="fa fa-search"/>
+                                        Repuestos Cattani
+                                    </button>
+                                </div>
+                            </section>
+
+                            <section class="bader-ai-search__block">
+                                <div class="bader-ai-search__block-head">
+                                    <h4>Tus ultimas busquedas</h4>
+                                    <span>Guardadas en este navegador</span>
+                                </div>
+                                <div class="bader-ai-search__recent" data-bader-search-recent="1">
+                                    <p class="bader-ai-search__hint">Todavia no hay historial reciente.</p>
+                                </div>
+                            </section>
+
+                            <section class="bader-ai-search__block">
+                                <div class="bader-ai-search__block-head">
+                                    <h4>Explora por perfil</h4>
+                                    <span>Atajos por nicho</span>
+                                </div>
+                                <div class="bader-ai-search__collections">
+                                    <article class="bader-ai-search__collection is-active" data-bader-search-collection="clinica">
+                                        <p>Clinica Dental</p>
+                                        <div class="bader-ai-search__collection-links">
+                                            <a href="/productos?niche=clinica-dental&amp;category=autoclaves" data-bader-search-nav="1">Autoclaves</a>
+                                            <a href="/productos?niche=clinica-dental&amp;category=compresores" data-bader-search-nav="1">Compresores</a>
+                                            <a href="/productos?niche=clinica-dental&amp;category=sillones" data-bader-search-nav="1">Sillones dentales</a>
+                                            <a href="/productos?niche=clinica-dental&amp;category=rotatorios" data-bader-search-nav="1">Rotatorios</a>
+                                        </div>
+                                    </article>
+                                    <article class="bader-ai-search__collection" data-bader-search-collection="laboratorio">
+                                        <p>Laboratorio Dental</p>
+                                        <div class="bader-ai-search__collection-links">
+                                            <a href="/productos?niche=laboratorio-dental&amp;category=mesas" data-bader-search-nav="1">Mesas de trabajo</a>
+                                            <a href="/productos?niche=laboratorio-dental&amp;category=arenadoras" data-bader-search-nav="1">Arenadoras</a>
+                                            <a href="/productos?niche=laboratorio-dental&amp;category=articuladores" data-bader-search-nav="1">Articuladores</a>
+                                            <a href="/productos?niche=laboratorio-dental&amp;category=termoformadoras" data-bader-search-nav="1">Termoformadoras</a>
+                                        </div>
+                                    </article>
+                                    <article class="bader-ai-search__collection" data-bader-search-collection="estudiantes">
+                                        <p>Estudiantes</p>
+                                        <div class="bader-ai-search__collection-links">
+                                            <a href="/productos?niche=estudiantes&amp;category=kits" data-bader-search-nav="1">Kits de rotatorios</a>
+                                            <a href="/productos?niche=estudiantes&amp;category=tipodontos" data-bader-search-nav="1">Tipodontos</a>
+                                            <a href="/productos?niche=estudiantes&amp;category=fantomas" data-bader-search-nav="1">Fantomas</a>
+                                            <a href="/productos?niche=estudiantes&amp;category=accesorios" data-bader-search-nav="1">Accesorios</a>
+                                        </div>
+                                    </article>
+                                    <article class="bader-ai-search__collection" data-bader-search-collection="mayorista">
+                                        <p>Mayoristas</p>
+                                        <div class="bader-ai-search__collection-links">
+                                            <button type="button" data-bader-ai-query="Productos con entrega rapida" data-bader-search-nav="1">Entrega rapida</button>
+                                            <button type="button" data-bader-ai-query="Accesorios para unidad dental" data-bader-search-nav="1">Accesorios</button>
+                                            <button type="button" data-bader-ai-query="Repuestos de alta rotacion" data-bader-search-nav="1">Repuestos</button>
+                                            <button type="button" data-bader-ai-query="Combos para reventa" data-bader-search-nav="1">Combos para reventa</button>
+                                        </div>
+                                    </article>
+                                </div>
+                            </section>
+
+                            <section class="bader-ai-search__block">
+                                <div class="bader-ai-search__block-head">
+                                    <h4>Sugerencias en vivo</h4>
+                                    <span>Actualizadas segun tu texto</span>
+                                </div>
+                                <div class="bader-ai-search__suggestions" data-bader-search-suggestions="1">
+                                    <p class="bader-ai-search__hint">Empieza a escribir para recibir sugerencias.</p>
+                                </div>
+                            </section>
+                        </aside>
+
+                        <main class="bader-ai-search__results">
+                            <section class="bader-ai-search__state is-active" data-bader-search-state="idle">
+                                <article class="bader-ai-search__spotlight">
+                                    <div class="bader-ai-search__spotlight-copy">
+                                        <p class="bader-ai-search__spotlight-kicker">Busqueda comercial + tecnica</p>
+                                        <h4>Todo el catalogo en una sola caja de busqueda</h4>
+                                        <p>Encuentra producto, categoria o repuesto sin ir navegando pagina por pagina.</p>
+                                    </div>
+                                    <div class="bader-ai-search__spotlight-stats">
+                                        <div><strong>SKU</strong><span>Busca por codigo directo</span></div>
+                                        <div><strong>Categoria</strong><span>Autoclaves, tipodontos, repuestos y mas</span></div>
+                                        <div><strong>Compatibilidad</strong><span>Tambien funciona con descripciones y usos</span></div>
+                                    </div>
+                                </article>
+                                <div class="bader-ai-search__idle-grid">
+                                    <article class="bader-ai-search__idle-card">
+                                        <span><i class="fa fa-hospital-o"/></span>
+                                        <h5>Compra por necesidad</h5>
+                                        <p>Busca por uso real: esterilizacion, aspiracion, simulacion, laboratorio o clinica.</p>
+                                    </article>
+                                    <article class="bader-ai-search__idle-card">
+                                        <span><i class="fa fa-cubes"/></span>
+                                        <h5>Repuestos y accesorios</h5>
+                                        <p>Encuentra piezas de reposicion, accesorios y consumibles sin depender del nombre exacto.</p>
+                                    </article>
+                                    <article class="bader-ai-search__idle-card">
+                                        <span><i class="fa fa-arrow-right"/></span>
+                                        <h5>Salto rapido al catalogo</h5>
+                                        <p>Cuando quieras una vista completa, pasas directo a /productos con la consulta aplicada.</p>
+                                    </article>
+                                </div>
+                            </section>
+
+                            <section class="bader-ai-search__state" data-bader-search-state="loading">
+                                <div class="bader-ai-search__loading-card">
+                                    <span class="bader-ai-search__loader"/>
+                                    <div>
+                                        <strong>Buscando en Odoo...</strong>
+                                        <p>Estamos cruzando nombre, SKU, categoria y descripcion comercial.</p>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="bader-ai-search__state" data-bader-search-state="results">
+                                <div class="bader-ai-search__categories" data-bader-search-categories="1"></div>
+                                <div class="bader-ai-search__hero-result" data-bader-search-hero="1"></div>
+                                <div class="bader-ai-search__product-grid" data-bader-search-products="1"></div>
+                                <div class="bader-ai-search__footer-actions">
+                                    <div class="bader-ai-search__related" data-bader-search-related="1"></div>
+                                    <a href="/productos"
+                                       class="bader-ai-search__view-all"
+                                       data-bader-search-view-all="1"
+                                       data-bader-search-nav="1">
+                                        Ver resultados completos
+                                        <i class="fa fa-arrow-right"/>
+                                    </a>
+                                </div>
+                            </section>
+
+                            <section class="bader-ai-search__state" data-bader-search-state="empty">
+                                <article class="bader-ai-search__empty-card">
+                                    <span><i class="fa fa-search"/></span>
+                                    <div>
+                                        <h4>No encontramos una coincidencia clara</h4>
+                                        <p>Prueba con SKU, categoria, compatibilidad o entra al catalogo completo.</p>
+                                    </div>
+                                </article>
+                                <div class="bader-ai-search__related" data-bader-search-empty-related="1"></div>
+                                <a href="/productos"
+                                   class="bader-ai-search__view-all bader-ai-search__view-all--ghost"
+                                   data-bader-search-empty-view-all="1"
+                                   data-bader-search-nav="1">
+                                    Ir al catalogo completo
+                                    <i class="fa fa-arrow-right"/>
+                                </a>
+                            </section>
+                        </main>
+                    </div>
+                </section>
+            </div>
+
             <t t-if="request.website.is_public_user()">
                 <div id="baderAuthModal" class="bader-auth-modal" aria-hidden="true">
                     <button type="button"
