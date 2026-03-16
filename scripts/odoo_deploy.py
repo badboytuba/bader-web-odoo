@@ -11,10 +11,14 @@ from __future__ import annotations
 
 import argparse
 import os
+import socket
 import subprocess
 import sys
 import time
 from pathlib import Path
+from urllib.error import HTTPError, URLError
+from urllib.parse import urljoin
+from urllib.request import Request, urlopen
 
 import paramiko
 from dotenv import load_dotenv
@@ -32,6 +36,12 @@ REMOTE_BADER_PATH = "/opt/odoo/src/bader"
 LOCAL_ADDONS_PATH = Path(__file__).resolve().parent.parent / "addons"
 SCRIPTS_PATH = Path(__file__).resolve().parent
 DEFAULT_AUDIT_URL = os.getenv("WEB_AUDIT_BASE_URL", "https://qas.bader4business.com").rstrip("/")
+DEFAULT_READY_PATHS = (
+    "/web/login",
+    "/",
+    "/productos",
+    "/shop",
+)
 
 SKIP_DIRS = {"__pycache__", ".git", "node_modules"}
 
@@ -125,6 +135,95 @@ def upgrade_module(client: paramiko.SSHClient, module_name: str) -> int:
     return ssh_exec(client, cmd, timeout=240)
 
 
+def http_probe(url: str, timeout: int) -> tuple[int, str, int]:
+    req = Request(
+        url=url,
+        headers={
+            "User-Agent": "BaderDeployWarmup/1.0",
+            "Accept": "text/html,application/xhtml+xml,*/*",
+        },
+    )
+    start = time.perf_counter()
+    try:
+        with urlopen(req, timeout=timeout) as resp:
+            resp.read(4096)
+            elapsed_ms = int((time.perf_counter() - start) * 1000)
+            return int(resp.status), resp.geturl(), elapsed_ms
+    except HTTPError as exc:
+        elapsed_ms = int((time.perf_counter() - start) * 1000)
+        try:
+            exc.read(4096)
+        except Exception:
+            pass
+        return int(exc.code), url, elapsed_ms
+    except (TimeoutError, socket.timeout, URLError):
+        elapsed_ms = int((time.perf_counter() - start) * 1000)
+        return 0, url, elapsed_ms
+
+
+def wait_for_http_ready(base_url: str, timeout_s: int, interval_s: int, paths: tuple[str, ...]) -> None:
+    deadline = time.time() + max(1, int(timeout_s))
+    interval = max(1, int(interval_s))
+    pending = list(paths)
+    print("Waiting for website readiness on: %s" % ", ".join(paths))
+    while time.time() < deadline:
+        remaining: list[str] = []
+        for path in pending:
+            url = urljoin(base_url + "/", path.lstrip("/"))
+            status, final_url, elapsed_ms = http_probe(url, timeout=max(10, interval))
+            print("READINESS %s -> %s (%dms) %s" % (path, status, elapsed_ms, final_url))
+            if status < 200 or status >= 400:
+                remaining.append(path)
+        if not remaining:
+            print("Website is ready.")
+            return
+        pending = remaining
+        time.sleep(interval)
+    raise RuntimeError("website did not become ready within %ss" % timeout_s)
+
+
+def warm_up_routes(base_url: str, timeout: int, paths: tuple[str, ...], rounds: int) -> None:
+    rounds = max(1, int(rounds))
+    print("Warming up routes: %s" % ", ".join(paths))
+    for round_idx in range(1, rounds + 1):
+        print("Warm-up round %d/%d" % (round_idx, rounds))
+        for path in paths:
+            url = urljoin(base_url + "/", path.lstrip("/"))
+            status, final_url, elapsed_ms = http_probe(url, timeout=max(10, timeout))
+            print("WARMUP %s -> %s (%dms) %s" % (path, status, elapsed_ms, final_url))
+
+
+def build_warmup_paths(extra_paths: list[str]) -> tuple[str, ...]:
+    warmup_paths = list(DEFAULT_READY_PATHS)
+    for path in extra_paths:
+        normalized = (path or "").strip()
+        if not normalized:
+            continue
+        if not normalized.startswith("/"):
+            normalized = "/" + normalized
+        if normalized not in warmup_paths:
+            warmup_paths.append(normalized)
+    return tuple(warmup_paths)
+
+
+def run_post_restart_warmup(args: argparse.Namespace) -> None:
+    if args.skip_warmup:
+        return
+    warmup_paths = build_warmup_paths(args.warmup_path)
+    wait_for_http_ready(
+        base_url=args.audit_url,
+        timeout_s=args.ready_timeout,
+        interval_s=args.ready_interval,
+        paths=warmup_paths,
+    )
+    warm_up_routes(
+        base_url=args.audit_url,
+        timeout=max(5, args.ready_interval),
+        paths=warmup_paths,
+        rounds=args.warmup_rounds,
+    )
+
+
 def main() -> None:
     ensure_env()
     parser = argparse.ArgumentParser(description="Deploy Odoo modules")
@@ -141,6 +240,16 @@ def main() -> None:
     parser.add_argument("--audit-url", type=str, default=DEFAULT_AUDIT_URL, help="base URL used by frontend QA audit")
     parser.add_argument("--audit-retries", type=int, default=6, help="audit retry attempts after restart")
     parser.add_argument("--audit-retry-delay", type=int, default=8, help="seconds between audit retries")
+    parser.add_argument("--skip-warmup", action="store_true", help="skip HTTP readiness check and warm-up after restart")
+    parser.add_argument("--ready-timeout", type=int, default=150, help="seconds to wait for frontend readiness after restart")
+    parser.add_argument("--ready-interval", type=int, default=5, help="seconds between readiness probes")
+    parser.add_argument("--warmup-rounds", type=int, default=2, help="how many warm-up passes to run before audit")
+    parser.add_argument(
+        "--warmup-path",
+        action="append",
+        default=[],
+        help="extra relative path to warm up after restart; repeatable",
+    )
     args = parser.parse_args()
 
     if not args.module and not args.restart_only:
@@ -171,6 +280,11 @@ def main() -> None:
             code = restart_odoo(client)
             if code != 0:
                 sys.exit(code)
+            try:
+                run_post_restart_warmup(args)
+            except RuntimeError as exc:
+                print(f"ERROR: {exc}")
+                sys.exit(1)
             print("Done.")
             return
 
@@ -194,6 +308,13 @@ def main() -> None:
         if restart_code != 0:
             print(f"ERROR: restart failed with exit code {restart_code}")
             sys.exit(restart_code)
+
+        if not args.skip_warmup:
+            try:
+                run_post_restart_warmup(args)
+            except RuntimeError as exc:
+                print(f"ERROR: {exc}")
+                sys.exit(1)
 
         if not args.skip_audit:
             audit_script = SCRIPTS_PATH / "web_qa_audit.py"
