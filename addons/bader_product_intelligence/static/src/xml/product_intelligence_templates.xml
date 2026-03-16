@@ -465,7 +465,7 @@
                                         <input class="bpi-input" t-model="state.contentForm.name"/>
                                         <label>Descripcion Optimizada</label>
                                         <textarea class="bpi-textarea bpi-textarea--mono" rows="11" t-model="state.contentForm.description"/>
-                                        <p class="bpi-muted" t-esc="(state.contentForm.description || '').split(/\\s+/).filter(Boolean).length + ' palabras · Optimizado para SEO y motores de IA (GEO)'"/>
+                                        <p class="bpi-muted" t-esc="contentWordCountLabel()"/>
                                     </div>
                                     <button type="button" class="bpi-button bpi-button--secondary bpi-button--full" t-on-click="saveContentOnly" t-att-disabled="state.contentBusy">
                                         <i class="fa fa-floppy-o"/>

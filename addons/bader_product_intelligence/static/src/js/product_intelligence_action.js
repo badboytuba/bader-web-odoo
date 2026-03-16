@@ -367,6 +367,18 @@ class ProductIntelligenceAction extends Component {
         return `${Number(value || 0).toFixed(1)}%`;
     }
 
+    contentWordCount() {
+        const text = (this.state.contentForm.description || "").trim();
+        if (!text) {
+            return 0;
+        }
+        return text.split(/\s+/).filter(Boolean).length;
+    }
+
+    contentWordCountLabel() {
+        return `${this.contentWordCount()} palabras - Optimizado para SEO y motores de IA (GEO)`;
+    }
+
     dashboardCounts() {
         const rows = this.state.dashboardRows || [];
         return {
