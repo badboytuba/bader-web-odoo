@@ -975,11 +975,43 @@ odoo.define('bader_website.main', function (require) {
                 }).join('');
             }
 
-            function renderHeroResult(product) {
+            function renderHeroResult(product, queryContext) {
                 if (!heroEl) return;
                 if (!product) {
                     heroEl.innerHTML = '';
                     return;
+                }
+                var contextData = queryContext || {};
+                var contextQueries = (contextData.queries || []).slice(0, 3);
+                var contextProducts = contextData.products || [];
+                var currentContextProduct = contextData.current_product || null;
+                var heroContextMarkup = '';
+                if (contextData.has_context && currentContextProduct) {
+                    heroContextMarkup =
+                        '<section class="bader-ai-search__hero-context">' +
+                        '<div class="bader-ai-search__hero-context-head">' +
+                        '<div>' +
+                        '<span class="bader-ai-search__context-eyebrow">Relacionado con la ficha actual</span>' +
+                        '<strong>' + escapeHtml(contextData.title || 'Seguir desde esta ficha') + '</strong>' +
+                        '</div>' +
+                        '<span class="bader-ai-search__hero-context-count">' + escapeHtml(String(contextProducts.length || 0)) + ' vinculados</span>' +
+                        '</div>' +
+                        '<div class="bader-ai-search__hero-context-current">' +
+                        '<span>' + escapeHtml(currentContextProduct.name || 'Producto actual') + '</span>' +
+                        '<a href="' + escapeHtml(currentContextProduct.url || currentProductUrlFromPage() || '/productos') + '" data-bader-search-nav="1">Abrir ficha</a>' +
+                        '</div>' +
+                        (contextQueries.length
+                            ? '<div class="bader-ai-search__hero-context-queries">' +
+                              contextQueries.map(function (label) {
+                                  return (
+                                      '<button type="button" class="bader-ai-search__hero-context-chip" data-bader-ai-query="' + escapeHtml(label) + '" data-bader-search-nav="1">' +
+                                      escapeHtml(label) +
+                                      '</button>'
+                                  );
+                              }).join('') +
+                              '</div>'
+                            : '') +
+                        '</section>';
                 }
                 heroEl.innerHTML =
                     '<article class="bader-ai-search__hero-card">' +
@@ -993,6 +1025,7 @@ odoo.define('bader_website.main', function (require) {
                     '</div>' +
                     '<h4>' + escapeHtml(product.name || 'Producto') + '</h4>' +
                     '<p>' + escapeHtml(product.excerpt || '') + '</p>' +
+                    heroContextMarkup +
                     '<div class="bader-ai-search__hero-bottom">' +
                     '<div class="bader-ai-search__hero-price">' + escapeHtml(formatPrice(product.price_value, product.currency_code, product.currency_symbol)) + '</div>' +
                     '<div class="bader-ai-search__hero-actions">' +
@@ -1164,7 +1197,7 @@ odoo.define('bader_website.main', function (require) {
                 renderRecentSearches();
                 if (contextWrapEl) contextWrapEl.hidden = true;
                 renderCategories(categories);
-                renderHeroResult(products.length ? products[0] : null);
+                renderHeroResult(products.length ? products[0] : null, queryContext);
                 renderProductGrid(products.slice(1));
                 renderRelatedQueries(relatedQueries, relatedEl);
                 renderRelatedQueries(relatedQueries, emptyRelatedEl);
