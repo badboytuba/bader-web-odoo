@@ -3,340 +3,782 @@
     <t t-name="bader_product_intelligence.ProductIntelligenceAction" owl="1">
         <div class="o_action bpi-app">
             <t t-if="state.loading">
-                <div class="bpi-loading">Cargando Producto Intelligence...</div>
+                <div class="bpi-loading-shell">
+                    <div class="bpi-spinner"/>
+                    <p>Cargando Producto Intelligence...</p>
+                </div>
             </t>
             <t t-elif="state.error">
-                <div class="bpi-empty">
+                <div class="bpi-empty-shell">
                     <h2>Producto Intelligence</h2>
                     <p t-esc="state.error"/>
                 </div>
             </t>
             <t t-else="">
-                <div class="bpi-shell">
-                    <div class="bpi-header">
-                        <div class="bpi-header__copy">
-                            <div class="bpi-header__brand">
-                                <img class="bpi-header__logo" src="/bader_website/static/src/img/bader_favicon.png" alt="Bader"/>
-                                <span class="bpi-badge">Nancy AI · Bader</span>
+                <t t-if="state.viewMode === 'dashboard'">
+                    <div class="bpi-module-shell">
+                        <div class="bpi-module-header">
+                            <div>
+                                <h1>Productos</h1>
+                                <p>Gestiona el catalogo de productos sincronizado con Odoo</p>
                             </div>
-                            <h1>Producto Intelligence</h1>
-                            <p t-esc="state.data.product.name"/>
+                            <button type="button" class="bpi-button bpi-button--success" t-on-click="syncCatalog" t-att-disabled="state.syncBusy">
+                                <i class="fa fa-refresh"/>
+                                <span t-if="!state.syncBusy">Sincronizar desde Odoo</span>
+                                <span t-else="">Actualizando...</span>
+                            </button>
                         </div>
-                        <div class="bpi-header__actions">
-                            <button type="button" class="btn btn-secondary" t-on-click="openProductForm">Volver al producto</button>
-                        </div>
-                    </div>
 
-                    <div class="bpi-score-grid">
-                        <div class="bpi-score-card">
-                            <span class="bpi-score-card__label">Score SEO</span>
-                            <strong t-esc="state.data.seoData.seoScore || 0"/>
-                        </div>
-                        <div class="bpi-score-card">
-                            <span class="bpi-score-card__label">Score GEO</span>
-                            <strong t-esc="state.data.seoData.geoScore || 0"/>
-                        </div>
-                        <div class="bpi-score-card">
-                            <span class="bpi-score-card__label">Competitividad</span>
-                            <strong t-esc="state.data.seoData.competitivenessScore || 0"/>
-                        </div>
-                        <div class="bpi-score-card">
-                            <span class="bpi-score-card__label">Imágenes</span>
-                            <strong t-esc="(state.data.images || []).length"/>
-                        </div>
-                    </div>
-
-                    <div class="bpi-tabs">
-                        <button t-att-class="'bpi-tab ' + (state.activeTab === 'seo' ? 'is-active' : '')" t-on-click="() => this.selectTab('seo')">SEO/GEO</button>
-                        <button t-att-class="'bpi-tab ' + (state.activeTab === 'category' ? 'is-active' : '')" t-on-click="() => this.selectTab('category')">Categoría</button>
-                        <button t-att-class="'bpi-tab ' + (state.activeTab === 'images' ? 'is-active' : '')" t-on-click="() => this.selectTab('images')">Imágenes</button>
-                        <button t-att-class="'bpi-tab ' + (state.activeTab === 'competitors' ? 'is-active' : '')" t-on-click="() => this.selectTab('competitors')">Competencia</button>
-                        <button t-att-class="'bpi-tab ' + (state.activeTab === 'chat' ? 'is-active' : '')" t-on-click="() => this.selectTab('chat')">Agente IA</button>
-                    </div>
-
-                    <div class="bpi-content">
-                        <t t-if="state.activeTab === 'seo'">
-                            <div class="bpi-panel">
-                                <div class="bpi-panel__header">
-                                    <div>
-                                        <h2>Optimización SEO &amp; GEO</h2>
-                                        <p>Analizá y editá el contenido optimizado del producto.</p>
-                                    </div>
-                                    <div class="bpi-inline-actions">
-                                        <select t-model="state.seoAudience" class="form-select">
-                                            <option value="clinicas">Clínicas</option>
-                                            <option value="laboratorios">Laboratorios</option>
-                                            <option value="estudiantes">Estudiantes</option>
-                                            <option value="general">General</option>
-                                        </select>
-                                        <button type="button" class="btn btn-primary" t-on-click="analyzeSeo" t-att-disabled="state.seoBusy">Analizar con IA</button>
-                                        <button type="button" class="btn btn-secondary" t-on-click="saveSeo" t-att-disabled="state.seoBusy">Guardar</button>
-                                    </div>
+                        <div class="bpi-kpi-grid bpi-kpi-grid--dashboard">
+                            <div class="bpi-kpi-card">
+                                <div class="bpi-kpi-card__copy">
+                                    <span>Total Productos</span>
+                                    <strong t-esc="state.dashboardStats.total"/>
                                 </div>
-                                <div class="bpi-grid bpi-grid--2">
-                                    <div class="bpi-card">
-                                        <h3>SEO Tradicional</h3>
-                                        <label>Título SEO</label>
-                                        <input class="form-control" t-model="state.seoForm.seoTitle"/>
-                                        <label>Meta Description</label>
-                                        <textarea class="form-control" rows="3" t-model="state.seoForm.seoDescription"/>
-                                        <label>Keywords SEO</label>
-                                        <textarea class="form-control" rows="3" t-model="state.seoForm.seoKeywords"/>
-                                    </div>
-                                    <div class="bpi-card">
-                                        <h3>GEO para motores IA</h3>
-                                        <label>Título GEO</label>
-                                        <input class="form-control" t-model="state.seoForm.geoTitle"/>
-                                        <label>Descripción GEO</label>
-                                        <textarea class="form-control" rows="3" t-model="state.seoForm.geoDescription"/>
-                                        <label>Features GEO</label>
-                                        <textarea class="form-control" rows="3" t-model="state.seoForm.geoFeatures"/>
-                                    </div>
+                                <div class="bpi-kpi-card__icon bpi-kpi-card__icon--dark"><i class="fa fa-cube"/></div>
+                            </div>
+                            <div class="bpi-kpi-card">
+                                <div class="bpi-kpi-card__copy">
+                                    <span>Publicados</span>
+                                    <strong t-esc="state.dashboardStats.published"/>
                                 </div>
-                                <div class="bpi-card">
-                                    <h3>Descripción generada por IA</h3>
-                                    <textarea class="form-control" rows="9" t-model="state.seoForm.aiGeneratedDescription"/>
+                                <div class="bpi-kpi-card__icon bpi-kpi-card__icon--green"><i class="fa fa-eye"/></div>
+                            </div>
+                            <div class="bpi-kpi-card">
+                                <div class="bpi-kpi-card__copy">
+                                    <span>Destacados</span>
+                                    <strong t-esc="state.dashboardStats.featured"/>
                                 </div>
-                                <div class="bpi-card" t-if="(state.data.seoData.geoFaq || []).length">
-                                    <h3>FAQ optimizado</h3>
-                                    <div class="bpi-faq-list">
-                                        <div class="bpi-faq-item" t-foreach="state.data.seoData.geoFaq" t-as="faq" t-key="faq.id || faq.question">
-                                            <strong t-esc="faq.question"/>
-                                            <p t-esc="faq.answer"/>
-                                        </div>
-                                    </div>
+                                <div class="bpi-kpi-card__icon bpi-kpi-card__icon--yellow"><i class="fa fa-star-o"/></div>
+                            </div>
+                            <div class="bpi-kpi-card">
+                                <div class="bpi-kpi-card__copy">
+                                    <span>Pendientes</span>
+                                    <strong t-esc="state.dashboardStats.pending"/>
+                                </div>
+                                <div class="bpi-kpi-card__icon bpi-kpi-card__icon--orange"><i class="fa fa-exclamation-circle"/></div>
+                            </div>
+                            <div class="bpi-kpi-card">
+                                <div class="bpi-kpi-card__copy">
+                                    <span>Tipo de Cambio</span>
+                                    <t t-if="state.exchangeRateBusy">
+                                        <strong>Guardando...</strong>
+                                    </t>
+                                    <t t-else="">
+                                        <strong t-esc="formatNumber(state.exchangeRate) + ' ARS'"/>
+                                    </t>
+                                </div>
+                                <div class="bpi-rate-inline">
+                                    <input class="bpi-input bpi-input--small" type="number" t-model="state.exchangeRateInput"/>
+                                    <button type="button" class="bpi-link-button" t-on-click="saveExchangeRate">Editar</button>
                                 </div>
                             </div>
-                        </t>
+                        </div>
 
-                        <t t-if="state.activeTab === 'category'">
-                            <div class="bpi-panel">
-                                <div class="bpi-panel__header">
-                                    <div>
-                                        <h2>Inteligencia de categoría</h2>
-                                        <p>Contexto de mercado y lenguaje local para la categoría pública.</p>
-                                    </div>
+                        <div class="bpi-panel bpi-panel--table">
+                            <div class="bpi-toolbar">
+                                <div class="bpi-filter-tabs">
+                                    <button type="button" t-att-class="'bpi-filter-pill ' + (state.dashboardTab === 'all' ? 'is-active' : '')" t-on-click="() => this.changeDashboardTab('all')">
+                                        <i class="fa fa-cube"/>
+                                        <span t-esc="'Todos (' + dashboardCounts().all + ')'"/>
+                                    </button>
+                                    <button type="button" t-att-class="'bpi-filter-pill ' + (state.dashboardTab === 'new' ? 'is-active' : '')" t-on-click="() => this.changeDashboardTab('new')">
+                                        <i class="fa fa-clock-o"/>
+                                        <span t-esc="'Nuevos (' + dashboardCounts().new + ')'"/>
+                                    </button>
+                                    <button type="button" t-att-class="'bpi-filter-pill ' + (state.dashboardTab === 'discontinued' ? 'is-active' : '')" t-on-click="() => this.changeDashboardTab('discontinued')">
+                                        <i class="fa fa-archive"/>
+                                        <span t-esc="'Descontinuados (' + dashboardCounts().discontinued + ')'"/>
+                                    </button>
                                 </div>
-                                <t t-if="state.data.categoryIntelligence">
-                                    <div class="bpi-grid bpi-grid--2">
-                                        <div class="bpi-card">
-                                            <h3>Nombres</h3>
-                                            <p><strong>Odoo:</strong> <t t-esc="state.data.categoryIntelligence.categoryName"/></p>
-                                            <p><strong>Local:</strong> <t t-esc="state.data.categoryIntelligence.localName || '-'"/></p>
-                                            <p><strong>Alias:</strong> <t t-esc="(state.data.categoryIntelligence.localAliases || []).join(', ') || '-'"/></p>
-                                        </div>
-                                        <div class="bpi-card">
-                                            <h3>Métricas</h3>
-                                            <p><strong>Volumen:</strong> <t t-esc="state.data.categoryIntelligence.searchVolume || '-'"/></p>
-                                            <p><strong>Competitividad:</strong> <t t-esc="state.data.categoryIntelligence.competitiveness || '-'"/></p>
-                                            <p><strong>Tendencia:</strong> <t t-esc="state.data.categoryIntelligence.trendDirection || '-'"/></p>
-                                            <p><strong>Estacionalidad:</strong> <t t-esc="state.data.categoryIntelligence.seasonality || '-'"/></p>
-                                        </div>
-                                    </div>
-                                    <div class="bpi-grid bpi-grid--3">
-                                        <div class="bpi-card">
-                                            <h3>Clínicas</h3>
-                                            <p t-esc="state.data.categoryIntelligence.clinicasDescription || '-'"/>
-                                        </div>
-                                        <div class="bpi-card">
-                                            <h3>Laboratorios</h3>
-                                            <p t-esc="state.data.categoryIntelligence.laboratoriosDescription || '-'"/>
-                                        </div>
-                                        <div class="bpi-card">
-                                            <h3>Estudiantes</h3>
-                                            <p t-esc="state.data.categoryIntelligence.estudiantesDescription || '-'"/>
-                                        </div>
-                                    </div>
+                                <div class="bpi-search">
+                                    <i class="fa fa-search"/>
+                                    <input class="bpi-input" type="search" placeholder="Buscar producto..." t-model="state.searchTerm"/>
+                                </div>
+                            </div>
+
+                            <t t-if="filteredDashboardProducts().length">
+                                <div class="bpi-table-wrap">
+                                    <table class="bpi-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Producto</th>
+                                                <th>Precio</th>
+                                                <th>Margen</th>
+                                                <th>Stock</th>
+                                                <th>Estado</th>
+                                                <th>Publicado</th>
+                                                <th>Destacado</th>
+                                                <th/>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="filteredDashboardProducts()" t-as="row" t-key="row.id" t-on-click="() => this.openDetail(row.id)">
+                                                <td>
+                                                    <div class="bpi-row-product">
+                                                        <t t-if="row.mainImageUrl">
+                                                            <img class="bpi-row-product__image" t-att-src="row.mainImageUrl" t-att-alt="row.name"/>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <div class="bpi-row-product__image bpi-row-product__image--empty"><i class="fa fa-picture-o"/></div>
+                                                        </t>
+                                                        <div>
+                                                            <strong t-esc="row.name"/>
+                                                            <p t-esc="row.sku || row.category || 'Sin codigo'"/>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <strong t-esc="formatARS(row.priceLocal)"/>
+                                                    <p t-esc="formatUSD(row.priceUsd)"/>
+                                                </td>
+                                                <td>
+                                                    <span class="bpi-inline-badge bpi-inline-badge--green" t-esc="formatPercent(row.margin)"/>
+                                                </td>
+                                                <td>
+                                                    <span t-esc="formatNumber(row.qtyAvailable)"/>
+                                                </td>
+                                                <td>
+                                                    <span t-if="row.inStock" class="bpi-status-pill bpi-status-pill--success">En stock</span>
+                                                    <span t-else="" class="bpi-status-pill">Sin stock</span>
+                                                </td>
+                                                <td t-on-click.stop="() => {}">
+                                                    <label class="bpi-toggle">
+                                                        <input type="checkbox" t-att-checked="row.isPublished" t-on-change="(ev) => this.toggleDashboardPublish(row.id, ev.target.checked)"/>
+                                                        <span class="bpi-toggle__track"><span class="bpi-toggle__thumb"/></span>
+                                                    </label>
+                                                </td>
+                                                <td t-on-click.stop="() => {}">
+                                                    <label class="bpi-toggle">
+                                                        <input type="checkbox" t-att-checked="row.featured" t-on-change="(ev) => this.toggleDashboardFeatured(row.id, ev.target.checked)"/>
+                                                        <span class="bpi-toggle__track"><span class="bpi-toggle__thumb"/></span>
+                                                    </label>
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="bpi-icon-button"><i class="fa fa-ellipsis-v"/></button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="bpi-empty-state">
+                                    <i class="fa fa-cube"/>
+                                    <p>No hay productos para mostrar.</p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+
+                <t t-if="state.viewMode === 'detail'">
+                    <t t-set="product" t-value="currentProduct()"/>
+                    <t t-set="seoData" t-value="currentSeoData()"/>
+                    <div class="bpi-detail-shell">
+                        <div class="bpi-detail-header">
+                            <div class="bpi-detail-header__left">
+                                <button type="button" class="bpi-icon-button bpi-icon-button--ghost" t-on-click="goBack">
+                                    <i class="fa fa-arrow-left"/>
+                                </button>
+                                <t t-if="product.mainImageUrl">
+                                    <img class="bpi-detail-header__image" t-att-src="product.mainImageUrl" t-att-alt="product.name"/>
                                 </t>
                                 <t t-else="">
-                                    <div class="bpi-empty">
-                                        <p>No hay inteligencia de categoría disponible para este producto.</p>
-                                    </div>
+                                    <div class="bpi-detail-header__image bpi-detail-header__image--empty"><i class="fa fa-picture-o"/></div>
                                 </t>
-                            </div>
-                        </t>
-
-                        <t t-if="state.activeTab === 'images'">
-                            <div class="bpi-panel">
-                                <div class="bpi-panel__header">
-                                    <div>
-                                        <h2>Galería e imágenes IA</h2>
-                                        <p>Mantené la referencia del producto y generá variaciones con el estilo de Bader.</p>
+                                <div class="bpi-detail-header__copy">
+                                    <div class="bpi-detail-header__title">
+                                        <h1 t-esc="product.name"/>
+                                        <span class="bpi-brand-badge" t-esc="product.brand || 'Bader'"/>
                                     </div>
-                                    <div class="bpi-inline-actions">
-                                        <select t-model="state.imageStyle" class="form-select">
-                                            <option value="professional">Profesional</option>
-                                            <option value="lifestyle">Lifestyle</option>
-                                            <option value="artistic">Artístico</option>
-                                            <option value="minimalist">Minimalista</option>
-                                        </select>
-                                        <button type="button" class="btn btn-primary" t-on-click="() => this.generateImage(false)" t-att-disabled="state.imageBusy">Generar</button>
-                                        <button type="button" class="btn btn-secondary" t-on-click="() => this.generateImage(true)" t-att-disabled="state.imageBusy">Nano Banana Pro</button>
-                                    </div>
-                                </div>
-
-                                <div class="bpi-card">
-                                    <h3>Imágenes de referencia</h3>
-                                    <div class="bpi-image-grid">
-                                        <button type="button"
-                                                class="bpi-image-tile"
-                                                t-att-class="state.selectedReferences.includes(ref.token) ? 'bpi-image-tile is-selected' : 'bpi-image-tile'"
-                                                t-foreach="state.data.product.referenceImages"
-                                                t-as="ref"
-                                                t-key="ref.token"
-                                                t-on-click="() => this.toggleReference(ref.token)">
-                                            <img t-att-src="ref.url" t-att-alt="ref.label"/>
-                                            <span t-esc="ref.label"/>
-                                        </button>
-                                    </div>
-                                    <label>Prompt</label>
-                                    <textarea class="form-control" rows="4" t-model="state.imagePrompt"/>
-                                </div>
-
-                                <div class="bpi-card" t-if="state.generatedPreviewUrl">
-                                    <h3>Preview generado</h3>
-                                    <div class="bpi-preview-grid">
-                                        <div>
-                                            <label>Original</label>
-                                            <img t-if="state.data.product.mainImageUrl" t-att-src="state.data.product.mainImageUrl" class="bpi-preview-image"/>
-                                        </div>
-                                        <div>
-                                            <label>Nuevo preview</label>
-                                            <img t-att-src="state.generatedPreviewUrl" class="bpi-preview-image"/>
-                                        </div>
-                                    </div>
-                                    <div class="bpi-inline-actions">
-                                        <button type="button" class="btn btn-primary" t-on-click="approveImage" t-att-disabled="state.imageBusy">Aprobar y guardar</button>
-                                        <button type="button" class="btn btn-secondary" t-on-click="() => this.state.generatedPreviewUrl = ''">Descartar</button>
-                                    </div>
-                                </div>
-
-                                <div class="bpi-card">
-                                    <h3>Video del producto</h3>
-                                    <div class="bpi-inline-actions">
-                                        <input class="form-control" t-model="state.videoUrl" placeholder="https://www.youtube.com/watch?v=..."/>
-                                        <button type="button" class="btn btn-secondary" t-on-click="saveVideo">Guardar video</button>
-                                    </div>
-                                </div>
-
-                                <div class="bpi-card">
-                                    <h3>Galería aprobada</h3>
-                                    <div class="bpi-image-grid">
-                                        <div class="bpi-image-tile bpi-image-tile--static" t-foreach="state.data.images" t-as="image" t-key="image.id">
-                                            <img t-att-src="image.imageUrl" t-att-alt="image.name"/>
-                                            <span t-esc="image.name"/>
-                                            <button type="button" class="btn btn-link text-danger" t-on-click="() => this.deleteImage(image.id)">Eliminar</button>
-                                        </div>
-                                    </div>
+                                    <p t-esc="(product.sku || 'Sin SKU') + ' · ' + (product.categoryPath || product.category || 'Sin categoria')"/>
                                 </div>
                             </div>
-                        </t>
+                            <div class="bpi-detail-header__right">
+                                <div class="bpi-inline-switch">
+                                    <span>Publicado</span>
+                                    <label class="bpi-toggle">
+                                        <input type="checkbox" t-model="state.productForm.isPublished"/>
+                                        <span class="bpi-toggle__track"><span class="bpi-toggle__thumb"/></span>
+                                    </label>
+                                </div>
+                                <button type="button" class="bpi-button bpi-button--primary" t-on-click="saveAll" t-att-disabled="state.saveBusy">
+                                    <i class="fa fa-floppy-o"/>
+                                    <span t-if="!state.saveBusy">Guardar Cambios</span>
+                                    <span t-else="">Guardando...</span>
+                                </button>
+                                <button type="button" class="bpi-icon-button" t-on-click="openProductForm">
+                                    <i class="fa fa-ellipsis-v"/>
+                                </button>
+                            </div>
+                        </div>
 
-                        <t t-if="state.activeTab === 'competitors'">
-                            <div class="bpi-panel">
-                                <div class="bpi-panel__header">
-                                    <div>
-                                        <h2>Competencia</h2>
-                                        <p>Descubrimiento, scraping, análisis y estrategia competitiva.</p>
+                        <div class="bpi-tab-strip">
+                            <button t-foreach="detailTabs" t-as="tab" t-key="tab.id" type="button" t-att-class="'bpi-tab-pill ' + (state.activeTab === tab.id ? 'is-active' : '')" t-on-click="() => this.selectTab(tab.id)">
+                                <i t-att-class="'fa ' + tab.icon"/>
+                                <span t-esc="tab.label"/>
+                            </button>
+                        </div>
+
+                        <div class="bpi-detail-content">
+                            <t t-if="state.activeTab === 'overview'">
+                                <div class="bpi-kpi-grid">
+                                    <div class="bpi-kpi-card">
+                                        <div class="bpi-kpi-card__copy">
+                                            <span>Precio</span>
+                                            <strong t-esc="formatARS(product.priceLocal || 0)"/>
+                                            <small t-esc="formatUSD(product.priceUsd || 0)"/>
+                                        </div>
+                                        <div class="bpi-kpi-card__icon bpi-kpi-card__icon--dark"><i class="fa fa-usd"/></div>
                                     </div>
-                                    <div class="bpi-inline-actions">
-                                        <button type="button" class="btn btn-secondary" t-on-click="discoverCompetitors" t-att-disabled="state.competitorBusy">Descubrir competidores</button>
-                                        <button type="button" class="btn btn-primary" t-on-click="generateStrategy" t-att-disabled="state.strategyBusy">Generar estrategia</button>
+                                    <div class="bpi-kpi-card">
+                                        <div class="bpi-kpi-card__copy">
+                                            <span>Stock</span>
+                                            <strong t-esc="formatNumber(product.qtyAvailable || 0)"/>
+                                        </div>
+                                        <div class="bpi-kpi-card__icon bpi-kpi-card__icon--dark"><i class="fa fa-cube"/></div>
+                                    </div>
+                                    <div class="bpi-kpi-card bpi-kpi-card--success">
+                                        <div class="bpi-kpi-card__copy">
+                                            <span>Margen</span>
+                                            <strong t-esc="formatPercent(detailMargin())"/>
+                                        </div>
+                                        <div class="bpi-kpi-card__icon bpi-kpi-card__icon--green"><i class="fa fa-line-chart"/></div>
                                     </div>
                                 </div>
 
-                                <div class="bpi-card">
-                                    <h3>Agregar competidor</h3>
-                                    <div class="bpi-grid bpi-grid--2">
-                                        <input class="form-control" t-model="state.competitorName" placeholder="Nombre"/>
-                                        <input class="form-control" t-model="state.competitorUrl" placeholder="https://competidor.com"/>
-                                    </div>
-                                    <div class="bpi-inline-actions">
-                                        <button type="button" class="btn btn-primary" t-on-click="() => this.addCompetitor()" t-att-disabled="state.competitorBusy">Agregar y scrapear</button>
-                                    </div>
+                                <div class="bpi-section-head">
+                                    <h3><i class="fa fa-magic"/> Acciones Rapidas Nancy AI</h3>
+                                </div>
+                                <div class="bpi-quick-grid">
+                                    <button type="button" class="bpi-quick-card" t-on-click="() => this.quickAction('content')">
+                                        <span class="bpi-quick-card__icon bpi-quick-card__icon--green"><i class="fa fa-pencil"/></span>
+                                        <strong>Generar Descripcion Nancy AI</strong>
+                                    </button>
+                                    <button type="button" class="bpi-quick-card" t-on-click="() => this.quickAction('images')">
+                                        <span class="bpi-quick-card__icon bpi-quick-card__icon--dark"><i class="fa fa-magic"/></span>
+                                        <strong>Generar Imagen Nancy AI</strong>
+                                    </button>
+                                    <button type="button" class="bpi-quick-card" t-on-click="() => this.quickAction('seo')">
+                                        <span class="bpi-quick-card__icon bpi-quick-card__icon--green"><i class="fa fa-search"/></span>
+                                        <strong>Optimizar SEO Nancy AI</strong>
+                                    </button>
+                                    <button type="button" class="bpi-quick-card" t-on-click="() => this.quickAction('competitors')">
+                                        <span class="bpi-quick-card__icon bpi-quick-card__icon--dark"><i class="fa fa-bullseye"/></span>
+                                        <strong>Anadir Competidor</strong>
+                                    </button>
                                 </div>
 
-                                <div class="bpi-card" t-if="state.discoveredCompetitors.length">
-                                    <h3>Competidores encontrados</h3>
-                                    <p t-if="state.discoveryQuery">Query: <t t-esc="state.discoveryQuery"/></p>
-                                    <div class="bpi-list">
-                                        <div class="bpi-list__item" t-foreach="state.discoveredCompetitors" t-as="item" t-key="item.url">
-                                            <div>
-                                                <strong t-esc="item.name"/>
-                                                <p t-esc="item.description"/>
+                                <div class="bpi-panel bpi-panel--insights">
+                                    <div class="bpi-panel__title">
+                                        <h3><i class="fa fa-sun-o"/> Nancy AI Insights</h3>
+                                        <p>Analisis inteligente basado en tus datos</p>
+                                    </div>
+                                    <t t-if="overviewInsights().length">
+                                        <div class="bpi-insight-list">
+                                            <div class="bpi-insight-item" t-foreach="overviewInsights()" t-as="insight" t-key="insight.title">
+                                                <i t-att-class="'fa ' + (insight.type === 'warning' ? 'fa-exclamation-triangle' : 'fa-check-circle')"/>
+                                                <div>
+                                                    <strong t-esc="insight.title"/>
+                                                    <p t-esc="insight.description"/>
+                                                </div>
                                             </div>
-                                            <button type="button" class="btn btn-secondary" t-on-click="() => this.addCompetitor(item.name, item.url)">Agregar</button>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <p class="bpi-muted">Agrega mas datos para obtener insights personalizados.</p>
+                                    </t>
+                                </div>
+                            </t>
+
+                            <t t-if="state.activeTab === 'datos'">
+                                <div class="bpi-grid bpi-grid--2">
+                                    <div class="bpi-panel">
+                                        <div class="bpi-panel__title"><h3><i class="fa fa-cog"/> Informacion Basica</h3></div>
+                                        <div class="bpi-form-grid">
+                                            <label>SKU</label>
+                                            <input class="bpi-input" t-model="state.productForm.sku"/>
+                                            <label>Slug (URL)</label>
+                                            <div class="bpi-inline-field">
+                                                <input class="bpi-input" t-model="state.productForm.slug"/>
+                                                <button type="button" class="bpi-icon-button" t-on-click="() => this.regenerateSlug('name')"><i class="fa fa-refresh"/></button>
+                                            </div>
+                                            <label>Marca</label>
+                                            <input class="bpi-input" t-model="state.productForm.brand"/>
+                                            <label>Categoria</label>
+                                            <select class="bpi-input" t-model="state.productForm.categoryId">
+                                                <option value="">Seleccionar categoria</option>
+                                                <option t-foreach="currentCategories()" t-as="category" t-key="category.id" t-att-value="String(category.id)" t-esc="category.completeName"/>
+                                            </select>
+                                            <div class="bpi-note" t-esc="product.dataLabel || 'Producto Bader'"/>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="bpi-list">
-                                    <div class="bpi-card" t-foreach="state.data.competitors" t-as="competitor" t-key="competitor.id">
-                                        <div class="bpi-panel__header">
-                                            <div>
-                                                <h3 t-esc="competitor.competitorName"/>
-                                                <p t-esc="competitor.competitorUrl"/>
-                                            </div>
-                                            <div class="bpi-inline-actions">
-                                                <button type="button" class="btn btn-secondary" t-on-click="() => this.scrapeCompetitor(competitor.id)">Scrapear</button>
-                                                <button type="button" class="btn btn-secondary" t-on-click="() => this.analyzeCompetitor(competitor.id)">Analizar</button>
-                                                <button type="button" class="btn btn-link text-danger" t-on-click="() => this.deleteCompetitor(competitor.id)">Eliminar</button>
-                                            </div>
-                                        </div>
+                                    <div class="bpi-panel">
+                                        <div class="bpi-panel__title"><h3><i class="fa fa-usd"/> Precios y Stock</h3></div>
                                         <div class="bpi-grid bpi-grid--3">
-                                            <div><strong>Precio:</strong> <t t-esc="competitor.competitorPrice || '-'"/></div>
-                                            <div><strong>SEO:</strong> <t t-esc="competitor.seoScore || 0"/></div>
-                                            <div><strong>Status:</strong> <t t-esc="competitor.scrapeStatus || '-'"/></div>
+                                            <div>
+                                                <label>Precio (USD)</label>
+                                                <input class="bpi-input" type="number" step="0.01" t-model="state.productForm.priceUsd"/>
+                                            </div>
+                                            <div>
+                                                <label>Precio Anterior (USD)</label>
+                                                <input class="bpi-input" type="number" step="0.01" t-model="state.productForm.previousPriceUsd"/>
+                                            </div>
+                                            <div>
+                                                <label>Costo (USD)</label>
+                                                <input class="bpi-input" type="number" step="0.01" t-model="state.productForm.costUsd"/>
+                                            </div>
                                         </div>
-                                        <p><strong>Título:</strong> <t t-esc="competitor.competitorTitle || '-'"/></p>
-                                        <p><strong>Descripción:</strong> <t t-esc="competitor.competitorDescription || '-'"/></p>
-                                        <p><strong>Fortalezas:</strong> <t t-esc="(competitor.strengthsVsUs || []).join(', ') || '-'"/></p>
-                                        <p><strong>Debilidades:</strong> <t t-esc="(competitor.weaknessesVsUs || []).join(', ') || '-'"/></p>
+                                        <div class="bpi-form-grid">
+                                            <label>Stock</label>
+                                            <input class="bpi-input" type="number" t-model="state.productForm.qtyAvailable" disabled="disabled"/>
+                                            <div class="bpi-inline-switch bpi-inline-switch--spread">
+                                                <span>Producto Destacado</span>
+                                                <label class="bpi-toggle">
+                                                    <input type="checkbox" t-model="state.productForm.featured"/>
+                                                    <span class="bpi-toggle__track"><span class="bpi-toggle__thumb"/></span>
+                                                </label>
+                                            </div>
+                                            <div class="bpi-inline-switch bpi-inline-switch--spread">
+                                                <span>Publicado en Tienda</span>
+                                                <label class="bpi-toggle">
+                                                    <input type="checkbox" t-model="state.productForm.isPublished"/>
+                                                    <span class="bpi-toggle__track"><span class="bpi-toggle__thumb"/></span>
+                                                </label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-
-                                <div class="bpi-card" t-if="state.strategy">
-                                    <h3>Estrategia competitiva</h3>
-                                    <p><strong>Resumen:</strong> <t t-esc="state.strategy.overallStrategy || '-'"/></p>
-                                    <p><strong>Posición:</strong> <t t-esc="state.strategy.competitivePosition || '-'"/></p>
-                                    <p><strong>Title recomendado:</strong> <t t-esc="state.strategy.seoStrategy &amp;&amp; state.strategy.seoStrategy.recommendedTitle || '-'"/></p>
-                                    <p><strong>Description recomendada:</strong> <t t-esc="state.strategy.seoStrategy &amp;&amp; state.strategy.seoStrategy.recommendedDescription || '-'"/></p>
-                                    <p><strong>Primary keywords:</strong> <t t-esc="(state.strategy.seoStrategy &amp;&amp; state.strategy.seoStrategy.primaryKeywords || []).join(', ') || '-'"/></p>
-                                    <p><strong>Acciones inmediatas:</strong> <t t-esc="(state.strategy.immediateActions || []).join(', ') || '-'"/></p>
+                                <div class="bpi-panel bpi-panel--success">
+                                    <div class="bpi-margin-card">
+                                        <div>
+                                            <span>Margen Calculado</span>
+                                            <strong t-esc="formatPercent(detailMargin())"/>
+                                        </div>
+                                        <div class="bpi-margin-card__aside">
+                                            <p t-esc="'Beneficio: ' + formatUSD((Number(product.priceUsd || 0) - Number(product.costUsd || 0)))"/>
+                                            <p t-esc="'PVP: ' + formatUSD(product.priceUsd || 0) + ' / Costo: ' + formatUSD(product.costUsd || 0)"/>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </t>
+                            </t>
 
-                        <t t-if="state.activeTab === 'chat'">
-                            <div class="bpi-panel">
-                                <div class="bpi-panel__header">
+                            <t t-if="state.activeTab === 'categorization'">
+                                <div class="bpi-section-head bpi-section-head--between">
                                     <div>
-                                        <h2>Agente IA por producto</h2>
-                                        <p>Chat contextual para contenido, pricing, promociones y posicionamiento.</p>
+                                        <h3><i class="fa fa-sitemap"/> Categorizacion Inteligente</h3>
+                                        <span t-att-class="'bpi-inline-badge ' + (state.categoryForm.manualMode ? 'bpi-inline-badge--amber' : 'bpi-inline-badge--green')" t-esc="state.categoryForm.manualMode ? 'Manual' : 'Automatico'"/>
+                                    </div>
+                                    <div class="bpi-inline-switch">
+                                        <span>Modo Manual</span>
+                                        <label class="bpi-toggle">
+                                            <input type="checkbox" t-att-checked="state.categoryForm.manualMode" t-on-change="toggleManualMode"/>
+                                            <span class="bpi-toggle__track"><span class="bpi-toggle__thumb"/></span>
+                                        </label>
                                     </div>
                                 </div>
-                                <div class="bpi-chat">
-                                    <div class="bpi-chat__actions">
-                                        <button type="button" class="btn btn-secondary" t-foreach="quickActions" t-as="action" t-key="action" t-on-click="() => this.sendQuickAction(action)">
-                                            <t t-esc="action"/>
+
+                                <div class="bpi-grid bpi-grid--2">
+                                    <div class="bpi-panel">
+                                        <div class="bpi-panel__title">
+                                            <h3><i class="fa fa-dot-circle-o"/> Nichos de Mercado</h3>
+                                            <p>Selecciona los nichos donde se vendera este producto</p>
+                                        </div>
+                                        <div class="bpi-stack">
+                                            <button type="button" t-foreach="nicheOptions" t-as="niche" t-key="niche.id" t-att-class="'bpi-choice-card ' + (state.categoryForm.niches.includes(niche.id) ? 'is-selected' : '')" t-on-click="() => this.toggleNiche(niche.id)">
+                                                <span class="bpi-choice-card__icon"><i t-att-class="'fa ' + niche.icon"/></span>
+                                                <span t-esc="niche.label"/>
+                                                <i class="fa fa-circle-o bpi-choice-card__radio"/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="bpi-panel">
+                                        <div class="bpi-panel__title">
+                                            <h3><i class="fa fa-folder-open-o"/> Tipo y Subcategoria</h3>
+                                            <p>Clasificacion del producto</p>
+                                        </div>
+                                        <div class="bpi-form-grid">
+                                            <label>Tipo de Producto</label>
+                                            <select class="bpi-input" t-model="state.categoryForm.type">
+                                                <option value="">Seleccionar tipo</option>
+                                                <option t-foreach="typeOptions" t-as="option" t-key="option.value" t-att-value="option.value" t-esc="option.label"/>
+                                            </select>
+                                            <label>Subcategoria</label>
+                                            <select class="bpi-input" t-model="state.categoryForm.subcategory">
+                                                <option value="">Seleccionar subcategoria</option>
+                                                <option t-foreach="subcategoryOptions" t-as="option" t-key="option.value" t-att-value="option.value" t-esc="option.label"/>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bpi-panel bpi-panel--footer">
+                                    <div>
+                                        <p class="bpi-muted" t-if="!state.categoryForm.manualMode">Modo automatico: Nancy AI clasificara el producto.</p>
+                                        <p class="bpi-muted" t-if="state.categoryForm.manualMode">Modo manual: define nichos y taxonomia desde esta pantalla.</p>
+                                    </div>
+                                    <div class="bpi-footer-actions">
+                                        <button type="button" class="bpi-button bpi-button--secondary" t-on-click="reclassifyCategory" t-att-disabled="state.categoryBusy">
+                                            <i class="fa fa-refresh"/>
+                                            <span>Reclasificar con IA</span>
+                                        </button>
+                                        <button type="button" class="bpi-button bpi-button--primary" t-on-click="saveCategoryOnly" t-att-disabled="state.categoryBusy">
+                                            <i class="fa fa-floppy-o"/>
+                                            <span>Guardar Categorizacion</span>
                                         </button>
                                     </div>
-                                    <div class="bpi-chat__messages">
-                                        <div t-foreach="state.chatMessages" t-as="message" t-key="message.content + message.role"
-                                             t-att-class="'bpi-chat__message ' + (message.role === 'user' ? 'is-user' : 'is-assistant')">
-                                            <span t-esc="message.content"/>
-                                        </div>
-                                        <div class="bpi-chat__message is-assistant" t-if="state.chatSending">Pensando...</div>
+                                </div>
+                            </t>
+
+                            <t t-if="state.activeTab === 'content'">
+                                <div class="bpi-panel">
+                                    <div class="bpi-panel__title">
+                                        <h3><i class="fa fa-magic"/> Nancy AI Studio</h3>
+                                        <p>Genera descripciones optimizadas para SEO y GEO</p>
                                     </div>
-                                    <div class="bpi-chat__composer">
-                                        <textarea class="form-control" rows="3" t-model="state.chatInput"/>
-                                        <button type="button" class="btn btn-primary" t-on-click="sendChat" t-att-disabled="state.chatSending">Enviar</button>
+                                    <div class="bpi-grid bpi-grid--2">
+                                        <div>
+                                            <label>Tono</label>
+                                            <select class="bpi-input" t-model="state.contentForm.tone">
+                                                <option value="profesional">Profesional</option>
+                                                <option value="tecnico">Tecnico</option>
+                                                <option value="comercial">Comercial</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label>Audiencia</label>
+                                            <select class="bpi-input" t-model="state.contentForm.audience">
+                                                <option value="clinicas">Clinicas Dentales</option>
+                                                <option value="laboratorios">Laboratorios</option>
+                                                <option value="estudiantes">Estudiantes</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="bpi-button bpi-button--primary bpi-button--full" t-on-click="generateContent" t-att-disabled="state.contentBusy">
+                                        <i class="fa fa-magic"/>
+                                        <span t-if="!state.contentBusy">Generar Descripcion con Nancy AI</span>
+                                        <span t-else="">Generando...</span>
+                                    </button>
+                                    <div class="bpi-form-grid">
+                                        <label>Nombre del Producto</label>
+                                        <input class="bpi-input" t-model="state.contentForm.name"/>
+                                        <label>Descripcion Optimizada</label>
+                                        <textarea class="bpi-textarea bpi-textarea--mono" rows="11" t-model="state.contentForm.description"/>
+                                        <p class="bpi-muted" t-esc="(state.contentForm.description || '').split(/\\s+/).filter(Boolean).length + ' palabras · Optimizado para SEO y motores de IA (GEO)'"/>
+                                    </div>
+                                    <button type="button" class="bpi-button bpi-button--secondary bpi-button--full" t-on-click="saveContentOnly" t-att-disabled="state.contentBusy">
+                                        <i class="fa fa-floppy-o"/>
+                                        <span>Guardar Cambios</span>
+                                    </button>
+                                </div>
+
+                                <div class="bpi-panel">
+                                    <div class="bpi-panel__title">
+                                        <h3><i class="fa fa-question-circle-o"/> Preguntas Frecuentes (FAQ)</h3>
+                                        <p>Preguntas y respuestas para SEO y GEO</p>
+                                    </div>
+                                    <t t-if="state.contentForm.faqs.length">
+                                        <div class="bpi-faq-editor">
+                                            <div class="bpi-faq-editor__item" t-foreach="state.contentForm.faqs" t-as="faq" t-key="faq_index">
+                                                <div class="bpi-faq-editor__row">
+                                                    <div class="bpi-faq-editor__field">
+                                                        <label>Pregunta</label>
+                                                        <textarea class="bpi-textarea" rows="2" t-att-value="faq.question" t-on-input="(ev) => this.updateFaq(faq_index, 'question', ev.target.value)"/>
+                                                    </div>
+                                                    <button type="button" class="bpi-icon-button" t-on-click="() => this.removeFaq(faq_index)"><i class="fa fa-times"/></button>
+                                                </div>
+                                                <div class="bpi-faq-editor__field">
+                                                    <label>Respuesta</label>
+                                                    <textarea class="bpi-textarea" rows="3" t-att-value="faq.answer" t-on-input="(ev) => this.updateFaq(faq_index, 'answer', ev.target.value)"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="bpi-button bpi-button--secondary bpi-button--full" t-on-click="addFaq">
+                                            <i class="fa fa-plus"/>
+                                            <span>Agregar Pregunta</span>
+                                        </button>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="bpi-empty-state">
+                                            <i class="fa fa-question-circle-o"/>
+                                            <p>No hay preguntas frecuentes</p>
+                                            <div class="bpi-footer-actions">
+                                                <button type="button" class="bpi-button bpi-button--secondary" t-on-click="addFaq"><i class="fa fa-plus"/> Agregar Pregunta</button>
+                                                <button type="button" class="bpi-button bpi-button--primary" t-on-click="generateFaq" t-att-disabled="state.faqBusy"><i class="fa fa-magic"/> Generar con Nancy AI</button>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+
+                            <t t-if="state.activeTab === 'images'">
+                                <div class="bpi-panel">
+                                    <div class="bpi-panel__title bpi-panel__title--between">
+                                        <h3>Galeria de Imagenes</h3>
+                                        <div class="bpi-footer-actions">
+                                            <button type="button" class="bpi-button bpi-button--secondary" t-on-click="() => this.generateImage(true)" t-att-disabled="state.imageBusy"><i class="fa fa-magic"/> Nano Banana</button>
+                                            <button type="button" class="bpi-button bpi-button--primary" t-on-click="() => this.generateImage(false)" t-att-disabled="state.imageBusy"><i class="fa fa-magic"/> Generar con Nancy AI</button>
+                                        </div>
+                                    </div>
+                                    <div class="bpi-grid bpi-grid--gallery">
+                                        <div class="bpi-gallery-preview">
+                                            <t t-if="state.imageForm.selectedGalleryUrl">
+                                                <img t-att-src="state.imageForm.selectedGalleryUrl" t-att-alt="product.name"/>
+                                            </t>
+                                            <t t-else="">
+                                                <div class="bpi-empty-state"><i class="fa fa-picture-o"/><p>Sin imagen</p></div>
+                                            </t>
+                                        </div>
+                                        <div class="bpi-gallery-sidebar">
+                                            <label>Todas las imagenes</label>
+                                            <div class="bpi-thumb-grid">
+                                                <button type="button" class="bpi-thumb" t-foreach="currentImages()" t-as="image" t-key="image.id" t-att-class="state.imageForm.selectedGalleryUrl === image.imageUrl ? 'bpi-thumb is-selected' : 'bpi-thumb'" t-on-click="() => this.selectGalleryImage(image.imageUrl)">
+                                                    <img t-att-src="image.imageUrl" t-att-alt="image.name"/>
+                                                </button>
+                                            </div>
+                                            <label>Anadir imagen por URL</label>
+                                            <div class="bpi-inline-field">
+                                                <input class="bpi-input" type="url" placeholder="https://..." t-model="state.imageForm.addImageUrl"/>
+                                                <button type="button" class="bpi-button bpi-button--secondary" t-on-click="addImageUrl" t-att-disabled="state.imageBusy">Anadir</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </t>
+
+                                <div class="bpi-panel" t-if="(product.referenceImages || []).length">
+                                    <div class="bpi-panel__title"><h3>Imagenes de Referencia</h3></div>
+                                    <div class="bpi-reference-grid">
+                                        <button type="button" class="bpi-reference-card" t-foreach="product.referenceImages" t-as="reference" t-key="reference.token" t-att-class="state.imageForm.selectedReferences.includes(reference.token) ? 'bpi-reference-card is-selected' : 'bpi-reference-card'" t-on-click="() => this.toggleReference(reference.token)">
+                                            <img t-att-src="reference.url" t-att-alt="reference.label"/>
+                                            <span t-esc="reference.label"/>
+                                        </button>
+                                    </div>
+                                    <label>Prompt de generacion</label>
+                                    <textarea class="bpi-textarea" rows="4" t-model="state.imageForm.prompt"/>
+                                </div>
+
+                                <div class="bpi-panel" t-if="state.imageForm.generatedPreviewUrl">
+                                    <div class="bpi-panel__title"><h3>Preview Generado</h3></div>
+                                    <div class="bpi-grid bpi-grid--2">
+                                        <div class="bpi-preview-card">
+                                            <label>Original</label>
+                                            <img t-att-src="product.mainImageUrl" t-att-alt="product.name"/>
+                                        </div>
+                                        <div class="bpi-preview-card">
+                                            <label>Nuevo preview</label>
+                                            <img t-att-src="state.imageForm.generatedPreviewUrl" t-att-alt="Preview"/>
+                                        </div>
+                                    </div>
+                                    <div class="bpi-footer-actions">
+                                        <button type="button" class="bpi-button bpi-button--primary" t-on-click="approveImage" t-att-disabled="state.imageBusy"><i class="fa fa-check"/> Aprobar y guardar</button>
+                                        <button type="button" class="bpi-button bpi-button--secondary" t-on-click="() => this.state.imageForm.generatedPreviewUrl = ''"><i class="fa fa-times"/> Descartar</button>
+                                    </div>
+                                </div>
+
+                                <div class="bpi-panel">
+                                    <div class="bpi-panel__title"><h3><i class="fa fa-video-camera"/> Video del producto</h3></div>
+                                    <div class="bpi-inline-field">
+                                        <input class="bpi-input" type="url" placeholder="https://www.youtube.com/watch?v=..." t-model="state.imageForm.videoUrl"/>
+                                        <button type="button" class="bpi-button bpi-button--secondary" t-on-click="saveVideo" t-att-disabled="state.imageBusy">Guardar video</button>
+                                    </div>
+                                    <iframe t-if="product.videoEmbedUrl" class="bpi-video-frame" t-att-src="product.videoEmbedUrl" allowfullscreen="allowfullscreen"/>
+                                </div>
+                            </t>
+
+                            <t t-if="state.activeTab === 'seo'">
+                                <div class="bpi-panel">
+                                    <div class="bpi-panel__title"><h3><i class="fa fa-globe"/> SEO &amp; Metadata</h3></div>
+                                    <div class="bpi-form-grid">
+                                        <div class="bpi-inline-meta">
+                                            <label>Meta Title</label>
+                                            <span t-esc="(state.seoForm.seoTitle || '').length + '/60 caracteres'"/>
+                                        </div>
+                                        <input class="bpi-input" maxlength="60" t-model="state.seoForm.seoTitle"/>
+                                        <div class="bpi-inline-meta">
+                                            <label>Meta Description</label>
+                                            <span t-esc="(state.seoForm.seoDescription || '').length + '/160 caracteres'"/>
+                                        </div>
+                                        <textarea class="bpi-textarea" rows="4" maxlength="160" t-model="state.seoForm.seoDescription"/>
+                                        <label>Slug (URL)</label>
+                                        <div class="bpi-inline-field">
+                                            <input class="bpi-input" t-model="state.seoForm.slug"/>
+                                            <button type="button" class="bpi-icon-button" t-on-click="() => this.regenerateSlug('seo')"><i class="fa fa-refresh"/></button>
+                                        </div>
+                                        <label>Keywords SEO</label>
+                                        <textarea class="bpi-textarea" rows="3" t-model="state.seoForm.seoKeywords"/>
+                                        <label>Titulo GEO</label>
+                                        <input class="bpi-input" t-model="state.seoForm.geoTitle"/>
+                                        <label>Descripcion GEO</label>
+                                        <textarea class="bpi-textarea" rows="3" t-model="state.seoForm.geoDescription"/>
+                                        <label>Features GEO</label>
+                                        <textarea class="bpi-textarea" rows="3" t-model="state.seoForm.geoFeatures"/>
+                                    </div>
+                                    <div class="bpi-footer-actions">
+                                        <button type="button" class="bpi-button bpi-button--primary bpi-button--grow" t-on-click="analyzeSeo" t-att-disabled="state.seoBusy"><i class="fa fa-magic"/> Optimizar SEO con Nancy AI</button>
+                                        <button type="button" class="bpi-icon-button" t-on-click="saveSeoOnly" t-att-disabled="state.seoBusy"><i class="fa fa-floppy-o"/></button>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <t t-if="state.activeTab === 'competitors'">
+                                <div class="bpi-panel bpi-panel--hero">
+                                    <div class="bpi-hero-card">
+                                        <div class="bpi-hero-card__icon"><i class="fa fa-search"/></div>
+                                        <div>
+                                            <h3><i class="fa fa-globe"/> Descubrimiento Automatico de Competidores</h3>
+                                            <p>Busca automaticamente productos similares en el mercado argentino usando inteligencia artificial.</p>
+                                            <button type="button" class="bpi-button bpi-button--success" t-on-click="discoverCompetitors" t-att-disabled="state.competitorBusy"><i class="fa fa-search"/> Descubrir Competidores</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bpi-panel">
+                                    <div class="bpi-panel__title">
+                                        <h3><i class="fa fa-bullseye"/> Competitor Intelligence</h3>
+                                        <p>Monitoriza precios y SEO de competidores</p>
+                                    </div>
+                                    <div class="bpi-inline-field">
+                                        <input class="bpi-input" type="url" placeholder="URL del producto competidor (ej: https://dentaltix.com/producto...)" t-model="state.competitorForm.competitorUrl"/>
+                                        <button type="button" class="bpi-button bpi-button--danger" t-on-click="() => this.addCompetitor()" t-att-disabled="state.competitorBusy"><i class="fa fa-plus"/> Anadir</button>
+                                    </div>
+
+                                    <t t-if="state.competitorForm.discoveredCompetitors.length">
+                                        <div class="bpi-stack bpi-stack--md">
+                                            <div class="bpi-panel__title"><h3>Competidores Encontrados</h3><p t-if="state.competitorForm.discoveryQuery" t-esc="'Busqueda: ' + state.competitorForm.discoveryQuery"/></div>
+                                            <div class="bpi-list-card" t-foreach="state.competitorForm.discoveredCompetitors" t-as="item" t-key="item.url">
+                                                <div>
+                                                    <strong t-esc="item.name"/>
+                                                    <p t-esc="item.description || item.domain"/>
+                                                </div>
+                                                <button type="button" class="bpi-button bpi-button--secondary" t-on-click="() => this.addCompetitor(item.name, item.url)">Agregar</button>
+                                            </div>
+                                        </div>
+                                    </t>
+
+                                    <t t-if="currentCompetitors().length">
+                                        <div class="bpi-competitor-list">
+                                            <div class="bpi-competitor-row" t-foreach="currentCompetitors()" t-as="competitor" t-key="competitor.id">
+                                                <div class="bpi-competitor-row__main">
+                                                    <strong t-esc="competitor.competitorName"/>
+                                                    <p t-esc="competitor.competitorUrl"/>
+                                                </div>
+                                                <div class="bpi-competitor-row__metrics">
+                                                    <div><span>Precio</span><strong t-esc="competitor.competitorPrice ? formatARS(competitor.competitorPrice) : 'Sin precio'"/></div>
+                                                    <div><span>SEO</span><strong t-esc="(competitor.seoScore || 0) + '/100'"/></div>
+                                                    <div><span>Status</span><strong t-esc="competitor.scrapeStatus || 'pending'"/></div>
+                                                </div>
+                                                <div class="bpi-footer-actions">
+                                                    <button type="button" class="bpi-button bpi-button--secondary" t-on-click="() => this.scrapeCompetitor(competitor.id)">Scrapear</button>
+                                                    <button type="button" class="bpi-button bpi-button--secondary" t-on-click="() => this.analyzeCompetitor(competitor.id)">Analizar</button>
+                                                    <button type="button" class="bpi-button bpi-button--ghost" t-on-click="() => this.deleteCompetitor(competitor.id)">Eliminar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="bpi-empty-state">
+                                            <i class="fa fa-bullseye"/>
+                                            <p>No hay competidores monitorizados</p>
+                                            <span>Anade URLs de productos competidores para comparar.</span>
+                                        </div>
+                                    </t>
+                                </div>
+
+                                <div class="bpi-panel">
+                                    <div class="bpi-panel__title bpi-panel__title--between">
+                                        <div>
+                                            <h3><i class="fa fa-line-chart"/> Estrategia Competitiva</h3>
+                                            <p>Resumen operativo para pricing y posicionamiento</p>
+                                        </div>
+                                        <button type="button" class="bpi-button bpi-button--primary" t-on-click="generateStrategy" t-att-disabled="state.strategyBusy"><i class="fa fa-magic"/> Generar estrategia</button>
+                                    </div>
+                                    <t t-if="currentStrategy().overallStrategy">
+                                        <div class="bpi-strategy-grid">
+                                            <div class="bpi-strategy-card"><label>Resumen</label><p t-esc="currentStrategy().overallStrategy"/></div>
+                                            <div class="bpi-strategy-card"><label>Posicion</label><p t-esc="currentStrategy().competitivePosition || '-'"/></div>
+                                            <div class="bpi-strategy-card"><label>Titulo recomendado</label><p t-esc="currentStrategy().seoStrategy &amp;&amp; currentStrategy().seoStrategy.recommendedTitle || '-'"/></div>
+                                            <div class="bpi-strategy-card"><label>Description recomendada</label><p t-esc="currentStrategy().seoStrategy &amp;&amp; currentStrategy().seoStrategy.recommendedDescription || '-'"/></div>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="bpi-empty-state">
+                                            <i class="fa fa-lightbulb-o"/>
+                                            <p>Genera una estrategia para ver recomendaciones de Nancy AI.</p>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+
+                            <t t-if="state.activeTab === 'analytics'">
+                                <div class="bpi-kpi-grid bpi-kpi-grid--analytics">
+                                    <div class="bpi-kpi-card">
+                                        <div class="bpi-kpi-card__copy">
+                                            <span>Precio (USD)</span>
+                                            <strong t-esc="formatUSD(product.priceUsd || 0)"/>
+                                        </div>
+                                    </div>
+                                    <div class="bpi-kpi-card bpi-kpi-card--success">
+                                        <div class="bpi-kpi-card__copy">
+                                            <span>Margen</span>
+                                            <strong t-esc="formatPercent(detailMargin())"/>
+                                            <small t-esc="'Costo: ' + formatUSD(product.costUsd || 0)"/>
+                                        </div>
+                                    </div>
+                                    <div class="bpi-kpi-card">
+                                        <div class="bpi-kpi-card__copy">
+                                            <span>Stock</span>
+                                            <strong t-esc="formatNumber(product.qtyAvailable || 0)"/>
+                                            <small t-esc="product.inStock ? 'En stock' : 'Stock bajo'"/>
+                                        </div>
+                                    </div>
+                                    <div class="bpi-kpi-card bpi-kpi-card--success">
+                                        <div class="bpi-kpi-card__copy">
+                                            <span>SEO Score</span>
+                                            <strong t-esc="(seoData.seoScore || 0) + '/100'"/>
+                                        </div>
+                                        <div class="bpi-progress"><span t-att-style="'width: ' + (seoData.seoScore || 0) + '%;'"/></div>
+                                    </div>
+                                </div>
+
+                                <div class="bpi-panel" t-if="currentCompetitors().length">
+                                    <div class="bpi-panel__title"><h3><i class="fa fa-bullseye"/> Analisis Competitivo</h3></div>
+                                    <div class="bpi-grid bpi-grid--4">
+                                        <div class="bpi-metric-box"><span>Tu Precio</span><strong t-esc="formatUSD(product.priceUsd || 0)"/></div>
+                                        <div class="bpi-metric-box"><span>Media Comp.</span><strong t-esc="formatUSD(averageCompetitorPrice())"/></div>
+                                        <div class="bpi-metric-box"><span>vs Media</span><strong t-esc="priceVsCompetition() !== null ? formatPercent(priceVsCompetition()) : '-'"/></div>
+                                        <div class="bpi-metric-box"><span>Rango</span><strong t-esc="formatUSD(competitorPriceRange().min) + ' - ' + formatUSD(competitorPriceRange().max)"/></div>
+                                    </div>
+                                    <div class="bpi-range-bar">
+                                        <span class="bpi-range-bar__fill"/>
+                                        <span class="bpi-range-bar__marker" t-att-style="priceMarkerStyle()"/>
+                                    </div>
+                                </div>
+
+                                <div class="bpi-panel bpi-panel--insights">
+                                    <div class="bpi-panel__title">
+                                        <h3><i class="fa fa-sun-o"/> Nancy AI Insights</h3>
+                                        <p>Analisis inteligente basado en tus datos</p>
+                                    </div>
+                                    <t t-if="analyticsInsights().length">
+                                        <div class="bpi-insight-list">
+                                            <div class="bpi-insight-item" t-foreach="analyticsInsights()" t-as="insight" t-key="insight.title">
+                                                <i t-att-class="'fa ' + (insight.type === 'warning' ? 'fa-exclamation-triangle' : 'fa-check-circle')"/>
+                                                <div>
+                                                    <strong t-esc="insight.title"/>
+                                                    <p t-esc="insight.description"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <p class="bpi-muted">Todavia no hay suficientes datos para generar insights.</p>
+                                    </t>
+                                </div>
+                            </t>
+                        </div>
                     </div>
-                </div>
+                </t>
             </t>
         </div>
     </t>

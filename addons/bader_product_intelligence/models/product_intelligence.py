@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import base64
-import imghdr
 import json
 import logging
 import os
@@ -298,8 +297,19 @@ class BPIService(models.AbstractModel):
             raw = base64.b64decode(encoded)
         except Exception:
             return "image/png"
-        image_type = imghdr.what(None, raw)
-        return "image/%s" % image_type if image_type else "image/png"
+        signatures = (
+            (b"\x89PNG\r\n\x1a\n", "image/png"),
+            (b"\xff\xd8\xff", "image/jpeg"),
+            (b"GIF87a", "image/gif"),
+            (b"GIF89a", "image/gif"),
+            (b"RIFF", "image/webp"),
+        )
+        for signature, mime_type in signatures:
+            if raw.startswith(signature):
+                if mime_type == "image/webp" and raw[8:12] != b"WEBP":
+                    continue
+                return mime_type
+        return "image/png"
 
     @api.model
     def _binary_to_inline_data(self, binary_value):
@@ -580,6 +590,258 @@ Reglas:
         return product.bpi_build_payload()["seoData"]
 
     @api.model
+    def dashboard_payload(self):
+        exchange_rate = self.env["product.template"]._bpi_exchange_rate()
+        products = self.env["product.template"].with_context(active_test=False).search(
+            [("sale_ok", "=", True)],
+            order="website_sequence asc, name asc, id desc",
+        )
+        rows = [product.bpi_dashboard_payload(exchange_rate=exchange_rate) for product in products]
+        return {
+            "products": rows,
+            "exchangeRate": exchange_rate,
+            "stats": {
+                "total": len(rows),
+                "published": len([row for row in rows if row.get("isPublished")]),
+                "featured": len([row for row in rows if row.get("featured")]),
+                "pending": len([row for row in rows if not row.get("isPublished")]),
+            },
+        }
+
+    @api.model
+    def sync_catalog(self):
+        return self.dashboard_payload()
+
+    @api.model
+    def update_exchange_rate(self, exchange_rate):
+        value = int(float(exchange_rate or 1650))
+        self.env["ir.config_parameter"].sudo().set_param("bader_product_intelligence.exchange_rate", value)
+        return {"success": True, "exchangeRate": value}
+
+    @api.model
+    def update_product(self, product, values):
+        product.ensure_one()
+        values = values or {}
+        write_values = {}
+        if "name" in values:
+            write_values["name"] = (values.get("name") or "").strip() or product.name
+        if "sku" in values:
+            write_values["default_code"] = (values.get("sku") or "").strip() or False
+        if "slug" in values:
+            write_values["bpi_slug"] = product._bpi_generate_slug_value(values.get("slug"))
+        if "brand" in values:
+            write_values["bpi_brand_name"] = (values.get("brand") or "Bader").strip() or "Bader"
+        if "priceUsd" in values:
+            write_values["list_price"] = float(values.get("priceUsd") or 0.0)
+        if "previousPriceUsd" in values:
+            write_values["bpi_previous_price"] = float(values.get("previousPriceUsd") or 0.0)
+        if "isPublished" in values:
+            write_values["website_published"] = bool(values.get("isPublished"))
+        if "featured" in values:
+            write_values["bpi_featured"] = bool(values.get("featured"))
+
+        category_id = values.get("categoryId")
+        if category_id:
+            write_values["public_categ_ids"] = [(6, 0, [int(category_id)])]
+        elif "categoryId" in values:
+            write_values["public_categ_ids"] = [(5, 0, 0)]
+
+        if write_values:
+            product.write(write_values)
+
+        if "costUsd" in values:
+            cost_value = float(values.get("costUsd") or 0.0)
+            if product.product_variant_id:
+                product.product_variant_id.write({"standard_price": cost_value})
+            else:
+                product.write({"standard_price": cost_value})
+
+        if "description" in values:
+            description_value = values.get("description") or False
+            product.write(
+                {
+                    "description_sale": description_value,
+                    "bpi_ai_generated_description": description_value,
+                }
+            )
+
+        return product.bpi_build_payload()
+
+    @api.model
+    def generate_content(self, product, tone="profesional", audience="clinicas"):
+        product.ensure_one()
+        prompt = """Sos Nancy AI, copywriter de e-commerce dental para Bader Argentina.
+
+Devolve solo JSON valido:
+{
+  "name": "",
+  "description": ""
+}
+
+Producto:
+- Nombre: %(name)s
+- SKU: %(sku)s
+- Categoria: %(category)s
+- Precio USD: %(price)s
+- Descripcion actual: %(description)s
+
+Tono: %(tone)s
+Audiencia: %(audience)s
+
+Reglas:
+- Espanol argentino.
+- Mantene un enfoque comercial y tecnico.
+- El nombre puede ajustarse ligeramente para mejorar claridad.
+- La descripcion debe tener entre 140 y 260 palabras.
+- Incluir beneficios, uso recomendado y credenciales de marca.
+- No inventes prestaciones clinicas que no surjan del contexto.
+""" % {
+            "name": product.name,
+            "sku": product.default_code or "N/A",
+            "category": product.public_categ_ids[:1].complete_name if product.public_categ_ids else "Sin categoria",
+            "price": product.list_price,
+            "description": product.description_sale or product.description or "Sin descripcion",
+            "tone": tone or "profesional",
+            "audience": audience or "clinicas",
+        }
+        response = self._gemini_json(prompt)
+        return {
+            "name": response.get("name") or product.name,
+            "description": response.get("description") or product.description_sale or product.description or "",
+            "tone": tone or "profesional",
+            "audience": audience or "clinicas",
+        }
+
+    @api.model
+    def _save_faq_items(self, product, faqs):
+        product.bpi_faq_ids.unlink()
+        commands = []
+        for index, faq in enumerate(faqs or []):
+            question = (faq or {}).get("question", "").strip()
+            answer = (faq or {}).get("answer", "").strip()
+            if question and answer:
+                commands.append(
+                    (
+                        0,
+                        0,
+                        {
+                            "question": question,
+                            "answer": answer,
+                            "sequence": index * 10 + 10,
+                        },
+                    )
+                )
+        if commands:
+            product.write({"bpi_faq_ids": commands})
+
+    @api.model
+    def save_content(self, product, values):
+        product.ensure_one()
+        values = values or {}
+        write_values = {}
+        if "name" in values:
+            write_values["name"] = (values.get("name") or "").strip() or product.name
+        if "description" in values:
+            write_values["description_sale"] = values.get("description") or False
+            write_values["bpi_ai_generated_description"] = values.get("description") or False
+        if "audience" in values:
+            write_values["bpi_ai_target_audience"] = values.get("audience") or "clinicas"
+        if "tone" in values:
+            write_values["bpi_ai_tone"] = values.get("tone") or "profesional"
+        if write_values:
+            product.write(write_values)
+        if "faqs" in values:
+            self._save_faq_items(product, values.get("faqs") or [])
+        return product.bpi_build_payload()
+
+    @api.model
+    def generate_faq(self, product, audience="clinicas"):
+        product.ensure_one()
+        prompt = """Sos Nancy AI y tenes que crear preguntas frecuentes de compra para un producto dental.
+
+Devolve solo JSON valido:
+{
+  "faqs": [
+    {"question": "", "answer": ""}
+  ]
+}
+
+Producto:
+- Nombre: %(name)s
+- SKU: %(sku)s
+- Categoria: %(category)s
+- Descripcion: %(description)s
+
+Audiencia: %(audience)s
+
+Reglas:
+- Espanol argentino.
+- Entre 4 y 6 FAQs.
+- Preguntas claras, orientadas a compra y uso real.
+- Respuestas cortas, directas y con tono profesional.
+""" % {
+            "name": product.name,
+            "sku": product.default_code or "N/A",
+            "category": product.public_categ_ids[:1].complete_name if product.public_categ_ids else "Sin categoria",
+            "description": product.description_sale or product.description or "Sin descripcion",
+            "audience": audience or "clinicas",
+        }
+        response = self._gemini_json(prompt)
+        return {"faqs": response.get("faqs") or []}
+
+    @api.model
+    def save_category(self, product, values):
+        product.ensure_one()
+        values = values or {}
+        product.write(
+            {
+                "bpi_intelligent_niches": values.get("niches") or [],
+                "bpi_intelligent_type": values.get("type") or False,
+                "bpi_intelligent_subcategory": values.get("subcategory") or False,
+                "bpi_intelligent_category_manual": bool(values.get("manualMode")),
+            }
+        )
+        category_id = values.get("categoryId")
+        if category_id:
+            product.write({"public_categ_ids": [(6, 0, [int(category_id)])]})
+        return product.bpi_build_payload()
+
+    @api.model
+    def reclassify_category(self, product):
+        product.ensure_one()
+        prompt = """Sos Nancy AI. Clasifica un producto dental para el catalogo de Bader Argentina.
+
+Devolve solo JSON valido:
+{
+  "niches": [],
+  "type": "",
+  "subcategory": ""
+}
+
+Producto:
+- Nombre: %(name)s
+- Categoria actual: %(category)s
+- Descripcion: %(description)s
+
+Reglas:
+- Niches permitidos: clinica, laboratorio, estudiantes.
+- Type debe ser una familia comercial corta.
+- Subcategory debe ser concreta y entendible para catalogo.
+""" % {
+            "name": product.name,
+            "category": product.public_categ_ids[:1].complete_name if product.public_categ_ids else "Sin categoria",
+            "description": product.description_sale or product.description or "Sin descripcion",
+        }
+        response = self._gemini_json(prompt)
+        values = {
+            "niches": [value for value in (response.get("niches") or []) if value],
+            "type": response.get("type") or False,
+            "subcategory": response.get("subcategory") or False,
+            "manualMode": False,
+        }
+        return self.save_category(product, values)
+
+    @api.model
     def generate_image(self, product, prompt, reference_tokens=None, style="professional", use_pro=False):
         product.ensure_one()
         image_model = self._get_config(
@@ -640,6 +902,33 @@ Reglas:
                 "mime_type": mime_type,
                 "prompt": prompt,
                 "image_type": "ai_generated",
+                "state": "approved",
+                "sequence": (max(product.bpi_image_ids.mapped("sequence")) + 10) if product.bpi_image_ids else 10,
+            }
+        )
+        return {
+            "id": image.id,
+            "imageUrl": "/web/image/bpi.product.image/%s/image_1920" % image.id,
+        }
+
+    @api.model
+    def add_image_from_url(self, product, image_url):
+        product.ensure_one()
+        clean_url = (image_url or "").strip()
+        if not clean_url:
+            raise UserError(_("Ingresa una URL valida para la imagen."))
+        response = requests.get(clean_url, timeout=90)
+        response.raise_for_status()
+        mime_type = (response.headers.get("Content-Type") or "image/png").split(";", 1)[0]
+        encoded = base64.b64encode(response.content).decode()
+        image = self.env["bpi.product.image"].create(
+            {
+                "product_tmpl_id": product.id,
+                "name": _("Imagen externa %s") % fields.Datetime.now(),
+                "image_1920": encoded,
+                "mime_type": mime_type,
+                "prompt": _("Importada desde URL"),
+                "image_type": "reference",
                 "state": "approved",
                 "sequence": (max(product.bpi_image_ids.mapped("sequence")) + 10) if product.bpi_image_ids else 10,
             }

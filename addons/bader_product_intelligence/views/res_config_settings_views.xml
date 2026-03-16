@@ -31,6 +31,14 @@
                                 <field name="bpi_firecrawl_base_url"/>
                             </div>
                         </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="bpi_exchange_rate"/>
+                                <div class="text-muted">Tipo de cambio usado por la interfaz para mostrar precio local en ARS.</div>
+                                <field name="bpi_exchange_rate"/>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </xpath>

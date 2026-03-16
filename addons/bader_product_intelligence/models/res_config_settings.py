@@ -34,4 +34,8 @@ class ResConfigSettings(models.TransientModel):
         default="https://api.firecrawl.dev",
         config_parameter="bader_product_intelligence.firecrawl_base_url",
     )
-
+    bpi_exchange_rate = fields.Integer(
+        string="Tipo de Cambio ARS",
+        default=1650,
+        config_parameter="bader_product_intelligence.exchange_rate",
+    )

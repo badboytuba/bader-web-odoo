@@ -38,7 +38,7 @@
             </section>
         </xpath>
 
-        <xpath expr="//section[@id='bader_pdp_faq']//div[@class='bader-app-faq-list']" position="replace">
+        <xpath expr="//section[@id='bader_pdp_faq']//div[hasclass('bader-app-faq-list')]" position="replace">
             <div class="bader-app-faq-list">
                 <t t-if="product.bpi_faq_ids">
                     <article class="bader-app-faq-item"

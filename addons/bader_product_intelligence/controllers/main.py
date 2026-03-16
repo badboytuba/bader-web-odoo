@@ -31,9 +31,59 @@ class BaderProductIntelligenceController(http.Controller):
             raise MissingError("Imagen no encontrada.")
         return image
 
+    @http.route("/bader_product_intelligence/dashboard", type="json", auth="user")
+    def dashboard(self, **kwargs):
+        self._ensure_manager()
+        return request.env["bpi.service"].dashboard_payload()
+
+    @http.route("/bader_product_intelligence/sync_catalog", type="json", auth="user")
+    def sync_catalog(self, **kwargs):
+        self._ensure_manager()
+        payload = request.env["bpi.service"].sync_catalog()
+        return {"success": True, **payload}
+
+    @http.route("/bader_product_intelligence/update_exchange_rate", type="json", auth="user")
+    def update_exchange_rate(self, exchange_rate=1650, **kwargs):
+        self._ensure_manager()
+        return request.env["bpi.service"].update_exchange_rate(exchange_rate)
+
     @http.route("/bader_product_intelligence/data", type="json", auth="user")
     def data(self, product_tmpl_id, **kwargs):
         return self._product(product_tmpl_id).bpi_build_payload()
+
+    @http.route("/bader_product_intelligence/update_product", type="json", auth="user")
+    def update_product(self, product_tmpl_id, values=None, **kwargs):
+        product = self._product(product_tmpl_id)
+        payload = request.env["bpi.service"].update_product(product, values or {})
+        return {"success": True, **payload}
+
+    @http.route("/bader_product_intelligence/generate_content", type="json", auth="user")
+    def generate_content(self, product_tmpl_id, tone="profesional", audience="clinicas", **kwargs):
+        product = self._product(product_tmpl_id)
+        return {"success": True, **request.env["bpi.service"].generate_content(product, tone=tone, audience=audience)}
+
+    @http.route("/bader_product_intelligence/save_content", type="json", auth="user")
+    def save_content(self, product_tmpl_id, values=None, **kwargs):
+        product = self._product(product_tmpl_id)
+        payload = request.env["bpi.service"].save_content(product, values or {})
+        return {"success": True, **payload}
+
+    @http.route("/bader_product_intelligence/generate_faq", type="json", auth="user")
+    def generate_faq(self, product_tmpl_id, audience="clinicas", **kwargs):
+        product = self._product(product_tmpl_id)
+        return {"success": True, **request.env["bpi.service"].generate_faq(product, audience=audience)}
+
+    @http.route("/bader_product_intelligence/save_category", type="json", auth="user")
+    def save_category(self, product_tmpl_id, values=None, **kwargs):
+        product = self._product(product_tmpl_id)
+        payload = request.env["bpi.service"].save_category(product, values or {})
+        return {"success": True, **payload}
+
+    @http.route("/bader_product_intelligence/reclassify_category", type="json", auth="user")
+    def reclassify_category(self, product_tmpl_id, **kwargs):
+        product = self._product(product_tmpl_id)
+        payload = request.env["bpi.service"].reclassify_category(product)
+        return {"success": True, **payload}
 
     @http.route("/bader_product_intelligence/analyze_seo", type="json", auth="user")
     def analyze_seo(self, product_tmpl_id, target_audience="clinicas", **kwargs):
@@ -69,6 +119,12 @@ class BaderProductIntelligenceController(http.Controller):
     def approve_image(self, product_tmpl_id, image_data_url="", prompt="", **kwargs):
         product = self._product(product_tmpl_id)
         image = request.env["bpi.service"].save_generated_image(product, image_data_url, prompt)
+        return {"success": True, "image": image}
+
+    @http.route("/bader_product_intelligence/add_image_url", type="json", auth="user")
+    def add_image_url(self, product_tmpl_id, image_url="", **kwargs):
+        product = self._product(product_tmpl_id)
+        image = request.env["bpi.service"].add_image_from_url(product, image_url)
         return {"success": True, "image": image}
 
     @http.route("/bader_product_intelligence/delete_image", type="json", auth="user")

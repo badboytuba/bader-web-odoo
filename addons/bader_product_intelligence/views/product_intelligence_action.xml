@@ -5,21 +5,14 @@
         <field name="tag">bader_product_intelligence.action</field>
     </record>
 
-    <record id="action_bpi_products" model="ir.actions.act_window">
-        <field name="name">Productos</field>
-        <field name="res_model">product.template</field>
-        <field name="view_mode">tree,form</field>
-        <field name="context">{'search_default_filter_to_sell': 1}</field>
-    </record>
-
     <record id="action_bpi_categories" model="ir.actions.act_window">
-        <field name="name">Inteligencia de Categorías</field>
+        <field name="name">Inteligencia de Categorias</field>
         <field name="res_model">product.public.category</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="view_bpi_category_tree"/>
     </record>
 
     <menuitem id="menu_bpi_root" name="Producto Intelligence" sequence="48" groups="base.group_system"/>
-    <menuitem id="menu_bpi_products" name="Productos" parent="menu_bpi_root" action="action_bpi_products" sequence="10" groups="base.group_system"/>
-    <menuitem id="menu_bpi_categories" name="Categorías" parent="menu_bpi_root" action="action_bpi_categories" sequence="20" groups="base.group_system"/>
+    <menuitem id="menu_bpi_products" name="Productos" parent="menu_bpi_root" action="action_product_intelligence_client" sequence="10" groups="base.group_system"/>
+    <menuitem id="menu_bpi_categories" name="Categorias" parent="menu_bpi_root" action="action_bpi_categories" sequence="20" groups="base.group_system"/>
 </odoo>
