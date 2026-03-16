@@ -97,14 +97,19 @@ class ProductTemplate(models.Model):
         self.ensure_one()
         if not self.public_categ_ids:
             return self.env["product.public.category"]
-        return self.public_categ_ids.sorted(key=lambda rec: ((rec.complete_name or rec.name or ""), rec.id))[:1]
+        return self.public_categ_ids.sorted(key=lambda rec: ((rec.display_name or rec.name or ""), rec.id))[:1]
+
+    def _bpi_category_display_name(self, category):
+        if not category:
+            return ""
+        return category.display_name or category.name or ""
 
     def _compute_bpi_intelligent_path(self):
         for product in self:
             segments = []
             category = product._bpi_main_category()
             if category:
-                segments.append(category.complete_name or category.name or "")
+                segments.append(product._bpi_category_display_name(category))
             if product.bpi_intelligent_type:
                 segments.append(product.bpi_intelligent_type)
             if product.bpi_intelligent_subcategory:
@@ -208,9 +213,9 @@ class ProductTemplate(models.Model):
             {
                 "id": category.id,
                 "name": category.name,
-                "completeName": category.complete_name or category.name,
+                "completeName": category.display_name or category.name,
             }
-            for category in category_model.search([], order="complete_name asc")
+            for category in category_model.search([], order="name asc, id asc")
         ]
 
     def bpi_dashboard_payload(self, exchange_rate=False):
@@ -225,7 +230,7 @@ class ProductTemplate(models.Model):
             "sku": self.default_code or "",
             "brand": self.bpi_brand_name or "Bader",
             "category": category.name if category else "",
-            "categoryPath": category.complete_name if category else "",
+            "categoryPath": self._bpi_category_display_name(category),
             "priceUsd": price,
             "previousPriceUsd": float(self.bpi_previous_price or 0.0),
             "costUsd": float(self.standard_price or 0.0),
@@ -297,7 +302,7 @@ class ProductTemplate(models.Model):
                 "slug": current_slug,
                 "brand": self.bpi_brand_name or "Bader",
                 "category": category.name if category else "",
-                "categoryPath": category.complete_name if category else "",
+                "categoryPath": self._bpi_category_display_name(category),
                 "categoryId": category.id if category else False,
                 "priceUsd": float(self.list_price or 0.0),
                 "previousPriceUsd": float(self.bpi_previous_price or 0.0),

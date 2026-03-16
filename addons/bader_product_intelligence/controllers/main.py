@@ -32,14 +32,14 @@ class BaderProductIntelligenceController(http.Controller):
         return image
 
     @http.route("/bader_product_intelligence/dashboard", type="json", auth="user")
-    def dashboard(self, **kwargs):
+    def dashboard(self, tab="all", search="", page=1, limit=40, **kwargs):
         self._ensure_manager()
-        return request.env["bpi.service"].dashboard_payload()
+        return request.env["bpi.service"].dashboard_payload(tab=tab, search=search, page=page, limit=limit)
 
     @http.route("/bader_product_intelligence/sync_catalog", type="json", auth="user")
-    def sync_catalog(self, **kwargs):
+    def sync_catalog(self, tab="all", search="", page=1, limit=40, **kwargs):
         self._ensure_manager()
-        payload = request.env["bpi.service"].sync_catalog()
+        payload = request.env["bpi.service"].sync_catalog(tab=tab, search=search, page=page, limit=limit)
         return {"success": True, **payload}
 
     @http.route("/bader_product_intelligence/update_exchange_rate", type="json", auth="user")

@@ -2,7 +2,9 @@
 
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
-import { Component, onWillStart, useState } from "@odoo/owl";
+import { Component, onWillStart, onWillUnmount, useState } from "@odoo/owl";
+
+const DASHBOARD_PAGE_SIZE = 40;
 
 const DETAIL_TABS = [
     { id: "overview", label: "Overview", icon: "fa-bar-chart" },
@@ -59,6 +61,7 @@ class ProductIntelligenceAction extends Component {
         this.nicheOptions = NICHE_OPTIONS;
         this.typeOptions = TYPE_OPTIONS;
         this.subcategoryOptions = SUBCATEGORY_OPTIONS;
+        this.dashboardReloadTimer = null;
 
         this.state = useState({
             loading: true,
@@ -66,6 +69,7 @@ class ProductIntelligenceAction extends Component {
             viewMode: "dashboard",
             origin: "menu",
             productId: null,
+            dashboardBusy: false,
             dashboardTab: "all",
             searchTerm: "",
             exchangeRateInput: "1650",
@@ -76,6 +80,19 @@ class ProductIntelligenceAction extends Component {
                 published: 0,
                 featured: 0,
                 pending: 0,
+            },
+            dashboardTabCounts: {
+                all: 0,
+                new: 0,
+                discontinued: 0,
+            },
+            dashboardPager: {
+                page: 1,
+                pageCount: 1,
+                total: 0,
+                limit: DASHBOARD_PAGE_SIZE,
+                hasNext: false,
+                hasPrevious: false,
             },
             detail: null,
             activeTab: "overview",
@@ -106,6 +123,10 @@ class ProductIntelligenceAction extends Component {
             } else {
                 await this.loadDashboard();
             }
+        });
+
+        onWillUnmount(() => {
+            this.clearDashboardReloadTimer();
         });
     }
 
@@ -189,6 +210,20 @@ class ProductIntelligenceAction extends Component {
         return params.origin || "menu";
     }
 
+    clearDashboardReloadTimer() {
+        if (this.dashboardReloadTimer) {
+            clearTimeout(this.dashboardReloadTimer);
+            this.dashboardReloadTimer = null;
+        }
+    }
+
+    scheduleDashboardReload() {
+        this.clearDashboardReloadTimer();
+        this.dashboardReloadTimer = setTimeout(() => {
+            this.loadDashboard({ page: 1 }, { showSpinner: false });
+        }, 300);
+    }
+
     notify(message, type = "success") {
         this.notification.add(message, { type });
     }
@@ -197,25 +232,81 @@ class ProductIntelligenceAction extends Component {
         return (error && (error.message || error.data && error.data.message)) || fallback;
     }
 
-    async loadDashboard() {
-        this.state.loading = true;
+    dashboardDefaultStats() {
+        return {
+            total: 0,
+            published: 0,
+            featured: 0,
+            pending: 0,
+        };
+    }
+
+    dashboardDefaultTabCounts() {
+        return {
+            all: 0,
+            new: 0,
+            discontinued: 0,
+        };
+    }
+
+    dashboardDefaultPager(limit = DASHBOARD_PAGE_SIZE) {
+        return {
+            page: 1,
+            pageCount: 1,
+            total: 0,
+            limit,
+            hasNext: false,
+            hasPrevious: false,
+        };
+    }
+
+    resolveDashboardParams(overrides = {}) {
+        const currentPager = this.state.dashboardPager || this.dashboardDefaultPager();
+        const page = Math.max(1, Number(overrides.page !== undefined ? overrides.page : currentPager.page || 1) || 1);
+        const limit = Math.max(
+            1,
+            Number(overrides.limit !== undefined ? overrides.limit : currentPager.limit || DASHBOARD_PAGE_SIZE) || DASHBOARD_PAGE_SIZE
+        );
+        return {
+            tab: overrides.tab !== undefined ? overrides.tab : this.state.dashboardTab,
+            search: overrides.search !== undefined ? overrides.search : this.state.searchTerm,
+            page,
+            limit,
+        };
+    }
+
+    applyDashboardPayload(data, params) {
+        this.state.dashboardRows = data.products || [];
+        this.state.dashboardStats = data.stats || this.dashboardDefaultStats();
+        this.state.dashboardTabCounts = data.tabCounts || this.dashboardDefaultTabCounts();
+        this.state.dashboardPager = {
+            ...this.dashboardDefaultPager(params.limit),
+            ...(data.pager || {}),
+        };
+        this.state.exchangeRate = data.exchangeRate || this.state.exchangeRate || 1650;
+        this.state.exchangeRateInput = String(this.state.exchangeRate || 1650);
+        this.state.dashboardTab = params.tab;
+        this.state.searchTerm = params.search || "";
+        this.state.viewMode = "dashboard";
+    }
+
+    async loadDashboard(overrides = {}, options = {}) {
+        const params = this.resolveDashboardParams(overrides);
+        const showSpinner = options.showSpinner !== false;
+        if (showSpinner) {
+            this.state.loading = true;
+        } else {
+            this.state.dashboardBusy = true;
+        }
         this.state.error = "";
         try {
-            const data = await this.rpc("/bader_product_intelligence/dashboard", {});
-            this.state.dashboardRows = data.products || [];
-            this.state.dashboardStats = data.stats || {
-                total: 0,
-                published: 0,
-                featured: 0,
-                pending: 0,
-            };
-            this.state.exchangeRate = data.exchangeRate || 1650;
-            this.state.exchangeRateInput = String(this.state.exchangeRate || 1650);
-            this.state.viewMode = "dashboard";
+            const data = await this.rpc("/bader_product_intelligence/dashboard", params);
+            this.applyDashboardPayload(data, params);
         } catch (error) {
             this.state.error = this.errorMessage(error, "No se pudo cargar Producto Intelligence.");
         } finally {
             this.state.loading = false;
+            this.state.dashboardBusy = false;
         }
     }
 
@@ -333,6 +424,33 @@ class ProductIntelligenceAction extends Component {
         return (this.state.detail && this.state.detail.competitiveStrategy) || {};
     }
 
+    detailHeaderSubtitle() {
+        const product = this.currentProduct();
+        const sku = product.sku || "Sin SKU";
+        const categoryPath = product.categoryPath || product.category || "Sin categoria";
+        return `${sku} - ${categoryPath}`;
+    }
+
+    seoTitleCounterLabel() {
+        return `${(this.state.seoForm.seoTitle || "").length}/60 caracteres`;
+    }
+
+    seoDescriptionCounterLabel() {
+        return `${(this.state.seoForm.seoDescription || "").length}/160 caracteres`;
+    }
+
+    selectedGalleryImageUrl() {
+        if (this.state.imageForm.selectedGalleryUrl) {
+            return this.state.imageForm.selectedGalleryUrl;
+        }
+        const images = this.currentImages();
+        return images.length ? images[0].imageUrl : "";
+    }
+
+    dismissGeneratedPreview() {
+        this.state.imageForm.generatedPreviewUrl = "";
+    }
+
     toInput(value) {
         if (value === undefined || value === null || value === false) {
             return "";
@@ -379,47 +497,42 @@ class ProductIntelligenceAction extends Component {
         return `${this.contentWordCount()} palabras - Optimizado para SEO y motores de IA (GEO)`;
     }
 
-    dashboardCounts() {
-        const rows = this.state.dashboardRows || [];
-        return {
-            all: rows.filter((row) => !row.isArchived && !row.isDiscontinued).length,
-            new: rows.filter((row) => !row.isPublished && !row.isArchived && !row.isDiscontinued).length,
-            discontinued: rows.filter((row) => row.isArchived || row.isDiscontinued).length,
-        };
-    }
-
     filteredDashboardProducts() {
-        const term = (this.state.searchTerm || "").trim().toLowerCase();
-        let rows = this.state.dashboardRows || [];
-        if (this.state.dashboardTab === "all") {
-            rows = rows.filter((row) => !row.isArchived && !row.isDiscontinued);
-        } else if (this.state.dashboardTab === "new") {
-            rows = rows.filter((row) => !row.isPublished && !row.isArchived && !row.isDiscontinued);
-        } else {
-            rows = rows.filter((row) => row.isArchived || row.isDiscontinued);
-        }
-        if (!term) {
-            return rows;
-        }
-        return rows.filter((row) => {
-            return (
-                (row.name || "").toLowerCase().includes(term) ||
-                (row.sku || "").toLowerCase().includes(term) ||
-                (row.category || "").toLowerCase().includes(term)
-            );
-        });
+        return this.state.dashboardRows || [];
     }
 
-    changeDashboardTab(tab) {
-        this.state.dashboardTab = tab;
+    onDashboardSearchInput(ev) {
+        this.state.searchTerm = ev.target.value || "";
+        this.scheduleDashboardReload();
+    }
+
+    async changeDashboardTab(tab) {
+        if (tab === this.state.dashboardTab && !this.state.error) {
+            return;
+        }
+        await this.loadDashboard({ tab, page: 1 }, { showSpinner: false });
+    }
+
+    async changeDashboardPage(page) {
+        const targetPage = Math.max(1, Number(page || 1));
+        const pager = this.state.dashboardPager || this.dashboardDefaultPager();
+        if (targetPage === pager.page || targetPage > pager.pageCount) {
+            return;
+        }
+        await this.loadDashboard({ page: targetPage }, { showSpinner: false });
+    }
+
+    dashboardPageLabel() {
+        const pager = this.state.dashboardPager || this.dashboardDefaultPager();
+        return `Pagina ${pager.page} de ${pager.pageCount}`;
     }
 
     async syncCatalog() {
         this.state.syncBusy = true;
         try {
-            const data = await this.rpc("/bader_product_intelligence/sync_catalog", {});
-            this.state.dashboardRows = data.products || [];
-            this.state.dashboardStats = data.stats || this.state.dashboardStats;
+            const params = this.resolveDashboardParams();
+            const data = await this.rpc("/bader_product_intelligence/sync_catalog", params);
+            this.applyDashboardPayload(data, params);
             this.notify("Catalogo actualizado desde Odoo.");
         } catch (error) {
             this.notify(this.errorMessage(error, "No se pudo actualizar el catalogo."), "danger");
@@ -436,7 +549,7 @@ class ProductIntelligenceAction extends Component {
                 exchange_rate: value,
             });
             this.state.exchangeRate = result.exchangeRate || value;
-            await this.loadDashboard();
+            await this.loadDashboard({}, { showSpinner: false });
             this.notify("Tipo de cambio actualizado.");
         } catch (error) {
             this.notify(this.errorMessage(error, "No se pudo actualizar el tipo de cambio."), "danger");
@@ -452,7 +565,11 @@ class ProductIntelligenceAction extends Component {
     }
 
     async goBack() {
-        await this.loadDashboard();
+        if (this.state.origin === "product_form") {
+            this.openProductForm();
+            return;
+        }
+        await this.loadDashboard({}, { showSpinner: true });
     }
 
     openProductForm() {
@@ -1038,7 +1155,7 @@ class ProductIntelligenceAction extends Component {
                 product_tmpl_id: productId,
                 values: { isPublished: checked },
             });
-            await this.loadDashboard();
+            await this.loadDashboard({}, { showSpinner: false });
         } catch (error) {
             this.notify(this.errorMessage(error, "No se pudo actualizar la publicacion."), "danger");
         }
@@ -1050,7 +1167,7 @@ class ProductIntelligenceAction extends Component {
                 product_tmpl_id: productId,
                 values: { featured: checked },
             });
-            await this.loadDashboard();
+            await this.loadDashboard({}, { showSpinner: false });
         } catch (error) {
             this.notify(this.errorMessage(error, "No se pudo actualizar el destacado."), "danger");
         }

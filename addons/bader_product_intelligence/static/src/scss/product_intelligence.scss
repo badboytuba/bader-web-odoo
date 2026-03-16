@@ -478,6 +478,19 @@ $bpi-orange: #ff8122;
         }
     }
 
+    .bpi-pagination {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 4px 12px;
+    }
+
+    .bpi-panel--table.is-busy {
+        opacity: 0.78;
+        transition: opacity 0.2s ease;
+    }
+
     .bpi-table-wrap {
         overflow: auto;
         border-radius: 16px;

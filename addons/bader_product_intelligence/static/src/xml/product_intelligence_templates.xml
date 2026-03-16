@@ -75,25 +75,25 @@
                             </div>
                         </div>
 
-                        <div class="bpi-panel bpi-panel--table">
+                        <div t-att-class="'bpi-panel bpi-panel--table' + (state.dashboardBusy ? ' is-busy' : '')">
                             <div class="bpi-toolbar">
                                 <div class="bpi-filter-tabs">
-                                    <button type="button" t-att-class="'bpi-filter-pill ' + (state.dashboardTab === 'all' ? 'is-active' : '')" t-on-click="() => this.changeDashboardTab('all')">
+                                    <button type="button" t-att-class="'bpi-filter-pill ' + (state.dashboardTab === 'all' ? 'is-active' : '')" t-on-click="() => this.changeDashboardTab('all')" t-att-disabled="state.dashboardBusy">
                                         <i class="fa fa-cube"/>
-                                        <span t-esc="'Todos (' + dashboardCounts().all + ')'"/>
+                                        <span t-esc="'Todos (' + state.dashboardTabCounts.all + ')'"/>
                                     </button>
-                                    <button type="button" t-att-class="'bpi-filter-pill ' + (state.dashboardTab === 'new' ? 'is-active' : '')" t-on-click="() => this.changeDashboardTab('new')">
+                                    <button type="button" t-att-class="'bpi-filter-pill ' + (state.dashboardTab === 'new' ? 'is-active' : '')" t-on-click="() => this.changeDashboardTab('new')" t-att-disabled="state.dashboardBusy">
                                         <i class="fa fa-clock-o"/>
-                                        <span t-esc="'Nuevos (' + dashboardCounts().new + ')'"/>
+                                        <span t-esc="'Nuevos (' + state.dashboardTabCounts.new + ')'"/>
                                     </button>
-                                    <button type="button" t-att-class="'bpi-filter-pill ' + (state.dashboardTab === 'discontinued' ? 'is-active' : '')" t-on-click="() => this.changeDashboardTab('discontinued')">
+                                    <button type="button" t-att-class="'bpi-filter-pill ' + (state.dashboardTab === 'discontinued' ? 'is-active' : '')" t-on-click="() => this.changeDashboardTab('discontinued')" t-att-disabled="state.dashboardBusy">
                                         <i class="fa fa-archive"/>
-                                        <span t-esc="'Descontinuados (' + dashboardCounts().discontinued + ')'"/>
+                                        <span t-esc="'Descontinuados (' + state.dashboardTabCounts.discontinued + ')'"/>
                                     </button>
                                 </div>
                                 <div class="bpi-search">
                                     <i class="fa fa-search"/>
-                                    <input class="bpi-input" type="search" placeholder="Buscar producto..." t-model="state.searchTerm"/>
+                                    <input class="bpi-input" type="search" placeholder="Buscar producto..." t-att-value="state.searchTerm" t-on-input="onDashboardSearchInput"/>
                                 </div>
                             </div>
 
@@ -160,6 +160,19 @@
                                             </tr>
                                         </tbody>
                                     </table>
+                                </div>
+                                <div class="bpi-pagination">
+                                    <span class="bpi-muted" t-esc="dashboardPageLabel()"/>
+                                    <div class="bpi-footer-actions">
+                                        <button type="button" class="bpi-button bpi-button--secondary" t-on-click="() => this.changeDashboardPage(state.dashboardPager.page - 1)" t-att-disabled="state.dashboardBusy || !state.dashboardPager.hasPrevious">
+                                            <i class="fa fa-angle-left"/>
+                                            <span>Anterior</span>
+                                        </button>
+                                        <button type="button" class="bpi-button bpi-button--secondary" t-on-click="() => this.changeDashboardPage(state.dashboardPager.page + 1)" t-att-disabled="state.dashboardBusy || !state.dashboardPager.hasNext">
+                                            <span>Siguiente</span>
+                                            <i class="fa fa-angle-right"/>
+                                        </button>
+                                    </div>
                                 </div>
                             </t>
                             <t t-else="">

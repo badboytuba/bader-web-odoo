@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import base64
+import ipaddress
 import json
 import logging
+import math
 import os
 import re
+import socket
 import uuid
 from urllib.parse import urlparse
 
@@ -12,6 +15,7 @@ import requests
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
@@ -266,17 +270,26 @@ class BPIService(models.AbstractModel):
 
     @api.model
     def _gemini_request(self, model_name, contents, generation_config=None):
-        response = requests.post(
-            self._gemini_endpoint(model_name),
-            json={
-                "contents": contents,
-                "generationConfig": generation_config or {},
-            },
-            headers={"Content-Type": "application/json"},
-            timeout=120,
-        )
-        response.raise_for_status()
-        return response.json()
+        try:
+            response = requests.post(
+                self._gemini_endpoint(model_name),
+                json={
+                    "contents": contents,
+                    "generationConfig": generation_config or {},
+                },
+                headers={"Content-Type": "application/json"},
+                timeout=120,
+            )
+            response.raise_for_status()
+            return response.json()
+        except requests.RequestException as error:
+            _logger.exception("Gemini request failed for model %s", model_name)
+            raise UserError(
+                _("No se pudo completar la solicitud a Gemini. Revisa la configuracion e intenta de nuevo.")
+            ) from error
+        except ValueError as error:
+            _logger.exception("Gemini returned a non-JSON response for model %s", model_name)
+            raise UserError(_("Gemini devolvio una respuesta invalida.")) from error
 
     @api.model
     def _gemini_json(self, prompt, model_name=False):
@@ -289,7 +302,11 @@ class BPIService(models.AbstractModel):
         text = self._clean_json_text(self._parse_gemini_text(payload))
         if not text:
             raise UserError(_("Gemini no devolvió contenido JSON."))
-        return json.loads(text)
+        try:
+            return json.loads(text)
+        except ValueError as error:
+            _logger.exception("Gemini returned invalid JSON: %s", text[:500])
+            raise UserError(_("Gemini devolvio JSON invalido para esta accion.")) from error
 
     @api.model
     def _image_mime_from_base64(self, encoded):
@@ -590,27 +607,117 @@ Reglas:
         return product.bpi_build_payload()["seoData"]
 
     @api.model
-    def dashboard_payload(self):
-        exchange_rate = self.env["product.template"]._bpi_exchange_rate()
-        products = self.env["product.template"].with_context(active_test=False).search(
-            [("sale_ok", "=", True)],
+    def _validate_external_url(self, raw_url):
+        clean_url = (raw_url or "").strip()
+        parsed = urlparse(clean_url)
+        if parsed.scheme not in ("http", "https") or not parsed.netloc:
+            raise UserError(_("Ingresa una URL externa válida."))
+
+        hostname = (parsed.hostname or "").strip().lower()
+        if not hostname:
+            raise UserError(_("Ingresa una URL externa válida."))
+        if hostname in ("localhost", "0.0.0.0") or hostname.endswith(".local") or hostname.endswith(".internal"):
+            raise UserError(_("La URL apunta a una red privada o interna y no está permitida."))
+
+        try:
+            host_entries = socket.getaddrinfo(hostname, parsed.port or (443 if parsed.scheme == "https" else 80), proto=socket.IPPROTO_TCP)
+        except socket.gaierror as error:
+            raise UserError(_("No se pudo resolver el dominio indicado.")) from error
+
+        for entry in host_entries:
+            ip_address = ipaddress.ip_address(entry[4][0])
+            if (
+                ip_address.is_private
+                or ip_address.is_loopback
+                or ip_address.is_link_local
+                or ip_address.is_multicast
+                or ip_address.is_reserved
+                or ip_address.is_unspecified
+            ):
+                raise UserError(_("La URL apunta a una red privada o interna y no está permitida."))
+
+        return clean_url
+
+    @api.model
+    def _dashboard_base_domain(self):
+        return []
+
+    @api.model
+    def _dashboard_search_domain(self, search):
+        term = (search or "").strip()
+        if not term:
+            return []
+        return expression.OR(
+            [
+                [("name", "ilike", term)],
+                [("default_code", "ilike", term)],
+                [("bpi_brand_name", "ilike", term)],
+                [("public_categ_ids.name", "ilike", term)],
+            ]
+        )
+
+    @api.model
+    def _dashboard_tab_domain(self, tab):
+        active_sale_domain = [("active", "=", True), ("sale_ok", "=", True)]
+        if tab == "new":
+            return expression.AND([active_sale_domain, [("website_published", "=", False)]])
+        if tab == "discontinued":
+            return expression.OR([[("active", "=", False)], [("sale_ok", "=", False)]])
+        return active_sale_domain
+
+    @api.model
+    def _dashboard_stats(self):
+        product_model = self.env["product.template"].with_context(active_test=False)
+        base_domain = self._dashboard_base_domain()
+        return {
+            "total": product_model.search_count(base_domain),
+            "published": product_model.search_count(expression.AND([base_domain, [("website_published", "=", True)]])),
+            "featured": product_model.search_count(expression.AND([base_domain, [("bpi_featured", "=", True)]])),
+            "pending": product_model.search_count(expression.AND([base_domain, [("website_published", "=", False)]])),
+        }
+
+    @api.model
+    def dashboard_payload(self, tab="all", search="", page=1, limit=40):
+        product_model = self.env["product.template"].with_context(active_test=False)
+        exchange_rate = product_model._bpi_exchange_rate()
+        safe_page = max(int(page or 1), 1)
+        safe_limit = min(max(int(limit or 40), 1), 120)
+        base_domain = self._dashboard_base_domain()
+        query_domain = expression.AND([base_domain, self._dashboard_tab_domain(tab), self._dashboard_search_domain(search)])
+        total_rows = product_model.search_count(query_domain)
+        if total_rows and (safe_page - 1) * safe_limit >= total_rows:
+            safe_page = max(1, int(math.ceil(total_rows / float(safe_limit))))
+        offset = (safe_page - 1) * safe_limit
+        products = product_model.search(
+            query_domain,
             order="website_sequence asc, name asc, id desc",
+            offset=offset,
+            limit=safe_limit,
         )
         rows = [product.bpi_dashboard_payload(exchange_rate=exchange_rate) for product in products]
+        page_count = max(1, int(math.ceil(total_rows / float(safe_limit))) if total_rows else 1)
         return {
             "products": rows,
             "exchangeRate": exchange_rate,
-            "stats": {
-                "total": len(rows),
-                "published": len([row for row in rows if row.get("isPublished")]),
-                "featured": len([row for row in rows if row.get("featured")]),
-                "pending": len([row for row in rows if not row.get("isPublished")]),
+            "stats": self._dashboard_stats(),
+            "tabCounts": {
+                "all": product_model.search_count(expression.AND([base_domain, self._dashboard_tab_domain("all")])),
+                "new": product_model.search_count(expression.AND([base_domain, self._dashboard_tab_domain("new")])),
+                "discontinued": product_model.search_count(expression.AND([base_domain, self._dashboard_tab_domain("discontinued")])),
+            },
+            "pager": {
+                "page": safe_page,
+                "pageCount": page_count,
+                "total": total_rows,
+                "limit": safe_limit,
+                "hasNext": safe_page < page_count,
+                "hasPrevious": safe_page > 1,
             },
         }
 
     @api.model
-    def sync_catalog(self):
-        return self.dashboard_payload()
+    def sync_catalog(self, tab="all", search="", page=1, limit=40):
+        return self.dashboard_payload(tab=tab, search=search, page=page, limit=limit)
 
     @api.model
     def update_exchange_rate(self, exchange_rate):
@@ -914,12 +1021,23 @@ Reglas:
     @api.model
     def add_image_from_url(self, product, image_url):
         product.ensure_one()
-        clean_url = (image_url or "").strip()
-        if not clean_url:
-            raise UserError(_("Ingresa una URL valida para la imagen."))
-        response = requests.get(clean_url, timeout=90)
-        response.raise_for_status()
+        clean_url = self._validate_external_url(image_url)
+        try:
+            response = requests.get(clean_url, timeout=90)
+            response.raise_for_status()
+        except requests.RequestException as error:
+            _logger.exception("Unable to download image from %s", clean_url)
+            raise UserError(_("No se pudo descargar la imagen externa.")) from error
+
         mime_type = (response.headers.get("Content-Type") or "image/png").split(";", 1)[0]
+        if not mime_type.startswith("image/"):
+            raise UserError(_("La URL indicada no devolvió una imagen válida."))
+        content_length = int(response.headers.get("Content-Length") or 0)
+        if content_length and content_length > 10 * 1024 * 1024:
+            raise UserError(_("La imagen supera el tamaño máximo permitido de 10 MB."))
+        if len(response.content or b"") > 10 * 1024 * 1024:
+            raise UserError(_("La imagen supera el tamaño máximo permitido de 10 MB."))
+
         encoded = base64.b64encode(response.content).decode()
         image = self.env["bpi.product.image"].create(
             {
@@ -995,19 +1113,31 @@ Reglas:
         api_key = self._require_config("bader_product_intelligence.firecrawl_api_key", "Firecrawl API Key")
         base_url = self._get_config("bader_product_intelligence.firecrawl_base_url", "https://api.firecrawl.dev").rstrip("/")
         competitor.write({"scrape_status": "pending", "scrape_error": False})
-        response = requests.post(
-            "%s/v1/scrape" % base_url,
-            json={
-                "url": competitor.competitor_url,
-                "formats": ["markdown", "html"],
-                "includeTags": ["meta", "title", "h1", "h2", "script", "img", "a"],
-                "onlyMainContent": False,
-            },
-            headers={"Authorization": "Bearer %s" % api_key, "Content-Type": "application/json"},
-            timeout=120,
-        )
-        response.raise_for_status()
-        payload = response.json()
+        safe_url = self._validate_external_url(competitor.competitor_url)
+        try:
+            response = requests.post(
+                "%s/v1/scrape" % base_url,
+                json={
+                    "url": safe_url,
+                    "formats": ["markdown", "html"],
+                    "includeTags": ["meta", "title", "h1", "h2", "script", "img", "a"],
+                    "onlyMainContent": False,
+                },
+                headers={"Authorization": "Bearer %s" % api_key, "Content-Type": "application/json"},
+                timeout=120,
+            )
+            response.raise_for_status()
+            payload = response.json()
+        except (requests.RequestException, ValueError) as error:
+            competitor.write(
+                {
+                    "scrape_status": "failed",
+                    "scrape_error": str(error),
+                    "last_scraped_at": fields.Datetime.now(),
+                }
+            )
+            _logger.exception("Firecrawl scrape failed for competitor %s", competitor.id)
+            raise UserError(_("No se pudo obtener el sitio del competidor desde Firecrawl.")) from error
         data = payload.get("data") or payload
         html = data.get("html") or ""
         markdown = data.get("markdown") or ""
@@ -1066,6 +1196,7 @@ Reglas:
     @api.model
     def add_competitor(self, product, competitor_name, competitor_url):
         product.ensure_one()
+        competitor_url = self._validate_external_url(competitor_url)
         name = competitor_name or ""
         if not name and competitor_url:
             parsed = urlparse(competitor_url)
