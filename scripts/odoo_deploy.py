@@ -130,7 +130,8 @@ def upgrade_module(client: paramiko.SSHClient, module_name: str) -> int:
     cmd = (
         "sudo -u odoo /opt/odoo/.venv/bin/python /opt/odoo/src/odoo/odoo-bin "
         "-c /opt/odoo/conf/odoo-server.conf "
-        f"-d bader -u {module_name} --stop-after-init"
+        f"-d bader -u {module_name} --stop-after-init "
+        "--http-port=8079 --gevent-port=8080 --workers=0 --max-cron-threads=0"
     )
     return ssh_exec(client, cmd, timeout=240)
 

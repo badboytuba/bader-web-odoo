@@ -7,6 +7,11 @@
     <template id="bader_header_class" inherit_id="website.layout"
               name="Bader Header Styling" customize_show="True" priority="50">
 
+        <xpath expr="//header[@id='top']" position="before">
+            <t t-set="bader_is_csp_strict_page"
+               t-value="request and request.httprequest and request.httprequest.path in ['/terminos', '/privacidad', '/cookies']"/>
+        </xpath>
+
         <!-- Add Bader class to header -->
         <xpath expr="//header[@id='top']" position="attributes">
             <attribute name="class" add="bader-header" separator=" "/>
@@ -15,9 +20,11 @@
         <!-- Inject search pill AFTER the navbar collapse menu (right side) -->
         <xpath expr="//div[@id='top_menu_collapse']" position="after">
             <div class="bader-header-right d-none d-lg-flex align-items-center">
-                <a href="#" class="bader-search-pill" id="baderSearchPill">
+                <a t-att-href="'/productos' if bader_is_csp_strict_page else '#'"
+                   class="bader-search-pill"
+                   t-att-id="False if bader_is_csp_strict_page else 'baderSearchPill'">
                     <i class="fa fa-magic"/>
-                    <span>Buscar con IA</span>
+                    <span><t t-esc="'Buscar productos' if bader_is_csp_strict_page else 'Buscar con IA'"/></span>
                 </a>
             </div>
         </xpath>
@@ -25,7 +32,14 @@
         <!-- Mobile drawer: app-style menu blocks -->
         <xpath expr="//div[@id='top_menu_collapse']" position="inside">
             <div class="bader-mobile-drawer d-lg-none">
-                <button type="button" class="bader-mobile-search" id="baderSearchPillMobile">
+                <a t-if="bader_is_csp_strict_page" href="/productos" class="bader-mobile-search">
+                    <span class="bader-mobile-search__left">
+                        <i class="fa fa-search"/>
+                        <span>Buscar productos</span>
+                    </span>
+                    <i class="fa fa-arrow-right"/>
+                </a>
+                <button t-else="" type="button" class="bader-mobile-search" id="baderSearchPillMobile">
                     <span class="bader-mobile-search__left">
                         <i class="fa fa-magic"/>
                         <span>Buscar con IA</span>
@@ -265,7 +279,7 @@
                 </aside>
             </div>
 
-            <div id="baderAiSearchModal" class="bader-ai-search" aria-hidden="true">
+            <div t-if="not bader_is_csp_strict_page" id="baderAiSearchModal" class="bader-ai-search" aria-hidden="true">
                 <button type="button"
                         class="bader-ai-search__backdrop"
                         data-bader-ai-close="1"
@@ -392,7 +406,7 @@
                 </section>
             </div>
 
-            <div id="baderSearchStudioModal" class="bader-ai-search bader-ai-search--studio" aria-hidden="true">
+            <div t-if="not bader_is_csp_strict_page" id="baderSearchStudioModal" class="bader-ai-search bader-ai-search--studio" aria-hidden="true">
                 <button type="button"
                         class="bader-ai-search__backdrop"
                         data-bader-ai-close="1"

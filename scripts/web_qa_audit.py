@@ -72,6 +72,9 @@ DEFAULT_EXTRA_PATHS = (
     "/shop",
     "/shop/cart",
     "/shop/checkout",
+    "/terminos",
+    "/privacidad",
+    "/cookies",
 )
 
 DEFAULT_FORBIDDEN_DOMAINS = tuple(
