@@ -74,23 +74,9 @@
             <t t-set="gallery_images" t-value="product_variant._get_images() if product_variant else product._get_images()"/>
             <section t-attf-class="bader-app-gallery-shell #{'is-single-shot' if len(gallery_images) &lt;= 1 else 'is-multi-shot'}"
                      t-att-data-gallery-count="len(gallery_images)"
-                     aria-label="Fotos del producto">
-                <div class="bader-app-gallery-shell__head bader-app-gallery-shell__head--simple">
-                    <div class="bader-app-gallery-shell__copy">
-                        <h2>Fotos del producto</h2>
-                        <p t-if="len(gallery_images) > 1">
-                            <t t-esc="len(gallery_images)"/> imagenes disponibles para revisar el producto desde distintos angulos.
-                        </p>
-                        <p t-else="">Imagen principal del producto con zoom para revisar detalles.</p>
-                    </div>
-                </div>
+                     aria-label="Galeria del producto">
                 <div class="bader-app-gallery-shell__stage">
                     <t t-call="website_sale.shop_product_images"/>
-                </div>
-                <div class="bader-app-gallery-shell__single-note">
-                    <i class="fa fa-search-plus"/>
-                    <span t-if="len(gallery_images) > 1">Usa las miniaturas para cambiar de vista y ampliar la imagen cuando necesites mas detalle.</span>
-                    <span t-else="">Amplia la imagen para revisar el producto con mas detalle.</span>
                 </div>
             </section>
         </xpath>

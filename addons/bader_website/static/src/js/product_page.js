@@ -183,6 +183,165 @@
             });
         }
 
+        function initGalleryThumbRail() {
+            var railWrap = productRoot.querySelector('#o-carousel-product .o_carousel_product_indicators');
+            var rail = railWrap ? railWrap.querySelector('.carousel-indicators') : null;
+            if (!railWrap || !rail) return;
+
+            function axis() {
+                return window.matchMedia('(max-width: 991px)').matches ? 'x' : 'y';
+            }
+
+            function currentPosition() {
+                return axis() === 'y' ? rail.scrollTop : rail.scrollLeft;
+            }
+
+            function maxPosition() {
+                return axis() === 'y'
+                    ? Math.max(0, rail.scrollHeight - rail.clientHeight)
+                    : Math.max(0, rail.scrollWidth - rail.clientWidth);
+            }
+
+            function scrollToPosition(nextPosition, behavior) {
+                if (axis() === 'y') {
+                    rail.scrollTo({
+                        top: Math.max(0, nextPosition),
+                        behavior: behavior || 'smooth',
+                    });
+                } else {
+                    rail.scrollTo({
+                        left: Math.max(0, nextPosition),
+                        behavior: behavior || 'smooth',
+                    });
+                }
+            }
+
+            function scrollActiveIntoView(behavior) {
+                var activeThumb = rail.querySelector('.active, [aria-current="true"]');
+                if (!activeThumb) return;
+
+                if (axis() === 'y') {
+                    var nextTop = activeThumb.offsetTop - Math.round((rail.clientHeight - activeThumb.offsetHeight) / 2);
+                    scrollToPosition(nextTop, behavior || 'smooth');
+                } else {
+                    var nextLeft = activeThumb.offsetLeft - Math.round((rail.clientWidth - activeThumb.offsetWidth) / 2);
+                    scrollToPosition(nextLeft, behavior || 'smooth');
+                }
+            }
+
+            function updateRailState() {
+                var max = maxPosition();
+                var pos = currentPosition();
+                var isScrollable = max > 6;
+
+                railWrap.classList.add('bader-app-thumb-rail');
+                railWrap.classList.toggle('is-scrollable', isScrollable);
+                railWrap.classList.toggle('is-vertical', axis() === 'y');
+                railWrap.classList.toggle('is-horizontal', axis() !== 'y');
+                railWrap.classList.toggle('is-at-start', pos <= 4);
+                railWrap.classList.toggle('is-at-end', pos >= max - 4);
+
+                if (railWrap._baderThumbPrev) {
+                    railWrap._baderThumbPrev.hidden = !isScrollable || axis() !== 'y';
+                    railWrap._baderThumbPrev.disabled = pos <= 4;
+                }
+                if (railWrap._baderThumbNext) {
+                    railWrap._baderThumbNext.hidden = !isScrollable || axis() !== 'y';
+                    railWrap._baderThumbNext.disabled = pos >= max - 4;
+                }
+            }
+
+            function ensureNavButton(direction) {
+                var existing = railWrap.querySelector('[data-bader-thumb-nav="' + direction + '"]');
+                if (existing) return existing;
+
+                var button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'bader-app-thumb-rail__nav bader-app-thumb-rail__nav--' + direction;
+                button.setAttribute('data-bader-thumb-nav', direction);
+                button.setAttribute('aria-label', direction === 'prev' ? 'Ver miniaturas anteriores' : 'Ver miniaturas siguientes');
+                button.innerHTML = direction === 'prev'
+                    ? '<i class="fa fa-angle-up"></i>'
+                    : '<i class="fa fa-angle-down"></i>';
+                railWrap.appendChild(button);
+                return button;
+            }
+
+            if (railWrap.getAttribute('data-bader-thumb-rail-ready') === '1') {
+                if (typeof railWrap._baderThumbRailRefresh === 'function') {
+                    railWrap._baderThumbRailRefresh();
+                }
+                return;
+            }
+
+            railWrap._baderThumbPrev = ensureNavButton('prev');
+            railWrap._baderThumbNext = ensureNavButton('next');
+
+            function stepScroll(direction) {
+                var step = axis() === 'y'
+                    ? Math.max(120, Math.round(rail.clientHeight * 0.72))
+                    : Math.max(120, Math.round(rail.clientWidth * 0.72));
+                scrollToPosition(currentPosition() + (direction * step), 'smooth');
+            }
+
+            railWrap._baderThumbPrev.addEventListener('click', function () {
+                stepScroll(-1);
+            });
+            railWrap._baderThumbNext.addEventListener('click', function () {
+                stepScroll(1);
+            });
+
+            rail.addEventListener('scroll', updateRailState, { passive: true });
+            rail.addEventListener('click', function () {
+                window.setTimeout(function () {
+                    scrollActiveIntoView('smooth');
+                    updateRailState();
+                }, 120);
+            });
+
+            railWrap.addEventListener('wheel', function (event) {
+                if (axis() !== 'y' || maxPosition() <= 6) return;
+                if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) return;
+                event.preventDefault();
+                rail.scrollTop += event.deltaY;
+            }, { passive: false });
+
+            if ('MutationObserver' in window) {
+                var activeObserver = new MutationObserver(function () {
+                    window.requestAnimationFrame(function () {
+                        scrollActiveIntoView('smooth');
+                        updateRailState();
+                    });
+                });
+                activeObserver.observe(rail, {
+                    subtree: true,
+                    attributes: true,
+                    attributeFilter: ['class', 'aria-current'],
+                });
+            }
+
+            var carousel = productRoot.querySelector('#o-carousel-product');
+            if (carousel) {
+                carousel.addEventListener('slid.bs.carousel', function () {
+                    scrollActiveIntoView('smooth');
+                    updateRailState();
+                });
+            }
+
+            window.addEventListener('resize', function () {
+                scrollActiveIntoView('auto');
+                updateRailState();
+            });
+
+            railWrap._baderThumbRailRefresh = function () {
+                scrollActiveIntoView('auto');
+                updateRailState();
+            };
+
+            railWrap.setAttribute('data-bader-thumb-rail-ready', '1');
+            railWrap._baderThumbRailRefresh();
+        }
+
         function initQtyControls() {
             var qtyControl = productRoot.querySelector('#o_wsale_cta_wrapper .css_quantity');
             if (!qtyControl) return;
@@ -629,6 +788,7 @@
 
         function applyEnhancements() {
             initGalleryLightbox();
+            initGalleryThumbRail();
             initQtyControls();
             initInstallmentNote();
             initDescriptionToggle();
