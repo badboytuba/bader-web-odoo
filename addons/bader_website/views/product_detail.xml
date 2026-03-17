@@ -41,18 +41,6 @@
                             <i class="fa fa-angle-right"/>
                             <span class="is-current" t-esc="pdp_product_name_clean or product.name"/>
                         </nav>
-                        <div class="bader-app-pdp-topbar__chips" aria-label="Datos rápidos del producto">
-                            <span class="bader-app-pdp-topbar__chip bader-app-pdp-topbar__chip--brand">Bader</span>
-                            <span class="bader-app-pdp-topbar__chip" t-if="product_variant and product_variant.default_code">
-                                Código <t t-esc="product_variant.default_code"/>
-                            </span>
-                            <span class="bader-app-pdp-topbar__chip" t-if="product.public_categ_ids">
-                                <t t-esc="product.public_categ_ids[0].name"/>
-                            </span>
-                        </div>
-                        <p class="bader-app-pdp-topbar__summary">
-                            <t t-esc="pdp_summary_text or 'Información comercial y técnica organizada para evaluar este producto con más claridad.'"/>
-                        </p>
                     </div>
                 </div>
             </section>
