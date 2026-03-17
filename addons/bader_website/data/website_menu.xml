@@ -2,52 +2,66 @@
 <odoo>
     <data>
         <record id="menu_bader_inicio" model="website.menu">
-            <field name="name">Inicio</field>
+            <field name="name">Home</field>
             <field name="url">/</field>
             <field name="parent_id" ref="website.main_menu"/>
             <field name="sequence" type="int">10</field>
+        </record>
+
+        <record id="menu_bader_ofertas" model="website.menu">
+            <field name="name">Ofertas</field>
+            <field name="url">/ofertas</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence" type="int">20</field>
+        </record>
+
+        <record id="menu_bader_promociones" model="website.menu">
+            <field name="name">Promociones</field>
+            <field name="url">/promociones</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence" type="int">30</field>
+        </record>
+
+        <record id="menu_bader_productos" model="website.menu">
+            <field name="name">Catálogo</field>
+            <field name="url">/productos</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence" type="int">40</field>
         </record>
 
         <record id="menu_bader_sobre_nosotros" model="website.menu">
             <field name="name">Nosotros</field>
             <field name="url">/sobre-nosotros</field>
             <field name="parent_id" ref="website.main_menu"/>
-            <field name="sequence" type="int">20</field>
-        </record>
-
-        <record id="menu_bader_productos" model="website.menu">
-            <field name="name">Productos</field>
-            <field name="url">/productos</field>
-            <field name="parent_id" ref="website.main_menu"/>
-            <field name="sequence" type="int">30</field>
+            <field name="sequence" type="int">50</field>
         </record>
 
         <record id="menu_bader_ser_distribuidor" model="website.menu">
             <field name="name">Ser Distribuidor</field>
             <field name="url">/ser-distribuidor</field>
             <field name="parent_id" ref="website.main_menu"/>
-            <field name="sequence" type="int">40</field>
+            <field name="sequence" type="int">60</field>
         </record>
 
         <record id="menu_bader_descargas" model="website.menu">
             <field name="name">Descargas</field>
             <field name="url">/descargas</field>
             <field name="parent_id" ref="website.main_menu"/>
-            <field name="sequence" type="int">50</field>
+            <field name="sequence" type="int">70</field>
         </record>
 
         <record id="menu_bader_blog" model="website.menu">
             <field name="name">Blog</field>
             <field name="url">/blog</field>
             <field name="parent_id" ref="website.main_menu"/>
-            <field name="sequence" type="int">60</field>
+            <field name="sequence" type="int">80</field>
         </record>
 
         <record id="menu_bader_servicios" model="website.menu">
             <field name="name">Servicios</field>
             <field name="url">/servicios</field>
             <field name="parent_id" ref="website.main_menu"/>
-            <field name="sequence" type="int">70</field>
+            <field name="sequence" type="int">90</field>
         </record>
 
         <!-- Normalize top menu for each Bader website (remove duplicates + no "Tienda"). -->

@@ -48,7 +48,7 @@
                 </button>
 
                 <section class="bader-mobile-block">
-                    <p class="bader-mobile-label">Productos</p>
+                    <p class="bader-mobile-label">Catálogo</p>
 
                     <article class="bader-mobile-niche" data-bader-niche="clinica">
                         <button type="button" class="bader-mobile-niche__toggle" data-bader-niche-toggle="clinica">
@@ -107,7 +107,9 @@
                 </section>
 
                 <nav class="bader-mobile-links">
-                    <a href="/">Inicio</a>
+                    <a href="/">Home</a>
+                    <a href="/ofertas">Ofertas</a>
+                    <a href="/promociones">Promociones</a>
                     <a href="/sobre-nosotros">Nosotros</a>
                     <a href="/ser-distribuidor">Ser Distribuidor</a>
                     <a href="/descargas">Descargas</a>

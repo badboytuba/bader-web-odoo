@@ -22,7 +22,7 @@
     <template id="bader_shop_title" inherit_id="website_sale.products"
               name="Bader Shop Title" priority="21">
         <xpath expr="//t[@t-set='additional_title']" position="replace">
-            <t t-set="additional_title">Productos</t>
+            <t t-set="additional_title">Catálogo</t>
         </xpath>
     </template>
 
@@ -32,15 +32,15 @@
             <section class="bader-hero" id="bader_catalog_hero">
                 <div class="bader-hero__container">
                     <nav class="bader-hero__breadcrumb">
-                        <a href="/">Inicio</a>
+                        <a href="/">Home</a>
                         <span class="bader-hero__chevron">&#8250;</span>
                         <t t-if="category">
-                            <a href="/productos">Productos</a>
+                            <a href="/productos">Catálogo</a>
                             <span class="bader-hero__chevron">&#8250;</span>
                             <span t-esc="category.name"/>
                         </t>
                         <t t-else="">
-                            <span>Productos</span>
+                            <span>Catálogo</span>
                         </t>
                     </nav>
 

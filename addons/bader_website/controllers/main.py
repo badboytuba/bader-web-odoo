@@ -3074,6 +3074,16 @@ class BaderWebsite(Website):
             **post
         )
 
+    @http.route(['/ofertas', '/oferta'], type='http', auth='public', website=True, sitemap=False)
+    def ofertas(self, **kw):
+        """Marketing menu alias for the catalog offers view."""
+        return request.redirect('/productos?bader_qf=ofertas', code=302)
+
+    @http.route(['/promociones', '/promocion'], type='http', auth='public', website=True, sitemap=False)
+    def promociones(self, **kw):
+        """Marketing menu alias for featured promotions in the catalog."""
+        return request.redirect('/productos?bader_qf=destacados&order=website_sequence+asc', code=302)
+
     @http.route('/producto/<int:product_id>', type='http', auth='public',
                 website=True, sitemap=False)
     def producto_por_id(self, product_id, **kw):

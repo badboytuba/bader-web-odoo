@@ -29,23 +29,39 @@ class Website(models.Model):
         }
 
         canonical_items = [
-            {"name": "Inicio", "url": "/", "sequence": 10, "aliases": ["/home"]},
+            {"name": "Home", "url": "/", "sequence": 10, "aliases": ["/home"]},
+            {
+                "name": "Ofertas",
+                "url": "/ofertas",
+                "sequence": 20,
+                "aliases": ["/oferta", "/productos?bader_qf=ofertas"],
+            },
+            {
+                "name": "Promociones",
+                "url": "/promociones",
+                "sequence": 30,
+                "aliases": [
+                    "/promocion",
+                    "/productos?bader_qf=destacados",
+                    "/productos?bader_qf=destacados&order=website_sequence+asc",
+                ],
+            },
+            {
+                "name": "Catálogo",
+                "url": "/productos",
+                "sequence": 40,
+                "aliases": ["/shop", "#productos", "/#productos"],
+            },
             {
                 "name": "Nosotros",
                 "url": "/sobre-nosotros",
-                "sequence": 20,
+                "sequence": 50,
                 "aliases": ["/nosotros", "/quienes-somos"],
             },
-            {
-                "name": "Productos",
-                "url": "/productos",
-                "sequence": 30,
-                "aliases": ["/shop", "#productos", "/#productos"],
-            },
-            {"name": "Ser Distribuidor", "url": "/ser-distribuidor", "sequence": 40, "aliases": []},
-            {"name": "Descargas", "url": "/descargas", "sequence": 50, "aliases": []},
-            {"name": "Blog", "url": "/blog", "sequence": 60, "aliases": []},
-            {"name": "Servicios", "url": "/servicios", "sequence": 70, "aliases": []},
+            {"name": "Ser Distribuidor", "url": "/ser-distribuidor", "sequence": 60, "aliases": []},
+            {"name": "Descargas", "url": "/descargas", "sequence": 70, "aliases": []},
+            {"name": "Blog", "url": "/blog", "sequence": 80, "aliases": []},
+            {"name": "Servicios", "url": "/servicios", "sequence": 90, "aliases": []},
         ]
 
         canonical_urls = set()
