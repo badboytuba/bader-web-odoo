@@ -41,6 +41,22 @@
                             <i class="fa fa-angle-right"/>
                             <span class="is-current" t-esc="pdp_product_name_clean or product.name"/>
                         </nav>
+                        <div class="bader-app-pdp-topbar__chips" aria-label="Datos rapidos del producto">
+                            <div class="bader-app-rating-pill bader-app-rating-pill--topbar" aria-label="Valoracion del producto">
+                                <span class="bader-app-rating-stars">
+                                    <i class="fa fa-star"/>
+                                    <i class="fa fa-star"/>
+                                    <i class="fa fa-star"/>
+                                    <i class="fa fa-star"/>
+                                    <i class="fa fa-star"/>
+                                </span>
+                                <span>(4.9)</span>
+                            </div>
+                            <span class="bader-app-pdp-topbar__chip bader-app-pdp-topbar__chip--sku"
+                                  t-if="product_variant and product_variant.default_code">
+                                SKU <t t-esc="product_variant.default_code"/>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -77,34 +93,6 @@
                     <span t-else="">Amplia la imagen para revisar el producto con mas detalle.</span>
                 </div>
             </section>
-        </xpath>
-
-        <xpath expr="//div[@id='product_details']/h1[@itemprop='name']" position="before">
-            <div class="bader-app-meta-row">
-                <div class="bader-app-category-pills">
-                    <t t-if="product.public_categ_ids">
-                        <t t-foreach="product.public_categ_ids[:2]" t-as="categ">
-                            <span class="bader-app-pill" t-esc="categ.name"/>
-                        </t>
-                    </t>
-                    <span class="bader-app-pill" t-else="">Equipamiento Profesional</span>
-                </div>
-                <div class="bader-app-rating-pill" aria-label="Valoracion del producto">
-                    <span class="bader-app-rating-stars">
-                        <i class="fa fa-star"/>
-                        <i class="fa fa-star"/>
-                        <i class="fa fa-star"/>
-                        <i class="fa fa-star"/>
-                        <i class="fa fa-star"/>
-                    </span>
-                    <span>(4.9)</span>
-                </div>
-            </div>
-            <div class="bader-app-sku-row">
-                <span class="bader-app-sku" t-if="product_variant and product_variant.default_code">
-                    SKU <t t-esc="product_variant.default_code"/>
-                </span>
-            </div>
         </xpath>
 
         <xpath expr="//div[@id='product_details']/h1[@itemprop='name']" position="before">
@@ -182,6 +170,55 @@
                     <i class="fa fa-share-alt"/>
                 </button>
             </div>
+            <section class="bader-app-purchase-support" aria-label="Condiciones comerciales y soporte">
+                <div class="bader-app-trust-grid bader-app-trust-grid--compact" aria-label="Pruebas de confianza">
+                    <article class="bader-app-trust-card">
+                        <span class="bader-app-trust-card__icon">
+                            <i class="fa fa-truck"/>
+                        </span>
+                        <div>
+                            <strong>Envio y coordinacion</strong>
+                            <p>Entrega segun zona y necesidad de instalacion.</p>
+                        </div>
+                    </article>
+                    <article class="bader-app-trust-card">
+                        <span class="bader-app-trust-card__icon">
+                            <i class="fa fa-shield"/>
+                        </span>
+                        <div>
+                            <strong>Garantia oficial</strong>
+                            <p>Respaldo Bader y postventa oficial.</p>
+                        </div>
+                    </article>
+                    <article class="bader-app-trust-card">
+                        <span class="bader-app-trust-card__icon">
+                            <i class="fa fa-credit-card"/>
+                        </span>
+                        <div>
+                            <strong>Financiacion</strong>
+                            <p>Cuotas y medios de pago disponibles.</p>
+                        </div>
+                    </article>
+                    <article class="bader-app-trust-card">
+                        <span class="bader-app-trust-card__icon">
+                            <i class="fa fa-headphones"/>
+                        </span>
+                        <div>
+                            <strong>Soporte Bader</strong>
+                            <p>Asistencia comercial y tecnica directa.</p>
+                        </div>
+                    </article>
+                </div>
+                <div class="bader-app-terms-inline" aria-label="Condiciones comerciales">
+                    <a href="/terms">Terminos</a>
+                    <span>30 dias devolucion</span>
+                    <span>Envio 2-3 dias</span>
+                </div>
+            </section>
+        </xpath>
+
+        <xpath expr="//div[@id='o_product_terms_and_share']" position="attributes">
+            <attribute name="class" add="bader-app-terms-native" separator=" "/>
         </xpath>
 
         <xpath expr="//div[@id='o_product_terms_and_share']" position="after">
@@ -204,47 +241,6 @@
                         Agregar
                     </button>
                 </div>
-            </section>
-        </xpath>
-
-        <xpath expr="//div[@id='o_product_terms_and_share']" position="before">
-            <section class="bader-app-trust-grid" aria-label="Pruebas de confianza">
-                <article class="bader-app-trust-card">
-                    <span class="bader-app-trust-card__icon">
-                        <i class="fa fa-truck"/>
-                    </span>
-                    <div>
-                        <strong>Envio y coordinacion</strong>
-                        <p>Gestion de entrega segun zona, tipo de producto y necesidad de instalacion.</p>
-                    </div>
-                </article>
-                <article class="bader-app-trust-card">
-                    <span class="bader-app-trust-card__icon">
-                        <i class="fa fa-shield"/>
-                    </span>
-                    <div>
-                        <strong>Garantia oficial</strong>
-                        <p>Respaldo Bader en equipos, instrumental y postventa segun la referencia.</p>
-                    </div>
-                </article>
-                <article class="bader-app-trust-card">
-                    <span class="bader-app-trust-card__icon">
-                        <i class="fa fa-credit-card"/>
-                    </span>
-                    <div>
-                        <strong>Financiacion</strong>
-                        <p>Consulta medios de pago y cuotas disponibles para este producto.</p>
-                    </div>
-                </article>
-                <article class="bader-app-trust-card">
-                    <span class="bader-app-trust-card__icon">
-                        <i class="fa fa-headphones"/>
-                    </span>
-                    <div>
-                        <strong>Soporte Bader</strong>
-                        <p>Asistencia comercial y tecnica antes y despues de la compra.</p>
-                    </div>
-                </article>
             </section>
         </xpath>
 
