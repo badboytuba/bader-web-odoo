@@ -4630,6 +4630,12 @@
     #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .o_carousel_product_indicators {
         width: 100%;
         min-width: 0;
+        padding: 0;
+    }
+
+    #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .o_carousel_product_indicators::before,
+    #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .o_carousel_product_indicators::after {
+        display: none;
     }
 
     #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators {
@@ -4637,7 +4643,7 @@
         max-height: none;
         overflow-x: auto;
         overflow-y: hidden;
-        padding-right: 0;
+        padding: 0 0 6px;
     }
 
     #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators li,
@@ -4791,20 +4797,80 @@
 }
 
 #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .o_carousel_product_indicators {
+    position: relative;
+    align-self: stretch;
     width: 88px;
     min-width: 88px;
+    padding: 8px 6px 8px 0;
+    isolation: isolate;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .o_carousel_product_indicators::before,
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .o_carousel_product_indicators::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 10px;
+    height: 24px;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: 18px;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .o_carousel_product_indicators::before {
+    top: 0;
+    background: linear-gradient(180deg, rgba(10, 78, 86, 0.34), rgba(10, 78, 86, 0));
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .o_carousel_product_indicators::after {
+    bottom: 0;
+    background: linear-gradient(0deg, rgba(10, 78, 86, 0.34), rgba(10, 78, 86, 0));
 }
 
 #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators {
     gap: 10px;
     max-height: clamp(320px, 35vw, 500px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 6px 8px 6px 0;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(112, 212, 75, 0.68) rgba(255, 255, 255, 0.14);
+    scroll-padding-block: 10px;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators::-webkit-scrollbar {
+    width: 6px;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(112, 212, 75, 0.94), rgba(91, 190, 55, 0.9));
+    border-radius: 999px;
+    border: 1px solid rgba(10, 78, 86, 0.16);
 }
 
 #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators li,
 #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators button {
     width: 78px !important;
     height: 78px !important;
+    flex: 0 0 auto;
     border-radius: 18px;
+    scroll-snap-align: start;
+}
+
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators li.active,
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators button.active,
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators li[aria-current='true'],
+#product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators button[aria-current='true'] {
+    transform: none;
+    box-shadow: 0 14px 24px rgba(0, 56, 65, 0.16);
 }
 
 #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .o_carousel_product_outer {
