@@ -40,9 +40,10 @@
 
         <xpath expr="//section[@id='bader_pdp_faq']//div[hasclass('bader-app-faq-list')]" position="replace">
             <div class="bader-app-faq-list">
-                <t t-if="product.bpi_faq_ids">
+                <t t-set="bpi_public_faqs" t-value="product.sudo().bpi_faq_ids.sorted('sequence')"/>
+                <t t-if="bpi_public_faqs">
                     <article class="bader-app-faq-item"
-                             t-foreach="product.bpi_faq_ids.sorted('sequence')"
+                             t-foreach="bpi_public_faqs"
                              t-as="faq">
                         <span class="bader-app-faq-item__index" t-esc="faq_index + 1"/>
                         <div class="bader-app-faq-item__body">

@@ -21,6 +21,43 @@
             <attribute name="class" add="bader-app-hero-grid" separator=" "/>
         </xpath>
 
+        <xpath expr="//div[@id='product_detail_main']" position="before">
+            <section class="bader-app-pdp-topbar" aria-label="Encabezado del producto">
+                <div class="bader-app-pdp-topbar__body">
+                    <a class="bader-app-pdp-topbar__back" href="/productos">
+                        <i class="fa fa-arrow-left"/>
+                        Volver al catálogo
+                    </a>
+                    <div class="bader-app-pdp-topbar__copy">
+                        <span class="bader-app-pdp-topbar__eyebrow">Ficha del producto</span>
+                        <nav class="bader-app-pdp-topbar__trail" aria-label="Ruta del producto">
+                            <a href="/">Home</a>
+                            <i class="fa fa-angle-right"/>
+                            <a href="/productos">Catálogo</a>
+                            <t t-if="product.public_categ_ids">
+                                <i class="fa fa-angle-right"/>
+                                <span t-esc="product.public_categ_ids[0].name"/>
+                            </t>
+                            <i class="fa fa-angle-right"/>
+                            <span class="is-current" t-esc="pdp_product_name_clean or product.name"/>
+                        </nav>
+                        <div class="bader-app-pdp-topbar__chips" aria-label="Datos rápidos del producto">
+                            <span class="bader-app-pdp-topbar__chip bader-app-pdp-topbar__chip--brand">Bader</span>
+                            <span class="bader-app-pdp-topbar__chip" t-if="product_variant and product_variant.default_code">
+                                Código <t t-esc="product_variant.default_code"/>
+                            </span>
+                            <span class="bader-app-pdp-topbar__chip" t-if="product.public_categ_ids">
+                                <t t-esc="product.public_categ_ids[0].name"/>
+                            </span>
+                        </div>
+                        <p class="bader-app-pdp-topbar__summary">
+                            <t t-esc="pdp_summary_text or 'Información comercial y técnica organizada para evaluar este producto con más claridad.'"/>
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+
         <xpath expr="//div[@id='product_detail_main']/div[t[@t-call='website_sale.shop_product_images']]" position="attributes">
             <attribute name="class" add="bader-app-gallery-column" separator=" "/>
         </xpath>
