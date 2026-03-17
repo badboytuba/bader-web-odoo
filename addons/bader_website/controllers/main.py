@@ -3084,6 +3084,46 @@ class BaderWebsite(Website):
         """Marketing menu alias for featured promotions in the catalog."""
         return request.redirect('/productos?bader_qf=destacados&order=website_sequence+asc', code=302)
 
+    @http.route(['/formacion', '/capacitacion'], type='http', auth='public', website=True, sitemap=False)
+    def formacion(self, **kw):
+        """Menu alias for Bader training content."""
+        return request.redirect('/servicios', code=302)
+
+    @http.route('/formacion/cursos-de-especialidades', type='http', auth='public', website=True, sitemap=False)
+    def formacion_cursos(self, **kw):
+        """Menu alias for specialty courses."""
+        return request.redirect('/servicios', code=302)
+
+    @http.route('/formacion/dictantes', type='http', auth='public', website=True, sitemap=False)
+    def formacion_dictantes(self, **kw):
+        """Menu alias for instructors and speakers."""
+        return request.redirect('/blog', code=302)
+
+    @http.route('/formacion/workshops', type='http', auth='public', website=True, sitemap=False)
+    def formacion_workshops(self, **kw):
+        """Menu alias for workshops."""
+        return request.redirect('/servicios', code=302)
+
+    @http.route(['/post-venta', '/postventa', '/post-ventas'], type='http', auth='public', website=True, sitemap=False)
+    def postventa(self, **kw):
+        """Menu alias for post-sale support."""
+        return request.redirect('/servicios', code=302)
+
+    @http.route('/post-venta/compra-repuestos', type='http', auth='public', website=True, sitemap=False)
+    def postventa_repuestos(self, **kw):
+        """Menu alias for spare parts purchase."""
+        return request.redirect('/productos?search=repuestos', code=302)
+
+    @http.route('/post-venta/servicio-tecnico-oficial', type='http', auth='public', website=True, sitemap=False)
+    def postventa_servicio_tecnico(self, **kw):
+        """Menu alias for official technical service."""
+        return request.redirect('/servicio-tecnico', code=302)
+
+    @http.route('/post-venta/asistencia-tecnica', type='http', auth='public', website=True, sitemap=False)
+    def postventa_asistencia_tecnica(self, **kw):
+        """Menu alias for technical assistance."""
+        return request.redirect('/contacto', code=302)
+
     @http.route('/producto/<int:product_id>', type='http', auth='public',
                 website=True, sitemap=False)
     def producto_por_id(self, product_id, **kw):

@@ -29,39 +29,102 @@
             <field name="sequence" type="int">40</field>
         </record>
 
+        <record id="menu_bader_formacion" model="website.menu">
+            <field name="name">Formación</field>
+            <field name="url">/formacion</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence" type="int">50</field>
+        </record>
+
+        <record id="menu_bader_formacion_cursos" model="website.menu">
+            <field name="name">Cursos de Especialidades</field>
+            <field name="url">/formacion/cursos-de-especialidades</field>
+            <field name="parent_id" ref="menu_bader_formacion"/>
+            <field name="sequence" type="int">10</field>
+        </record>
+
+        <record id="menu_bader_formacion_dictantes" model="website.menu">
+            <field name="name">Dictantes</field>
+            <field name="url">/formacion/dictantes</field>
+            <field name="parent_id" ref="menu_bader_formacion"/>
+            <field name="sequence" type="int">20</field>
+        </record>
+
+        <record id="menu_bader_formacion_workshops" model="website.menu">
+            <field name="name">Workshops</field>
+            <field name="url">/formacion/workshops</field>
+            <field name="parent_id" ref="menu_bader_formacion"/>
+            <field name="sequence" type="int">30</field>
+        </record>
+
+        <record id="menu_bader_postventa" model="website.menu">
+            <field name="name">Post-Venta</field>
+            <field name="url">/post-venta</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence" type="int">60</field>
+        </record>
+
+        <record id="menu_bader_postventa_repuestos" model="website.menu">
+            <field name="name">Compra de Repuestos</field>
+            <field name="url">/post-venta/compra-repuestos</field>
+            <field name="parent_id" ref="menu_bader_postventa"/>
+            <field name="sequence" type="int">10</field>
+        </record>
+
+        <record id="menu_bader_postventa_servicio_tecnico" model="website.menu">
+            <field name="name">Servicio Técnico Oficial</field>
+            <field name="url">/post-venta/servicio-tecnico-oficial</field>
+            <field name="parent_id" ref="menu_bader_postventa"/>
+            <field name="sequence" type="int">20</field>
+        </record>
+
+        <record id="menu_bader_postventa_asistencia" model="website.menu">
+            <field name="name">Asistencia técnica</field>
+            <field name="url">/post-venta/asistencia-tecnica</field>
+            <field name="parent_id" ref="menu_bader_postventa"/>
+            <field name="sequence" type="int">30</field>
+        </record>
+
+        <record id="menu_bader_contacto" model="website.menu">
+            <field name="name">Contacto</field>
+            <field name="url">/contacto</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence" type="int">70</field>
+        </record>
+
         <record id="menu_bader_sobre_nosotros" model="website.menu">
             <field name="name">Nosotros</field>
             <field name="url">/sobre-nosotros</field>
             <field name="parent_id" ref="website.main_menu"/>
-            <field name="sequence" type="int">50</field>
+            <field name="sequence" type="int">80</field>
         </record>
 
         <record id="menu_bader_ser_distribuidor" model="website.menu">
             <field name="name">Ser Distribuidor</field>
             <field name="url">/ser-distribuidor</field>
             <field name="parent_id" ref="website.main_menu"/>
-            <field name="sequence" type="int">60</field>
+            <field name="sequence" type="int">90</field>
         </record>
 
         <record id="menu_bader_descargas" model="website.menu">
             <field name="name">Descargas</field>
             <field name="url">/descargas</field>
             <field name="parent_id" ref="website.main_menu"/>
-            <field name="sequence" type="int">70</field>
+            <field name="sequence" type="int">100</field>
         </record>
 
         <record id="menu_bader_blog" model="website.menu">
             <field name="name">Blog</field>
             <field name="url">/blog</field>
             <field name="parent_id" ref="website.main_menu"/>
-            <field name="sequence" type="int">80</field>
+            <field name="sequence" type="int">110</field>
         </record>
 
         <record id="menu_bader_servicios" model="website.menu">
             <field name="name">Servicios</field>
             <field name="url">/servicios</field>
             <field name="parent_id" ref="website.main_menu"/>
-            <field name="sequence" type="int">90</field>
+            <field name="sequence" type="int">120</field>
         </record>
 
         <!-- Normalize top menu for each Bader website (remove duplicates + no "Tienda"). -->
