@@ -62,12 +62,14 @@
             }
         }
 
-        // Logo - green like reference
+        // Logo - green wordmark with white dot like brand reference
         .navbar-brand {
             margin-right: 40px;
             display: inline-flex;
             align-items: center;
+            gap: 8px;
             position: relative;
+            min-height: 36px;
 
             img {
                 display: none !important;
@@ -78,25 +80,41 @@
             }
 
             &::before {
-                content: 'BADER';
-                font-family: $font-display;
-                font-weight: 700;
-                font-size: 1.55rem;
-                letter-spacing: -0.02em;
-                color: $white;
-                line-height: 1;
-                display: inline-flex;
-                align-items: center;
+                content: '';
+                display: block;
+                width: 152px;
+                height: 30px;
+                background: url('/bader_website/static/src/img/bader_logotipo_verde_wordmark.png') left center / contain no-repeat;
+                flex: 0 0 auto;
             }
 
             &::after {
-                content: '.';
-                font-family: $font-display;
-                font-weight: 700;
-                font-size: 1.55rem;
-                line-height: 1;
-                color: $bader-green;
-                margin-left: 1px;
+                content: '';
+                display: block;
+                width: 12px;
+                height: 12px;
+                border-radius: 999px;
+                background: $white;
+                box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+                flex: 0 0 auto;
+                transform: translateY(6px);
+            }
+
+            @include mobile {
+                margin-right: 12px;
+                gap: 6px;
+                min-height: 30px;
+
+                &::before {
+                    width: 118px;
+                    height: 24px;
+                }
+
+                &::after {
+                    width: 9px;
+                    height: 9px;
+                    transform: translateY(5px);
+                }
             }
         }
 

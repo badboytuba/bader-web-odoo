@@ -106,13 +106,7 @@ class Website(models.Model):
                 ],
             },
             {
-                "name": "Contacto",
-                "url": "/contacto",
-                "sequence": 70,
-                "aliases": ["/#contacto"],
-            },
-            {
-                "name": "Nosotros",
+                "name": "Quienes Somos",
                 "url": "/sobre-nosotros",
                 "sequence": 80,
                 "aliases": ["/nosotros", "/quienes-somos"],
@@ -125,7 +119,12 @@ class Website(models.Model):
             },
             {"name": "Descargas", "url": "/descargas", "sequence": 100, "aliases": []},
             {"name": "Blog", "url": "/blog", "sequence": 110, "aliases": []},
-            {"name": "Servicios", "url": "/servicios", "sequence": 120, "aliases": []},
+            {
+                "name": "Contacto",
+                "url": "/contacto",
+                "sequence": 120,
+                "aliases": ["/servicios", "/#contacto"],
+            },
         ]
 
         canonical_urls = set()

@@ -146,12 +146,11 @@
                     <a href="/">Home</a>
                     <a href="/ofertas">Ofertas</a>
                     <a href="/promociones">Promociones</a>
-                    <a href="/contacto">Contacto</a>
-                    <a href="/sobre-nosotros">Nosotros</a>
+                    <a href="/sobre-nosotros">Quienes Somos</a>
                     <a href="/ser-distribuidor">Ser Distribuidor</a>
                     <a href="/descargas">Descargas</a>
                     <a href="/blog">Blog</a>
-                    <a href="/servicios">Servicios</a>
+                    <a href="/contacto">Contacto</a>
                 </nav>
 
                 <section class="bader-mobile-account" t-if="request.env.user._is_public()">
