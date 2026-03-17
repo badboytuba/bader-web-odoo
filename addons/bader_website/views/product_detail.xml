@@ -231,41 +231,8 @@
         </xpath>
 
         <xpath expr="//div[@id='product_full_description']" position="replace">
-            <section id="product_full_description" class="bader-app-detail-section mt-5">
+            <section id="product_full_description" class="bader-app-detail-section">
                 <div class="bader-app-detail-shell">
-                    <div class="bader-app-detail-intro">
-                        <div class="bader-app-section-heading">
-                            <span class="bader-app-section-heading__eyebrow">Informacion del producto</span>
-                            <h2>Informacion clara para evaluar el producto</h2>
-                            <p>Descripcion comercial, ficha tecnica, envio y garantia organizados en un bloque mas limpio y facil de revisar.</p>
-                        </div>
-                        <aside class="bader-app-detail-intro-card" aria-label="Resumen del producto">
-                            <span class="bader-app-detail-intro-card__eyebrow">Resumen rapido</span>
-                            <strong>Todo lo esencial reunido en una sola lectura</strong>
-                            <p t-esc="pdp_summary_text or 'Consulta aqui descripcion, datos base y condiciones comerciales del producto.'"/>
-                            <dl class="bader-app-detail-intro-meta">
-                                <div>
-                                    <dt>Categoria</dt>
-                                    <dd>
-                                        <span t-if="product.public_categ_ids" t-esc="product.public_categ_ids[0].name"/>
-                                        <span t-else="">General</span>
-                                    </dd>
-                                </div>
-                                <div>
-                                    <dt>Codigo</dt>
-                                    <dd>
-                                        <span t-if="product_variant and product_variant.default_code" t-esc="product_variant.default_code"/>
-                                        <span t-else="">BAD-<t t-esc="product.id"/></span>
-                                    </dd>
-                                </div>
-                                <div>
-                                    <dt>Marca</dt>
-                                    <dd>BADER</dd>
-                                </div>
-                            </dl>
-                        </aside>
-                    </div>
-
                     <div class="bader-app-tab-shell">
                         <ul class="nav nav-tabs bader-app-tablist" role="tablist">
                             <li class="nav-item" role="presentation">

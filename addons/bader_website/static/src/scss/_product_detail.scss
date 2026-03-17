@@ -7315,7 +7315,10 @@
 // ============================================================
 // Lower Section Typography Normalization
 // ============================================================
-#product_full_description.bader-app-detail-section,
+#product_full_description.bader-app-detail-section {
+    margin-top: clamp(14px, 2vw, 22px);
+}
+
 #bader_pdp_faq,
 #bader_pdp_related,
 #bader_pdp_help_cta {
@@ -7330,7 +7333,7 @@
 }
 
     #product_full_description .bader-app-detail-shell {
-        padding: clamp(24px, 3.2vw, 34px);
+        padding: clamp(16px, 2vw, 22px) clamp(24px, 3.2vw, 34px) clamp(24px, 3vw, 32px);
     }
 
     #product_full_description .bader-app-detail-intro {
@@ -7397,7 +7400,7 @@
     }
 
     #product_full_description .bader-app-tab-shell {
-        margin-bottom: 18px;
+        margin-bottom: 14px;
     }
 
     #product_full_description .bader-app-tablist .nav-link {
@@ -7560,7 +7563,7 @@
     #bader_pdp_related .bader-app-related-shell,
     #bader_pdp_help_cta .bader-app-help-cta__shell {
         border-radius: 24px;
-        padding: 18px;
+        padding: 14px 18px 18px;
     }
 
     #product_full_description .bader-app-section-heading h2,
