@@ -7311,3 +7311,274 @@
         justify-content: center;
     }
 }
+
+// ============================================================
+// Lower Section Typography Normalization
+// ============================================================
+#product_full_description.bader-app-detail-section,
+#bader_pdp_faq,
+#bader_pdp_related,
+#bader_pdp_help_cta {
+    margin-top: clamp(28px, 4vw, 44px);
+}
+
+#product_full_description .bader-app-detail-shell,
+#bader_pdp_faq .bader-app-faq-shell,
+#bader_pdp_related .bader-app-related-shell,
+#bader_pdp_help_cta .bader-app-help-cta__shell {
+    border-radius: 30px;
+}
+
+    #product_full_description .bader-app-detail-shell {
+        padding: clamp(24px, 3.2vw, 34px);
+    }
+
+    #product_full_description .bader-app-detail-intro {
+        gap: clamp(18px, 2.6vw, 32px);
+        margin-bottom: 20px;
+    }
+
+    #product_full_description .bader-app-section-heading__eyebrow,
+    #product_full_description .bader-app-detail-intro-card__eyebrow,
+    #product_full_description .bader-app-detail-rail-card__eyebrow,
+    #bader_pdp_faq .bader-app-faq-head__eyebrow,
+    #bader_pdp_related .bader-app-related-head__eyebrow,
+    #bader_pdp_help_cta .bader-app-help-cta__eyebrow {
+        font-size: 11px;
+        letter-spacing: 0.14em;
+    }
+
+    #product_full_description .bader-app-section-heading h2,
+    #bader_pdp_faq .bader-app-faq-head h2,
+    #bader_pdp_related .bader-app-related-head h2 {
+        font-size: clamp(28px, 3.2vw, 40px);
+        line-height: 0.98;
+        letter-spacing: -0.04em;
+    }
+
+    #product_full_description .bader-app-section-heading h2 {
+        max-width: 12ch;
+    }
+
+    #product_full_description .bader-app-section-heading p,
+    #bader_pdp_faq .bader-app-faq-head p,
+    #bader_pdp_related .bader-app-related-head p,
+    #bader_pdp_help_cta .bader-app-help-cta__text p {
+        font-size: 14px;
+        line-height: 1.65;
+    }
+
+    #product_full_description .bader-app-detail-intro-card {
+        padding: 22px 24px;
+    }
+
+    #product_full_description .bader-app-detail-intro-card strong {
+        font-size: clamp(20px, 2.1vw, 26px);
+        line-height: 1.08;
+    }
+
+    #product_full_description .bader-app-detail-intro-card p {
+        font-size: 14px;
+        line-height: 1.65;
+    }
+
+    #product_full_description .bader-app-detail-intro-meta {
+        gap: 10px;
+    }
+
+    #product_full_description .bader-app-detail-intro-meta dt {
+        font-size: 11px;
+        letter-spacing: 0.1em;
+    }
+
+    #product_full_description .bader-app-detail-intro-meta dd {
+        font-size: 15px;
+        line-height: 1.35;
+    }
+
+    #product_full_description .bader-app-tab-shell {
+        margin-bottom: 18px;
+    }
+
+    #product_full_description .bader-app-tablist .nav-link {
+        min-height: 44px;
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+
+    #product_full_description .bader-app-detail-card,
+    #product_full_description .bader-app-detail-rail-card,
+    #bader_pdp_faq .bader-app-faq-item,
+    #bader_pdp_related .bader-app-related-card,
+    #bader_pdp_help_cta .bader-app-help-cta__shell {
+        border-radius: 24px;
+    }
+
+    #product_full_description .bader-app-detail-card,
+    #product_full_description .bader-app-detail-rail-card,
+    #bader_pdp_faq .bader-app-faq-item {
+        padding: 22px;
+    }
+
+    #product_full_description .bader-app-detail-card__header {
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+
+    #product_full_description .bader-app-detail-card__header h3 {
+        font-size: clamp(20px, 2.3vw, 28px);
+        line-height: 1.08;
+        letter-spacing: -0.03em;
+    }
+
+    #product_full_description .bader-app-detail-card__header p,
+    #product_full_description .bader-app-description-body,
+    #product_full_description .bader-app-detail-rail-card p,
+    #product_full_description .bader-app-detail-rail-list li,
+    #product_full_description .bader-app-spec-item span,
+    #product_full_description .bader-app-info-panel p,
+    #bader_pdp_faq .bader-app-faq-item p,
+    #bader_pdp_related .bader-app-related-card__meta {
+        font-size: 14px;
+        line-height: 1.65;
+    }
+
+    #product_full_description .bader-app-description-specs h4,
+    #product_full_description .bader-app-detail-rail-card h4,
+    #bader_pdp_help_cta .bader-app-help-cta__text h3 {
+        font-size: clamp(18px, 2vw, 24px);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+    }
+
+    #product_full_description .bader-app-description-specs ul,
+    #product_full_description .bader-app-detail-rail-list,
+    #product_full_description .bader-app-info-panels {
+        gap: 12px;
+    }
+
+    #product_full_description .bader-app-spec-grid {
+        gap: 12px;
+    }
+
+    #product_full_description .bader-app-spec-item {
+        padding: 16px 18px;
+        border-radius: 18px;
+    }
+
+    #product_full_description .bader-app-spec-item strong,
+    #product_full_description .bader-app-info-panel strong {
+        font-size: 16px;
+        line-height: 1.3;
+    }
+
+    #product_full_description .bader-app-info-panel {
+        gap: 14px;
+        padding: 18px;
+        border-radius: 20px;
+    }
+
+    #product_full_description .bader-app-info-panel__icon {
+        width: 42px;
+        height: 42px;
+        flex: 0 0 42px;
+        font-size: 16px;
+    }
+
+    #product_full_description .bader-app-description-toggle,
+    #product_full_description .bader-app-detail-rail-cta {
+        min-height: 44px;
+        font-size: 13px;
+        border-radius: 15px;
+    }
+
+    #bader_pdp_faq .bader-app-faq-shell,
+    #bader_pdp_related .bader-app-related-shell,
+    #bader_pdp_help_cta .bader-app-help-cta__shell {
+        padding: clamp(22px, 3vw, 32px);
+    }
+
+    #bader_pdp_faq .bader-app-faq-grid,
+    #bader_pdp_related .bader-app-related-grid {
+        gap: 16px;
+    }
+
+    #bader_pdp_faq .bader-app-faq-item h3 {
+        font-size: 18px;
+        line-height: 1.22;
+        letter-spacing: -0.02em;
+    }
+
+    #bader_pdp_faq .bader-app-faq-cta__copy strong {
+        font-size: clamp(20px, 2.2vw, 26px);
+        line-height: 1.12;
+    }
+
+    #bader_pdp_related .bader-app-related-card {
+        padding: 16px;
+    }
+
+    #bader_pdp_related .bader-app-related-card__image {
+        border-radius: 18px;
+    }
+
+    #bader_pdp_related .bader-app-related-card__name {
+        font-size: 15px;
+        line-height: 1.38;
+    }
+
+    #bader_pdp_related .bader-app-related-card__price {
+        font-size: 20px;
+        line-height: 1.05;
+    }
+
+    #bader_pdp_related .bader-app-related-card__cta,
+    #bader_pdp_help_cta .bader-app-help-cta__actions .btn {
+        min-height: 44px;
+        font-size: 13px;
+        border-radius: 15px;
+    }
+
+@media (max-width: 991px) {
+    #product_full_description .bader-app-section-heading h2,
+    #bader_pdp_faq .bader-app-faq-head h2,
+    #bader_pdp_related .bader-app-related-head h2 {
+        max-width: none;
+        font-size: clamp(24px, 6.2vw, 34px);
+    }
+
+    #product_full_description .bader-app-detail-card,
+    #product_full_description .bader-app-detail-rail-card,
+    #bader_pdp_faq .bader-app-faq-item {
+        padding: 18px;
+    }
+}
+
+@media (max-width: 767px) {
+    #product_full_description .bader-app-detail-shell,
+    #bader_pdp_faq .bader-app-faq-shell,
+    #bader_pdp_related .bader-app-related-shell,
+    #bader_pdp_help_cta .bader-app-help-cta__shell {
+        border-radius: 24px;
+        padding: 18px;
+    }
+
+    #product_full_description .bader-app-section-heading h2,
+    #bader_pdp_faq .bader-app-faq-head h2,
+    #bader_pdp_related .bader-app-related-head h2 {
+        font-size: 26px;
+        line-height: 1.02;
+    }
+
+    #product_full_description .bader-app-detail-intro-card strong,
+    #product_full_description .bader-app-detail-card__header h3,
+    #product_full_description .bader-app-description-specs h4,
+    #product_full_description .bader-app-detail-rail-card h4,
+    #bader_pdp_help_cta .bader-app-help-cta__text h3 {
+        font-size: 18px;
+    }
+
+    #bader_pdp_related .bader-app-related-card {
+        padding: 14px;
+    }
+}
