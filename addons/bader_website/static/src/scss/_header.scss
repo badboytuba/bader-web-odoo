@@ -749,6 +749,15 @@ html.o_connected_user #wrapwrap>header#top {
     border: 1px solid rgba(130, 150, 170, 0.20);
     border-radius: 16px;
     padding: 12px;
+    color: #4a5d6a !important;
+
+    *,
+    a,
+    p,
+    span,
+    nav {
+        color: inherit !important;
+    }
 }
 
 .bader-mobile-account__name {
@@ -772,8 +781,8 @@ html.o_connected_user #wrapwrap>header#top {
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #4a5d6a;
-    text-decoration: none;
+    color: #4a5d6a !important;
+    text-decoration: none !important;
     font-size: 0.9rem;
     font-weight: 500;
     border-radius: 8px;
@@ -783,13 +792,13 @@ html.o_connected_user #wrapwrap>header#top {
 
 .bader-mobile-account__menu a:hover {
     background: #f4f8f8;
-    color: $bader-dark;
+    color: $bader-dark !important;
 }
 
 .bader-mobile-account__menu a i {
     width: 18px;
     text-align: center;
-    color: #0a5863;
+    color: #0a5863 !important;
     flex: 0 0 18px;
 }
 
