@@ -2,7 +2,6 @@
 
 import json
 import logging
-import uuid
 
 import requests as http_requests
 from odoo import SUPERUSER_ID, http
@@ -85,6 +84,16 @@ def _sync_website_session_flags(user):
         request.session["bader_home_persona"] = persona
     request.session.modified = True
     return needs_onboarding
+
+
+def _finalize_clerk_session(user):
+    """Log in the current HTTP session with an already trusted Clerk identity."""
+    request.session.uid = None
+    request.session["pre_login"] = user.login
+    request.session["pre_uid"] = user.id
+    request.session.finalize(request.env)
+    request.update_env(user=request.session.uid)
+    request.update_context(**request.session.context)
 
 
 def _decode_clerk_jwt(token, config):
@@ -244,9 +253,7 @@ class ClerkAuthController(http.Controller):
                 % http_requests.utils.quote(redirect_url, safe="")
             )
 
-        temp_pw = "clerk_" + uuid.uuid4().hex[:16]
-        odoo_user.sudo().write({"password": temp_pw})
-        request.session.authenticate(request.db, odoo_user.login, temp_pw)
+        _finalize_clerk_session(odoo_user)
         _sync_website_session_flags(odoo_user)
 
         _logger.info(
