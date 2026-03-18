@@ -741,6 +741,90 @@ html.o_connected_user #wrapwrap>header#top {
 }
 
 // -----------------------------------------------
+// 3b. Account Card - base styles (visible on ALL viewports)
+// The mobile override below switches to white-on-dark for the drawer.
+// -----------------------------------------------
+.bader-mobile-account__card {
+    background: #fff;
+    border: 1px solid rgba(130, 150, 170, 0.20);
+    border-radius: 16px;
+    padding: 12px;
+}
+
+.bader-mobile-account__name {
+    color: $bader-dark;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.bader-mobile-account__email {
+    color: $gray-400;
+    font-size: 0.78rem;
+}
+
+.bader-mobile-account__menu {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+.bader-mobile-account__menu a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #4a5d6a;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 10px 8px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.bader-mobile-account__menu a:hover {
+    background: #f4f8f8;
+    color: $bader-dark;
+}
+
+.bader-mobile-account__menu a i {
+    width: 18px;
+    text-align: center;
+    color: #0a5863;
+    flex: 0 0 18px;
+}
+
+.bader-mobile-account__admin {
+    color: #58bf46 !important;
+    font-weight: 600;
+}
+
+.bader-mobile-account__admin i {
+    color: #58bf46 !important;
+}
+
+.bader-mobile-account__admin:hover {
+    background: rgba(88, 191, 70, 0.08) !important;
+    color: #58bf46 !important;
+}
+
+.bader-mobile-account__logout {
+    color: #e14239 !important;
+    margin-top: 4px;
+    border-top: 1px solid rgba(130, 150, 170, 0.12);
+    padding-top: 12px !important;
+}
+
+.bader-mobile-account__logout i {
+    color: #e14239 !important;
+}
+
+.bader-mobile-account__logout:hover {
+    background: rgba(225, 66, 57, 0.08) !important;
+    color: #e14239 !important;
+}
+
+
+// -----------------------------------------------
 // 4. Responsive - Mobile
 // -----------------------------------------------
 @include mobile {
