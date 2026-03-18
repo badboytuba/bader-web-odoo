@@ -51,7 +51,7 @@
 
                 <!-- Cuenta: conditional public vs logged in -->
                 <t t-if="request.env.user._is_public()">
-                    <a href="/web/login?redirect=/"
+                    <a href="javascript:void(0)"
                        class="bader-bottom-nav__item bader-auth-trigger"
                        data-bader-auth-open="login"
                        data-bader-auth-redirect="/"
