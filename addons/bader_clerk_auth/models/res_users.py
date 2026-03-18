@@ -135,7 +135,6 @@ class ResUsers(models.Model):
             "email": email,
             "clerk_user_id": clerk_id,
             "share": True,
-            "password": False,
         }
         if group:
             vals["groups_id"] = [(6, 0, [group.id])]
