@@ -3450,6 +3450,129 @@ odoo.define('bader_website.main', function (require) {
             });
         })();
 
+        // ===================================================
+        // Mobile Header — Avatar Account Toggle
+        // ===================================================
+        (function initMobileAccountToggle() {
+            var avatarBtn = document.querySelector('[data-bader-mobile-account-toggle]');
+            if (!avatarBtn) return;
+
+            var panel = null;
+
+            function createPanel() {
+                var card = document.querySelector('.bader-mobile-account__card');
+                if (!card) return null;
+                var el = document.createElement('div');
+                el.className = 'bader-mobile-account-panel';
+                el.innerHTML = card.outerHTML;
+                document.body.appendChild(el);
+                return el;
+            }
+
+            function togglePanel() {
+                if (!panel) panel = createPanel();
+                if (!panel) return;
+                var isOpen = panel.classList.contains('is-open');
+                panel.classList.toggle('is-open', !isOpen);
+            }
+
+            function closePanel() {
+                if (panel) panel.classList.remove('is-open');
+            }
+
+            avatarBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                togglePanel();
+            });
+
+            document.addEventListener('click', function (e) {
+                if (panel && panel.classList.contains('is-open')) {
+                    if (!panel.contains(e.target) && e.target !== avatarBtn) {
+                        closePanel();
+                    }
+                }
+            });
+        })();
+
+        // ===================================================
+        // Cart Mini-Drawer (slide-up on add-to-cart)
+        // ===================================================
+        (function initCartDrawer() {
+            var drawerEl = null;
+            var drawerTimeout = null;
+
+            function createDrawer() {
+                var el = document.createElement('div');
+                el.className = 'bader-cart-drawer';
+                el.innerHTML =
+                    '<div class="bader-cart-drawer__content">' +
+                    '  <div class="bader-cart-drawer__header">' +
+                    '    <i class="fa fa-check-circle"></i>' +
+                    '    <strong>Producto agregado al carrito</strong>' +
+                    '  </div>' +
+                    '  <div class="bader-cart-drawer__actions">' +
+                    '    <a href="/shop/cart" class="bader-cart-drawer__btn bader-cart-drawer__btn--primary">Ver carrito</a>' +
+                    '    <button type="button" class="bader-cart-drawer__btn bader-cart-drawer__btn--secondary" data-cart-drawer-close="1">Seguir comprando</button>' +
+                    '  </div>' +
+                    '</div>';
+                document.body.appendChild(el);
+
+                el.addEventListener('click', function (ev) {
+                    var closeBtn = ev.target.closest('[data-cart-drawer-close]');
+                    if (closeBtn || ev.target === el) {
+                        hideDrawer();
+                    }
+                });
+
+                return el;
+            }
+
+            function showDrawer() {
+                if (!drawerEl) drawerEl = createDrawer();
+                clearTimeout(drawerTimeout);
+                drawerEl.classList.add('is-visible');
+                // Auto-dismiss after 5s
+                drawerTimeout = setTimeout(hideDrawer, 5000);
+
+                // Update mobile cart badge
+                updateMobileCartBadge();
+            }
+
+            function hideDrawer() {
+                if (drawerEl) drawerEl.classList.remove('is-visible');
+                clearTimeout(drawerTimeout);
+            }
+
+            function updateMobileCartBadge() {
+                try {
+                    var badgeEl = document.querySelector('.bader-mobile-header-actions__badge');
+                    var cartLink = document.querySelector('.bader-mobile-header-actions__cart');
+                    if (!cartLink) return;
+                    var currentQty = badgeEl ? parseInt(badgeEl.textContent, 10) || 0 : 0;
+                    var newQty = currentQty + 1;
+                    if (badgeEl) {
+                        badgeEl.textContent = newQty;
+                    } else {
+                        var badge = document.createElement('span');
+                        badge.className = 'bader-mobile-header-actions__badge';
+                        badge.textContent = newQty;
+                        cartLink.appendChild(badge);
+                    }
+                    // Bounce animation on cart icon
+                    cartLink.style.transform = 'scale(1.25)';
+                    setTimeout(function () { cartLink.style.transform = ''; }, 300);
+                } catch (_) {}
+            }
+
+            // Listen for Odoo's add-to-cart events
+            document.addEventListener('click', function (ev) {
+                var addBtn = ev.target.closest('.a-submit, [name="add"], .js_add_cart_json');
+                if (!addBtn) return;
+                // Show drawer after a short delay for Odoo to process
+                setTimeout(showDrawer, 600);
+            });
+        })();
+
     } // end initBader
 
     // Execute: by the time a lazy-loaded Odoo module runs, the DOM is always ready

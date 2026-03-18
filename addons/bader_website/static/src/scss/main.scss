@@ -6416,3 +6416,98 @@ body.bader-onboarding-open {
     0%, 100% { transform: scale(1); box-shadow: 0 8px 24px rgba(112, 212, 75, 0.3); }
     50% { transform: scale(1.08); box-shadow: 0 12px 32px rgba(112, 212, 75, 0.45); }
 }
+
+// ===================================================
+// Cart Mini-Drawer (slide-up on add-to-cart)
+// ===================================================
+.bader-cart-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+
+    &.is-visible {
+        opacity: 1;
+        pointer-events: auto;
+
+        .bader-cart-drawer__content {
+            transform: translateY(0);
+        }
+    }
+
+    &__content {
+        width: 100%;
+        max-width: 480px;
+        padding: 22px 20px;
+        padding-bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+        border-radius: 22px 22px 0 0;
+        background: #fff;
+        box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.18);
+        transform: translateY(100%);
+        transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 18px;
+
+        i {
+            color: $bader-green;
+            font-size: 1.3rem;
+        }
+
+        strong {
+            color: $bader-dark;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+    }
+
+    &__actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    &__btn {
+        flex: 1;
+        min-height: 48px;
+        border-radius: 14px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: background 0.2s ease, transform 0.2s ease;
+
+        &--primary {
+            background: #003841;
+            color: #fff !important;
+
+            &:hover {
+                background: #00505c;
+                transform: translateY(-1px);
+            }
+        }
+
+        &--secondary {
+            background: transparent;
+            border: 1.5px solid rgba(0, 56, 65, 0.2);
+            color: $bader-dark;
+
+            &:hover {
+                background: rgba(0, 56, 65, 0.05);
+            }
+        }
+    }
+}

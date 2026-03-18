@@ -4435,10 +4435,11 @@
     width: 96px !important;
     height: 96px !important;
     border-radius: 24px;
-    border-color: rgba(255, 255, 255, 0.14);
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: none;
+    border: 1px solid rgba(0, 56, 65, 0.12);
+    background: #ffffff;
+    box-shadow: 0 6px 16px rgba(0, 56, 65, 0.08);
     scroll-snap-align: start;
+    overflow: hidden;
 }
 
 #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators li.active,
@@ -4451,6 +4452,9 @@
 }
 
 #product_detail.bader-product-detail .bader-app-gallery-shell #o-carousel-product .carousel-indicators img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
     padding: 8px;
 }
 
