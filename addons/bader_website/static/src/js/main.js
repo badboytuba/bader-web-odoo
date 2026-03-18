@@ -2725,6 +2725,20 @@ odoo.define('bader_website.main', function (require) {
                 profile.study_year = serverProfile.study_year || '';
                 profile.career = serverProfile.career || '';
                 profile.student_city = serverProfile.student_city || '';
+
+                // Clerk auto-fill: name and phone from Clerk session
+                try {
+                    var clerkUser = window.Clerk && window.Clerk.user;
+                    if (clerkUser) {
+                        if (!profile.name) {
+                            var clerkName = ((clerkUser.firstName || '') + ' ' + (clerkUser.lastName || '')).trim();
+                            if (clerkName) profile.name = clerkName;
+                        }
+                        if (!profile.phone && clerkUser.primaryPhoneNumber) {
+                            profile.phone = clerkUser.primaryPhoneNumber.phoneNumber || '';
+                        }
+                    }
+                } catch (e) { /* Clerk not available */ }
             }
 
             function hasText(value) {
@@ -2732,32 +2746,29 @@ odoo.define('bader_website.main', function (require) {
             }
 
             function currentTotalSteps() {
-                return 5;
+                return 3;
             }
 
             function canProceedStep() {
-                if (step === 0) return true;
-                if (step === 1) return !!profile.persona;
-                if (step === 2) {
-                    return hasText(profile.name) && hasText(profile.phone) && hasText(profile.city);
+                // Step 0: persona selection
+                if (step === 0) return !!profile.persona;
+                // Step 1: contact + professional (combined)
+                if (step === 1) {
+                    if (!hasText(profile.name) || !hasText(profile.phone) || !hasText(profile.city)) return false;
+                    if (profile.persona === 'clinica') {
+                        return hasText(profile.clinic_name) && !!profile.clinic_role
+                            && Array.isArray(profile.clinic_specialties) && profile.clinic_specialties.length > 0;
+                    }
+                    if (profile.persona === 'laboratorio') {
+                        return hasText(profile.lab_name) && !!profile.lab_type && !!profile.lab_specialization;
+                    }
+                    if (profile.persona === 'estudiantes') {
+                        return hasText(profile.university) && !!profile.career && !!profile.study_year;
+                    }
+                    return true;
                 }
-                if (step !== 3) return true;
-
-                if (profile.persona === 'clinica') {
-                    return (
-                        hasText(profile.clinic_name)
-                        && !!profile.clinic_role
-                        && Array.isArray(profile.clinic_specialties)
-                        && profile.clinic_specialties.length > 0
-                    );
-                }
-                if (profile.persona === 'laboratorio') {
-                    return hasText(profile.lab_name) && !!profile.lab_type && !!profile.lab_specialization;
-                }
-                if (profile.persona === 'estudiantes') {
-                    return hasText(profile.university) && !!profile.career && !!profile.study_year;
-                }
-                return false;
+                // Step 2: done
+                return true;
             }
 
             function onboardingMissingFieldsMessage(fields) {
@@ -2796,7 +2807,7 @@ odoo.define('bader_website.main', function (require) {
             }
 
             function stepTitles() {
-                return ['Inicio', 'Perfil', 'Contacto', 'Profesional', 'Listo'];
+                return ['Segmento', 'Datos', 'Listo'];
             }
 
             function onboardingMeta() {
@@ -2804,70 +2815,38 @@ odoo.define('bader_website.main', function (require) {
                 if (step === 0) {
                     return {
                         eyebrow: isMandatory ? 'Registro obligatorio' : 'Experiencia personalizada',
-                        title: 'Activa tu cuenta profesional',
-                        copy: 'En menos de un minuto dejamos tu cuenta lista para mostrar catalogo, ofertas y soporte segun tu perfil real.',
+                        title: 'Elige tu universo Bader',
+                        copy: 'Selecciona tu perfil para personalizar catalogo, ofertas y soporte.',
                         bullets: [
                             'Catalogo segmentado segun tu actividad',
-                            'Seguimiento comercial mas preciso en Odoo',
+                            'Seguimiento comercial preciso en Odoo',
                             'Accesos rapidos y recursos relevantes',
                         ],
                     };
                 }
                 if (step === 1) {
                     return {
-                        eyebrow: 'Personalizacion base',
-                        title: 'Elige tu universo Bader',
-                        copy: currentPersona
-                            ? 'Excelente. Vamos a construir una experiencia pensada para ' + currentPersona.title.toLowerCase() + '.'
-                            : 'Selecciona el perfil que mejor describe tu negocio o etapa profesional.',
+                        eyebrow: currentPersona ? currentPersona.title : 'Datos y perfil',
+                        title: 'Completa tu informacion',
+                        copy: 'Datos de contacto y perfil profesional en un solo paso.',
                         bullets: currentPersona ? [
                             currentPersona.focus,
-                            'Promociones y contenido filtrados por segmento',
-                            'Navegacion orientada a tus productos clave',
+                            'Atencion comercial personalizada',
+                            'Menos friccion en compras y soporte',
                         ] : [
-                            'Clinicas: equipamiento, imagen y postventa',
-                            'Laboratorios: procesos tecnicos y CAD/CAM',
-                            'Estudiantes: practicas, simulacion y kits',
-                        ],
-                    };
-                }
-                if (step === 2) {
-                    return {
-                        eyebrow: 'Base comercial',
-                        title: 'Conecta tu contacto con Odoo',
-                        copy: 'Estos datos alimentan tu ficha comercial para que el equipo vea tu contexto desde el primer contacto.',
-                        bullets: [
                             'Nombre, WhatsApp y ciudad siempre a mano',
                             'Empresa e identificacion fiscal centralizadas',
-                            'Menos friccion en compras, soporte y seguimiento',
-                        ],
-                    };
-                }
-                if (step === 3) {
-                    return {
-                        eyebrow: 'Contexto profesional',
-                        title: 'Afina tu perfil operativo',
-                        copy: currentPersona
-                            ? 'Un ultimo paso para personalizar recomendaciones, categorias y soporte para ' + currentPersona.title.toLowerCase() + '.'
-                            : 'Completa tu contexto profesional para adaptar toda la experiencia.',
-                        bullets: currentPersona ? [
-                            currentPersona.focus,
-                            'Ofertas y productos mas relevantes primero',
-                            'Asesoria comercial mejor segmentada',
-                        ] : [
-                            'Personalizacion segun especialidad',
-                            'Accesos rapidos por rol y etapa',
-                            'Prioridad en recursos utiles para tu perfil',
+                            'Menos friccion en compras y seguimiento',
                         ],
                     };
                 }
                 return {
                     eyebrow: 'Cuenta lista',
-                    title: 'Ya puedes entrar con experiencia personalizada',
-                    copy: 'Guardamos tu configuracion para que el portal empiece desde hoy a trabajar a favor de tu perfil.',
+                    title: 'Tu portal personalizado esta listo',
+                    copy: 'Todo configurado para una experiencia adaptada a tu perfil.',
                     bullets: [
                         'Inicio adaptado a tu segmento',
-                        'Soporte comercial mas contextual',
+                        'Soporte comercial contextual',
                         'Cuenta preparada para crecer contigo',
                     ],
                 };
@@ -2933,8 +2912,8 @@ odoo.define('bader_website.main', function (require) {
                     '<p class="bader-onboarding__aside-copy">' + htmlEscape(meta.copy) + '</p>' +
                     personaBadgeHtml() +
                     '<div class="bader-onboarding__aside-stats">' +
-                    '<div class="bader-onboarding__aside-stat"><strong>5</strong><span>pasos claros</span></div>' +
-                    '<div class="bader-onboarding__aside-stat"><strong>1 min</strong><span>promedio</span></div>' +
+                    '<div class="bader-onboarding__aside-stat"><strong>3</strong><span>pasos claros</span></div>' +
+                    '<div class="bader-onboarding__aside-stat"><strong>30 seg</strong><span>promedio</span></div>' +
                     '<div class="bader-onboarding__aside-stat"><strong>100%</strong><span>adaptado a tu perfil</span></div>' +
                     '</div>' +
                     '<ul class="bader-onboarding__aside-list">' + bullets + '</ul>' +
@@ -3043,6 +3022,57 @@ odoo.define('bader_website.main', function (require) {
                     '<i class="fa fa-lock"></i>' +
                     '<span>Usamos esta informacion para seguimiento comercial, facturacion y una experiencia de cuenta mas precisa.</span>' +
                     '</div>';
+            }
+
+            function stepCombinedHtml() {
+                var profBody = '';
+                if (profile.persona === 'clinica') profBody = clinicQuestionsHtml();
+                if (profile.persona === 'laboratorio') profBody = labQuestionsHtml();
+                if (profile.persona === 'estudiantes') profBody = studentQuestionsHtml();
+
+                return '' +
+                    '<div class="bader-onboarding__step-head">' +
+                    '<h3>Completa tu informacion</h3>' +
+                    '<p>Datos de contacto y perfil profesional de <strong>' + htmlEscape(personaTitle(profile.persona)) + '</strong> en un solo paso.</p>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__surface">' +
+                    '<div class="bader-onboarding__surface-head">' +
+                    '<i class="fa fa-address-card-o"></i>' +
+                    '<div><strong>Contacto</strong><span>Lo esencial para identificarte.</span></div>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__grid">' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Nombre completo *</label>' +
+                    '<input type="text" data-onboarding-input="name" value="' + htmlEscape(profile.name) + '" placeholder="Nombre y apellido"/>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Telefono / WhatsApp *</label>' +
+                    '<input type="text" data-onboarding-input="phone" value="' + htmlEscape(profile.phone) + '" placeholder="+54 11 0000 0000"/>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__grid">' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Ciudad *</label>' +
+                    '<input type="text" data-onboarding-input="city" value="' + htmlEscape(profile.city) + '" placeholder="Ej: Buenos Aires"/>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>' + htmlEscape(companyFieldLabel()) + '</label>' +
+                    '<input type="text" data-onboarding-input="company_name" value="' + htmlEscape(profile.company_name) + '" placeholder="Opcional"/>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Documento fiscal</label>' +
+                    '<input type="text" data-onboarding-input="vat" value="' + htmlEscape(profile.vat) + '" placeholder="CUIT / NIF / Documento"/>' +
+                    '</div>' +
+                    '</div>' +
+                    (profBody ? '' +
+                    '<div class="bader-onboarding__surface" style="margin-top:1rem">' +
+                    '<div class="bader-onboarding__surface-head">' +
+                    '<i class="fa ' + htmlEscape((personaOption(profile.persona) || {}).icon || 'fa-briefcase') + '"></i>' +
+                    '<div><strong>Perfil ' + htmlEscape(personaTitle(profile.persona)) + '</strong><span>Para personalizar catalogo y soporte.</span></div>' +
+                    '</div>' +
+                    profBody +
+                    '</div>' : '');
             }
 
             function clinicQuestionsHtml() {
@@ -3170,11 +3200,9 @@ odoo.define('bader_website.main', function (require) {
 
             function renderCurrentStep() {
                 if (!contentEl) return;
-                if (step === 0) contentEl.innerHTML = stepOneHtml();
-                if (step === 1) contentEl.innerHTML = stepTwoHtml();
-                if (step === 2) contentEl.innerHTML = stepThreeHtml();
-                if (step === 3) contentEl.innerHTML = stepFourHtml();
-                if (step === 4) contentEl.innerHTML = stepFiveHtml();
+                if (step === 0) contentEl.innerHTML = stepTwoHtml();
+                if (step === 1) contentEl.innerHTML = stepCombinedHtml();
+                if (step === 2) contentEl.innerHTML = stepFiveHtml();
                 if (asideEl) asideEl.innerHTML = asideHtml();
                 if (stepRailEl) stepRailEl.innerHTML = stepRailHtml();
                 updateFrame();
@@ -3190,7 +3218,7 @@ odoo.define('bader_website.main', function (require) {
                 if (backBtn) backBtn.style.display = step > 0 ? '' : 'none';
                 if (modalRoot) modalRoot.setAttribute('data-persona', profile.persona || '');
                 if (primaryBtn) {
-                    var isLast = step >= 4;
+                    var isLast = step >= 2;
                     primaryBtn.textContent = isLast ? (isSaving ? 'Guardando...' : 'Empezar a explorar') : 'Continuar';
                     primaryBtn.disabled = isSaving || !canProceedStep();
                 }
@@ -3339,7 +3367,7 @@ odoo.define('bader_website.main', function (require) {
                     }
 
                     if (nextControl === primaryBtn) {
-                        if (step < 4) {
+                        if (step < 2) {
                             if (!canProceedStep()) return;
                             step += 1;
                             renderCurrentStep();
