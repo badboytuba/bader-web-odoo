@@ -1,10 +1,9 @@
 """Clerk authentication controller — JWT validation, login, callback, webhook."""
 
-import hashlib
-import hmac
 import json
 import logging
 import time
+import uuid
 
 import requests as http_requests
 from odoo import http, SUPERUSER_ID
@@ -26,24 +25,6 @@ def _get_clerk_config():
         "jwks_url": ICP.get_param("clerk.jwks_url", ""),
         "frontend_api": ICP.get_param("clerk.frontend_api", ""),
     }
-
-
-def _fetch_jwks(jwks_url):
-    """Fetch and cache JWKS keys from Clerk."""
-    now = time.time()
-    if _jwks_cache["keys"] and _jwks_cache["expires"] > now:
-        return _jwks_cache["keys"]
-
-    try:
-        resp = http_requests.get(jwks_url, timeout=10)
-        resp.raise_for_status()
-        keys = resp.json().get("keys", [])
-        _jwks_cache["keys"] = keys
-        _jwks_cache["expires"] = now + JWKS_TTL
-        return keys
-    except Exception:
-        _logger.exception("Failed to fetch JWKS from %s", jwks_url)
-        return _jwks_cache.get("keys") or []
 
 
 def _decode_clerk_jwt(token, config):
@@ -99,7 +80,10 @@ def _fetch_clerk_user(user_id, secret_key):
 
 class ClerkAuthController(http.Controller):
 
-    @http.route("/clerk/config", type="http", auth="none", csrf=False)
+    # --- Fix #3: auth='public' for DB context ---
+
+    @http.route("/clerk/config", type="http", auth="public", csrf=False,
+                website=True)
     def clerk_config(self, **kwargs):
         """Return Clerk publishable config for the JS SDK (public)."""
         config = _get_clerk_config()
@@ -112,7 +96,8 @@ class ClerkAuthController(http.Controller):
             headers=[("Content-Type", "application/json")],
         )
 
-    @http.route("/clerk/login", type="http", auth="none", csrf=False)
+    @http.route("/clerk/login", type="http", auth="public", csrf=False,
+                website=True)
     def clerk_login(self, redirect=None, **kwargs):
         """Redirect user to Clerk hosted sign-in page."""
         config = _get_clerk_config()
@@ -123,7 +108,9 @@ class ClerkAuthController(http.Controller):
 
         callback_url = request.httprequest.host_url.rstrip("/") + "/clerk/callback"
         if redirect:
-            callback_url += "?redirect=%s" % http_requests.utils.quote(redirect, safe="")
+            callback_url += "?redirect=%s" % http_requests.utils.quote(
+                redirect, safe=""
+            )
 
         sign_in_url = "%s/sign-in?redirect_url=%s" % (
             frontend_api,
@@ -131,19 +118,17 @@ class ClerkAuthController(http.Controller):
         )
         return request.redirect(sign_in_url)
 
-    @http.route("/clerk/callback", type="http", auth="none", csrf=False)
+    @http.route("/clerk/callback", type="http", auth="public", csrf=False,
+                website=True)
     def clerk_callback(self, **kwargs):
-        """Handle Clerk redirect after authentication.
+        """Handle Clerk callback after authentication.
 
-        Clerk sends the session token as __session cookie or as
-        a URL hash fragment. We read the cookie.
+        Validates the JWT, finds/creates Odoo user, establishes session.
         """
         config = _get_clerk_config()
 
-        # Try to get token from __session cookie (Clerk's default)
+        # Get token from __session cookie (Clerk default) or query param
         token = request.httprequest.cookies.get("__session")
-
-        # Fallback: token in query param (custom redirect)
         if not token:
             token = kwargs.get("token") or kwargs.get("__clerk_session")
 
@@ -179,9 +164,12 @@ class ClerkAuthController(http.Controller):
         clerk_data = {
             "sub": clerk_user_id,
             "email": email or claims.get("email", ""),
-            "first_name": (clerk_user or {}).get("first_name") or claims.get("given_name", ""),
-            "last_name": (clerk_user or {}).get("last_name") or claims.get("family_name", ""),
-            "image_url": (clerk_user or {}).get("image_url") or claims.get("picture", ""),
+            "first_name": (clerk_user or {}).get("first_name")
+                or claims.get("given_name", ""),
+            "last_name": (clerk_user or {}).get("last_name")
+                or claims.get("family_name", ""),
+            "image_url": (clerk_user or {}).get("image_url")
+                or claims.get("picture", ""),
         }
 
         # Find or create Odoo user
@@ -189,22 +177,21 @@ class ClerkAuthController(http.Controller):
         odoo_user = Users._find_or_create_from_clerk(clerk_data)
 
         if not odoo_user:
-            _logger.error("Could not find/create Odoo user for Clerk ID %s", clerk_user_id)
+            _logger.error(
+                "Could not find/create Odoo user for Clerk ID %s",
+                clerk_user_id,
+            )
             return request.redirect("/clerk/login")
 
-        # Authenticate into Odoo session
-        request.session.authenticate(
-            request.db,
-            odoo_user.login,
-            {"type": "clerk_token", "clerk_user_id": clerk_user_id},
-        )
+        # --- Fix #4: Proper Odoo 16 session establishment ---
+        # Set a random password for Clerk-only users so authenticate() works
+        temp_pw = "clerk_" + uuid.uuid4().hex[:16]
+        odoo_user.sudo().write({"password": temp_pw})
 
-        # Force session uid (bypass password check)
-        request.session.uid = odoo_user.id
-        request.session.login = odoo_user.login
-        request.session.session_token = odoo_user._compute_session_token(request.session.sid)
+        # Standard Odoo session authentication
+        request.session.authenticate(request.db, odoo_user.login, temp_pw)
 
-        redirect_url = kwargs.get("redirect", "/web")
+        redirect_url = kwargs.get("redirect", "/")
         _logger.info(
             "Clerk auth successful: %s (uid=%s) → %s",
             odoo_user.login,
@@ -213,7 +200,7 @@ class ClerkAuthController(http.Controller):
         )
         return request.redirect(redirect_url)
 
-    @http.route("/clerk/logout", type="http", auth="user")
+    @http.route("/clerk/logout", type="http", auth="user", website=True)
     def clerk_logout(self, **kwargs):
         """Log out from Odoo and redirect to Clerk sign-out."""
         config = _get_clerk_config()
@@ -221,14 +208,14 @@ class ClerkAuthController(http.Controller):
 
         frontend_api = config["frontend_api"]
         if frontend_api:
-            return_url = request.httprequest.host_url.rstrip("/") + "/web"
+            return_url = request.httprequest.host_url.rstrip("/") + "/"
             sign_out_url = "%s/sign-out?redirect_url=%s" % (
                 frontend_api,
                 http_requests.utils.quote(return_url, safe=""),
             )
             return request.redirect(sign_out_url)
 
-        return request.redirect("/web/login")
+        return request.redirect("/")
 
     @http.route(
         "/clerk/webhook",
@@ -238,12 +225,7 @@ class ClerkAuthController(http.Controller):
         methods=["POST"],
     )
     def clerk_webhook(self, **kwargs):
-        """Handle Clerk webhook events (user.created, user.updated, user.deleted).
-
-        Verifies webhook signature using Svix headers.
-        """
-        config = _get_clerk_config()
-
+        """Handle Clerk webhook events (user.created, user.updated, user.deleted)."""
         # Parse the raw body
         try:
             body = json.loads(request.httprequest.get_data(as_text=True))

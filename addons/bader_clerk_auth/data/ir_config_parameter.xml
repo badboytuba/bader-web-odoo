@@ -19,7 +19,7 @@
         </record>
         <record id="clerk_default_group" model="ir.config_parameter">
             <field name="key">clerk.default_user_group</field>
-            <field name="value">base.group_user</field>
+            <field name="value">base.group_portal</field>
         </record>
     </data>
 </odoo>

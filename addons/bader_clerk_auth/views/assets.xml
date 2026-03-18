@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Register Clerk auth assets in 'web.assets_frontend' bundle -->
+    <!--
+        NOTE: All CSS + JS assets are registered via __manifest__.py 'assets' dict.
+        This template kept empty intentionally to avoid double loading.
+        The template ID must remain because it exists in the database from prior installs.
+    -->
     <template id="clerk_auth_assets" inherit_id="web.assets_frontend" name="Clerk Auth Assets">
         <xpath expr="." position="inside">
-            <link rel="stylesheet" type="text/css"
-                  href="/bader_clerk_auth/static/src/css/clerk_auth.css"/>
-            <script type="text/javascript"
-                    src="/bader_clerk_auth/static/src/js/clerk_auth.js"/>
+            <!-- Assets loaded via __manifest__.py — no duplicates here -->
         </xpath>
     </template>
 </odoo>
