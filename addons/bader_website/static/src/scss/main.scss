@@ -16,6 +16,11 @@
 // --- Smooth Scrolling ---
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+body {
+    overflow-x: hidden;
 }
 
 // --- Global LIGHT Background ---
