@@ -743,40 +743,52 @@ html.o_connected_user #wrapwrap>header#top {
 // -----------------------------------------------
 // 3b. Account Card - base styles (visible on ALL viewports)
 // The mobile override below switches to white-on-dark for the drawer.
+// Nuclear specificity: use #wrapwrap + header#top to beat Odoo's
+// auto-generated contrast rules from $o-color-1: #003841
 // -----------------------------------------------
+#wrapwrap > header#top .bader-mobile-account__card,
 .bader-mobile-account__card {
-    background: #fff;
+    background: #fff !important;
     border: 1px solid rgba(130, 150, 170, 0.20);
     border-radius: 16px;
     padding: 12px;
     color: #4a5d6a !important;
-
-    *,
-    a,
-    p,
-    span,
-    nav {
-        color: inherit !important;
-    }
 }
 
+#wrapwrap > header#top .bader-mobile-account__card *,
+#wrapwrap > header#top .bader-mobile-account__card a,
+#wrapwrap > header#top .bader-mobile-account__card p,
+#wrapwrap > header#top .bader-mobile-account__card span,
+#wrapwrap > header#top .bader-mobile-account__card nav,
+.bader-mobile-account__card *,
+.bader-mobile-account__card a,
+.bader-mobile-account__card p,
+.bader-mobile-account__card span,
+.bader-mobile-account__card nav {
+    color: #4a5d6a !important;
+}
+
+#wrapwrap > header#top .bader-mobile-account__name,
 .bader-mobile-account__name {
-    color: $bader-dark;
+    color: $bader-dark !important;
     font-size: 0.95rem;
     font-weight: 600;
 }
 
+#wrapwrap > header#top .bader-mobile-account__email,
 .bader-mobile-account__email {
-    color: $gray-400;
+    color: #8a9baa !important;
     font-size: 0.78rem;
 }
 
+#wrapwrap > header#top .bader-mobile-account__menu,
 .bader-mobile-account__menu {
     display: flex;
     flex-direction: column;
     margin-top: 10px;
 }
 
+#wrapwrap > header#top .bader-mobile-account__menu a,
 .bader-mobile-account__menu a {
     display: flex;
     align-items: center;
@@ -790,11 +802,13 @@ html.o_connected_user #wrapwrap>header#top {
     transition: background 0.15s ease, color 0.15s ease;
 }
 
+#wrapwrap > header#top .bader-mobile-account__menu a:hover,
 .bader-mobile-account__menu a:hover {
     background: #f4f8f8;
     color: $bader-dark !important;
 }
 
+#wrapwrap > header#top .bader-mobile-account__menu a i,
 .bader-mobile-account__menu a i {
     width: 18px;
     text-align: center;
@@ -802,20 +816,24 @@ html.o_connected_user #wrapwrap>header#top {
     flex: 0 0 18px;
 }
 
+#wrapwrap > header#top .bader-mobile-account__admin,
 .bader-mobile-account__admin {
     color: #58bf46 !important;
     font-weight: 600;
 }
 
+#wrapwrap > header#top .bader-mobile-account__admin i,
 .bader-mobile-account__admin i {
     color: #58bf46 !important;
 }
 
+#wrapwrap > header#top .bader-mobile-account__admin:hover,
 .bader-mobile-account__admin:hover {
     background: rgba(88, 191, 70, 0.08) !important;
     color: #58bf46 !important;
 }
 
+#wrapwrap > header#top .bader-mobile-account__logout,
 .bader-mobile-account__logout {
     color: #e14239 !important;
     margin-top: 4px;
@@ -823,10 +841,12 @@ html.o_connected_user #wrapwrap>header#top {
     padding-top: 12px !important;
 }
 
+#wrapwrap > header#top .bader-mobile-account__logout i,
 .bader-mobile-account__logout i {
     color: #e14239 !important;
 }
 
+#wrapwrap > header#top .bader-mobile-account__logout:hover,
 .bader-mobile-account__logout:hover {
     background: rgba(225, 66, 57, 0.08) !important;
     color: #e14239 !important;
