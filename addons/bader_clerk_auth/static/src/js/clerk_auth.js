@@ -299,8 +299,40 @@
     // ------------------------------------------------------------------
     // 4. After Clerk login, send JWT to Odoo /clerk/callback
     // ------------------------------------------------------------------
+    var SYNC_GUARD_KEY = '__baderClerkSyncAttempts';
+    var SYNC_MAX_ATTEMPTS = 2;
+
+    function getSyncAttempts() {
+        try { return parseInt(sessionStorage.getItem(SYNC_GUARD_KEY) || '0', 10); }
+        catch (e) { return 0; }
+    }
+
+    function incrementSyncAttempts() {
+        try { sessionStorage.setItem(SYNC_GUARD_KEY, String(getSyncAttempts() + 1)); }
+        catch (e) { /* noop */ }
+    }
+
+    function resetSyncAttempts() {
+        try { sessionStorage.removeItem(SYNC_GUARD_KEY); }
+        catch (e) { /* noop */ }
+    }
+
     function syncClerkSessionToOdoo(session) {
         if (!session) return;
+
+        // Guard against redirect loops (e.g. internal users rejected by callback)
+        var attempts = getSyncAttempts();
+        if (attempts >= SYNC_MAX_ATTEMPTS) {
+            console.warn('[Clerk] Sync loop detected (' + attempts + ' attempts). Signing out from Clerk to break loop.');
+            resetSyncAttempts();
+            // Sign out from Clerk to prevent future loop triggers
+            var clerk = window.Clerk;
+            if (clerk && typeof clerk.signOut === 'function') {
+                clerk.signOut().catch(function () {});
+            }
+            return;
+        }
+        incrementSyncAttempts();
 
         session.getToken().then(function (jwt) {
             if (!jwt) {
@@ -309,7 +341,7 @@
             }
             var callbackUrl = '/clerk/callback?token=' + encodeURIComponent(jwt);
             callbackUrl += '&redirect=' + encodeURIComponent(_pendingRedirect || currentRedirectFromWindow());
-            console.log('[Clerk] Syncing session to Odoo...');
+            console.log('[Clerk] Syncing session to Odoo (attempt ' + (attempts + 1) + ')...');
             window.location.href = callbackUrl;
         }).catch(function (err) {
             console.error('[Clerk] Failed to get token:', err);
@@ -557,13 +589,18 @@
             if (clerk.user) {
                 if (isCurrentOdooUserClerkLinked(clerk.user)) {
                     showUserAvatar(clerk);
+                    // Successful link — reset any loop counter
+                    resetSyncAttempts();
                 }
 
                 // If user is signed in via Clerk but not in Odoo,
-                // sync the session
+                // sync the session (with loop guard)
                 if (clerk.session) {
                     if (!hasOdooSession()) {
                         syncClerkSessionToOdoo(clerk.session);
+                    } else {
+                        // Session synced OK, clear loop counter
+                        resetSyncAttempts();
                     }
                 }
                 return;
