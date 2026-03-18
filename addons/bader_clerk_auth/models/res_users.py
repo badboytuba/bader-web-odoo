@@ -5,7 +5,6 @@ import logging
 
 import requests
 from odoo import api, fields, models
-from odoo.exceptions import AccessDenied
 
 _logger = logging.getLogger(__name__)
 
@@ -50,15 +49,11 @@ class ResUsers(models.Model):
         if clerk_id:
             user = self.sudo().search([("clerk_user_id", "=", clerk_id)], limit=1)
         if user:
-            if user._is_internal():
-                raise AccessDenied("Internal users must use native Odoo login.")
             self._sync_clerk_data(user, full_name, email, image_url)
             return user
 
         user = self._find_user_by_clerk_email(email)
         if user:
-            if user._is_internal():
-                raise AccessDenied("Internal users must use native Odoo login.")
             if clerk_id:
                 user.sudo().write({"clerk_user_id": clerk_id})
             self._sync_clerk_data(user, full_name, email, image_url)
@@ -156,12 +151,18 @@ class ResUsers(models.Model):
 
     @api.model
     def _sync_clerk_data(self, user, full_name, email, image_url):
-        """Sync name/email/avatar from Clerk to an external Odoo user."""
+        """Sync name/email/avatar from Clerk to an Odoo user.
+
+        For internal users, only avatar is synced — name and email are
+        authoritative in Odoo and should not be overwritten by Clerk.
+        """
         vals = {}
-        if full_name and user.name != full_name:
-            vals["name"] = full_name
-        if email and user.email != email:
-            vals["email"] = email
+        is_internal = user._is_internal()
+        if not is_internal:
+            if full_name and user.name != full_name:
+                vals["name"] = full_name
+            if email and user.email != email:
+                vals["email"] = email
         # M6: Sync avatar if user has none or Clerk provides a new URL
         if image_url:
             avatar = self._download_avatar(image_url)

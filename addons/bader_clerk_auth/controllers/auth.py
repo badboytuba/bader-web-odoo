@@ -399,9 +399,9 @@ class ClerkAuthController(http.Controller):
         Users = request.env["res.users"].with_user(SUPERUSER_ID)
         try:
             odoo_user = Users._find_or_create_from_clerk(clerk_data)
-        except AccessDenied:
-            _logger.info(
-                "Blocked Clerk login for internal identity %s", email or clerk_user_id
+        except Exception as exc:
+            _logger.exception(
+                "Clerk callback error for %s: %s", email or clerk_user_id, exc
             )
             return request.redirect(_build_native_login_url(redirect_url, login=email))
 
