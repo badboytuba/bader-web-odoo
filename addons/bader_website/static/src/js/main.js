@@ -2514,6 +2514,8 @@ odoo.define('bader_website.main', function (require) {
             var contentEl = null;
             var progressBarEl = null;
             var stepLabelEl = null;
+            var stepRailEl = null;
+            var asideEl = null;
             var primaryBtn = null;
             var backBtn = null;
             var skipTopBtn = null;
@@ -2524,9 +2526,27 @@ odoo.define('bader_website.main', function (require) {
             var step = 0;
 
             var personaOptions = [
-                { key: 'clinica', title: 'Clinica Dental', desc: 'Consultorios y clinicas odontologicas' },
-                { key: 'laboratorio', title: 'Laboratorio Dental', desc: 'Laboratorios de protesis y tecnica dental' },
-                { key: 'estudiantes', title: 'Estudiantes', desc: 'Estudiantes de odontologia y carreras afines' },
+                {
+                    key: 'clinica',
+                    title: 'Clinica Dental',
+                    desc: 'Consultorios y clinicas odontologicas',
+                    icon: 'fa-medkit',
+                    focus: 'Sillones, imagen y flujo clinico',
+                },
+                {
+                    key: 'laboratorio',
+                    title: 'Laboratorio Dental',
+                    desc: 'Laboratorios de protesis y tecnica dental',
+                    icon: 'fa-flask',
+                    focus: 'CAD/CAM, protesis y procesos tecnicos',
+                },
+                {
+                    key: 'estudiantes',
+                    title: 'Estudiantes',
+                    desc: 'Estudiantes de odontologia y carreras afines',
+                    icon: 'fa-graduation-cap',
+                    focus: 'Kits, practicas y primer equipamiento',
+                },
             ];
             var clinicRoles = [
                 { value: 'dueno', label: 'Dueno/a' },
@@ -2756,12 +2776,187 @@ odoo.define('bader_website.main', function (require) {
                 return 'Profesional';
             }
 
+            function personaOption(personaKey) {
+                for (var i = 0; i < personaOptions.length; i += 1) {
+                    if (personaOptions[i].key === personaKey) return personaOptions[i];
+                }
+                return null;
+            }
+
+            function stepTitles() {
+                return ['Inicio', 'Perfil', 'Contacto', 'Profesional', 'Listo'];
+            }
+
+            function onboardingMeta() {
+                var currentPersona = personaOption(profile.persona);
+                if (step === 0) {
+                    return {
+                        eyebrow: isMandatory ? 'Registro obligatorio' : 'Experiencia Prime',
+                        title: 'Activa tu cuenta profesional',
+                        copy: 'En menos de un minuto dejamos tu cuenta lista para mostrar catalogo, ofertas y soporte segun tu perfil real.',
+                        bullets: [
+                            'Catalogo segmentado segun tu actividad',
+                            'Seguimiento comercial mas preciso en Odoo',
+                            'Accesos rapidos y recursos relevantes',
+                        ],
+                    };
+                }
+                if (step === 1) {
+                    return {
+                        eyebrow: 'Personalizacion base',
+                        title: 'Elige tu universo Bader',
+                        copy: currentPersona
+                            ? 'Excelente. Vamos a construir una experiencia pensada para ' + currentPersona.title.toLowerCase() + '.'
+                            : 'Selecciona el perfil que mejor describe tu negocio o etapa profesional.',
+                        bullets: currentPersona ? [
+                            currentPersona.focus,
+                            'Promociones y contenido filtrados por segmento',
+                            'Navegacion orientada a tus productos clave',
+                        ] : [
+                            'Clinicas: equipamiento, imagen y postventa',
+                            'Laboratorios: procesos tecnicos y CAD/CAM',
+                            'Estudiantes: practicas, simulacion y kits',
+                        ],
+                    };
+                }
+                if (step === 2) {
+                    return {
+                        eyebrow: 'Base comercial',
+                        title: 'Conecta tu contacto con Odoo',
+                        copy: 'Estos datos alimentan tu ficha comercial para que el equipo vea tu contexto desde el primer contacto.',
+                        bullets: [
+                            'Nombre, WhatsApp y ciudad siempre a mano',
+                            'Empresa e identificacion fiscal centralizadas',
+                            'Menos friccion en compras, soporte y seguimiento',
+                        ],
+                    };
+                }
+                if (step === 3) {
+                    return {
+                        eyebrow: 'Contexto profesional',
+                        title: 'Afina tu perfil operativo',
+                        copy: currentPersona
+                            ? 'Un ultimo paso para personalizar recomendaciones, categorias y soporte para ' + currentPersona.title.toLowerCase() + '.'
+                            : 'Completa tu contexto profesional para adaptar toda la experiencia.',
+                        bullets: currentPersona ? [
+                            currentPersona.focus,
+                            'Ofertas y productos mas relevantes primero',
+                            'Asesoria comercial mejor segmentada',
+                        ] : [
+                            'Personalizacion segun especialidad',
+                            'Accesos rapidos por rol y etapa',
+                            'Prioridad en recursos utiles para tu perfil',
+                        ],
+                    };
+                }
+                return {
+                    eyebrow: 'Cuenta lista',
+                    title: 'Ya puedes entrar con experiencia personalizada',
+                    copy: 'Guardamos tu configuracion para que el portal empiece desde hoy a trabajar a favor de tu perfil.',
+                    bullets: [
+                        'Inicio adaptado a tu segmento',
+                        'Soporte comercial mas contextual',
+                        'Cuenta preparada para crecer contigo',
+                    ],
+                };
+            }
+
+            function stepRailHtml() {
+                var labels = stepTitles();
+                var html = '';
+                for (var i = 0; i < labels.length; i += 1) {
+                    var state = '';
+                    if (i < step) state = ' is-complete';
+                    if (i === step) state = ' is-active';
+                    html += '' +
+                        '<span class="bader-onboarding__step-node' + state + '">' +
+                        '<span class="bader-onboarding__step-node-index">' + (i + 1) + '</span>' +
+                        '<span class="bader-onboarding__step-node-label">' + htmlEscape(labels[i]) + '</span>' +
+                        '</span>';
+                }
+                return html;
+            }
+
+            function personaBadgeHtml() {
+                var currentPersona = personaOption(profile.persona);
+                if (!currentPersona) {
+                    return '' +
+                        '<div class="bader-onboarding__aside-card is-placeholder">' +
+                        '<span class="bader-onboarding__aside-card-icon"><i class="fa fa-diamond"></i></span>' +
+                        '<div>' +
+                        '<strong>Perfil aun no definido</strong>' +
+                        '<span>Selecciona tu segmento para activar una experiencia mas precisa.</span>' +
+                        '</div>' +
+                        '</div>';
+                }
+                return '' +
+                    '<div class="bader-onboarding__aside-card">' +
+                    '<span class="bader-onboarding__aside-card-icon"><i class="fa ' + htmlEscape(currentPersona.icon) + '"></i></span>' +
+                    '<div>' +
+                    '<strong>' + htmlEscape(currentPersona.title) + '</strong>' +
+                    '<span>' + htmlEscape(currentPersona.focus) + '</span>' +
+                    '</div>' +
+                    '</div>';
+            }
+
+            function asideHtml() {
+                var meta = onboardingMeta();
+                var noteText = isMandatory
+                    ? 'Completa este onboarding para terminar tu registro y activar la cuenta.'
+                    : 'Puedes salir y retomarlo luego, sin perder lo que ya completes.';
+                var bullets = '';
+                for (var i = 0; i < meta.bullets.length; i += 1) {
+                    bullets += '<li>' + htmlEscape(meta.bullets[i]) + '</li>';
+                }
+                return '' +
+                    '<div class="bader-onboarding__brand">' +
+                    '<span class="bader-onboarding__brand-mark"><i class="fa fa-diamond"></i></span>' +
+                    '<div>' +
+                    '<strong>Bader Prime</strong>' +
+                    '<span>Portal profesional integrado con Odoo</span>' +
+                    '</div>' +
+                    '</div>' +
+                    '<span class="bader-onboarding__eyebrow">' + htmlEscape(meta.eyebrow) + '</span>' +
+                    '<h3 class="bader-onboarding__aside-title">' + htmlEscape(meta.title) + '</h3>' +
+                    '<p class="bader-onboarding__aside-copy">' + htmlEscape(meta.copy) + '</p>' +
+                    personaBadgeHtml() +
+                    '<div class="bader-onboarding__aside-stats">' +
+                    '<div class="bader-onboarding__aside-stat"><strong>5</strong><span>pasos claros</span></div>' +
+                    '<div class="bader-onboarding__aside-stat"><strong>1 min</strong><span>promedio</span></div>' +
+                    '<div class="bader-onboarding__aside-stat"><strong>100%</strong><span>adaptado a tu perfil</span></div>' +
+                    '</div>' +
+                    '<ul class="bader-onboarding__aside-list">' + bullets + '</ul>' +
+                    '<div class="bader-onboarding__aside-note' + (isMandatory ? ' is-mandatory' : '') + '">' +
+                    '<i class="fa ' + (isMandatory ? 'fa-lock' : 'fa-clock-o') + '"></i>' +
+                    '<span>' + htmlEscape(noteText) + '</span>' +
+                    '</div>';
+            }
+
+            function personaSummaryHtml() {
+                var currentPersona = personaOption(profile.persona);
+                if (!currentPersona) return '';
+                return '' +
+                    '<div class="bader-onboarding__persona-summary">' +
+                    '<span class="bader-onboarding__persona-summary-icon"><i class="fa ' + htmlEscape(currentPersona.icon) + '"></i></span>' +
+                    '<div>' +
+                    '<small>Perfil seleccionado</small>' +
+                    '<strong>' + htmlEscape(currentPersona.title) + '</strong>' +
+                    '<span>' + htmlEscape(currentPersona.focus) + '</span>' +
+                    '</div>' +
+                    '</div>';
+            }
+
             function stepOneHtml() {
                 return '' +
                     '<div class="bader-onboarding__welcome">' +
-                    '<span class="bader-onboarding__icon"><i class="fa fa-sparkles fa-star"></i></span>' +
-                    '<h3>Bienvenido a Bader Argentina</h3>' +
-                    '<p>Completa tu perfil en 1 minuto para personalizar productos, ofertas y contenido segun tu especialidad.</p>' +
+                    '<span class="bader-onboarding__icon"><i class="fa fa-star"></i></span>' +
+                    '<h3>Bienvenido a una experiencia mas inteligente</h3>' +
+                    '<p>Completa tu perfil una sola vez para que el portal trabaje con tu contexto comercial y profesional desde el primer minuto.</p>' +
+                    '<div class="bader-onboarding__welcome-grid">' +
+                    '<article class="bader-onboarding__welcome-card"><strong>Catalogo preciso</strong><span>Productos y categorias mas relevantes primero.</span></article>' +
+                    '<article class="bader-onboarding__welcome-card"><strong>Soporte contextual</strong><span>Tu contacto queda listo para atencion comercial en Odoo.</span></article>' +
+                    '<article class="bader-onboarding__welcome-card"><strong>Ruta corta</strong><span>Solo 5 pasos, sin formularios eternos ni ruido.</span></article>' +
+                    '</div>' +
                     '</div>';
             }
 
@@ -2772,8 +2967,13 @@ odoo.define('bader_website.main', function (require) {
                     var isActive = profile.persona === item.key ? ' is-active' : '';
                     cards += '' +
                         '<button type="button" class="bader-onboarding__persona' + isActive + '" data-onboarding-persona="' + item.key + '">' +
+                        '<span class="bader-onboarding__persona-top">' +
+                        '<span class="bader-onboarding__persona-icon"><i class="fa ' + htmlEscape(item.icon) + '"></i></span>' +
+                        '<span class="bader-onboarding__persona-check"><i class="fa fa-check"></i></span>' +
+                        '</span>' +
                         '<strong>' + htmlEscape(item.title) + '</strong>' +
                         '<span>' + htmlEscape(item.desc) + '</span>' +
+                        '<em>' + htmlEscape(item.focus) + '</em>' +
                         '</button>';
                 }
                 return '' +
@@ -2796,6 +2996,11 @@ odoo.define('bader_website.main', function (require) {
                     '<div class="bader-onboarding__step-head">' +
                     '<h3>Datos de contacto</h3>' +
                     '<p>Estos datos se guardan en tu contacto de Odoo para atencion comercial y seguimiento.</p>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__surface">' +
+                    '<div class="bader-onboarding__surface-head">' +
+                    '<strong>Base comercial</strong>' +
+                    '<span>Lo esencial para identificarte y ayudarte mejor.</span>' +
                     '</div>' +
                     '<div class="bader-onboarding__grid">' +
                     '<div class="bader-onboarding__field">' +
@@ -2820,6 +3025,11 @@ odoo.define('bader_website.main', function (require) {
                     '<div class="bader-onboarding__field">' +
                     '<label>Documento fiscal</label>' +
                     '<input type="text" data-onboarding-input="vat" value="' + htmlEscape(profile.vat) + '" placeholder="CUIT / NIF / Documento"/>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__note">' +
+                    '<i class="fa fa-lock"></i>' +
+                    '<span>Usamos esta informacion para seguimiento comercial, facturacion y una experiencia de cuenta mas precisa.</span>' +
                     '</div>';
             }
 
@@ -2928,7 +3138,8 @@ odoo.define('bader_website.main', function (require) {
                     '<h3>Perfil profesional</h3>' +
                     '<p>Perfil seleccionado: <strong>' + htmlEscape(personaTitle(profile.persona)) + '</strong>. Completa los datos para personalizar catalogo, ofertas y soporte.</p>' +
                     '</div>' +
-                    body;
+                    personaSummaryHtml() +
+                    '<div class="bader-onboarding__surface">' + body + '</div>';
             }
 
             function stepFiveHtml() {
@@ -2952,6 +3163,8 @@ odoo.define('bader_website.main', function (require) {
                 if (step === 2) contentEl.innerHTML = stepThreeHtml();
                 if (step === 3) contentEl.innerHTML = stepFourHtml();
                 if (step === 4) contentEl.innerHTML = stepFiveHtml();
+                if (asideEl) asideEl.innerHTML = asideHtml();
+                if (stepRailEl) stepRailEl.innerHTML = stepRailHtml();
                 updateFrame();
             }
 
@@ -2963,6 +3176,7 @@ odoo.define('bader_website.main', function (require) {
                 if (progressBarEl) progressBarEl.style.width = pct + '%';
                 if (stepLabelEl) stepLabelEl.textContent = 'Paso ' + current + ' de ' + total;
                 if (backBtn) backBtn.style.display = step > 0 ? '' : 'none';
+                if (modalRoot) modalRoot.setAttribute('data-persona', profile.persona || '');
                 if (primaryBtn) {
                     var isLast = step >= 4;
                     primaryBtn.textContent = isLast ? (isSaving ? 'Guardando...' : 'Empezar a explorar') : 'Continuar';
@@ -3074,8 +3288,12 @@ odoo.define('bader_website.main', function (require) {
                 modalRoot.addEventListener('click', function (ev) {
                     var target = ev.target;
                     if (!target) return;
+                    var closeBtn = target.closest ? target.closest('[data-onboarding-close="1"]') : null;
+                    var skipBtn = target.closest ? target.closest('[data-onboarding-skip="1"]') : null;
+                    var backControl = target.closest ? target.closest('[data-onboarding-back="1"]') : null;
+                    var nextControl = target.closest ? target.closest('[data-onboarding-next="1"]') : null;
 
-                    if (target === modalRoot || target.getAttribute('data-onboarding-close') === '1') {
+                    if (target === modalRoot || closeBtn) {
                         skipOnboarding();
                         return;
                     }
@@ -3095,12 +3313,12 @@ odoo.define('bader_website.main', function (require) {
                         return;
                     }
 
-                    if (target === skipTopBtn || target === skipBottomBtn) {
+                    if (skipBtn) {
                         skipOnboarding();
                         return;
                     }
 
-                    if (target === backBtn) {
+                    if (backControl === backBtn) {
                         if (step > 0) {
                             step -= 1;
                             renderCurrentStep();
@@ -3108,7 +3326,7 @@ odoo.define('bader_website.main', function (require) {
                         return;
                     }
 
-                    if (target === primaryBtn) {
+                    if (nextControl === primaryBtn) {
                         if (step < 4) {
                             if (!canProceedStep()) return;
                             step += 1;
@@ -3136,11 +3354,14 @@ odoo.define('bader_website.main', function (require) {
                 modalRoot = document.createElement('div');
                 modalRoot.className = 'bader-onboarding';
                 modalRoot.innerHTML = '' +
+                    '<div class="bader-onboarding__shell">' +
+                    '<aside class="bader-onboarding__aside" data-onboarding-aside="1"></aside>' +
                     '<div class="bader-onboarding__dialog">' +
                     '<div class="bader-onboarding__head">' +
                     '<span class="bader-onboarding__step" data-onboarding-step="1">Paso 1 de 5</span>' +
                     '<button type="button" class="bader-onboarding__skip-top" data-onboarding-close="1" aria-label="Cerrar"><i class="fa fa-times"></i></button>' +
                     '</div>' +
+                    '<div class="bader-onboarding__step-rail" data-onboarding-step-rail="1"></div>' +
                     '<div class="bader-onboarding__progress"><span data-onboarding-progress="1"></span></div>' +
                     '<div class="bader-onboarding__body" data-onboarding-content="1"></div>' +
                     '<p class="bader-onboarding__message" data-onboarding-message="1"></p>' +
@@ -3149,12 +3370,15 @@ odoo.define('bader_website.main', function (require) {
                     '<button type="button" class="btn-bader" data-onboarding-next="1">Continuar</button>' +
                     '</div>' +
                     '<button type="button" class="bader-onboarding__skip-bottom" data-onboarding-skip="1">Omitir por ahora</button>' +
+                    '</div>' +
                     '</div>';
 
                 document.body.appendChild(modalRoot);
+                asideEl = modalRoot.querySelector('[data-onboarding-aside="1"]');
                 contentEl = modalRoot.querySelector('[data-onboarding-content="1"]');
                 progressBarEl = modalRoot.querySelector('[data-onboarding-progress="1"]');
                 stepLabelEl = modalRoot.querySelector('[data-onboarding-step="1"]');
+                stepRailEl = modalRoot.querySelector('[data-onboarding-step-rail="1"]');
                 primaryBtn = modalRoot.querySelector('[data-onboarding-next="1"]');
                 backBtn = modalRoot.querySelector('[data-onboarding-back="1"]');
                 skipTopBtn = modalRoot.querySelector('[data-onboarding-close="1"]');
