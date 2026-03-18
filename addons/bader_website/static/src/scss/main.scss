@@ -597,10 +597,13 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
 }
 
 // --- Portal --- (keep light for logged-in area)
+// Fix: Odoo's $o-color-1 (#003841 dark teal) makes portal think it's dark-themed,
+// causing white text on white backgrounds. Override everything to ensure readability.
 .o_portal {
     background: $gray-50;
     color: $gray-700;
 
+    // --- Cards ---
     .card {
         background: $white;
         border-color: $gray-200;
@@ -610,10 +613,139 @@ body.bader-js-ready .bader-animate:not(.bader-visible) {
             background: $gray-50;
             color: $bader-dark;
         }
+
+        .card-body {
+            color: $gray-700;
+        }
     }
 
+    // --- Tables ---
     .table {
         color: $gray-700;
+
+        th {
+            color: $bader-dark;
+        }
+
+        td {
+            color: $gray-700;
+        }
+    }
+
+    // --- Sidebar navigation (the white-on-white fix) ---
+    .list-group-item {
+        background: $white;
+        border-color: $gray-200;
+        color: $gray-700;
+
+        &:hover,
+        &:focus {
+            background: rgba($bader-green, 0.06);
+            color: $bader-dark;
+        }
+
+        &.active {
+            background: rgba($bader-green, 0.12);
+            border-color: rgba($bader-green, 0.3);
+            color: $bader-dark;
+        }
+
+        a,
+        span {
+            color: inherit;
+        }
+
+        i,
+        .fa {
+            color: $gray-500;
+            margin-right: 0.4rem;
+        }
+    }
+
+    // --- Nav links (pills, tabs) ---
+    .nav-link {
+        color: $gray-600;
+
+        &:hover,
+        &:focus {
+            color: $bader-dark;
+        }
+
+        &.active {
+            color: $bader-dark;
+            background: rgba($bader-green, 0.10);
+            border-color: rgba($bader-green, 0.3);
+        }
+    }
+
+    // --- Breadcrumb ---
+    .breadcrumb {
+        background: transparent;
+
+        .breadcrumb-item {
+            color: $gray-500;
+
+            a {
+                color: $bader-green;
+            }
+
+            &.active {
+                color: $gray-700;
+            }
+        }
+    }
+
+    // --- Text elements ---
+    h1, h2, h3, h4, h5, h6 {
+        color: $bader-dark;
+    }
+
+    p, span, small, label {
+        color: $gray-700;
+    }
+
+    a:not(.btn):not(.btn-bader):not(.btn-bader-sm) {
+        color: $bader-green;
+
+        &:hover {
+            color: $bader-green-dark;
+        }
+    }
+
+    // --- Forms ---
+    .form-control,
+    .form-select {
+        background: $white;
+        border-color: $gray-200;
+        color: $gray-700;
+
+        &:focus {
+            border-color: $bader-green;
+            box-shadow: 0 0 0 3px $bader-green-glow;
+        }
+    }
+
+    label {
+        color: $gray-600;
+        font-weight: 500;
+    }
+
+    // --- Badges / Pills in portal ---
+    .badge {
+        &.bg-primary,
+        &.badge-primary {
+            background: $bader-green !important;
+            color: $white !important;
+        }
+    }
+
+    // --- Portal user info ---
+    .o_portal_my_details {
+        color: $gray-700;
+
+        label {
+            color: $gray-600;
+        }
     }
 }
 
