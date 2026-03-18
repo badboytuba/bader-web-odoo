@@ -119,6 +119,33 @@ def _patch_inject_future_response():
     setattr(request_cls, '_inject_future_response', _wrapped)
 
 
+def _patch_profiler_session_guard():
+    request_cls = getattr(odoo_http, 'Request', None)
+    if request_cls is None:
+        return
+    original = getattr(request_cls, '_get_profiler_context_manager', None)
+    if not callable(original) or getattr(original, _PATCH_ATTR, False):
+        return
+
+    @functools.wraps(original)
+    def _wrapped(self):
+        session = getattr(self, 'session', None)
+        if session is not None:
+            profile_session = getattr(session, 'profile_session', None)
+            profile_expiration = getattr(session, 'profile_expiration', None)
+            if isinstance(profile_session, bool) and not profile_expiration:
+                if profile_session:
+                    session['bader_onboarding_pending'] = True
+                session.pop('profile_session', None)
+                session.profile_session = None
+                session.profile_expiration = ''
+        return original(self)
+
+    setattr(_wrapped, _PATCH_ATTR, True)
+    setattr(request_cls, '_get_profiler_context_manager', _wrapped)
+
+
 _patch_set_cookie(getattr(odoo_http, 'FutureResponse', None))
 _patch_set_cookie(getattr(odoo_http, '_Response', None))
 _patch_inject_future_response()
+_patch_profiler_session_guard()

@@ -1,10 +1,11 @@
-"""Extend res.users with Clerk user ID and auto-provisioning."""
+"""Extend res.users with Clerk user ID and safe portal provisioning."""
 
 import base64
 import logging
 
 import requests
 from odoo import api, fields, models
+from odoo.exceptions import AccessDenied
 
 _logger = logging.getLogger(__name__)
 
@@ -29,21 +30,9 @@ class ResUsers(models.Model):
 
     @api.model
     def _find_or_create_from_clerk(self, clerk_data):
-        """Find existing or create new Odoo user from Clerk JWT claims.
-
-        Args:
-            clerk_data: dict with keys:
-                - sub: Clerk user ID (e.g. "user_2x...")
-                - email: primary email address
-                - first_name / given_name: first name
-                - last_name / family_name: last name
-                - image_url: avatar URL (optional)
-
-        Returns:
-            res.users recordset (single record)
-        """
+        """Find an external Odoo user or create one from Clerk claims."""
         clerk_id = clerk_data.get("sub") or clerk_data.get("user_id")
-        email = clerk_data.get("email", "")
+        email = (clerk_data.get("email") or "").strip().lower()
         first_name = (
             clerk_data.get("first_name")
             or clerk_data.get("given_name")
@@ -57,50 +46,102 @@ class ResUsers(models.Model):
         full_name = ("%s %s" % (first_name, last_name)).strip() or email
         image_url = clerk_data.get("image_url") or clerk_data.get("avatar_url")
 
-        # 1) Search by clerk_user_id
-        user = self.sudo().search([("clerk_user_id", "=", clerk_id)], limit=1)
+        user = self.browse()
+        if clerk_id:
+            user = self.sudo().search([("clerk_user_id", "=", clerk_id)], limit=1)
         if user:
+            if user._is_internal():
+                raise AccessDenied("Internal users must use native Odoo login.")
             self._sync_clerk_data(user, full_name, email, image_url)
             return user
 
-        # 2) Fallback: search by email
-        if email:
-            user = self.sudo().search([("login", "=", email)], limit=1)
-            if user:
+        user = self._find_user_by_clerk_email(email)
+        if user:
+            if user._is_internal():
+                raise AccessDenied("Internal users must use native Odoo login.")
+            if clerk_id:
                 user.sudo().write({"clerk_user_id": clerk_id})
-                self._sync_clerk_data(user, full_name, email, image_url)
-                _logger.info(
-                    "Linked existing Odoo user %s to Clerk ID %s",
-                    user.login,
-                    clerk_id,
-                )
-                return user
+            self._sync_clerk_data(user, full_name, email, image_url)
+            _logger.info(
+                "Linked existing Odoo user %s to Clerk ID %s",
+                user.login,
+                clerk_id,
+            )
+            return user
 
-        # 3) Create new user
-        user = self._create_from_clerk(clerk_id, email, full_name, image_url)
-        return user
+        return self._create_from_clerk(clerk_id, email, full_name, image_url)
 
     @api.model
-    def _create_from_clerk(self, clerk_id, email, full_name, image_url):
-        """Create a new Odoo user from Clerk data."""
+    def _find_user_by_clerk_email(self, email):
+        """Find an existing Odoo user by login/email for Clerk linking."""
+        if not email:
+            return self.browse()
+
+        user = self.sudo().search([("login", "=", email)], limit=1)
+        if user:
+            return user
+        return self.sudo().search([("email", "=", email)], limit=1)
+
+    @api.model
+    def _find_partner_for_clerk_email(self, email):
+        """Reuse an existing contact when provisioning Clerk users."""
+        if not email:
+            return self.env["res.partner"]
+
+        partners = self.env["res.partner"].sudo().search(
+            [("email", "=ilike", email)],
+            order="id asc",
+        )
+        for partner in partners:
+            commercial_partner = partner.commercial_partner_id
+            if commercial_partner.user_ids.filtered(lambda user: user._is_internal()):
+                continue
+            if partner.user_ids:
+                continue
+            return partner
+        return self.env["res.partner"]
+
+    @api.model
+    def _resolve_clerk_default_group(self):
+        """Always provision Clerk users as external users, never internal."""
         ICP = self.env["ir.config_parameter"].sudo()
+        portal_group = self.env.ref("base.group_portal", raise_if_not_found=False)
         default_group_ref = ICP.get_param(
             "clerk.default_user_group", "base.group_portal"
         )
+        group = self.env.ref(default_group_ref, raise_if_not_found=False) or portal_group
+        internal_group = self.env.ref("base.group_user", raise_if_not_found=False)
 
-        group = self.env.ref(default_group_ref, raise_if_not_found=False)
-        group_ids = [(4, group.id)] if group else []
+        if group and internal_group:
+            effective_groups = group | group.trans_implied_ids
+            if internal_group in effective_groups:
+                _logger.warning(
+                    "Configured Clerk group %s is internal; falling back to portal",
+                    default_group_ref,
+                )
+                group = portal_group
+
+        return group
+
+    @api.model
+    def _create_from_clerk(self, clerk_id, email, full_name, image_url):
+        """Create a new external Odoo user from Clerk data."""
+        group = self._resolve_clerk_default_group()
+        partner = self._find_partner_for_clerk_email(email)
 
         vals = {
             "name": full_name,
             "login": email or "clerk_%s" % clerk_id,
             "email": email,
             "clerk_user_id": clerk_id,
-            "groups_id": group_ids,
-            "password": False,  # No password — Clerk handles auth
+            "share": True,
+            "password": False,
         }
+        if group:
+            vals["groups_id"] = [(6, 0, [group.id])]
+        if partner:
+            vals["partner_id"] = partner.id
 
-        # Download avatar
         avatar = self._download_avatar(image_url)
         if avatar:
             vals["image_1920"] = avatar
@@ -116,7 +157,7 @@ class ResUsers(models.Model):
 
     @api.model
     def _sync_clerk_data(self, user, full_name, email, image_url):
-        """Sync name/email/avatar from Clerk to existing Odoo user."""
+        """Sync name/email from Clerk to an external Odoo user."""
         vals = {}
         if full_name and user.name != full_name:
             vals["name"] = full_name

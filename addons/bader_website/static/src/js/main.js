@@ -2559,6 +2559,7 @@ odoo.define('bader_website.main', function (require) {
             var skipBottomBtn = null;
             var messageEl = null;
             var isSaving = false;
+            var isMandatory = false;
             var step = 0;
 
             var personaOptions = [
@@ -2923,6 +2924,8 @@ odoo.define('bader_website.main', function (require) {
                     primaryBtn.textContent = isLast ? (isSaving ? 'Guardando...' : 'Empezar a explorar') : 'Continuar';
                     primaryBtn.disabled = isSaving || !canProceedStep();
                 }
+                if (skipTopBtn) skipTopBtn.style.display = isMandatory ? 'none' : '';
+                if (skipBottomBtn) skipBottomBtn.style.display = isMandatory ? 'none' : '';
             }
 
             function closeOnboarding() {
@@ -2938,6 +2941,12 @@ odoo.define('bader_website.main', function (require) {
             }
 
             function skipOnboarding() {
+                if (isMandatory) {
+                    if (messageEl) {
+                        messageEl.textContent = 'Completa tu perfil para terminar tu registro.';
+                    }
+                    return;
+                }
                 safeSetStorage(STORAGE_KEY, 'true');
                 closeOnboarding();
             }
@@ -3069,7 +3078,7 @@ odoo.define('bader_website.main', function (require) {
                 });
                 document.addEventListener('keydown', function (ev) {
                     if (!modalRoot || !modalRoot.classList.contains('is-open')) return;
-                    if (ev.key === 'Escape') skipOnboarding();
+                    if (ev.key === 'Escape' && !isMandatory) skipOnboarding();
                 });
             }
 
@@ -3113,7 +3122,8 @@ odoo.define('bader_website.main', function (require) {
             var alreadyShown = safeGetStorage(STORAGE_KEY) === 'true';
             rpc('/bader/onboarding/state', {}).then(function (result) {
                 if (!result || !result.ok || !result.show_onboarding) return;
-                if (alreadyShown) return;
+                isMandatory = !!result.require_onboarding;
+                if (alreadyShown && !isMandatory) return;
                 mergeProfile(result.profile || {});
                 mountModal();
             }).catch(function () {

@@ -11,7 +11,7 @@
                data-bader-auth-open="login"
                data-bader-auth-redirect="/">
                 Tu Cuenta
-                <span t-if="request.session.profile_session" class="text-danger fa fa-circle"/>
+                <span t-if="request.session.bader_onboarding_pending" class="text-danger fa fa-circle"/>
             </a>
         </xpath>
     </template>

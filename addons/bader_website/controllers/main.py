@@ -3617,6 +3617,36 @@ class BaderWebsite(Website):
         }
         return {'ok': True, 'persona': persona, 'write_vals': write_vals}
 
+    def _is_internal_website_user(self, user):
+        """Internal users keep native login and skip website onboarding."""
+        return bool(user and user.has_group('base.group_user'))
+
+    def _sync_profile_session_flags(self, user=None, partner=None):
+        """Track whether the current external user still owes onboarding."""
+        user = user or request.env.user
+        if not user or user == request.website.user_id:
+            request.session.pop('bader_onboarding_pending', None)
+            request.session.modified = True
+            return False
+
+        partner = partner or self._current_customer_partner().sudo()
+        is_internal_user = self._is_internal_website_user(user)
+        needs_onboarding = bool(
+            partner
+            and not is_internal_user
+            and not partner.bader_onboarding_completed_at
+        )
+        persona = self._normalize_home_persona(partner.bader_persona if partner else '')
+
+        if needs_onboarding:
+            request.session['bader_onboarding_pending'] = True
+        else:
+            request.session.pop('bader_onboarding_pending', None)
+        if persona:
+            request.session['bader_home_persona'] = persona
+        request.session.modified = True
+        return needs_onboarding
+
     @http.route('/bader/auth/login', type='json', auth='public', website=True, csrf=False)
     def auth_modal_login(self, **params):
         """AJAX login endpoint used by the Clerk-like website modal."""
@@ -3659,6 +3689,11 @@ class BaderWebsite(Website):
             }
 
         _clear_auth_failures(rate_key)
+        user = request.env['res.users'].sudo().browse(uid)
+        self._sync_profile_session_flags(
+            user=user,
+            partner=user.partner_id.commercial_partner_id.sudo(),
+        )
         return {'ok': True, 'redirect': redirect_path}
 
     @http.route('/bader/auth/signup', type='json', auth='public', website=True, csrf=False)
@@ -3757,8 +3792,10 @@ class BaderWebsite(Website):
         write_vals = dict(profile_payload.get('write_vals') or {})
         write_vals['bader_onboarding_completed_at'] = datetime.utcnow()
         partner.write(write_vals)
-        request.session['bader_home_persona'] = profile_payload.get('persona')
-        request.session.modified = True
+        self._sync_profile_session_flags(
+            user=request.env.user,
+            partner=partner,
+        )
 
         return {
             'ok': True,
@@ -3773,14 +3810,18 @@ class BaderWebsite(Website):
             return {'ok': False, 'error': 'auth_required'}
 
         user = request.env.user
-        is_internal_user = bool(user.has_group('base.group_user'))
+        is_internal_user = self._is_internal_website_user(user)
         partner = self._current_customer_partner().sudo()
         profile = self._onboarding_profile_payload(partner)
-        is_completed = bool(partner.bader_onboarding_completed_at)
+        needs_onboarding = self._sync_profile_session_flags(
+            user=user,
+            partner=partner,
+        )
 
         return {
             'ok': True,
-            'show_onboarding': bool(not is_completed and not is_internal_user),
+            'show_onboarding': needs_onboarding,
+            'require_onboarding': bool(request.session.get('bader_onboarding_pending')),
             'is_internal_user': is_internal_user,
             'profile': profile,
         }
@@ -3792,7 +3833,7 @@ class BaderWebsite(Website):
             return {'ok': False, 'error': 'auth_required'}
 
         user = request.env.user
-        if user.has_group('base.group_user'):
+        if self._is_internal_website_user(user):
             return {'ok': False, 'error': 'internal_user_not_allowed'}
 
         partner = self._current_customer_partner().sudo()
@@ -3800,14 +3841,12 @@ class BaderWebsite(Website):
         if not onboarding_payload.get('ok'):
             return onboarding_payload
         write_vals = dict(onboarding_payload.get('write_vals') or {})
-        persona = onboarding_payload.get('persona')
 
         if not partner.bader_onboarding_completed_at:
             write_vals['bader_onboarding_completed_at'] = datetime.utcnow()
 
         partner.write(write_vals)
-        request.session['bader_home_persona'] = persona
-        request.session.modified = True
+        self._sync_profile_session_flags(user=user, partner=partner)
 
         return {
             'ok': True,
