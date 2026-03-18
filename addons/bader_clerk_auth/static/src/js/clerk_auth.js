@@ -68,6 +68,8 @@
     }
 
     // The SDK auto-initializes asynchronously, wait until Clerk is ready
+    // IMPORTANT: Even after auto-init, we must call clerk.load() to mount
+    // the UI components (openSignIn, openUserProfile, etc.)
     function waitForClerkReady(resolve, reject, attempts) {
         if (attempts > 100) {
             reject(new Error('[Clerk] Timed out waiting for Clerk.loaded'));
@@ -81,23 +83,50 @@
             return;
         }
 
-        // If it's a thenable (Promise), wait for it
+        // If it's a thenable (Promise), wait for it to resolve
         if (typeof clerk.then === 'function') {
-            clerk.then(function () {
-                waitForClerkReady(resolve, reject, attempts + 1);
+            clerk.then(function (resolvedClerk) {
+                // After the promise resolves, window.Clerk is the real instance
+                loadClerkComponents(resolve, reject);
+            }).catch(function (err) {
+                reject(err);
             });
             return;
         }
 
-        // Check if the clerk instance is loaded
-        if (clerk.loaded || typeof clerk.openSignIn === 'function') {
-            _clerkReady = true;
-            console.log('[Clerk] Ready! User:', clerk.user ? clerk.user.fullName : 'none');
-            resolve(clerk);
+        // Clerk instance exists — now load UI components
+        loadClerkComponents(resolve, reject);
+    }
+
+    function loadClerkComponents(resolve, reject) {
+        var clerk = window.Clerk;
+        if (!clerk) {
+            reject(new Error('[Clerk] No Clerk instance after init'));
             return;
         }
 
-        setTimeout(function () { waitForClerkReady(resolve, reject, attempts + 1); }, 100);
+        // clerk.load() mounts the UI components (sign-in, user profile, etc.)
+        // Without this, calling openSignIn() throws "components are not ready"
+        if (typeof clerk.load === 'function') {
+            console.log('[Clerk] Loading UI components...');
+            clerk.load()
+                .then(function () {
+                    _clerkReady = true;
+                    console.log('[Clerk] Components ready! User:', clerk.user ? clerk.user.fullName : 'none');
+                    resolve(clerk);
+                })
+                .catch(function (err) {
+                    console.error('[Clerk] Failed to load components:', err);
+                    reject(err);
+                });
+        } else if (clerk.loaded) {
+            // Fallback: already loaded
+            _clerkReady = true;
+            console.log('[Clerk] Already loaded! User:', clerk.user ? clerk.user.fullName : 'none');
+            resolve(clerk);
+        } else {
+            setTimeout(function () { waitForClerkReady(resolve, reject, 50); }, 100);
+        }
     }
 
     // ------------------------------------------------------------------
