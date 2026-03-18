@@ -6516,3 +6516,159 @@ body.bader-onboarding-open {
         }
     }
 }
+
+// =============================================================================
+// MOBILE CONTAINMENT — Prevent ALL horizontal overflow (applies to every page)
+// =============================================================================
+@media (max-width: 991px) {
+
+    // --- Nuclear containment: nothing escapes the viewport ---
+    html, body, #wrapwrap, #wrap, main {
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+    }
+
+    // --- Containers, rows, sections ---
+    .container,
+    .container-fluid,
+    .container-lg,
+    .container-xl,
+    .container-xxl,
+    section,
+    .row,
+    [class*="oe_structure"],
+    .o_website_page,
+    #product_detail,
+    #product_full_description,
+    #products_grid,
+    .oe_website_sale {
+        max-width: 100% !important;
+        overflow-x: hidden;
+    }
+
+    // --- Bootstrap row negative margins: clamp them ---
+    .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+        > [class*="col-"] {
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+    }
+
+    // --- Images, media, iframes, canvas, video ---
+    img,
+    video,
+    iframe,
+    canvas,
+    svg,
+    picture,
+    object,
+    embed {
+        max-width: 100% !important;
+        height: auto;
+    }
+
+    // --- Tables: scrollable wrapper behavior ---
+    table {
+        max-width: 100%;
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    // --- Pre/code blocks ---
+    pre, code {
+        max-width: 100%;
+        overflow-x: auto;
+        word-break: break-all;
+    }
+
+    // --- Tab bars: horizontal scroll with hidden scrollbar ---
+    .nav-tabs,
+    .nav-pills,
+    .bader-app-tablist,
+    [role="tablist"] {
+        max-width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        flex-wrap: nowrap !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-item {
+            flex: 0 0 auto;
+        }
+
+        .nav-link {
+            white-space: nowrap;
+        }
+    }
+
+    // --- Tab shell (container around tabs) ---
+    .bader-app-tab-shell {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    // --- Text overflow prevention ---
+    h1, h2, h3, h4, h5, h6,
+    p, li, td, th, span, a, label, figcaption {
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+    }
+
+    // --- Product cards / grid ---
+    .oe_product_cart,
+    .o_wsale_product_grid_wrapper,
+    .bader-product-card {
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    // --- Flexbox containers that might not wrap ---
+    .d-flex:not(.bader-bottom-nav):not(.nav) {
+        flex-wrap: wrap;
+    }
+
+    // --- Absolute/fixed positioned elements that might extend ---
+    .bader-mega,
+    .bader-ai-search,
+    .dropdown-menu {
+        max-width: 100vw;
+        right: 0;
+    }
+}
+
+// Extra small devices (phones, <576px)
+@media (max-width: 575px) {
+
+    // --- Tighter padding on small phones ---
+    .container {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+
+    // --- Product detail tabs: smaller font for tight screens ---
+    .bader-app-tablist .nav-link,
+    .nav-tabs .nav-link {
+        font-size: 0.8rem;
+        padding: 10px 14px;
+        min-width: 0 !important;
+    }
+
+    // --- Long product names ---
+    .bader-product-card h5,
+    .bader-product-card h6,
+    .oe_product_cart .product_price,
+    #product_detail h1,
+    #product_detail h2 {
+        word-break: break-word;
+        hyphens: auto;
+    }
+}
