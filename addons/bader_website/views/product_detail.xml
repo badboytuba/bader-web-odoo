@@ -549,19 +549,14 @@
                     <div class="bader-app-studio-head bader-app-studio-head--related">
                         <div class="bader-app-studio-head__copy">
                             <span class="bader-app-section-heading__eyebrow">Productos relacionados</span>
-                            <h2>Complementa tu compra</h2>
-                            <p>Accesorios, repuestos y equipos vinculados a este producto.</p>
+                            <h2>Mas opciones para esta compra</h2>
+                            <p>Accesorios, repuestos y equipos compatibles para completar la operacion.</p>
                         </div>
-                        <aside class="bader-app-studio-summary">
-                            <span class="bader-app-studio-summary__eyebrow">Seleccion vinculada</span>
-                            <strong>Referencias utiles para ampliar la compra</strong>
-                            <p>Accesorios, repuestos y equipos relacionados para completar instalacion, reposicion o venta cruzada.</p>
-                        </aside>
                     </div>
 
                     <div class="row g-4 bader-app-related-grid">
                         <t t-foreach="pdp_related_products" t-as="rel">
-                            <div class="col-12 col-sm-6 col-xl-4">
+                            <div class="col-6 col-lg-4 col-xl-3">
                                 <t t-set="rel_name_source"
                                    t-value="(rel.with_context(lang='es_ES', display_default_code=False).name or rel.name or '').strip()"/>
                                 <t t-set="rel_name_clean"

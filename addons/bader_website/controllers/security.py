@@ -7,6 +7,9 @@ import time
 from odoo import http
 from odoo.http import request
 
+# M10: unified helper
+from .helpers import _client_ip
+
 
 _logger = logging.getLogger(__name__)
 
@@ -15,16 +18,6 @@ _REPORT_LOG_WINDOW_SECONDS = 60
 _REPORT_LOG_MAX_KEYS = 1000
 _REPORT_LOG_STATE = {}
 _REPORT_LOG_LOCK = threading.Lock()
-
-
-def _client_ip():
-    httprequest = getattr(request, 'httprequest', None)
-    if not httprequest:
-        return 'unknown'
-    forwarded_for = (httprequest.headers.get('X-Forwarded-For') or '').strip()
-    if forwarded_for:
-        return forwarded_for.split(',')[0].strip()[:96] or 'unknown'
-    return (httprequest.remote_addr or 'unknown')[:96]
 
 
 def _cleanup_report_log_state(now_ts):

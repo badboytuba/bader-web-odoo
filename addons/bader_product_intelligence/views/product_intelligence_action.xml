@@ -12,7 +12,7 @@
         <field name="view_id" ref="view_bpi_category_tree"/>
     </record>
 
-    <menuitem id="menu_bpi_root" name="Producto Intelligence" sequence="48" groups="base.group_system"/>
+    <menuitem id="menu_bpi_root" name="Producto Intelligence" sequence="48" groups="base.group_system" web_icon="bader_product_intelligence,static/description/icon.png"/>
     <menuitem id="menu_bpi_products" name="Productos" parent="menu_bpi_root" action="action_product_intelligence_client" sequence="10" groups="base.group_system"/>
     <menuitem id="menu_bpi_categories" name="Categorias" parent="menu_bpi_root" action="action_bpi_categories" sequence="20" groups="base.group_system"/>
 </odoo>

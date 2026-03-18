@@ -20,13 +20,8 @@
                         <div class="bpi-module-header">
                             <div>
                                 <h1>Productos</h1>
-                                <p>Gestiona el catalogo de productos sincronizado con Odoo</p>
+                                <p>Gestiona el catalogo de productos con Product Intelligence</p>
                             </div>
-                            <button type="button" class="bpi-button bpi-button--success" t-on-click="syncCatalog" t-att-disabled="state.syncBusy">
-                                <i class="fa fa-refresh"/>
-                                <span t-if="!state.syncBusy">Sincronizar desde Odoo</span>
-                                <span t-else="">Actualizando...</span>
-                            </button>
                         </div>
 
                         <div class="bpi-kpi-grid bpi-kpi-grid--dashboard">
@@ -216,7 +211,7 @@
                                         <span class="bpi-toggle__track"><span class="bpi-toggle__thumb"/></span>
                                     </label>
                                 </div>
-                                <button type="button" class="bpi-button bpi-button--primary" t-on-click="saveAll" t-att-disabled="state.saveBusy">
+                                <button type="button" class="bpi-button bpi-button--success" t-on-click="saveAll" t-att-disabled="state.saveBusy">
                                     <i class="fa fa-floppy-o"/>
                                     <span t-if="!state.saveBusy">Guardar Cambios</span>
                                     <span t-else="">Guardando...</span>
@@ -224,6 +219,18 @@
                                 <button type="button" class="bpi-icon-button" t-on-click="openProductForm">
                                     <i class="fa fa-ellipsis-v"/>
                                 </button>
+                            </div>
+                        </div>
+
+                        <div class="bpi-score-strip">
+                            <div t-att-data-level="sc.level" class="bpi-score-card" t-foreach="detailScoreCards()" t-as="sc" t-key="sc.label" t-on-click="() => this.scoreCardClick(sc.tab)">
+                                <div class="bpi-score-card__head">
+                                    <span t-esc="sc.label"/>
+                                    <strong t-esc="sc.score + '/100'"/>
+                                </div>
+                                <div class="bpi-score-bar">
+                                    <span t-att-class="'bpi-score-bar__fill bpi-score-bar__fill--' + sc.color" t-att-style="'width: ' + sc.score + '%;'"/>
+                                </div>
                             </div>
                         </div>
 
@@ -262,7 +269,7 @@
                                 </div>
 
                                 <div class="bpi-section-head">
-                                    <h3><i class="fa fa-magic"/> Acciones Rapidas Nancy AI</h3>
+                                    <h3><i class="fa fa-star-o"/> Acciones Rápidas Nancy AI</h3>
                                 </div>
                                 <div class="bpi-quick-grid">
                                     <button type="button" class="bpi-quick-card" t-on-click="() => this.quickAction('content')">
@@ -436,7 +443,7 @@
                                             <i class="fa fa-refresh"/>
                                             <span>Reclasificar con IA</span>
                                         </button>
-                                        <button type="button" class="bpi-button bpi-button--primary" t-on-click="saveCategoryOnly" t-att-disabled="state.categoryBusy">
+                                        <button type="button" class="bpi-button bpi-button--success" t-on-click="saveCategoryOnly" t-att-disabled="state.categoryBusy">
                                             <i class="fa fa-floppy-o"/>
                                             <span>Guardar Categorizacion</span>
                                         </button>
@@ -468,7 +475,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <button type="button" class="bpi-button bpi-button--primary bpi-button--full" t-on-click="generateContent" t-att-disabled="state.contentBusy">
+                                    <button type="button" class="bpi-button bpi-button--primary bpi-button--full" style="margin-top: 18px;" t-on-click="generateContent" t-att-disabled="state.contentBusy">
                                         <i class="fa fa-magic"/>
                                         <span t-if="!state.contentBusy">Generar Descripcion con Nancy AI</span>
                                         <span t-else="">Generando...</span>
@@ -526,16 +533,27 @@
                             </t>
 
                             <t t-if="state.activeTab === 'images'">
+                                <!-- ── E-commerce Gallery Panel ── -->
                                 <div class="bpi-panel">
                                     <div class="bpi-panel__title bpi-panel__title--between">
-                                        <h3>Galeria de Imagenes</h3>
-                                        <div class="bpi-footer-actions">
-                                            <button type="button" class="bpi-button bpi-button--secondary" t-on-click="() => this.generateImage(true)" t-att-disabled="state.imageBusy"><i class="fa fa-magic"/> Nano Banana</button>
-                                            <button type="button" class="bpi-button bpi-button--primary" t-on-click="() => this.generateImage(false)" t-att-disabled="state.imageBusy"><i class="fa fa-magic"/> Generar con Nancy AI</button>
-                                        </div>
+                                        <h3><i class="fa fa-picture-o"/> Galeria de Imagenes</h3>
+                                        <button type="button" class="bpi-button bpi-button--primary" t-on-click="openImageModal" t-att-disabled="state.imageBusy"><i class="fa fa-magic"/> Editar con Nancy AI</button>
                                     </div>
-                                    <div class="bpi-grid bpi-grid--gallery">
-                                        <div class="bpi-gallery-preview">
+                                    <div class="bpi-gallery-shell">
+                                        <!-- Thumbnail sidebar (left) -->
+                                        <div class="bpi-gallery-shell__sidebar">
+                                            <div t-foreach="currentImages()" t-as="image" t-key="image.id"
+                                                 t-att-class="state.imageForm.selectedGalleryUrl === image.imageUrl ? 'bpi-gallery-thumb is-active' : 'bpi-gallery-thumb'"
+                                                 t-on-click="() => this.selectGalleryImage(image.imageUrl)">
+                                                <img t-att-src="image.imageUrl" t-att-alt="image.name"/>
+                                                <button type="button" class="bpi-gallery-thumb__delete" t-on-click.stop="() => this.deleteImage(image.id)" t-att-disabled="state.imageBusy" title="Eliminar"><i class="fa fa-trash"/></button>
+                                            </div>
+                                            <div class="bpi-gallery-thumb bpi-gallery-thumb--add" t-on-click="() => this.state.showAddUrlInput = !this.state.showAddUrlInput">
+                                                <i class="fa fa-plus"/>
+                                            </div>
+                                        </div>
+                                        <!-- Main preview (right) -->
+                                        <div class="bpi-gallery-shell__stage">
                                             <t t-if="state.imageForm.selectedGalleryUrl">
                                                 <img t-att-src="state.imageForm.selectedGalleryUrl" t-att-alt="product.name"/>
                                             </t>
@@ -543,52 +561,14 @@
                                                 <div class="bpi-empty-state"><i class="fa fa-picture-o"/><p>Sin imagen</p></div>
                                             </t>
                                         </div>
-                                        <div class="bpi-gallery-sidebar">
-                                            <label>Todas las imagenes</label>
-                                            <div class="bpi-thumb-grid">
-                                                <button type="button" class="bpi-thumb" t-foreach="currentImages()" t-as="image" t-key="image.id" t-att-class="state.imageForm.selectedGalleryUrl === image.imageUrl ? 'bpi-thumb is-selected' : 'bpi-thumb'" t-on-click="() => this.selectGalleryImage(image.imageUrl)">
-                                                    <img t-att-src="image.imageUrl" t-att-alt="image.name"/>
-                                                </button>
-                                            </div>
-                                            <label>Anadir imagen por URL</label>
-                                            <div class="bpi-inline-field">
-                                                <input class="bpi-input" type="url" placeholder="https://..." t-model="state.imageForm.addImageUrl"/>
-                                                <button type="button" class="bpi-button bpi-button--secondary" t-on-click="addImageUrl" t-att-disabled="state.imageBusy">Anadir</button>
-                                            </div>
-                                        </div>
+                                    </div>
+                                    <div class="bpi-add-url-inline" t-if="state.showAddUrlInput">
+                                        <input class="bpi-input" type="url" placeholder="https://..." t-model="state.imageForm.addImageUrl"/>
+                                        <button type="button" class="bpi-button bpi-button--secondary" t-on-click="addImageUrl" t-att-disabled="state.imageBusy">Anadir</button>
                                     </div>
                                 </div>
 
-                                <div class="bpi-panel" t-if="(product.referenceImages || []).length">
-                                    <div class="bpi-panel__title"><h3>Imagenes de Referencia</h3></div>
-                                    <div class="bpi-reference-grid">
-                                        <button type="button" class="bpi-reference-card" t-foreach="product.referenceImages" t-as="reference" t-key="reference.token" t-att-class="state.imageForm.selectedReferences.includes(reference.token) ? 'bpi-reference-card is-selected' : 'bpi-reference-card'" t-on-click="() => this.toggleReference(reference.token)">
-                                            <img t-att-src="reference.url" t-att-alt="reference.label"/>
-                                            <span t-esc="reference.label"/>
-                                        </button>
-                                    </div>
-                                    <label>Prompt de generacion</label>
-                                    <textarea class="bpi-textarea" rows="4" t-model="state.imageForm.prompt"/>
-                                </div>
-
-                                <div class="bpi-panel" t-if="state.imageForm.generatedPreviewUrl">
-                                    <div class="bpi-panel__title"><h3>Preview Generado</h3></div>
-                                    <div class="bpi-grid bpi-grid--2">
-                                        <div class="bpi-preview-card">
-                                            <label>Original</label>
-                                            <img t-att-src="product.mainImageUrl" t-att-alt="product.name"/>
-                                        </div>
-                                        <div class="bpi-preview-card">
-                                            <label>Nuevo preview</label>
-                                            <img t-att-src="state.imageForm.generatedPreviewUrl" t-att-alt="Preview"/>
-                                        </div>
-                                    </div>
-                                    <div class="bpi-footer-actions">
-                                        <button type="button" class="bpi-button bpi-button--primary" t-on-click="approveImage" t-att-disabled="state.imageBusy"><i class="fa fa-check"/> Aprobar y guardar</button>
-                                        <button type="button" class="bpi-button bpi-button--secondary" t-on-click="() => this.state.imageForm.generatedPreviewUrl = ''"><i class="fa fa-times"/> Descartar</button>
-                                    </div>
-                                </div>
-
+                                <!-- ── Video Panel ── -->
                                 <div class="bpi-panel">
                                     <div class="bpi-panel__title"><h3><i class="fa fa-video-camera"/> Video del producto</h3></div>
                                     <div class="bpi-inline-field">
@@ -596,6 +576,118 @@
                                         <button type="button" class="bpi-button bpi-button--secondary" t-on-click="saveVideo" t-att-disabled="state.imageBusy">Guardar video</button>
                                     </div>
                                     <iframe t-if="product.videoEmbedUrl" class="bpi-video-frame" t-att-src="product.videoEmbedUrl" allowfullscreen="allowfullscreen"/>
+                                </div>
+
+                                <!-- ── Nancy AI Studio Playground ── -->
+                                <div class="bpi-playground-overlay" t-if="state.showImageModal" t-on-click.self="closeImageModal">
+                                    <div class="bpi-playground">
+                                        <!-- ─── LEFT: Form Panel ─── -->
+                                        <div class="bpi-playground__form">
+                                            <div class="bpi-playground__form-header">
+                                                <h3><i class="fa fa-magic"/> Editar Imagen con Nancy AI</h3>
+                                                <button type="button" class="bpi-playground__close" t-on-click="closeImageModal"><i class="fa fa-times"/></button>
+                                            </div>
+                                            <div class="bpi-playground__form-body">
+                                                <!-- Image selection -->
+                                                <div>
+                                                    <div class="bpi-playground__section-label">Selecciona imagenes del producto</div>
+                                                    <div class="bpi-playground__thumb-grid">
+                                                        <div t-foreach="currentImages()" t-as="image" t-key="image.id"
+                                                             t-att-class="state.imageForm.selectedGalleryUrl === image.imageUrl ? 'bpi-pg-thumb bpi-pg-thumb--lg is-selected' : 'bpi-pg-thumb bpi-pg-thumb--lg'"
+                                                             t-on-click="() => this.selectGalleryImage(image.imageUrl)">
+                                                            <img t-att-src="image.imageUrl" t-att-alt="image.name"/>
+                                                            <div class="bpi-pg-thumb__check"><i class="fa fa-check"/></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- File upload for reference -->
+                                                <div>
+                                                    <div class="bpi-playground__section-label">Subir imagen de referencia (logo, fondo, etc.)</div>
+                                                    <div class="bpi-playground__upload-zone">
+                                                        <button type="button" class="bpi-playground__upload-btn" t-on-click="triggerFileUpload"><i class="fa fa-cloud-upload"/> Seleccionar archivo</button>
+                                                        <input type="file" class="d-none" accept="image/*" t-ref="fileUploadInput" t-on-change="handleFileUpload"/>
+                                                        <div class="bpi-playground__upload-preview" t-if="state.imageForm.uploadedRefUrl">
+                                                            <img t-att-src="state.imageForm.uploadedRefUrl"/>
+                                                            <span t-esc="state.imageForm.uploadedRefName"/>
+                                                            <button type="button" class="bpi-playground__att-remove" t-on-click="removeUploadedRef"><i class="fa fa-times"/></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Reference images -->
+                                                <div t-if="(product.referenceImages || []).length">
+                                                    <div class="bpi-playground__section-label">Imagenes de referencia del producto</div>
+                                                    <div class="bpi-playground__thumb-grid">
+                                                        <div t-foreach="product.referenceImages" t-as="reference" t-key="reference.token"
+                                                             t-att-class="state.imageForm.selectedReferences.includes(reference.token) ? 'bpi-pg-thumb bpi-pg-thumb--lg is-selected' : 'bpi-pg-thumb bpi-pg-thumb--lg'"
+                                                             t-on-click="() => this.toggleReference(reference.token)">
+                                                            <img t-att-src="reference.url" t-att-alt="reference.label"/>
+                                                            <div class="bpi-pg-thumb__check"><i class="fa fa-check"/></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Prompt -->
+                                                <div>
+                                                    <div class="bpi-playground__section-label">Prompt (describe lo que quieres)</div>
+                                                    <textarea class="bpi-textarea" rows="4" placeholder="Ej: Remueve el fondo y coloca el producto sobre fondo blanco con el logo Bader..." t-model="state.imageForm.prompt"/>
+                                                </div>
+
+                                                <!-- Generate button -->
+                                                <div class="bpi-footer-actions">
+                                                    <button type="button" class="bpi-button bpi-button--primary bpi-button--full" t-on-click="() => this.generateFromForm()" t-att-disabled="state.imageBusy">
+                                                        <i class="fa fa-magic"/> Generar con Nancy AI
+                                                        <span t-if="state.imageBusy" class="fa fa-spinner fa-spin" style="margin-left: 6px;"/>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- ─── RIGHT: Chat Sidebar ─── -->
+                                        <div class="bpi-playground__chat">
+                                            <div class="bpi-playground__chat-header">
+                                                <h3><i class="fa fa-comments-o"/> Resultados</h3>
+                                            </div>
+
+                                            <!-- Messages / Activity log -->
+                                            <div class="bpi-playground__messages" t-ref="playgroundMessages">
+                                                <t t-foreach="state.playground.messages" t-as="msg" t-key="msg_index">
+                                                    <!-- AI message -->
+                                                    <div t-if="msg.role === 'ai'" class="bpi-pg-msg bpi-pg-msg--ai">
+                                                        <div class="bpi-pg-msg__avatar"><i class="fa fa-magic"/></div>
+                                                        <div class="bpi-pg-msg__bubble">
+                                                            <span class="bpi-pg-msg__name">Nancy AI</span>
+                                                            <p t-esc="msg.text"/>
+                                                            <div t-if="msg.imageUrl" class="bpi-pg-msg__result">
+                                                                <img class="bpi-pg-msg__img" t-att-src="msg.imageUrl" alt="Resultado"/>
+                                                                <div class="bpi-pg-msg__result-actions">
+                                                                    <button type="button" class="bpi-button bpi-button--success bpi-button--sm" t-on-click="() => this.saveGeneratedImage(msg.imageUrl)" t-att-disabled="state.imageBusy">
+                                                                        <i class="fa fa-save"/> Guardar en Galería
+                                                                    </button>
+                                                                    <a class="bpi-button bpi-button--secondary bpi-button--sm" t-att-href="msg.imageUrl" download="nancy_ai_image.png" target="_blank">
+                                                                        <i class="fa fa-download"/>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                            <div t-if="msg.loading" class="bpi-pg-msg__loading">
+                                                                <span class="fa fa-spinner fa-spin"/> Generando imagen...
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- User message -->
+                                                    <div t-if="msg.role === 'user'" class="bpi-pg-msg bpi-pg-msg--user">
+                                                        <div class="bpi-pg-msg__bubble">
+                                                            <p t-esc="msg.text"/>
+                                                            <div t-if="msg.attachments &amp;&amp; msg.attachments.length" class="bpi-pg-msg__attachments">
+                                                                <img t-foreach="msg.attachments" t-as="att" t-key="att_index" t-att-src="att.url" class="bpi-pg-msg__att-thumb"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </t>
 
@@ -653,7 +745,7 @@
                                     </div>
                                     <div class="bpi-inline-field">
                                         <input class="bpi-input" type="url" placeholder="URL del producto competidor (ej: https://dentaltix.com/producto...)" t-model="state.competitorForm.competitorUrl"/>
-                                        <button type="button" class="bpi-button bpi-button--danger" t-on-click="() => this.addCompetitor()" t-att-disabled="state.competitorBusy"><i class="fa fa-plus"/> Anadir</button>
+                                        <button type="button" class="bpi-button bpi-button--primary" t-on-click="() => this.addCompetitor()" t-att-disabled="state.competitorBusy"><i class="fa fa-plus"/> Anadir</button>
                                     </div>
 
                                     <t t-if="state.competitorForm.discoveredCompetitors.length">
@@ -673,18 +765,91 @@
                                         <div class="bpi-competitor-list">
                                             <div class="bpi-competitor-row" t-foreach="currentCompetitors()" t-as="competitor" t-key="competitor.id">
                                                 <div class="bpi-competitor-row__main">
-                                                    <strong t-esc="competitor.competitorName"/>
-                                                    <p t-esc="competitor.competitorUrl"/>
+                                                    <div class="bpi-competitor-row__header" t-on-click="() => this.toggleCompetitorExpand(competitor.id)">
+                                                        <div>
+                                                            <strong t-esc="competitor.competitorName"/>
+                                                            <p t-esc="competitor.competitorUrl"/>
+                                                        </div>
+                                                        <i t-att-class="'fa ' + (state.expandedCompetitorId === competitor.id ? 'fa-chevron-up' : 'fa-chevron-down')"/>
+                                                    </div>
                                                 </div>
                                                 <div class="bpi-competitor-row__metrics">
                                                     <div><span>Precio</span><strong t-esc="competitor.competitorPrice ? formatARS(competitor.competitorPrice) : 'Sin precio'"/></div>
                                                     <div><span>SEO</span><strong t-esc="(competitor.seoScore || 0) + '/100'"/></div>
                                                     <div><span>Status</span><strong t-esc="competitor.scrapeStatus || 'pending'"/></div>
                                                 </div>
+
+                                                <t t-if="state.expandedCompetitorId === competitor.id">
+                                                    <div class="bpi-competitor-expand">
+                                                        <t t-if="competitor.metaTitle || competitor.metaDescription">
+                                                            <div class="bpi-expand-section">
+                                                                <label>Meta Tags</label>
+                                                                <div class="bpi-expand-grid">
+                                                                    <div t-if="competitor.metaTitle"><span>Title</span><p t-esc="competitor.metaTitle"/></div>
+                                                                    <div t-if="competitor.metaDescription"><span>Description</span><p t-esc="competitor.metaDescription"/></div>
+                                                                    <div t-if="competitor.metaKeywords.length"><span>Keywords</span><p t-esc="(competitor.metaKeywords || []).join(', ')"/></div>
+                                                                </div>
+                                                            </div>
+                                                        </t>
+                                                        <t t-if="(competitor.h1Tags || []).length || (competitor.h2Tags || []).length">
+                                                            <div class="bpi-expand-section">
+                                                                <label>Heading Tags</label>
+                                                                <div class="bpi-expand-grid">
+                                                                    <div t-if="(competitor.h1Tags || []).length"><span>H1</span><p t-foreach="competitor.h1Tags" t-as="tag" t-key="tag_index" t-esc="tag"/></div>
+                                                                    <div t-if="(competitor.h2Tags || []).length"><span>H2</span><p t-foreach="competitor.h2Tags.slice(0, 5)" t-as="tag" t-key="tag_index" t-esc="tag"/></div>
+                                                                </div>
+                                                            </div>
+                                                        </t>
+                                                        <t t-if="competitor.ogTitle || competitor.ogImage">
+                                                            <div class="bpi-expand-section">
+                                                                <label>Open Graph</label>
+                                                                <div class="bpi-expand-grid">
+                                                                    <div t-if="competitor.ogTitle"><span>OG Title</span><p t-esc="competitor.ogTitle"/></div>
+                                                                    <div t-if="competitor.ogDescription"><span>OG Description</span><p t-esc="competitor.ogDescription"/></div>
+                                                                    <div t-if="competitor.ogImage"><span>OG Image</span><img class="bpi-og-thumb" t-att-src="competitor.ogImage" alt="OG"/></div>
+                                                                </div>
+                                                            </div>
+                                                        </t>
+                                                        <div class="bpi-expand-section">
+                                                            <label>Links</label>
+                                                            <div class="bpi-expand-metrics">
+                                                                <div><span>Internos</span><strong t-esc="competitor.internalLinks || 0"/></div>
+                                                                <div><span>Externos</span><strong t-esc="competitor.externalLinks || 0"/></div>
+                                                                <div><span>Palabras</span><strong t-esc="competitor.wordCount || 0"/></div>
+                                                                <div><span>Imagenes</span><strong t-esc="competitor.imageCount || 0"/></div>
+                                                            </div>
+                                                            <p t-if="competitor.canonicalUrl" class="bpi-muted">Canonical: <t t-esc="competitor.canonicalUrl"/></p>
+                                                        </div>
+                                                        <t t-if="(competitor.strengthsVsUs || []).length || (competitor.weaknessesVsUs || []).length">
+                                                            <div class="bpi-expand-section">
+                                                                <div class="bpi-expand-grid bpi-expand-grid--2">
+                                                                    <div t-if="(competitor.strengthsVsUs || []).length">
+                                                                        <label class="bpi-label--warning">Sus Ventajas</label>
+                                                                        <ul class="bpi-sw-list bpi-sw-list--warning">
+                                                                            <li t-foreach="competitor.strengthsVsUs" t-as="item" t-key="item_index" t-esc="item"/>
+                                                                        </ul>
+                                                                    </div>
+                                                                    <div t-if="(competitor.weaknessesVsUs || []).length">
+                                                                        <label class="bpi-label--success">Sus Desventajas</label>
+                                                                        <ul class="bpi-sw-list bpi-sw-list--success">
+                                                                            <li t-foreach="competitor.weaknessesVsUs" t-as="item" t-key="item_index" t-esc="item"/>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </t>
+                                                        <t t-if="competitor.scrapeStatus === 'failed' and competitor.scrapeError">
+                                                            <div class="bpi-expand-error">
+                                                                <i class="fa fa-exclamation-triangle"/> <t t-esc="competitor.scrapeError"/>
+                                                            </div>
+                                                        </t>
+                                                    </div>
+                                                </t>
+
                                                 <div class="bpi-footer-actions">
                                                     <button type="button" class="bpi-button bpi-button--secondary" t-on-click="() => this.scrapeCompetitor(competitor.id)">Scrapear</button>
                                                     <button type="button" class="bpi-button bpi-button--secondary" t-on-click="() => this.analyzeCompetitor(competitor.id)">Analizar</button>
-                                                    <button type="button" class="bpi-button bpi-button--ghost" t-on-click="() => this.deleteCompetitor(competitor.id)">Eliminar</button>
+                                                    <button type="button" class="bpi-button bpi-button--ghost" t-on-click="() => this.deleteCompetitor(competitor.id)"><i class="fa fa-trash-o"/> Eliminar</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -787,6 +952,49 @@
                                     <t t-else="">
                                         <p class="bpi-muted">Todavia no hay suficientes datos para generar insights.</p>
                                     </t>
+                                </div>
+                            </t>
+
+                            <t t-if="state.activeTab === 'chat'">
+                                <div class="bpi-chat-shell">
+                                    <div class="bpi-chat-header">
+                                        <div>
+                                            <i class="fa fa-comments"/>
+                                            <h3>Agente de Producto IA</h3>
+                                        </div>
+                                        <span class="bpi-inline-badge bpi-inline-badge--green"><i class="fa fa-bolt"/> Asistente dedicado</span>
+                                    </div>
+
+                                    <div class="bpi-chat-card">
+                                        <div class="bpi-chat-messages">
+                                            <t t-if="!state.chatMessages.length">
+                                                <div class="bpi-chat-empty">
+                                                    <i class="fa fa-magic"/>
+                                                    <p><strong>Hola! Soy el agente de <t t-esc="currentProduct().name"/></strong></p>
+                                                    <p class="bpi-muted">Puedo ayudarte a crear contenido, analizar competencia y optimizar este producto.</p>
+                                                    <div class="bpi-chat-quick-actions">
+                                                        <button type="button" class="bpi-button bpi-button--secondary bpi-button--sm" t-foreach="chatQuickActions" t-as="action" t-key="action_index" t-on-click="() => this.useChatQuickAction(action)">
+                                                            <t t-esc="action"/>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                            <t t-else="">
+                                                <div t-foreach="state.chatMessages" t-as="msg" t-key="msg_index" t-att-class="'bpi-chat-bubble ' + (msg.role === 'user' ? 'bpi-chat-bubble--user' : 'bpi-chat-bubble--assistant')">
+                                                    <p t-esc="msg.content"/>
+                                                </div>
+                                                <div t-if="state.chatBusy" class="bpi-chat-bubble bpi-chat-bubble--assistant">
+                                                    <div class="bpi-chat-typing"><span/><span/><span/></div>
+                                                </div>
+                                            </t>
+                                        </div>
+                                        <div class="bpi-chat-input-bar">
+                                            <input class="bpi-input" type="text" placeholder="Escribe tu mensaje..." t-model="state.chatInput" t-on-keydown="onChatKeydown" t-att-disabled="state.chatBusy"/>
+                                            <button type="button" class="bpi-button bpi-button--primary" t-on-click="() => this.sendChatMessage()" t-att-disabled="state.chatBusy || !state.chatInput.trim()">
+                                                <i class="fa fa-paper-plane"/>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </t>
                         </div>

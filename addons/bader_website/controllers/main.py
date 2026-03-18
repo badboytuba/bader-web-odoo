@@ -39,6 +39,10 @@ AUTH_RATE_MAX_KEYS = 4000
 _AUTH_RATE_STATE = {}
 _AUTH_RATE_LOCK = threading.Lock()
 
+# M14: Shop tree cache with TTL
+_SHOP_TREE_CACHE = {}
+_SHOP_TREE_TTL = 300  # 5 minutes
+
 # ─── Base URL helper ──────────────────────────────────────────
 FALLBACK_BASE_URL = 'https://www.bader4business.com'
 
@@ -1036,6 +1040,11 @@ class BaderWebsiteSale(WebsiteSale):
         return options
 
 
+
+# M12: Module-level singleton to avoid BaderWebsiteSale() instantiation per call
+_bws = BaderWebsiteSale()
+
+
 class BaderWebsite(Website):
     """Override homepage to render Bader custom template.
     Also handles CTA form, page routes, and thank-you pages.
@@ -1649,10 +1658,10 @@ class BaderWebsite(Website):
         return self._normalize_search_text(' '.join(filter(None, parts)))
 
     def _normalize_pdp_persona(self, raw_value):
-        return BaderWebsiteSale()._normalize_pdp_persona(raw_value)
+        return _bws._normalize_pdp_persona(raw_value)
 
     def _build_pdp_persona_href(self, product, persona=''):
-        return BaderWebsiteSale()._build_pdp_persona_href(product, persona)
+        return _bws._build_pdp_persona_href(product, persona)
 
     def _force_es_frontend_lang(self, response):
         if response is None:
@@ -1664,28 +1673,28 @@ class BaderWebsite(Website):
         return response
 
     def _pdp_strip_sku_prefix(self, value):
-        return BaderWebsiteSale()._pdp_strip_sku_prefix(value)
+        return _bws._pdp_strip_sku_prefix(value)
 
     def _pdp_description_plaintext(self, raw_value):
-        return BaderWebsiteSale()._pdp_description_plaintext(raw_value)
+        return _bws._pdp_description_plaintext(raw_value)
 
     def _pdp_extract_language_block(self, text, preferred='es'):
-        return BaderWebsiteSale()._pdp_extract_language_block(text, preferred=preferred)
+        return _bws._pdp_extract_language_block(text, preferred=preferred)
 
     def _pdp_is_feature_heading(self, line):
-        return BaderWebsiteSale()._pdp_is_feature_heading(line)
+        return _bws._pdp_is_feature_heading(line)
 
     def _pdp_should_skip_line(self, line, product_name=''):
-        return BaderWebsiteSale()._pdp_should_skip_line(line, product_name=product_name)
+        return _bws._pdp_should_skip_line(line, product_name=product_name)
 
     def _pdp_unique_items(self, items, limit=None):
-        return BaderWebsiteSale()._pdp_unique_items(items, limit=limit)
+        return _bws._pdp_unique_items(items, limit=limit)
 
     def _build_pdp_related_products(self, product, limit=6):
-        return BaderWebsiteSale()._build_pdp_related_products(product, limit=limit)
+        return _bws._build_pdp_related_products(product, limit=limit)
 
     def _build_pdp_content_payload(self, product):
-        return BaderWebsiteSale()._build_pdp_content_payload(product)
+        return _bws._build_pdp_content_payload(product)
 
     def _predictive_search_persona_keywords(self, persona):
         normalized = self._normalize_pdp_persona(persona)
@@ -2611,7 +2620,15 @@ class BaderWebsite(Website):
         return 'blog.post' in request.env and 'blog.blog' in request.env
 
     def _build_intelligent_shop_tree(self):
-        """Return niche > type > subcategory tree based on Odoo public categories."""
+        """Return niche > type > subcategory tree based on Odoo public categories.
+        M14: Cached with 5-minute TTL to avoid N+1 queries per page load.
+        """
+        now = time.time()
+        cache_key = 'shop_tree'
+        cached = _SHOP_TREE_CACHE.get(cache_key)
+        if cached and (now - cached['ts']) < _SHOP_TREE_TTL:
+            return cached['data']
+
         category_model = request.env['product.public.category'].sudo().with_context(lang='es_ES')
         product_model = request.env['product.template'].sudo()
 
@@ -2713,7 +2730,9 @@ class BaderWebsite(Website):
                 'types': root_node['subcategories'],
             })
 
-        return {'niches': niches}
+        result = {'niches': niches}
+        _SHOP_TREE_CACHE['shop_tree'] = {'data': result, 'ts': time.time()}
+        return result
 
     def _blog_cover_url(self, post):
         """Best-effort cover image URL from Odoo blog post."""
@@ -2952,38 +2971,31 @@ class BaderWebsite(Website):
                 f'  </url>'
             )
 
-        # Dynamic: product public categories
+        # M11: Dynamic categories — use Odoo slug() for proper URLs
         try:
             categories = request.env['product.public.category'].sudo().search(
                 [('website_published', '=', True)], order='id'
             )
             for cat in categories:
-                slug_val = '%s-%d' % (
-                    cat.name.lower().replace(' ', '-'), cat.id
-                )
                 urls.append(
                     f'  <url>\n'
-                    f'    <loc>{base}/shop/category/{slug_val}</loc>\n'
+                    f'    <loc>{base}/shop/category/{slug(cat)}</loc>\n'
                     f'    <changefreq>weekly</changefreq>\n'
                     f'    <priority>0.6</priority>\n'
                     f'  </url>'
                 )
         except Exception:
-            pass  # categories might not have website_published field
+            pass
 
-        # Dynamic: published products
+        # M11: Dynamic products — use Odoo slug() for proper URLs
         try:
             products = request.env['product.template'].sudo().search(
                 [('website_published', '=', True)], order='id', limit=5000
             )
             for prod in products:
-                slug_val = '%s-%d' % (
-                    (prod.name or 'product').lower().replace(' ', '-')[:50],
-                    prod.id
-                )
                 urls.append(
                     f'  <url>\n'
-                    f'    <loc>{base}/shop/{slug_val}</loc>\n'
+                    f'    <loc>{base}/shop/{slug(prod)}</loc>\n'
                     f'    <changefreq>weekly</changefreq>\n'
                     f'    <priority>0.5</priority>\n'
                     f'  </url>'

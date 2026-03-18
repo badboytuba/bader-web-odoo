@@ -52,6 +52,7 @@ class BPIProductImage(models.Model):
     _order = "sequence, id desc"
 
     product_tmpl_id = fields.Many2one("product.template", required=True, ondelete="cascade")
+    product_image_id = fields.Many2one("product.image", string="Imagen Odoo", ondelete="set null")
     name = fields.Char(required=True)
     image_1920 = fields.Image(required=True, attachment=True)
     mime_type = fields.Char()
@@ -270,26 +271,40 @@ class BPIService(models.AbstractModel):
 
     @api.model
     def _gemini_request(self, model_name, contents, generation_config=None):
-        try:
-            response = requests.post(
-                self._gemini_endpoint(model_name),
-                json={
-                    "contents": contents,
-                    "generationConfig": generation_config or {},
-                },
-                headers={"Content-Type": "application/json"},
-                timeout=120,
-            )
-            response.raise_for_status()
-            return response.json()
-        except requests.RequestException as error:
-            _logger.exception("Gemini request failed for model %s", model_name)
-            raise UserError(
-                _("No se pudo completar la solicitud a Gemini. Revisa la configuracion e intenta de nuevo.")
-            ) from error
-        except ValueError as error:
-            _logger.exception("Gemini returned a non-JSON response for model %s", model_name)
-            raise UserError(_("Gemini devolvio una respuesta invalida.")) from error
+        import time as _time
+        max_retries = 5
+        for attempt in range(max_retries):
+            try:
+                response = requests.post(
+                    self._gemini_endpoint(model_name),
+                    json={
+                        "contents": contents,
+                        "generationConfig": generation_config or {},
+                    },
+                    headers={"Content-Type": "application/json"},
+                    timeout=120,
+                )
+                response.raise_for_status()
+                return response.json()
+            except requests.RequestException as error:
+                status = getattr(getattr(error, "response", None), "status_code", 0)
+                if status == 429 and attempt < max_retries - 1:
+                    wait = 3 * (2 ** attempt)  # 3, 6, 12, 24, 48
+                    _logger.warning("Gemini 429 rate-limited (model %s), retrying in %ss (attempt %s/%s)", model_name, wait, attempt + 1, max_retries)
+                    _time.sleep(wait)
+                    continue
+                if status == 429:
+                    _logger.error("Gemini rate limit exhausted after %s retries for model %s", max_retries, model_name)
+                    raise UserError(
+                        _("Límite de uso de Gemini alcanzado. Espera 1-2 minutos e intenta de nuevo.")
+                    ) from error
+                _logger.exception("Gemini request failed for model %s", model_name)
+                raise UserError(
+                    _("No se pudo completar la solicitud a Gemini. Revisa la configuracion e intenta de nuevo.")
+                ) from error
+            except ValueError as error:
+                _logger.exception("Gemini returned a non-JSON response for model %s", model_name)
+                raise UserError(_("Gemini devolvio una respuesta invalida.")) from error
 
     @api.model
     def _gemini_json(self, prompt, model_name=False):
@@ -355,6 +370,24 @@ class BPIService(models.AbstractModel):
                 image = self.env["bpi.product.image"].browse(image_id).exists()
                 if image and image.product_tmpl_id == product:
                     inline = self._binary_to_inline_data(image.image_1920)
+                    if inline:
+                        parts.append(inline)
+                continue
+
+            if token.startswith("odoo:"):
+                image_id = int(token.split(":")[1])
+                image = self.env["product.image"].browse(image_id).exists()
+                if image and image.product_tmpl_id == product:
+                    inline = self._binary_to_inline_data(image.image_1920)
+                    if inline:
+                        parts.append(inline)
+                continue
+
+            if token.startswith("variant:"):
+                variant_id = int(token.split(":")[1])
+                variant = self.env["product.product"].browse(variant_id).exists()
+                if variant and variant.product_tmpl_id == product:
+                    inline = self._binary_to_inline_data(variant.image_1920 or getattr(variant, "image_variant_1920", False))
                     if inline:
                         parts.append(inline)
         return parts
@@ -517,6 +550,19 @@ class BPIService(models.AbstractModel):
         seo_keywords = [kw.strip() for kw in (data.get("seoKeywords") or []) if kw and kw.strip()]
         geo_keywords = [kw.strip() for kw in (data.get("geoKeywords") or data.get("geoFeatures") or []) if kw and kw.strip()]
         faqs = data.get("geoFaq") or []
+        # Sanitize aiTargetAudience: AI may return full text instead of selection key
+        valid_audiences = {"clinicas", "laboratorios", "estudiantes", "general"}
+        raw_audience = (data.get("aiTargetAudience") or "clinicas").strip().lower()
+        if raw_audience not in valid_audiences:
+            # Fuzzy match: "Clínicas Dentales" → "clinicas"
+            audience_map = {"clin": "clinicas", "lab": "laboratorios", "estud": "estudiantes"}
+            sanitized = "clinicas"
+            for prefix, key in audience_map.items():
+                if prefix in raw_audience:
+                    sanitized = key
+                    break
+            raw_audience = sanitized
+
         product.write(
             {
                 "website_meta_title": data.get("seoTitle") or "",
@@ -525,7 +571,7 @@ class BPIService(models.AbstractModel):
                 "bpi_geo_description": data.get("geoDescription") or "",
                 "bpi_geo_features": data.get("geoFeatures") or [],
                 "bpi_ai_generated_description": data.get("aiGeneratedDescription") or "",
-                "bpi_ai_target_audience": data.get("aiTargetAudience") or "clinicas",
+                "bpi_ai_target_audience": raw_audience,
                 "bpi_seo_score": int(data.get("seoScore") or 0),
                 "bpi_geo_score": int(data.get("geoScore") or 0),
                 "bpi_competitiveness_score": int(data.get("competitivenessScore") or 0),
@@ -556,9 +602,11 @@ class BPIService(models.AbstractModel):
     @api.model
     def analyze_seo(self, product, target_audience):
         product.ensure_one()
-        prompt = """Sos Nancy AI, experta en marketing dental para Bader Argentina.
+        prompt = """Sos Nancy AI, la experta #1 en SEO dental y GEO (Generative Engine Optimization) de Bader Argentina — importador líder de equipamiento e insumos odontológicos.
 
-Analizá este producto y devolvé exclusivamente un JSON válido con esta estructura:
+Tu objetivo: crear una ficha de producto que DOMINE tanto en Google Search como en motores de IA (ChatGPT, Gemini, Perplexity, Copilot).
+
+Devolvé exclusivamente un JSON válido con esta estructura:
 {
   "seoTitle": "",
   "seoDescription": "",
@@ -575,24 +623,51 @@ Analizá este producto y devolvé exclusivamente un JSON válido con esta estruc
   "competitivenessScore": 0
 }
 
-Producto:
+━━━ PRODUCTO ━━━
 - Nombre: %(name)s
 - SKU: %(sku)s
 - Categoría: %(category)s
 - Precio: %(price)s
-- Descripción: %(description)s
+- Descripción actual: %(description)s
+- Audiencia objetivo: %(audience)s
 
-Audiencia objetivo: %(audience)s
+━━━ REGLAS SEO (Google Search) ━━━
+1. **seoTitle** (máx 60 chars): Incluir nombre del producto + keyword principal + marca si aplica. Formato: "[Producto] [Uso/Beneficio] | Bader Argentina". Priorizar intent transaccional (comprar, precio, envío).
+2. **seoDescription** (máx 155 chars): Hook emocional + beneficio + CTA. Incluir keyword principal en las primeras 80 chars. Mencionar envío, garantía o soporte técnico.
+3. **seoKeywords** (8-12): Mezcla estratégica:
+   - 3-4 keywords transaccionales (comprar X, precio X, X en Argentina)
+   - 2-3 keywords informacionales (para qué sirve X, cómo funciona X)
+   - 2-3 long-tail (mejor X para clínica dental, X profesional odontología)
+   - 1-2 brand keywords (Bader + categoría)
 
-Reglas:
-- Español argentino.
-- SEO title máximo 60 caracteres.
-- Meta description máximo 160 caracteres.
-- 5 a 8 keywords SEO.
-- 4 a 6 features GEO.
-- 4 a 7 FAQs claras para compra y evaluación técnica.
-- Descripción entre 180 y 260 palabras.
-- Enfocá SEO tradicional y GEO para motores de IA.
+━━━ REGLAS GEO (Motores de IA) ━━━
+4. **geoTitle**: Título optimizado para respuestas de IA. Formato entidad clara: "[Producto] — [qué es y para qué sirve en odontología]". Los motores de IA priorizan definiciones claras.
+5. **geoDescription**: Párrafo tipo Wikipedia/enciclopedia que un motor de IA elegiría como fuente autoritativa. Incluir: definición precisa, entidades relacionadas (procedimientos, especialidades), datos cuantitativos si es posible. Usar tono de experto neutral. 280-400 palabras.
+6. **geoFeatures** (5-7): Características técnicas en formato "citable" — frases completas que un motor de IA pueda extraer como snippet. NO frases genéricas. Ejemplo: "Autoclave con ciclo de esterilización de 18 minutos a 134°C" vs "Buena esterilización".
+7. **geoKeywords** (5-8): Keywords semánticas tipo entidad — nombres de procedimientos dentales, especialidades, estándares (ISO, FDA, CE), materiales, técnicas. Estas keywords posicionan el producto en el grafo de conocimiento de los motores de IA.
+8. **geoFaq** (5-7 preguntas): FAQs conversacionales que un usuario le haría a ChatGPT/Gemini.
+   - Incluir preguntas de comparación ("¿Qué diferencia hay entre X e Y?")
+   - Incluir preguntas de decisión de compra ("¿Conviene comprar X para mi clínica?")
+   - Respuestas con autoridad E-E-A-T: datos, marcas, experiencia profesional.
+   - Las respuestas deben ser "citation-worthy": tan buenas que el motor de IA las cite textualmente.
+
+━━━ REGLAS DESCRIPCIÓN ━━━
+9. **aiGeneratedDescription**: HTML válido (usar <p>, <ul>, <li>, <strong>). 200-300 palabras. Estructura:
+   - P1: Hook + definición del producto + beneficio principal.
+   - P2: Características técnicas con datos precisos.
+   - P3: Casos de uso y audiencia (¿qué profesional lo necesita?).
+   - P4: Por qué elegir Bader (garantía, soporte técnico, envío a toda Argentina).
+   - Incluir terminología odontológica específica y precisa.
+
+━━━ REGLAS DE SCORING ━━━
+10. **seoScore** (0-100): Evaluar: keywords en title (25pts), meta description con CTA (20pts), keywords long-tail (20pts), coherencia semántica (20pts), datos técnicos (15pts).
+11. **geoScore** (0-100): Evaluar: citabilidad de descripción (25pts), FAQ conversacionales (25pts), entidades nombradas (20pts), features cuantitativos (15pts), autoridad E-E-A-T (15pts).
+12. **competitivenessScore** (0-100): Evaluar: diferenciación de mercado (30pts), propuesta de valor clara (25pts), keywords competitivas (25pts), cobertura de nichos (20pts).
+13. **aiTargetAudience**: Devolver EXACTAMENTE uno de: "clinicas", "laboratorios", "estudiantes", "general".
+
+━━━ IDIOMA ━━━
+- Español argentino natural. Usar "vos" implícito pero tono profesional.
+- NO inventar datos clínicos falsos. Si no tenés datos del producto, generá contenido basado en la categoría.
 """ % {
             "name": product.name,
             "sku": product.default_code or "N/A",
@@ -667,18 +742,22 @@ Reglas:
 
     @api.model
     def _dashboard_stats(self):
-        product_model = self.env["product.template"].with_context(active_test=False)
+        PT = self.env["product.template"]
         base_domain = self._dashboard_base_domain()
+        active_domain = expression.AND([base_domain, [('active', '=', True)]])
         return {
-            "total": product_model.search_count(base_domain),
-            "published": product_model.search_count(expression.AND([base_domain, [("website_published", "=", True)]])),
-            "featured": product_model.search_count(expression.AND([base_domain, [("bpi_featured", "=", True)]])),
-            "pending": product_model.search_count(expression.AND([base_domain, [("website_published", "=", False)]])),
+            "total": PT.search_count(active_domain),
+            "published": PT.search_count(expression.AND([active_domain, [("website_published", "=", True)]])),
+            "featured": PT.search_count(expression.AND([active_domain, [("bpi_featured", "=", True)]])),
+            "pending": PT.search_count(expression.AND([active_domain, [("website_published", "=", False)]])),
         }
 
     @api.model
     def dashboard_payload(self, tab="all", search="", page=1, limit=40):
-        product_model = self.env["product.template"].with_context(active_test=False)
+        use_inactive = (tab == "discontinued")
+        product_model = self.env["product.template"]
+        if use_inactive:
+            product_model = product_model.with_context(active_test=False)
         exchange_rate = product_model._bpi_exchange_rate()
         safe_page = max(int(page or 1), 1)
         safe_limit = min(max(int(limit or 40), 1), 120)
@@ -696,14 +775,17 @@ Reglas:
         )
         rows = [product.bpi_dashboard_payload(exchange_rate=exchange_rate) for product in products]
         page_count = max(1, int(math.ceil(total_rows / float(safe_limit))) if total_rows else 1)
+
+        PT = self.env["product.template"]
+        PT_inactive = PT.with_context(active_test=False)
         return {
             "products": rows,
             "exchangeRate": exchange_rate,
             "stats": self._dashboard_stats(),
             "tabCounts": {
-                "all": product_model.search_count(expression.AND([base_domain, self._dashboard_tab_domain("all")])),
-                "new": product_model.search_count(expression.AND([base_domain, self._dashboard_tab_domain("new")])),
-                "discontinued": product_model.search_count(expression.AND([base_domain, self._dashboard_tab_domain("discontinued")])),
+                "all": PT.search_count(expression.AND([base_domain, self._dashboard_tab_domain("all")])),
+                "new": PT.search_count(expression.AND([base_domain, self._dashboard_tab_domain("new")])),
+                "discontinued": PT_inactive.search_count(expression.AND([base_domain, self._dashboard_tab_domain("discontinued")])),
             },
             "pager": {
                 "page": safe_page,
@@ -777,37 +859,66 @@ Reglas:
     @api.model
     def generate_content(self, product, tone="profesional", audience="clinicas"):
         product.ensure_one()
-        prompt = """Sos Nancy AI, copywriter de e-commerce dental para Bader Argentina.
+        prompt = """Sos Nancy AI, copywriter experta en e-commerce dental para Bader Argentina — importador líder de equipamiento e insumos odontológicos en Argentina.
 
-Devolve solo JSON valido:
+Tu misión: crear contenido de producto que CONVIERTE visitantes en compradores Y que los motores de IA (ChatGPT, Gemini, Perplexity) citen como fuente autoritativa.
+
+Devolvé solo JSON válido:
 {
   "name": "",
   "description": ""
 }
 
-Producto:
-- Nombre: %(name)s
+━━━ PRODUCTO ━━━
+- Nombre actual: %(name)s
 - SKU: %(sku)s
-- Categoria: %(category)s
+- Categoría: %(category)s
 - Precio USD: %(price)s
-- Descripcion actual: %(description)s
+- Descripción actual: %(description)s
+- Tono: %(tone)s
+- Audiencia: %(audience)s
 
-Tono: %(tone)s
-Audiencia: %(audience)s
+━━━ REGLAS PARA "name" ━━━
+- Mantener el nombre original si ya es claro y descriptivo.
+- Solo ajustar si falta claridad: agregar uso principal o material si mejora la comprensión.
+- NO cambiar marca ni modelo. NO agregar adjetivos de marketing vacíos.
+- Máximo 80 caracteres.
 
-Reglas:
-- Espanol argentino.
-- Mantene un enfoque comercial y tecnico.
-- El nombre puede ajustarse ligeramente para mejorar claridad.
-- La descripcion debe tener entre 140 y 260 palabras.
-- Incluir beneficios, uso recomendado y credenciales de marca.
-- No inventes prestaciones clinicas que no surjan del contexto.
+━━━ REGLAS PARA "description" ━━━
+Generar descripción en HTML válido. Extensión: 180-280 palabras. Estructura obligatoria:
+
+**Párrafo 1 — Hook + Definición** (2-3 oraciones):
+- Empezar con el beneficio principal del producto, NO con "Este producto es...".
+- Definir qué es y para qué procedimiento dental se usa.
+- Incluir al menos 1 entidad dental específica (procedimiento, técnica, especialidad).
+
+**Párrafo 2 — Características Técnicas** (usar <ul><li>):
+- 4-6 características con datos precisos (medidas, materiales, certificaciones).
+- Si no tenés datos exactos, describir la categoría general con precisión técnica.
+- Usar terminología odontológica correcta.
+
+**Párrafo 3 — Casos de Uso y Audiencia** (2-3 oraciones):
+- ¿Quién lo necesita? (odontólogo general, especialista, laboratorio, estudiante)
+- ¿En qué procedimiento específico se usa?
+- Tono de recomendación experta.
+
+**Párrafo 4 — Por qué Bader** (1-2 oraciones):
+- Mencionar: soporte técnico, envío a toda Argentina, garantía.
+- Cerrar con CTA implícito.
+
+━━━ PRINCIPIOS DE CALIDAD ━━━
+- Tono: %(tone)s pero siempre profesional y creíble.
+- Español argentino natural.
+- NO inventar especificaciones clínicas que no surjan del contexto.
+- Usar HTML semántico: <p>, <ul>, <li>, <strong>.
+- El contenido debe ser "citation-worthy" — tan preciso que un motor de IA lo citaría.
+- Evitar frases genéricas ("la mejor calidad", "excelente rendimiento"). Preferir datos concretos.
 """ % {
             "name": product.name,
             "sku": product.default_code or "N/A",
-            "category": product.public_categ_ids[:1].complete_name if product.public_categ_ids else "Sin categoria",
+            "category": product.public_categ_ids[:1].complete_name if product.public_categ_ids else "Sin categoría",
             "price": product.list_price,
-            "description": product.description_sale or product.description or "Sin descripcion",
+            "description": product.description_sale or product.description or "Sin descripción",
             "tone": tone or "profesional",
             "audience": audience or "clinicas",
         }
@@ -864,33 +975,47 @@ Reglas:
     @api.model
     def generate_faq(self, product, audience="clinicas"):
         product.ensure_one()
-        prompt = """Sos Nancy AI y tenes que crear preguntas frecuentes de compra para un producto dental.
+        prompt = """Sos Nancy AI, experta en SEO y GEO dental para Bader Argentina.
 
-Devolve solo JSON valido:
+Tu misión: crear FAQs que posicionen en Google (People Also Ask / FAQ Rich Snippets) Y que los motores de IA citen como respuesta autoritativa.
+
+Devolvé solo JSON válido:
 {
   "faqs": [
     {"question": "", "answer": ""}
   ]
 }
 
-Producto:
+━━━ PRODUCTO ━━━
 - Nombre: %(name)s
 - SKU: %(sku)s
-- Categoria: %(category)s
-- Descripcion: %(description)s
+- Categoría: %(category)s
+- Descripción: %(description)s
+- Audiencia: %(audience)s
 
-Audiencia: %(audience)s
+━━━ REGLAS FAQ ━━━
+Generar entre 5 y 7 FAQs. Cada FAQ debe cubrir una etapa diferente del buyer journey:
 
-Reglas:
-- Espanol argentino.
-- Entre 4 y 6 FAQs.
-- Preguntas claras, orientadas a compra y uso real.
-- Respuestas cortas, directas y con tono profesional.
+1. **Pregunta de definición**: "¿Qué es [producto] y para qué se usa?" — respuesta tipo enciclopedia, precisa y citable.
+2. **Pregunta de decisión de compra**: "¿Conviene comprar [producto] para mi clínica/laboratorio?" — respuesta con criterios objetivos.
+3. **Pregunta de comparación**: "¿Qué diferencia hay entre [producto] y [alternativa]?" — respuesta que posiciona el producto.
+4. **Pregunta técnica/clínica**: "¿Cómo se usa [producto] en [procedimiento]?" — respuesta con autoridad profesional.
+5. **Pregunta de especificaciones**: "¿Qué incluye el [producto]?" o "¿Cuáles son las medidas/materiales?" — respuesta con datos concretos.
+6-7. **Preguntas de soporte/logística**: sobre envío, garantía, soporte técnico de Bader. Opcional.
+
+━━━ REGLAS DE CALIDAD ━━━
+- Las preguntas deben sonar naturales — como las haría un profesional dental real buscando en Google o preguntando a ChatGPT.
+- Respuestas entre 40 y 80 palabras. Concisas pero completas.
+- Incluir datos técnicos precisos cuando sea posible.
+- NO inventar especificaciones que no surjan del contexto.
+- Cada respuesta debe empezar con la información más importante (pirámide invertida).
+- Usar español argentino profesional.
+- Las respuestas deben ser "citation-worthy" — que un motor de IA las cite textualmente.
 """ % {
             "name": product.name,
             "sku": product.default_code or "N/A",
-            "category": product.public_categ_ids[:1].complete_name if product.public_categ_ids else "Sin categoria",
-            "description": product.description_sale or product.description or "Sin descripcion",
+            "category": product.public_categ_ids[:1].complete_name if product.public_categ_ids else "Sin categoría",
+            "description": product.description_sale or product.description or "Sin descripción",
             "audience": audience or "clinicas",
         }
         response = self._gemini_json(prompt)
@@ -949,11 +1074,11 @@ Reglas:
         return self.save_category(product, values)
 
     @api.model
-    def generate_image(self, product, prompt, reference_tokens=None, style="professional", use_pro=False):
+    def generate_image(self, product, prompt, reference_tokens=None, style="professional", use_pro=False, uploaded_ref=""):
         product.ensure_one()
         image_model = self._get_config(
             "bader_product_intelligence.gemini_image_pro_model" if use_pro else "bader_product_intelligence.gemini_image_model",
-            "gemini-2.5-flash-image",
+            "gemini-3.1-flash-image-preview",
         )
         style_map = {
             "professional": "fotografía de producto profesional, fondo blanco limpio, iluminación de estudio",
@@ -962,6 +1087,13 @@ Reglas:
             "minimalist": "composición minimalista blanca y elegante",
         }
         parts = self._reference_parts(product, reference_tokens)
+        # Include user-uploaded reference image (e.g. logo)
+        if uploaded_ref and "," in uploaded_ref:
+            meta, b64data = uploaded_ref.split(",", 1)
+            mime = "image/png"
+            if ":" in meta and ";" in meta:
+                mime = meta.split(":", 1)[1].split(";", 1)[0]
+            parts.append({"inlineData": {"mimeType": mime, "data": b64data}})
         parts.append(
             {
                 "text": """Generá una imagen publicitaria para Bader Argentina.

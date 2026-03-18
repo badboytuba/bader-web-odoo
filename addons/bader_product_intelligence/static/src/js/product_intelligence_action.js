@@ -2,7 +2,7 @@
 
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
-import { Component, onWillStart, onWillUnmount, useState } from "@odoo/owl";
+import { Component, onWillStart, onWillUnmount, onMounted, useState, useRef } from "@odoo/owl";
 
 const DASHBOARD_PAGE_SIZE = 40;
 
@@ -15,6 +15,14 @@ const DETAIL_TABS = [
     { id: "seo", label: "SEO", icon: "fa-search" },
     { id: "competitors", label: "Competidores", icon: "fa-bullseye" },
     { id: "analytics", label: "Analytics", icon: "fa-line-chart" },
+    { id: "chat", label: "Agente IA", icon: "fa-comments" },
+];
+
+const CHAT_QUICK_ACTIONS = [
+    "Sugiere una descripcion atractiva",
+    "Como mejorar el SEO de este producto?",
+    "Ideas de promociones",
+    "Analiza el precio vs competencia",
 ];
 
 const NICHE_OPTIONS = [
@@ -61,6 +69,7 @@ class ProductIntelligenceAction extends Component {
         this.nicheOptions = NICHE_OPTIONS;
         this.typeOptions = TYPE_OPTIONS;
         this.subcategoryOptions = SUBCATEGORY_OPTIONS;
+        this.chatQuickActions = CHAT_QUICK_ACTIONS;
         this.dashboardReloadTimer = null;
 
         this.state = useState({
@@ -97,7 +106,6 @@ class ProductIntelligenceAction extends Component {
             detail: null,
             activeTab: "overview",
             saveBusy: false,
-            syncBusy: false,
             exchangeRateBusy: false,
             seoBusy: false,
             contentBusy: false,
@@ -106,13 +114,28 @@ class ProductIntelligenceAction extends Component {
             competitorBusy: false,
             strategyBusy: false,
             categoryBusy: false,
+            chatBusy: false,
+            chatMessages: [],
+            chatSessionKey: "",
+            chatInput: "",
+            expandedCompetitorId: null,
+            showImageModal: false,
+            showAddUrlInput: false,
             productForm: this.emptyProductForm(),
             contentForm: this.emptyContentForm(),
             seoForm: this.emptySeoForm(),
             categoryForm: this.emptyCategoryForm(),
             imageForm: this.emptyImageForm(),
             competitorForm: this.emptyCompetitorForm(),
+            playground: {
+                messages: [],
+                canvasUrl: "",
+                inputText: "",
+            },
         });
+
+        this.fileUploadInputRef = useRef("fileUploadInput");
+        this.playgroundMessagesRef = useRef("playgroundMessages");
 
         onWillStart(async () => {
             const productId = this.resolveProductId();
@@ -125,9 +148,75 @@ class ProductIntelligenceAction extends Component {
             }
         });
 
+        onMounted(() => {
+            this._setupScrollListener();
+            this._setupKeyboardShortcuts();
+        });
+
         onWillUnmount(() => {
             this.clearDashboardReloadTimer();
+            this._cleanupScrollListener();
+            this._cleanupKeyboardShortcuts();
         });
+    }
+
+    _setupScrollListener() {
+        this._scrollHandler = () => {
+            const header = this.el?.querySelector?.(".bpi-detail-header");
+            const shell = this.el?.querySelector?.(".bpi-detail-shell");
+            if (header && shell) {
+                header.classList.toggle("is-scrolled", shell.scrollTop > 40);
+            }
+        };
+        // Defer to let OWL render
+        setTimeout(() => {
+            const shell = this.el?.querySelector?.(".bpi-detail-shell");
+            if (shell) {
+                shell.addEventListener("scroll", this._scrollHandler, { passive: true });
+            }
+            // Also listen on the parent .o_action since it may be the scrolling container
+            const action = this.el?.closest?.(".o_action.bpi-app");
+            if (action) {
+                action.addEventListener("scroll", this._scrollHandler, { passive: true });
+            }
+        }, 100);
+    }
+
+    _cleanupScrollListener() {
+        if (this._scrollHandler) {
+            const shell = this.el?.querySelector?.(".bpi-detail-shell");
+            if (shell) shell.removeEventListener("scroll", this._scrollHandler);
+            const action = this.el?.closest?.(".o_action.bpi-app");
+            if (action) action.removeEventListener("scroll", this._scrollHandler);
+        }
+    }
+
+    _setupKeyboardShortcuts() {
+        this._keyHandler = (ev) => {
+            if ((ev.ctrlKey || ev.metaKey) && ev.key === "s") {
+                ev.preventDefault();
+                if (this.state.viewMode === "detail" && !this.state.saveBusy) {
+                    this.saveAll();
+                }
+            }
+        };
+        document.addEventListener("keydown", this._keyHandler);
+    }
+
+    _cleanupKeyboardShortcuts() {
+        if (this._keyHandler) {
+            document.removeEventListener("keydown", this._keyHandler);
+        }
+    }
+
+    _scoreLevel(score) {
+        if (score <= 30) return "critical";
+        if (score <= 60) return "warning";
+        return "good";
+    }
+
+    scoreCardClick(tab) {
+        this.selectTab(tab);
     }
 
     emptyProductForm() {
@@ -187,6 +276,8 @@ class ProductIntelligenceAction extends Component {
             selectedGalleryUrl: "",
             addImageUrl: "",
             videoUrl: "",
+            uploadedRefUrl: "",
+            uploadedRefName: "",
         };
     }
 
@@ -537,19 +628,6 @@ class ProductIntelligenceAction extends Component {
         return `Pagina ${pager.page} de ${pager.pageCount}`;
     }
 
-    async syncCatalog() {
-        this.state.syncBusy = true;
-        try {
-            const params = this.resolveDashboardParams();
-            const data = await this.rpc("/bader_product_intelligence/sync_catalog", params);
-            this.applyDashboardPayload(data, params);
-            this.notify("Catalogo actualizado desde Odoo.");
-        } catch (error) {
-            this.notify(this.errorMessage(error, "No se pudo actualizar el catalogo."), "danger");
-        } finally {
-            this.state.syncBusy = false;
-        }
-    }
 
     async saveExchangeRate() {
         this.state.exchangeRateBusy = true;
@@ -676,6 +754,9 @@ class ProductIntelligenceAction extends Component {
 
     selectTab(tabId) {
         this.state.activeTab = tabId;
+        if (tabId === "chat") {
+            this.loadChatHistory();
+        }
     }
 
     updateProductField(field, value) {
@@ -968,15 +1049,19 @@ class ProductIntelligenceAction extends Component {
         }
         this.state.imageBusy = true;
         try {
-            const result = await this.rpc("/bader_product_intelligence/generate_image", {
+            const payload = {
                 product_tmpl_id: this.state.productId,
                 prompt: this.state.imageForm.prompt,
                 reference_tokens: this.state.imageForm.selectedReferences,
                 style: this.state.imageForm.style,
-                use_pro: !!usePro,
-            });
+                use_pro: true,
+            };
+            if (this.state.imageForm.uploadedRefUrl) {
+                payload.uploaded_ref = this.state.imageForm.uploadedRefUrl;
+            }
+            const result = await this.rpc("/bader_product_intelligence/generate_image", payload);
             this.state.imageForm.generatedPreviewUrl = result.previewUrl || "";
-            this.notify(usePro ? "Preview generado con Nano Banana." : "Preview generado con Nancy AI.");
+            this.notify("Preview generado con Nancy AI.");
         } catch (error) {
             this.notify(this.errorMessage(error, "No se pudo generar la imagen."), "danger");
         } finally {
@@ -997,6 +1082,227 @@ class ProductIntelligenceAction extends Component {
             });
             await this.loadDetail(this.state.productId);
             this.notify("Imagen aprobada y guardada.");
+        } catch (error) {
+            this.notify(this.errorMessage(error, "No se pudo guardar la imagen."), "danger");
+        } finally {
+            this.state.imageBusy = false;
+        }
+    }
+
+    openImageModal() {
+        const product = this.currentProduct();
+        this.state.playground.messages = [
+            { role: "ai", text: `¡Hola! Soy Nancy AI. Estoy lista para editar las imágenes de "${product ? product.name : 'tu producto'}". Selecciona imágenes de referencia abajo, adjunta un logo si quieres, y describe lo que necesitas.` },
+        ];
+        this.state.playground.canvasUrl = (product && product.mainImageUrl) || "";
+        this.state.playground.inputText = "";
+        this.state.imageForm.selectedReferences = [];
+        this.state.imageForm.uploadedRefUrl = "";
+        this.state.imageForm.uploadedRefName = "";
+        this.state.showImageModal = true;
+    }
+
+    closeImageModal() {
+        this.state.showImageModal = false;
+    }
+
+    triggerFileUpload() {
+        const input = this.fileUploadInputRef.el;
+        if (input) {
+            input.click();
+        }
+    }
+
+    handleFileUpload(ev) {
+        const file = ev.target.files && ev.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            this.state.imageForm.uploadedRefUrl = e.target.result;
+            this.state.imageForm.uploadedRefName = file.name;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    removeUploadedRef() {
+        this.state.imageForm.uploadedRefUrl = "";
+        this.state.imageForm.uploadedRefName = "";
+    }
+
+    async approveImageAndClose() {
+        await this.approveImage();
+        this.state.showImageModal = false;
+    }
+
+    selectCanvasImage(url) {
+        this.state.playground.canvasUrl = url;
+    }
+
+    togglePlaygroundRef(image) {
+        const token = image.token || "";
+        if (!token) return;
+        if (this.state.imageForm.selectedReferences.includes(token)) {
+            this.state.imageForm.selectedReferences = this.state.imageForm.selectedReferences.filter((t) => t !== token);
+        } else {
+            this.state.imageForm.selectedReferences = [...this.state.imageForm.selectedReferences, token];
+        }
+    }
+
+    onPlaygroundKeydown(ev) {
+        if (ev.key === "Enter" && !ev.shiftKey) {
+            ev.preventDefault();
+            this.sendPlaygroundMessage();
+        }
+    }
+
+    scrollPlayground() {
+        const el = this.playgroundMessagesRef.el;
+        if (el) {
+            requestAnimationFrame(() => { el.scrollTop = el.scrollHeight; });
+        }
+    }
+
+    async sendPlaygroundMessage() {
+        const text = (this.state.playground.inputText || "").trim();
+        if (!text) return;
+
+        const attachments = [];
+        if (this.state.imageForm.uploadedRefUrl) {
+            attachments.push({ url: this.state.imageForm.uploadedRefUrl, name: this.state.imageForm.uploadedRefName });
+        }
+
+        this.state.playground.messages = [
+            ...this.state.playground.messages,
+            { role: "user", text, attachments },
+        ];
+        this.state.playground.inputText = "";
+        this.scrollPlayground();
+
+        const loadingIdx = this.state.playground.messages.length;
+        this.state.playground.messages = [
+            ...this.state.playground.messages,
+            { role: "ai", text: "", loading: true },
+        ];
+        this.scrollPlayground();
+
+        this.state.imageBusy = true;
+        try {
+            const payload = {
+                product_tmpl_id: this.state.productId,
+                prompt: text,
+                reference_tokens: this.state.imageForm.selectedReferences,
+                style: this.state.imageForm.style || "professional",
+                use_pro: true,
+            };
+            if (this.state.imageForm.uploadedRefUrl) {
+                payload.uploaded_ref = this.state.imageForm.uploadedRefUrl;
+            }
+            const result = await this.rpc("/bader_product_intelligence/generate_image", payload);
+            const previewUrl = result.previewUrl || "";
+
+            this.state.playground.messages = this.state.playground.messages.map((m, i) =>
+                i === loadingIdx ? { role: "ai", text: "Imagen generada. Haz clic en la imagen para verla en el canvas.", imageUrl: previewUrl } : m
+            );
+            this.state.playground.canvasUrl = previewUrl;
+            this.state.imageForm.generatedPreviewUrl = previewUrl;
+            this.state.imageForm.uploadedRefUrl = "";
+            this.state.imageForm.uploadedRefName = "";
+        } catch (error) {
+            this.state.playground.messages = this.state.playground.messages.map((m, i) =>
+                i === loadingIdx ? { role: "ai", text: this.errorMessage(error, "No se pudo generar la imagen. Intenta de nuevo.") } : m
+            );
+        } finally {
+            this.state.imageBusy = false;
+            this.scrollPlayground();
+        }
+    }
+
+    async saveCanvasToGallery() {
+        if (!this.state.playground.canvasUrl) return;
+        this.state.imageBusy = true;
+        try {
+            await this.rpc("/bader_product_intelligence/approve_image", {
+                product_tmpl_id: this.state.productId,
+                image_data_url: this.state.playground.canvasUrl,
+                prompt: "Nancy AI Studio",
+            });
+            await this.loadDetail(this.state.productId);
+            this.notify("Imagen guardada en la galería.");
+        } catch (error) {
+            this.notify(this.errorMessage(error, "No se pudo guardar la imagen."), "danger");
+        } finally {
+            this.state.imageBusy = false;
+        }
+    }
+
+    async generateFromForm() {
+        const prompt = (this.state.imageForm.prompt || "").trim();
+        if (!prompt) {
+            this.notify("Escribe un prompt para generar la imagen.", "warning");
+            return;
+        }
+
+        const attachments = [];
+        if (this.state.imageForm.uploadedRefUrl) {
+            attachments.push({ url: this.state.imageForm.uploadedRefUrl, name: this.state.imageForm.uploadedRefName });
+        }
+
+        this.state.playground.messages = [
+            ...this.state.playground.messages,
+            { role: "user", text: prompt, attachments },
+        ];
+        this.scrollPlayground();
+
+        const loadingIdx = this.state.playground.messages.length;
+        this.state.playground.messages = [
+            ...this.state.playground.messages,
+            { role: "ai", text: "", loading: true },
+        ];
+        this.scrollPlayground();
+
+        this.state.imageBusy = true;
+        try {
+            const payload = {
+                product_tmpl_id: this.state.productId,
+                prompt,
+                reference_tokens: this.state.imageForm.selectedReferences,
+                style: this.state.imageForm.style || "professional",
+                use_pro: true,
+            };
+            if (this.state.imageForm.uploadedRefUrl) {
+                payload.uploaded_ref = this.state.imageForm.uploadedRefUrl;
+            }
+            if (this.state.imageForm.selectedGalleryUrl) {
+                payload.selected_image_url = this.state.imageForm.selectedGalleryUrl;
+            }
+            const result = await this.rpc("/bader_product_intelligence/generate_image", payload);
+            const previewUrl = result.previewUrl || "";
+
+            this.state.playground.messages = this.state.playground.messages.map((m, i) =>
+                i === loadingIdx ? { role: "ai", text: "✅ Imagen generada con éxito.", imageUrl: previewUrl } : m
+            );
+            this.state.imageForm.generatedPreviewUrl = previewUrl;
+        } catch (error) {
+            this.state.playground.messages = this.state.playground.messages.map((m, i) =>
+                i === loadingIdx ? { role: "ai", text: this.errorMessage(error, "❌ No se pudo generar la imagen. Intenta de nuevo.") } : m
+            );
+        } finally {
+            this.state.imageBusy = false;
+            this.scrollPlayground();
+        }
+    }
+
+    async saveGeneratedImage(imageUrl) {
+        if (!imageUrl) return;
+        this.state.imageBusy = true;
+        try {
+            await this.rpc("/bader_product_intelligence/approve_image", {
+                product_tmpl_id: this.state.productId,
+                image_data_url: imageUrl,
+                prompt: this.state.imageForm.prompt || "Nancy AI Studio",
+            });
+            await this.loadDetail(this.state.productId);
+            this.notify("Imagen guardada en la galería del producto.");
         } catch (error) {
             this.notify(this.errorMessage(error, "No se pudo guardar la imagen."), "danger");
         } finally {
@@ -1196,6 +1502,86 @@ class ProductIntelligenceAction extends Component {
         const ratio = ((price - range.min) / (range.max - range.min)) * 100;
         const clamped = Math.max(0, Math.min(100, ratio));
         return `left: ${clamped}%;`;
+    }
+
+    toggleCompetitorExpand(competitorId) {
+        if (this.state.expandedCompetitorId === competitorId) {
+            this.state.expandedCompetitorId = null;
+        } else {
+            this.state.expandedCompetitorId = competitorId;
+        }
+    }
+
+    async sendChatMessage(text) {
+        const msg = (text || this.state.chatInput || "").trim();
+        if (!msg || this.state.chatBusy) {
+            return;
+        }
+        this.state.chatMessages.push({ role: "user", content: msg });
+        this.state.chatInput = "";
+        this.state.chatBusy = true;
+        try {
+            const result = await this.rpc("/bader_product_intelligence/chat", {
+                product_tmpl_id: this.state.productId,
+                message: msg,
+                session_id: this.state.chatSessionKey || false,
+            });
+            this.state.chatMessages.push({ role: "assistant", content: result.response });
+            this.state.chatSessionKey = result.sessionId || this.state.chatSessionKey;
+        } catch (error) {
+            this.state.chatMessages.push({ role: "assistant", content: "Error: " + this.errorMessage(error, "No se pudo obtener respuesta.") });
+        } finally {
+            this.state.chatBusy = false;
+        }
+    }
+
+    onChatKeydown(ev) {
+        if (ev.key === "Enter" && !ev.shiftKey) {
+            ev.preventDefault();
+            this.sendChatMessage();
+        }
+    }
+
+    useChatQuickAction(action) {
+        this.state.chatMessages.push({ role: "user", content: action });
+        this.sendChatMessage(action);
+    }
+
+    async loadChatHistory() {
+        if (this.state.chatMessages.length || !this.state.productId) {
+            return;
+        }
+        try {
+            const data = await this.rpc("/bader_product_intelligence/data", {
+                product_tmpl_id: this.state.productId,
+            });
+            const messages = (data && data.chatHistory) || [];
+            if (messages.length) {
+                this.state.chatSessionKey = data.chatSessionId || "";
+                this.state.chatMessages = messages.map((m) => ({
+                    role: m.role,
+                    content: m.content,
+                }));
+            }
+        } catch (_e) {
+            // Silent fail
+        }
+    }
+
+    detailScoreCards() {
+        const seo = this.currentSeoData();
+        const images = this.currentImages();
+        const scores = [
+            { label: "Score SEO", score: seo.seoScore || 0, tab: "seo" },
+            { label: "Score GEO", score: seo.geoScore || 0, tab: "seo" },
+            { label: "Competitividad", score: seo.competitivenessScore || 0, tab: "competitors" },
+            { label: "Imagenes", score: Math.min(100, (images.length || 0) * 20), tab: "images" },
+        ];
+        return scores.map((s) => ({
+            ...s,
+            level: this._scoreLevel(s.score),
+            color: this._scoreLevel(s.score),
+        }));
     }
 }
 

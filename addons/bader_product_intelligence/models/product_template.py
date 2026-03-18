@@ -3,7 +3,10 @@
 import re
 import unicodedata
 
+from markupsafe import escape
+
 from odoo import _, fields, models
+from odoo.tools import html2plaintext
 
 
 class ProductTemplate(models.Model):
@@ -104,6 +107,173 @@ class ProductTemplate(models.Model):
             return ""
         return category.display_name or category.name or ""
 
+    def _bpi_plain_text(self, raw_value):
+        if not raw_value:
+            return ""
+        try:
+            text = html2plaintext(raw_value)
+        except Exception:
+            text = str(raw_value)
+        text = text.replace("\r\n", "\n").replace("\r", "\n")
+        text = re.sub(r"[^\S\n]+", " ", text)
+        text = "\n".join(line.strip() for line in text.split("\n"))
+        text = re.sub(r"\n{3,}", "\n\n", text)
+        return text.strip()[:18000]
+
+    def _bpi_html_from_plaintext(self, raw_value):
+        text = (raw_value or "").replace("\r\n", "\n").replace("\r", "\n").strip()
+        if not text:
+            return False
+        paragraphs = []
+        for block in re.split(r"\n{2,}", text):
+            lines = [line.strip() for line in block.split("\n") if line.strip()]
+            if not lines:
+                continue
+            paragraphs.append("<p>%s</p>" % "<br/>".join(str(escape(line)) for line in lines))
+        return "".join(paragraphs) or False
+
+    def _bpi_description_payload(self):
+        self.ensure_one()
+        ai_description = self._bpi_plain_text(self.bpi_ai_generated_description)
+        sale_description = self._bpi_plain_text(self.description_sale)
+        website_description_text = self._bpi_plain_text(self.website_description)
+        technical_description = self._bpi_plain_text(self.description)
+
+        description_candidates = [
+            ("ai", ai_description),
+            ("sale", sale_description),
+            ("website", website_description_text),
+            ("technical", technical_description),
+        ]
+        source = ""
+        content_description = ""
+        for candidate_source, candidate_value in description_candidates:
+            if candidate_value:
+                source = candidate_source
+                content_description = candidate_value
+                break
+
+        source_labels = {
+            "ai": _("Descripcion optimizada por Nancy AI"),
+            "sale": _("Descripcion comercial de Odoo"),
+            "website": _("Descripcion web de Odoo"),
+            "technical": _("Descripcion interna de Odoo"),
+            "": _("Sin descripcion cargada"),
+        }
+        return {
+            "aiDescription": ai_description,
+            "descriptionSale": sale_description,
+            "websiteDescriptionText": website_description_text,
+            "technicalDescription": technical_description,
+            "contentDescription": content_description,
+            "source": source,
+            "sourceLabel": source_labels.get(source, source_labels[""]),
+        }
+
+    def _bpi_prompt_category_name(self):
+        self.ensure_one()
+        return self._bpi_category_display_name(self._bpi_main_category()) or _("Sin categoria")
+
+    def _bpi_prompt_description(self):
+        self.ensure_one()
+        descriptions = self._bpi_description_payload()
+        return (
+            descriptions["descriptionSale"]
+            or descriptions["websiteDescriptionText"]
+            or descriptions["technicalDescription"]
+            or descriptions["aiDescription"]
+        )
+
+    def _bpi_image_url(self, model_name, record_id, field_name="image_1920"):
+        return "/web/image/%s/%s/%s" % (model_name, record_id, field_name)
+
+    def _bpi_append_image_entry(self, payload, seen_urls, image_url, **values):
+        if not image_url or image_url in seen_urls:
+            return
+        seen_urls.add(image_url)
+        payload.append({"imageUrl": image_url, **values})
+
+    def _bpi_native_gallery_payload(self):
+        self.ensure_one()
+        payload = []
+        seen_urls = set()
+
+        if self.image_1920:
+            self._bpi_append_image_entry(
+                payload,
+                seen_urls,
+                self._bpi_image_url("product.template", self.id, "image_1920"),
+                id="main",
+                name=_("Imagen principal"),
+                imageType="odoo_main",
+                source="odoo",
+                sourceLabel=_("Imagen principal de Odoo"),
+                prompt="",
+                state="approved",
+                sequence=0,
+                canDelete=False,
+            )
+
+        if "product_template_image_ids" in self._fields:
+            extra_images = self.product_template_image_ids.sorted(
+                key=lambda rec: (getattr(rec, "sequence", 0), rec.id)
+            )
+            for index, image in enumerate(extra_images, start=1):
+                if not image.image_1920:
+                    continue
+                self._bpi_append_image_entry(
+                    payload,
+                    seen_urls,
+                    self._bpi_image_url(image._name, image.id, "image_1920"),
+                    id="odoo:%s" % image.id,
+                    name=image.name or (_("Imagen Odoo %s") % index),
+                    imageType="odoo_gallery",
+                    source="odoo",
+                    sourceLabel=_("Imagen extra de Odoo"),
+                    prompt="",
+                    state="approved",
+                    sequence=getattr(image, "sequence", index * 10),
+                    canDelete=False,
+                )
+
+        variant_records = self.product_variant_ids.sorted("id")
+        for index, variant in enumerate(variant_records, start=1):
+            field_name = ""
+            if variant.image_1920:
+                field_name = "image_1920"
+            elif getattr(variant, "image_variant_1920", False):
+                field_name = "image_variant_1920"
+            if not field_name:
+                continue
+            self._bpi_append_image_entry(
+                payload,
+                seen_urls,
+                self._bpi_image_url(variant._name, variant.id, field_name),
+                id="variant:%s" % variant.id,
+                name=variant.display_name or (_("Imagen variante %s") % index),
+                imageType="odoo_variant",
+                source="odoo",
+                sourceLabel=_("Imagen de variante de Odoo"),
+                prompt="",
+                state="approved",
+                sequence=1000 + index,
+                canDelete=False,
+            )
+        return payload
+
+    def _bpi_primary_image_url(self):
+        self.ensure_one()
+        native_gallery = self._bpi_native_gallery_payload()
+        if native_gallery:
+            return native_gallery[0]["imageUrl"]
+        approved_image = self.bpi_image_ids.filtered(lambda rec: rec.state == "approved").sorted("sequence")[:1]
+        if not approved_image:
+            return False
+        linked_native = approved_image.product_image_id
+        if linked_native and linked_native.image_1920:
+            return self._bpi_image_url(linked_native._name, linked_native.id, "image_1920")
+        return self._bpi_image_url("bpi.product.image", approved_image.id, "image_1920")
+
     def _compute_bpi_intelligent_path(self):
         for product in self:
             segments = []
@@ -158,51 +328,46 @@ class ProductTemplate(models.Model):
     def _bpi_reference_images_payload(self):
         self.ensure_one()
         payload = []
-        if self.image_1920:
+        for image in self._bpi_native_gallery_payload():
             payload.append(
                 {
-                    "token": "main",
-                    "label": _("Principal"),
-                    "url": "/web/image/product.template/%s/image_1920" % self.id,
+                    "token": "main" if image["id"] == "main" else image["id"],
+                    "label": image["name"],
+                    "url": image["imageUrl"],
                 }
             )
 
         approved_images = self.bpi_image_ids.filtered(lambda rec: rec.state == "approved").sorted("sequence")
         for image in approved_images:
+            if image.product_image_id:
+                continue
             payload.append(
                 {
                     "token": "bpi:%s" % image.id,
                     "label": image.name or _("Variacion IA"),
-                    "url": "/web/image/bpi.product.image/%s/image_1920" % image.id,
+                    "url": self._bpi_image_url("bpi.product.image", image.id, "image_1920"),
                 }
             )
         return payload
 
     def _bpi_gallery_payload(self):
         self.ensure_one()
-        payload = []
-        if self.image_1920:
-            payload.append(
-                {
-                    "id": "main",
-                    "name": _("Imagen principal"),
-                    "imageUrl": "/web/image/product.template/%s/image_1920" % self.id,
-                    "imageType": "main",
-                    "prompt": "",
-                    "state": "approved",
-                    "sequence": 0,
-                }
-            )
+        payload = list(self._bpi_native_gallery_payload())
         for image in self.bpi_image_ids.filtered(lambda rec: rec.state == "approved").sorted("sequence"):
+            if image.product_image_id:
+                continue
             payload.append(
                 {
-                    "id": image.id,
+                    "id": "bpi:%s" % image.id,
                     "name": image.name,
-                    "imageUrl": "/web/image/bpi.product.image/%s/image_1920" % image.id,
+                    "imageUrl": self._bpi_image_url("bpi.product.image", image.id, "image_1920"),
                     "imageType": image.image_type,
+                    "source": "bpi",
+                    "sourceLabel": _("Imagen IA de Producto Intelligence"),
                     "prompt": image.prompt or "",
                     "state": image.state,
                     "sequence": image.sequence,
+                    "canDelete": True,
                 }
             )
         return payload
@@ -236,7 +401,7 @@ class ProductTemplate(models.Model):
             "costUsd": float(self.standard_price or 0.0),
             "localExchangeRate": exchange_rate,
             "priceLocal": local_price,
-            "mainImageUrl": "/web/image/product.template/%s/image_1920" % self.id if self.image_1920 else False,
+            "mainImageUrl": self._bpi_primary_image_url(),
             "qtyAvailable": float(self.qty_available or 0.0),
             "inStock": bool((self.qty_available or 0.0) > 0),
             "isPublished": bool(self.website_published),
@@ -255,6 +420,11 @@ class ProductTemplate(models.Model):
         self.ensure_one()
         category = self._bpi_main_category()
         exchange_rate = self._bpi_exchange_rate()
+        description_payload = self._bpi_description_payload()
+        native_gallery_payload = self._bpi_native_gallery_payload()
+        gallery_payload = self._bpi_gallery_payload()
+        primary_image_url = gallery_payload[0]["imageUrl"] if gallery_payload else False
+        native_primary_image_url = native_gallery_payload[0]["imageUrl"] if native_gallery_payload else primary_image_url
         latest_session = self.bpi_chat_session_ids.sorted(lambda rec: rec.write_date or rec.create_date, reverse=True)[:1]
         chat_messages = []
         if latest_session:
@@ -284,7 +454,8 @@ class ProductTemplate(models.Model):
                 }
                 for faq in self.bpi_faq_ids.sorted("sequence")
             ],
-            "aiGeneratedDescription": self.bpi_ai_generated_description or "",
+            "aiGeneratedDescription": description_payload["aiDescription"],
+            "aiGeneratedDescriptionHtml": self.bpi_ai_generated_description or "",
             "aiTargetAudience": self.bpi_ai_target_audience or "clinicas",
             "aiTone": self.bpi_ai_tone or "profesional",
             "seoScore": self.bpi_seo_score,
@@ -297,7 +468,14 @@ class ProductTemplate(models.Model):
             "product": {
                 "id": self.id,
                 "name": self.name or "",
-                "description": self.description_sale or self.description or "",
+                "description": description_payload["contentDescription"],
+                "contentDescription": description_payload["contentDescription"],
+                "descriptionSource": description_payload["source"],
+                "descriptionSourceLabel": description_payload["sourceLabel"],
+                "descriptionSale": description_payload["descriptionSale"],
+                "websiteDescription": self.website_description or "",
+                "websiteDescriptionText": description_payload["websiteDescriptionText"],
+                "technicalDescription": description_payload["technicalDescription"],
                 "sku": self.default_code or "",
                 "slug": current_slug,
                 "brand": self.bpi_brand_name or "Bader",
@@ -314,10 +492,15 @@ class ProductTemplate(models.Model):
                 "isPublished": bool(self.website_published),
                 "featured": bool(self.bpi_featured),
                 "dataLabel": _("Producto Bader: SKU origen %s") % (self.default_code or "-"),
-                "mainImageUrl": "/web/image/product.template/%s/image_1920" % self.id if self.image_1920 else False,
+                "mainImageUrl": primary_image_url,
+                "imageUrl": native_primary_image_url,
+                "imageLarge": primary_image_url,
+                "alternativeImages": [image["imageUrl"] for image in native_gallery_payload[1:]],
                 "videoUrl": self.bpi_video_url or "",
                 "videoEmbedUrl": self.bpi_video_embed_url or "",
                 "referenceImages": self._bpi_reference_images_payload(),
+                "galleryCount": len(gallery_payload),
+                "nativeImageCount": len(native_gallery_payload),
                 "intelligentNiches": self.bpi_intelligent_niches or [],
                 "intelligentType": self.bpi_intelligent_type or "",
                 "intelligentSubcategory": self.bpi_intelligent_subcategory or "",
@@ -326,7 +509,7 @@ class ProductTemplate(models.Model):
                 "websiteUrl": self.website_url or "",
             },
             "seoData": seo_data,
-            "images": self._bpi_gallery_payload(),
+            "images": gallery_payload,
             "competitors": [competitor.bpi_to_payload() for competitor in self.bpi_competitor_ids.sorted(lambda rec: rec.id, reverse=True)],
             "categoryIntelligence": category.bpi_to_payload() if category else False,
             "availableCategories": self._bpi_categories_payload(),

@@ -7,29 +7,10 @@ from odoo import http
 from odoo.addons.website.controllers.main import Website
 from odoo.http import request
 
+# M4: Reuse the complete versions from auth.py (includes blocked_prefixes)
+from .auth import _safe_redirect_path, _is_backend_redirect
+
 _logger = logging.getLogger(__name__)
-
-
-def _safe_redirect_path(raw_redirect):
-    redirect_path = (raw_redirect or "").strip()
-    if not redirect_path:
-        return ""
-    if not redirect_path.startswith("/") or redirect_path.startswith("//"):
-        return "/"
-    return redirect_path
-
-
-def _is_backend_redirect(redirect_path):
-    path = _safe_redirect_path(redirect_path)
-    return (
-        not path
-        or path == "/web"
-        or path.startswith("/web?")
-        or path.startswith("/web/")
-        or path.startswith("/web#")
-        or path == "/odoo"
-        or path.startswith("/odoo/")
-    )
 
 
 class ClerkLoginRedirect(Website):

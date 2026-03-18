@@ -6551,7 +6551,9 @@
 }
 
 #bader_pdp_related .bader-app-related-grid {
-    row-gap: 22px;
+    --bs-gutter-x: 14px;
+    --bs-gutter-y: 16px;
+    row-gap: 16px;
 }
 
 #bader_pdp_related .bader-app-related-grid > [class*='col-'] {
@@ -6563,35 +6565,42 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding: 18px;
-    border-radius: 30px;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 22px;
     border: 1px solid rgba(0, 56, 65, 0.08);
     background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 20px 36px rgba(0, 56, 65, 0.08);
+    box-shadow: 0 16px 28px rgba(0, 56, 65, 0.08);
     transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
 }
 
 #bader_pdp_related .bader-app-related-card:hover,
 #bader_pdp_related .bader-app-related-card:focus-visible {
-    transform: translateY(-5px);
+    transform: translateY(-3px);
     border-color: rgba(112, 212, 75, 0.42);
-    box-shadow: 0 26px 42px rgba(0, 56, 65, 0.12);
+    box-shadow: 0 20px 34px rgba(0, 56, 65, 0.12);
     outline: 0;
+}
+
+#bader_pdp_related .bader-app-related-head,
+#bader_pdp_related .bader-app-studio-head--related {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
 }
 
 #bader_pdp_related .bader-app-related-card__media {
     display: block;
-    padding: 10px;
-    border-radius: 24px;
+    padding: 8px;
+    border-radius: 18px;
     background: linear-gradient(180deg, rgba(243, 248, 246, 0.98), rgba(255, 255, 255, 0.98));
 }
 
 #bader_pdp_related .bader-app-related-card__image {
-    min-height: 280px;
+    min-height: 188px;
     display: grid;
     place-items: center;
-    border-radius: 20px;
+    border-radius: 16px;
     background: #ffffff;
     overflow: hidden;
 }
@@ -6600,12 +6609,12 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
-    padding: 20px;
+    padding: 14px;
 }
 
 #bader_pdp_related .bader-app-related-card__body {
     display: grid;
-    gap: 16px;
+    gap: 10px;
     min-width: 0;
     flex: 1 1 auto;
 }
@@ -6613,27 +6622,54 @@
 #bader_pdp_related .bader-app-related-card__name {
     min-height: 0;
     color: var(--bader-pdp-text);
-    font-size: 22px;
+    font-size: 16px;
     font-weight: 700;
-    line-height: 1.32;
+    line-height: 1.35;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
 #bader_pdp_related .bader-app-related-card__price-row {
     margin-top: auto;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
+    gap: 10px;
 }
 
 #bader_pdp_related .bader-app-related-card__price {
-    font-size: 30px;
+    font-size: 22px;
+    line-height: 1.05;
 }
 
 #bader_pdp_related .bader-app-related-card__cta {
-    min-height: 40px;
-    padding: 8px 16px;
+    min-height: 34px;
+    padding: 7px 13px;
+    font-size: 12px;
+    border-radius: 999px;
+}
+
+#bader_pdp_related .bader-app-related-card__tag {
+    align-self: flex-start;
+    max-width: 100%;
+    min-height: 28px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+}
+
+@media (min-width: 1200px) {
+    #bader_pdp_related .bader-app-related-shell {
+        padding: 24px 26px 28px;
+    }
+
+    #bader_pdp_related .bader-app-related-grid > [class*='col-'] {
+        flex: 0 0 calc((100% - 42px) / 4);
+        max-width: calc((100% - 42px) / 4);
+    }
 }
 
 #bader_pdp_help_cta {
@@ -7583,5 +7619,17 @@
 
     #bader_pdp_related .bader-app-related-card {
         padding: 14px;
+    }
+
+    #bader_pdp_related .bader-app-related-card__image {
+        min-height: 150px;
+    }
+
+    #bader_pdp_related .bader-app-related-card__name {
+        font-size: 14px;
+    }
+
+    #bader_pdp_related .bader-app-related-card__price {
+        font-size: 18px;
     }
 }

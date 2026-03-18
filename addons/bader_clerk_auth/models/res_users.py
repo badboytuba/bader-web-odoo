@@ -156,12 +156,17 @@ class ResUsers(models.Model):
 
     @api.model
     def _sync_clerk_data(self, user, full_name, email, image_url):
-        """Sync name/email from Clerk to an external Odoo user."""
+        """Sync name/email/avatar from Clerk to an external Odoo user."""
         vals = {}
         if full_name and user.name != full_name:
             vals["name"] = full_name
         if email and user.email != email:
             vals["email"] = email
+        # M6: Sync avatar if user has none or Clerk provides a new URL
+        if image_url:
+            avatar = self._download_avatar(image_url)
+            if avatar and (not user.image_1920 or user.image_1920 != avatar):
+                vals["image_1920"] = avatar
         if vals:
             user.sudo().write(vals)
 

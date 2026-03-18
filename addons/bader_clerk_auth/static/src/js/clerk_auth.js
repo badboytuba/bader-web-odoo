@@ -363,17 +363,28 @@
             // Close native modal if somehow open
             hideNativeAuthModal();
 
+            // M7: Remove previous listener if one was attached
+            if (window.__baderClerkListener && typeof clerk.removeListener === 'function') {
+                clerk.removeListener(window.__baderClerkListener);
+                window.__baderClerkListener = null;
+            }
+
             // Register listener BEFORE opening sign-in to catch the event
-            // (adding after openSignIn causes a race condition)
             var _syncing = false;
-            clerk.addListener(function (payload) {
+            window.__baderClerkListener = function (payload) {
                 if (_syncing) return;
                 if (payload && payload.session && payload.user) {
                     _syncing = true;
                     console.log('[Clerk] Sign-in detected:', payload.user.firstName);
+                    // M7: Clean up listener after successful sign-in
+                    if (typeof clerk.removeListener === 'function') {
+                        clerk.removeListener(window.__baderClerkListener);
+                        window.__baderClerkListener = null;
+                    }
                     syncClerkSessionToOdoo(payload.session);
                 }
-            });
+            };
+            clerk.addListener(window.__baderClerkListener);
 
             // Open Clerk sign-in popup
             // DO NOT set afterSignInUrl — it causes page reload before

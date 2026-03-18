@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
+        <!-- SECURITY: Configure real keys via Settings > System Parameters.
+             DO NOT commit production secrets here. -->
         <record id="clerk_publishable_key" model="ir.config_parameter">
             <field name="key">clerk.publishable_key</field>
-            <field name="value">pk_test_YXNzdXJlZC10b2FkLTc0LmNsZXJrLmFjY291bnRzLmRldiQ</field>
+            <field name="value">CHANGE_ME_VIA_SETTINGS</field>
         </record>
         <record id="clerk_secret_key" model="ir.config_parameter">
             <field name="key">clerk.secret_key</field>
-            <field name="value">sk_test_7n8orIe6uYNwptv7aRd3vHMwQAxPvnEY95c4UAcvLy</field>
+            <field name="value">CHANGE_ME_VIA_SETTINGS</field>
+        </record>
+        <record id="clerk_webhook_signing_secret" model="ir.config_parameter">
+            <field name="key">clerk.webhook_signing_secret</field>
+            <field name="value">CHANGE_ME_VIA_SETTINGS</field>
         </record>
         <record id="clerk_jwks_url" model="ir.config_parameter">
             <field name="key">clerk.jwks_url</field>

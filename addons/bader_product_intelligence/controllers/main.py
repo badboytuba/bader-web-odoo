@@ -104,7 +104,7 @@ class BaderProductIntelligenceController(http.Controller):
         return {"success": True, "videoUrl": product.bpi_video_url or ""}
 
     @http.route("/bader_product_intelligence/generate_image", type="json", auth="user")
-    def generate_image(self, product_tmpl_id, prompt="", reference_tokens=None, style="professional", use_pro=False, **kwargs):
+    def generate_image(self, product_tmpl_id, prompt="", reference_tokens=None, style="professional", use_pro=False, uploaded_ref="", **kwargs):
         product = self._product(product_tmpl_id)
         payload = request.env["bpi.service"].generate_image(
             product,
@@ -112,6 +112,7 @@ class BaderProductIntelligenceController(http.Controller):
             reference_tokens=reference_tokens or [],
             style=style,
             use_pro=bool(use_pro),
+            uploaded_ref=uploaded_ref or "",
         )
         return {"success": True, **payload}
 
