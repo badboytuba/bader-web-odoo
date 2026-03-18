@@ -2871,14 +2871,7 @@ odoo.define('bader_website.main', function (require) {
             function personaBadgeHtml() {
                 var currentPersona = personaOption(profile.persona);
                 if (!currentPersona) {
-                    return '' +
-                        '<div class="bader-onboarding__aside-card is-placeholder">' +
-                        '<span class="bader-onboarding__aside-card-icon"><i class="fa fa-diamond"></i></span>' +
-                        '<div>' +
-                        '<strong>Perfil aun no definido</strong>' +
-                        '<span>Selecciona tu segmento para activar una experiencia mas precisa.</span>' +
-                        '</div>' +
-                        '</div>';
+                    return '';
                 }
                 return '' +
                     '<div class="bader-onboarding__aside-card">' +
@@ -3219,7 +3212,13 @@ odoo.define('bader_website.main', function (require) {
                 if (modalRoot) modalRoot.setAttribute('data-persona', profile.persona || '');
                 if (primaryBtn) {
                     var isLast = step >= 2;
-                    primaryBtn.textContent = isLast ? (isSaving ? 'Guardando...' : 'Empezar a explorar') : 'Continuar';
+                    if (isLast) {
+                        primaryBtn.textContent = isSaving ? 'Guardando...' : 'Empezar a explorar';
+                    } else if (step === 0 && !profile.persona) {
+                        primaryBtn.textContent = 'Selecciona tu perfil';
+                    } else {
+                        primaryBtn.textContent = 'Continuar';
+                    }
                     primaryBtn.disabled = isSaving || !canProceedStep();
                 }
                 if (skipTopBtn) skipTopBtn.style.display = isMandatory ? 'none' : '';
@@ -3342,6 +3341,13 @@ odoo.define('bader_website.main', function (require) {
                     if (personaBtn) {
                         profile.persona = personaBtn.getAttribute('data-onboarding-persona') || '';
                         renderCurrentStep();
+                        // Auto-advance to step 2 after a brief visual confirmation
+                        if (step === 0 && profile.persona) {
+                            setTimeout(function () {
+                                step = 1;
+                                renderCurrentStep();
+                            }, 400);
+                        }
                         return;
                     }
 
