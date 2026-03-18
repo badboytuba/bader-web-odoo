@@ -2791,7 +2791,7 @@ odoo.define('bader_website.main', function (require) {
                 var currentPersona = personaOption(profile.persona);
                 if (step === 0) {
                     return {
-                        eyebrow: isMandatory ? 'Registro obligatorio' : 'Experiencia Prime',
+                        eyebrow: isMandatory ? 'Registro obligatorio' : 'Experiencia personalizada',
                         title: 'Activa tu cuenta profesional',
                         copy: 'En menos de un minuto dejamos tu cuenta lista para mostrar catalogo, ofertas y soporte segun tu perfil real.',
                         bullets: [
@@ -2912,7 +2912,7 @@ odoo.define('bader_website.main', function (require) {
                     '<div class="bader-onboarding__brand">' +
                     '<span class="bader-onboarding__brand-mark"><i class="fa fa-diamond"></i></span>' +
                     '<div>' +
-                    '<strong>Bader Prime</strong>' +
+                    '<strong>Bader Argentina</strong>' +
                     '<span>Portal profesional integrado con Odoo</span>' +
                     '</div>' +
                     '</div>' +
