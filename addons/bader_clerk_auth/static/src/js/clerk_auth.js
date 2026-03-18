@@ -33,6 +33,11 @@
         return !!header && header.getAttribute('data-bader-auth-provider') === 'clerk';
     }
 
+    function hasOdooSession() {
+        var header = document.querySelector('header#top');
+        return !!header && header.getAttribute('data-bader-odoo-authenticated') === '1';
+    }
+
     function normalizeRedirect(path) {
         var value = (path || '').trim();
         if (!value || value.charAt(0) !== '/' || value.indexOf('//') === 0) {
@@ -425,8 +430,7 @@
                 // If user is signed in via Clerk but not in Odoo,
                 // sync the session
                 if (clerk.session) {
-                    var hasOdooSession = document.cookie.indexOf('session_id=') !== -1;
-                    if (!hasOdooSession) {
+                    if (!hasOdooSession()) {
                         syncClerkSessionToOdoo(clerk.session);
                     }
                 }
