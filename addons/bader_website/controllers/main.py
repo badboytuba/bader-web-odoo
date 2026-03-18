@@ -1520,17 +1520,22 @@ class BaderWebsite(Website):
             ]
 
         return {
+            'name': (partner.name or '').strip(),
+            'phone': (partner.phone or partner.mobile or '').strip(),
+            'city': (partner.city or '').strip(),
+            'vat': (partner.vat or '').strip(),
+            'company_name': (partner.company_name or '').strip(),
             'persona': self._normalize_home_persona(partner.bader_persona) or '',
             'onboarding_completed_at': (
                 partner.bader_onboarding_completed_at.isoformat()
                 if partner.bader_onboarding_completed_at else ''
             ),
-            'clinic_name': (partner.bader_clinic_name or '').strip(),
+            'clinic_name': (partner.bader_clinic_name or partner.company_name or '').strip(),
             'clinic_role': (partner.bader_clinic_role or '').strip(),
             'clinic_specialties': specialties,
             'clinic_size': (partner.bader_clinic_size or '').strip(),
             'years_experience': int(partner.bader_years_experience or 0),
-            'lab_name': (partner.bader_lab_name or '').strip(),
+            'lab_name': (partner.bader_lab_name or partner.company_name or '').strip(),
             'lab_type': (partner.bader_lab_type or '').strip(),
             'lab_specialization': (partner.bader_lab_specialization or '').strip(),
             'lab_team_size': (partner.bader_lab_team_size or '').strip(),
@@ -3568,6 +3573,11 @@ class BaderWebsite(Website):
         lab_team_size = _clean_selection('bader_lab_team_size', payload.get('lab_team_size'))
         study_year = _clean_selection('bader_study_year', payload.get('study_year'))
         career = _clean_selection('bader_career', payload.get('career'))
+        name = _clean_text_line(payload.get('name'), max_len=120)
+        phone = _clean_phone(payload.get('phone'))
+        city = _clean_text_line(payload.get('city'), max_len=120)
+        vat = _clean_text_line(payload.get('vat'), max_len=64)
+        company_name = _clean_text_line(payload.get('company_name'), max_len=255)
 
         try:
             years_experience = int(payload.get('years_experience') or 0)
@@ -3576,21 +3586,33 @@ class BaderWebsite(Website):
         years_experience = max(0, min(years_experience, 80))
 
         missing_fields = []
+        if not name:
+            missing_fields.append('name')
+        if not phone:
+            missing_fields.append('phone')
+        if not city:
+            missing_fields.append('city')
         if persona == 'clinica':
             if not clinic_role:
                 missing_fields.append('clinic_role')
             if not clinic_specialties:
                 missing_fields.append('clinic_specialties')
+            if not _clean_text(payload.get('clinic_name')):
+                missing_fields.append('clinic_name')
         elif persona == 'laboratorio':
             if not lab_type:
                 missing_fields.append('lab_type')
             if not lab_specialization:
                 missing_fields.append('lab_specialization')
+            if not _clean_text(payload.get('lab_name')):
+                missing_fields.append('lab_name')
         elif persona == 'estudiantes':
             if not career:
                 missing_fields.append('career')
             if not study_year:
                 missing_fields.append('study_year')
+            if not _clean_text(payload.get('university')):
+                missing_fields.append('university')
 
         if missing_fields:
             return {
@@ -3599,7 +3621,20 @@ class BaderWebsite(Website):
                 'fields': missing_fields,
             }
 
+        if not company_name:
+            if persona == 'clinica':
+                company_name = _clean_text(payload.get('clinic_name'))
+            elif persona == 'laboratorio':
+                company_name = _clean_text(payload.get('lab_name'))
+            elif persona == 'estudiantes':
+                company_name = _clean_text(payload.get('university'))
+
         write_vals = {
+            'name': name,
+            'phone': phone,
+            'city': city,
+            'vat': vat,
+            'company_name': company_name,
             'bader_persona': persona,
             'bader_clinic_name': _clean_text(payload.get('clinic_name')),
             'bader_clinic_role': clinic_role,
@@ -3698,7 +3733,7 @@ class BaderWebsite(Website):
 
     @http.route('/bader/auth/signup', type='json', auth='public', website=True, csrf=False)
     def auth_modal_signup(self, **params):
-        """Create website account + segmented profile in one secure flow."""
+        """Create website account and defer profile completion to onboarding."""
         payload = params or {}
         if not _is_same_origin_request():
             return {'ok': False, 'error': 'forbidden_origin'}
@@ -3733,17 +3768,6 @@ class BaderWebsite(Website):
         if password != confirm_password:
             _record_auth_failure(rate_key, 'signup')
             return {'ok': False, 'error': 'password_mismatch', 'message': 'Las contrasenas no coinciden.'}
-
-        profile_payload = self._prepare_onboarding_write_vals(
-            request.env['res.partner'].sudo(), payload
-        )
-        if not profile_payload.get('ok'):
-            _record_auth_failure(rate_key, 'signup')
-            profile_payload.setdefault(
-                'message',
-                'Completa los datos requeridos para terminar tu registro.',
-            )
-            return profile_payload
 
         auth_signup = AuthSignupHome()
         qcontext = auth_signup.get_auth_signup_qcontext()
@@ -3788,19 +3812,15 @@ class BaderWebsite(Website):
             }
 
         _clear_auth_failures(rate_key)
-        partner = self._current_customer_partner().sudo()
-        write_vals = dict(profile_payload.get('write_vals') or {})
-        write_vals['bader_onboarding_completed_at'] = datetime.utcnow()
-        partner.write(write_vals)
+        user = request.env['res.users'].sudo().browse(uid)
         self._sync_profile_session_flags(
-            user=request.env.user,
-            partner=partner,
+            user=user,
+            partner=user.partner_id.commercial_partner_id.sudo(),
         )
 
         return {
             'ok': True,
             'redirect': redirect_path,
-            'profile': self._onboarding_profile_payload(partner),
         }
 
     @http.route('/bader/onboarding/state', type='json', auth='user', website=True, csrf=False)

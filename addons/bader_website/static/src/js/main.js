@@ -2347,7 +2347,7 @@ odoo.define('bader_website.main', function (require) {
                 } else {
                     if (registerForm) registerForm.removeAttribute('hidden');
                     if (loginForm) loginForm.setAttribute('hidden', 'hidden');
-                    if (hintEl) hintEl.textContent = 'Crea tu cuenta y completa tu perfil profesional para una experiencia personalizada.';
+                    if (hintEl) hintEl.textContent = 'Crea tu cuenta y completa tu perfil comercial en el siguiente paso.';
                     updatePersonaPanels();
                 }
                 setMessage('', false);
@@ -2399,35 +2399,8 @@ odoo.define('bader_website.main', function (require) {
                     email: (formData.get('email') || '').toString().trim(),
                     password: (formData.get('password') || '').toString(),
                     confirm_password: (formData.get('confirm_password') || '').toString(),
-                    persona: (formData.get('persona') || '').toString(),
-                    clinic_role: (formData.get('clinic_role') || '').toString(),
-                    clinic_specialties: formData.getAll('clinic_specialties').map(function (v) { return String(v); }),
-                    clinic_size: (formData.get('clinic_size') || '').toString(),
-                    years_experience: (formData.get('years_experience') || '').toString(),
-                    clinic_name: (formData.get('clinic_name') || '').toString(),
-                    lab_type: (formData.get('lab_type') || '').toString(),
-                    lab_specialization: (formData.get('lab_specialization') || '').toString(),
-                    lab_team_size: (formData.get('lab_team_size') || '').toString(),
-                    lab_name: (formData.get('lab_name') || '').toString(),
-                    career: (formData.get('career') || '').toString(),
-                    study_year: (formData.get('study_year') || '').toString(),
-                    university: (formData.get('university') || '').toString(),
-                    student_city: (formData.get('student_city') || '').toString(),
                     redirect: normalizeRedirect(registerForm.getAttribute('data-redirect') || currentRedirectFromWindow()),
                 };
-            }
-
-            function humanizeMissingFields(fields) {
-                if (!fields || !fields.length) return 'Completa los datos requeridos para terminar el registro.';
-                var labels = {
-                    clinic_role: 'cargo',
-                    clinic_specialties: 'especialidades',
-                    lab_type: 'tipo de laboratorio',
-                    lab_specialization: 'especializacion principal',
-                    career: 'carrera',
-                    study_year: 'ano de cursado',
-                };
-                return 'Falta completar: ' + fields.map(function (key) { return labels[key] || key; }).join(', ') + '.';
             }
 
             tabButtons.forEach(function (btn) {
@@ -2480,24 +2453,12 @@ odoo.define('bader_website.main', function (require) {
                     if (isSubmitting) return;
 
                     var payload = serializeRegisterForm();
-                    if (!payload.persona) {
-                        setMessage('Selecciona tu perfil profesional.', true);
-                        return;
-                    }
-                    if (payload.persona === 'clinica' && (!payload.clinic_specialties || !payload.clinic_specialties.length)) {
-                        setMessage('Selecciona al menos una especialidad para clinica.', true);
-                        return;
-                    }
 
                     setSubmitting(true);
                     setMessage('', false);
                     rpc('/bader/auth/signup', payload).then(function (result) {
                         if (!result || !result.ok) {
                             setSubmitting(false);
-                            if (result && result.error === 'missing_required_fields') {
-                                setMessage(humanizeMissingFields(result.fields || []), true);
-                                return;
-                            }
                             setMessage(
                                 (result && result.message) || 'No se pudo crear la cuenta.',
                                 true
@@ -2625,6 +2586,11 @@ odoo.define('bader_website.main', function (require) {
             ];
 
             var profile = {
+                name: '',
+                phone: '',
+                city: '',
+                vat: '',
+                company_name: '',
                 persona: '',
                 clinic_name: '',
                 clinic_role: '',
@@ -2706,6 +2672,11 @@ odoo.define('bader_website.main', function (require) {
 
             function mergeProfile(serverProfile) {
                 if (!serverProfile) return;
+                profile.name = serverProfile.name || '';
+                profile.phone = serverProfile.phone || '';
+                profile.city = serverProfile.city || '';
+                profile.vat = serverProfile.vat || '';
+                profile.company_name = serverProfile.company_name || '';
                 profile.persona = (serverProfile.persona || '').toLowerCase();
                 profile.clinic_name = serverProfile.clinic_name || '';
                 profile.clinic_role = serverProfile.clinic_role || '';
@@ -2724,25 +2695,58 @@ odoo.define('bader_website.main', function (require) {
                 profile.student_city = serverProfile.student_city || '';
             }
 
+            function hasText(value) {
+                return !!String(value || '').trim();
+            }
+
             function currentTotalSteps() {
-                return 4;
+                return 5;
             }
 
             function canProceedStep() {
                 if (step === 0) return true;
                 if (step === 1) return !!profile.persona;
-                if (step !== 2) return true;
+                if (step === 2) {
+                    return hasText(profile.name) && hasText(profile.phone) && hasText(profile.city);
+                }
+                if (step !== 3) return true;
 
                 if (profile.persona === 'clinica') {
-                    return !!profile.clinic_role && Array.isArray(profile.clinic_specialties) && profile.clinic_specialties.length > 0;
+                    return (
+                        hasText(profile.clinic_name)
+                        && !!profile.clinic_role
+                        && Array.isArray(profile.clinic_specialties)
+                        && profile.clinic_specialties.length > 0
+                    );
                 }
                 if (profile.persona === 'laboratorio') {
-                    return !!profile.lab_type && !!profile.lab_specialization;
+                    return hasText(profile.lab_name) && !!profile.lab_type && !!profile.lab_specialization;
                 }
                 if (profile.persona === 'estudiantes') {
-                    return !!profile.career && !!profile.study_year;
+                    return hasText(profile.university) && !!profile.career && !!profile.study_year;
                 }
                 return false;
+            }
+
+            function onboardingMissingFieldsMessage(fields) {
+                if (!fields || !fields.length) {
+                    return 'No se pudo guardar. Revisa los campos obligatorios e intenta nuevamente.';
+                }
+                var labels = {
+                    name: 'nombre completo',
+                    phone: 'telefono o WhatsApp',
+                    city: 'ciudad',
+                    clinic_role: 'cargo',
+                    clinic_specialties: 'especialidades',
+                    clinic_name: 'nombre de la clinica',
+                    lab_type: 'tipo de laboratorio',
+                    lab_specialization: 'especializacion principal',
+                    lab_name: 'nombre del laboratorio',
+                    career: 'carrera',
+                    study_year: 'ano de cursado',
+                    university: 'universidad',
+                };
+                return 'Falta completar: ' + fields.map(function (key) { return labels[key] || key; }).join(', ') + '.';
             }
 
             function personaTitle(personaKey) {
@@ -2780,6 +2784,45 @@ odoo.define('bader_website.main', function (require) {
                     '<div class="bader-onboarding__persona-grid">' + cards + '</div>';
             }
 
+            function companyFieldLabel() {
+                if (profile.persona === 'clinica') return 'Clinica o empresa';
+                if (profile.persona === 'laboratorio') return 'Laboratorio o empresa';
+                if (profile.persona === 'estudiantes') return 'Institucion (opcional)';
+                return 'Empresa o institucion';
+            }
+
+            function stepThreeHtml() {
+                return '' +
+                    '<div class="bader-onboarding__step-head">' +
+                    '<h3>Datos de contacto</h3>' +
+                    '<p>Estos datos se guardan en tu contacto de Odoo para atencion comercial y seguimiento.</p>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__grid">' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Nombre completo *</label>' +
+                    '<input type="text" data-onboarding-input="name" value="' + htmlEscape(profile.name) + '" placeholder="Nombre y apellido"/>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Telefono / WhatsApp *</label>' +
+                    '<input type="text" data-onboarding-input="phone" value="' + htmlEscape(profile.phone) + '" placeholder="+54 11 0000 0000"/>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__grid">' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Ciudad *</label>' +
+                    '<input type="text" data-onboarding-input="city" value="' + htmlEscape(profile.city) + '" placeholder="Ej: Buenos Aires"/>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>' + htmlEscape(companyFieldLabel()) + '</label>' +
+                    '<input type="text" data-onboarding-input="company_name" value="' + htmlEscape(profile.company_name) + '" placeholder="Opcional"/>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="bader-onboarding__field">' +
+                    '<label>Documento fiscal</label>' +
+                    '<input type="text" data-onboarding-input="vat" value="' + htmlEscape(profile.vat) + '" placeholder="CUIT / NIF / Documento"/>' +
+                    '</div>';
+            }
+
             function clinicQuestionsHtml() {
                 var chips = '';
                 for (var i = 0; i < clinicSpecialties.length; i += 1) {
@@ -2815,7 +2858,7 @@ odoo.define('bader_website.main', function (require) {
                     '</div>' +
                     '</div>' +
                     '<div class="bader-onboarding__field">' +
-                    '<label>Nombre de la clinica</label>' +
+                    '<label>Nombre de la clinica *</label>' +
                     '<input type="text" data-onboarding-input="clinic_name" value="' + htmlEscape(profile.clinic_name) + '" placeholder="Ej: Clinica Dental Sonrisa"/>' +
                     '</div>';
             }
@@ -2842,7 +2885,7 @@ odoo.define('bader_website.main', function (require) {
                     '</select>' +
                     '</div>' +
                     '<div class="bader-onboarding__field">' +
-                    '<label>Nombre del laboratorio</label>' +
+                    '<label>Nombre del laboratorio *</label>' +
                     '<input type="text" data-onboarding-input="lab_name" value="' + htmlEscape(profile.lab_name) + '" placeholder="Ej: Laboratorio Dental Elite"/>' +
                     '</div>' +
                     '</div>';
@@ -2864,17 +2907,17 @@ odoo.define('bader_website.main', function (require) {
                     '</div>' +
                     '<div class="bader-onboarding__grid">' +
                     '<div class="bader-onboarding__field">' +
-                    '<label>Universidad</label>' +
+                    '<label>Universidad *</label>' +
                     '<input type="text" data-onboarding-input="university" value="' + htmlEscape(profile.university) + '" placeholder="Ej: Universidad de Buenos Aires"/>' +
                     '</div>' +
                     '<div class="bader-onboarding__field">' +
-                    '<label>Ciudad</label>' +
+                    '<label>Ciudad de estudio</label>' +
                     '<input type="text" data-onboarding-input="student_city" value="' + htmlEscape(profile.student_city) + '" placeholder="Ej: Buenos Aires"/>' +
                     '</div>' +
                     '</div>';
             }
 
-            function stepThreeHtml() {
+            function stepFourHtml() {
                 var body = '';
                 if (profile.persona === 'clinica') body = clinicQuestionsHtml();
                 if (profile.persona === 'laboratorio') body = labQuestionsHtml();
@@ -2882,13 +2925,13 @@ odoo.define('bader_website.main', function (require) {
 
                 return '' +
                     '<div class="bader-onboarding__step-head">' +
-                    '<h3>Contanos sobre vos</h3>' +
-                    '<p>Perfil seleccionado: <strong>' + htmlEscape(personaTitle(profile.persona)) + '</strong></p>' +
+                    '<h3>Perfil profesional</h3>' +
+                    '<p>Perfil seleccionado: <strong>' + htmlEscape(personaTitle(profile.persona)) + '</strong>. Completa los datos para personalizar catalogo, ofertas y soporte.</p>' +
                     '</div>' +
                     body;
             }
 
-            function stepFourHtml() {
+            function stepFiveHtml() {
                 return '' +
                     '<div class="bader-onboarding__done">' +
                     '<span class="bader-onboarding__check"><i class="fa fa-check"/></span>' +
@@ -2908,6 +2951,7 @@ odoo.define('bader_website.main', function (require) {
                 if (step === 1) contentEl.innerHTML = stepTwoHtml();
                 if (step === 2) contentEl.innerHTML = stepThreeHtml();
                 if (step === 3) contentEl.innerHTML = stepFourHtml();
+                if (step === 4) contentEl.innerHTML = stepFiveHtml();
                 updateFrame();
             }
 
@@ -2920,7 +2964,7 @@ odoo.define('bader_website.main', function (require) {
                 if (stepLabelEl) stepLabelEl.textContent = 'Paso ' + current + ' de ' + total;
                 if (backBtn) backBtn.style.display = step > 0 ? '' : 'none';
                 if (primaryBtn) {
-                    var isLast = step >= 3;
+                    var isLast = step >= 4;
                     primaryBtn.textContent = isLast ? (isSaving ? 'Guardando...' : 'Empezar a explorar') : 'Continuar';
                     primaryBtn.disabled = isSaving || !canProceedStep();
                 }
@@ -2966,6 +3010,11 @@ odoo.define('bader_website.main', function (require) {
                 updateFrame();
 
                 rpc('/bader/onboarding/save', {
+                    name: profile.name,
+                    phone: profile.phone,
+                    city: profile.city,
+                    vat: profile.vat,
+                    company_name: profile.company_name,
                     persona: profile.persona,
                     clinic_name: profile.clinic_name,
                     clinic_role: profile.clinic_role,
@@ -2984,7 +3033,7 @@ odoo.define('bader_website.main', function (require) {
                     isSaving = false;
                     if (!result || !result.ok) {
                         if (messageEl) {
-                            messageEl.textContent = 'No se pudo guardar. Revisa los campos obligatorios e intenta nuevamente.';
+                            messageEl.textContent = onboardingMissingFieldsMessage(result && result.fields);
                         }
                         updateFrame();
                         return;
@@ -3060,7 +3109,7 @@ odoo.define('bader_website.main', function (require) {
                     }
 
                     if (target === primaryBtn) {
-                        if (step < 3) {
+                        if (step < 4) {
                             if (!canProceedStep()) return;
                             step += 1;
                             renderCurrentStep();
@@ -3089,7 +3138,7 @@ odoo.define('bader_website.main', function (require) {
                 modalRoot.innerHTML = '' +
                     '<div class="bader-onboarding__dialog">' +
                     '<div class="bader-onboarding__head">' +
-                    '<span class="bader-onboarding__step" data-onboarding-step="1">Paso 1 de 4</span>' +
+                    '<span class="bader-onboarding__step" data-onboarding-step="1">Paso 1 de 5</span>' +
                     '<button type="button" class="bader-onboarding__skip-top" data-onboarding-close="1" aria-label="Cerrar"><i class="fa fa-times"></i></button>' +
                     '</div>' +
                     '<div class="bader-onboarding__progress"><span data-onboarding-progress="1"></span></div>' +
