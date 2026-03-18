@@ -16,6 +16,104 @@
         </xpath>
     </template>
 
+    <template id="bader_user_dropdown"
+              inherit_id="portal.user_dropdown"
+              name="Bader Header User Dropdown"
+              priority="99">
+        <xpath expr="//li[@t-if='is_connected']" position="replace">
+            <li t-if="is_connected"
+                t-attf-class="#{_item_class} o_no_autohide_item bader-user-menu">
+                <t t-set="user_display_email" t-value="user_id.email or user_id.login or ''"/>
+                <t t-set="user_initial" t-value="((user_id.name or user_display_email or 'U')[:1]).upper()"/>
+
+                <a href="#"
+                   role="button"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false"
+                   t-attf-class="dropdown-toggle #{_link_class} bader-user-menu__trigger">
+                    <span class="bader-user-menu__avatar" data-bader-user-avatar="1">
+                        <img t-if="user_id.avatar_128"
+                             t-att-src="image_data_uri(user_id.avatar_128)"
+                             t-att-alt="user_id.name or 'Usuario'"
+                             class="bader-user-menu__avatar-img"
+                             data-bader-user-avatar-img="1"/>
+                        <span t-attf-class="bader-user-menu__avatar-fallback #{'d-none' if user_id.avatar_128 else ''}"
+                              data-bader-user-avatar-fallback="1"
+                              t-esc="user_initial"/>
+                    </span>
+                    <span class="bader-user-menu__chevron">
+                        <i class="fa fa-chevron-down"/>
+                    </span>
+                </a>
+
+                <div t-attf-class="dropdown-menu js_usermenu bader-user-menu__dropdown #{_dropdown_menu_class}"
+                     role="menu">
+                    <div class="bader-user-menu__summary">
+                        <p class="bader-user-menu__name"
+                           data-bader-user-name="1"
+                           t-esc="user_id.name or 'Usuario'"/>
+                        <p class="bader-user-menu__email"
+                           data-bader-user-email="1"
+                           t-esc="user_display_email"/>
+                    </div>
+
+                    <div class="dropdown-divider"/>
+
+                    <a href="/mi-perfil" role="menuitem" class="dropdown-item bader-user-menu__item">
+                        <i class="fa fa-user-o"/>
+                        <span>Mi Perfil</span>
+                    </a>
+                    <a href="/mis-pedidos" role="menuitem" class="dropdown-item bader-user-menu__item">
+                        <i class="fa fa-cube"/>
+                        <span>Mis Pedidos</span>
+                    </a>
+                    <a href="/mis-facturas" role="menuitem" class="dropdown-item bader-user-menu__item">
+                        <i class="fa fa-file-text-o"/>
+                        <span>Mis Facturas</span>
+                    </a>
+                    <a href="/mis-favoritos" role="menuitem" class="dropdown-item bader-user-menu__item">
+                        <i class="fa fa-heart-o"/>
+                        <span>Mis Favoritos</span>
+                    </a>
+
+                    <div class="dropdown-divider"/>
+
+                    <a href="/configuracion" role="menuitem" class="dropdown-item bader-user-menu__item">
+                        <i class="fa fa-cog"/>
+                        <span>Configuracion</span>
+                    </a>
+                    <a href="/ayuda" role="menuitem" class="dropdown-item bader-user-menu__item">
+                        <i class="fa fa-question-circle-o"/>
+                        <span>Ayuda y Soporte</span>
+                    </a>
+
+                    <div groups="base.group_user" class="dropdown-divider"/>
+                    <a groups="base.group_user"
+                       href="/web"
+                       role="menuitem"
+                       id="o_backend_user_dropdown_link"
+                       class="dropdown-item bader-user-menu__item bader-user-menu__item--admin">
+                        <i class="fa fa-shield"/>
+                        <span>Panel Admin</span>
+                    </a>
+
+                    <div class="dropdown-divider"/>
+
+                    <a href="/web/session/logout?redirect=/"
+                       role="menuitem"
+                       id="o_logout"
+                       class="dropdown-item bader-user-menu__item bader-user-menu__item--logout"
+                       data-bader-user-logout="1"
+                       data-bader-user-logout-native="/web/session/logout?redirect=/"
+                       data-bader-user-logout-clerk="/clerk/logout">
+                        <i class="fa fa-sign-out"/>
+                        <span>Cerrar Sesion</span>
+                    </a>
+                </div>
+            </li>
+        </xpath>
+    </template>
+
     <template id="bader_hide_header_wishlist"
               inherit_id="website_sale_wishlist.header_wishlist_link"
               name="Bader Hide Header Wishlist"

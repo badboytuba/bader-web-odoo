@@ -38,6 +38,18 @@
         return !!header && header.getAttribute('data-bader-odoo-authenticated') === '1';
     }
 
+    function isCurrentOdooUserClerkLinked(clerkUser) {
+        var header = document.querySelector('header#top');
+        if (!header || header.getAttribute('data-bader-odoo-clerk-user') !== '1') {
+            return false;
+        }
+        var odooClerkId = header.getAttribute('data-bader-odoo-clerk-id') || '';
+        if (!odooClerkId || !clerkUser || !clerkUser.id) {
+            return false;
+        }
+        return odooClerkId === clerkUser.id;
+    }
+
     function normalizeRedirect(path) {
         var value = (path || '').trim();
         if (!value || value.charAt(0) !== '/' || value.indexOf('//') === 0) {
@@ -331,48 +343,86 @@
         }
     }
 
+    function getClerkUserEmail(user) {
+        if (!user) {
+            return '';
+        }
+        if (user.primaryEmailAddress && user.primaryEmailAddress.emailAddress) {
+            return user.primaryEmailAddress.emailAddress;
+        }
+        if (user.emailAddresses && user.emailAddresses.length && user.emailAddresses[0].emailAddress) {
+            return user.emailAddresses[0].emailAddress;
+        }
+        return '';
+    }
+
+    function getUserInitials(name, email) {
+        var source = (name || '').trim();
+        if (source) {
+            var parts = source.split(/\s+/).filter(Boolean);
+            if (parts.length > 1) {
+                return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+            }
+            return parts[0].charAt(0).toUpperCase();
+        }
+        return ((email || 'U').charAt(0) || 'U').toUpperCase();
+    }
+
+    function updateAvatarElements(imageUrl, name, fallbackText) {
+        var wrappers = document.querySelectorAll('[data-bader-user-avatar]');
+        wrappers.forEach(function (wrapper) {
+            var img = wrapper.querySelector('[data-bader-user-avatar-img]');
+            var fallback = wrapper.querySelector('[data-bader-user-avatar-fallback]');
+
+            if (img) {
+                if (imageUrl) {
+                    img.setAttribute('src', imageUrl);
+                    img.setAttribute('alt', name || 'Usuario');
+                    img.classList.remove('d-none');
+                } else {
+                    img.removeAttribute('src');
+                    img.classList.add('d-none');
+                }
+            }
+
+            if (fallback) {
+                fallback.textContent = fallbackText;
+                fallback.classList.toggle('d-none', !!imageUrl);
+            }
+        });
+    }
+
+    function updateTextElements(selector, value) {
+        document.querySelectorAll(selector).forEach(function (element) {
+            element.textContent = value || '';
+        });
+    }
+
+    function updateLogoutLinks(logoutUrl) {
+        document.querySelectorAll('[data-bader-user-logout]').forEach(function (link) {
+            link.setAttribute(
+                'href',
+                logoutUrl || link.getAttribute('data-bader-user-logout-native') || '/web/session/logout?redirect=/'
+            );
+        });
+    }
+
     // ------------------------------------------------------------------
-    // 7. Replace "Tu Cuenta" with user avatar when logged in
+    // 7. Hydrate the shared Odoo user menu with Clerk identity data
     // ------------------------------------------------------------------
     function showUserAvatar(clerk) {
         var user = clerk.user;
         if (!user) return;
 
-        var name = user.fullName || '';
-        var email = (user.primaryEmailAddress && user.primaryEmailAddress.emailAddress) || '';
+        var name = user.fullName || [user.firstName, user.lastName].filter(Boolean).join(' ');
+        var email = getClerkUserEmail(user);
+        var initials = getUserInitials(name, email);
 
-        var triggers = document.querySelectorAll('.bader-auth-trigger, [data-bader-auth-open]');
-        triggers.forEach(function (trigger) {
-            var avatar = document.createElement('div');
-            avatar.className = 'bader-clerk-avatar';
-            avatar.title = name || email || 'Tu Cuenta';
+        updateTextElements('[data-bader-user-name]', name || 'Usuario');
+        updateTextElements('[data-bader-user-email]', email);
+        updateAvatarElements(user.imageUrl || '', name, initials);
+        updateLogoutLinks('/clerk/logout');
 
-            if (user.imageUrl) {
-                var img = document.createElement('img');
-                img.src = user.imageUrl;
-                img.alt = name;
-                img.className = 'bader-clerk-avatar__img';
-                avatar.appendChild(img);
-            } else {
-                var initial = document.createElement('span');
-                initial.className = 'bader-clerk-avatar__initial';
-                initial.textContent = (user.firstName || email || 'U')[0].toUpperCase();
-                avatar.appendChild(initial);
-            }
-
-            avatar.addEventListener('click', function (ev) {
-                ev.preventDefault();
-                ev.stopPropagation();
-                ev.stopImmediatePropagation();
-                clerk.openUserProfile();
-            });
-
-            if (trigger.parentNode) {
-                trigger.parentNode.replaceChild(avatar, trigger);
-            }
-        });
-
-        // Also hide the native auth modal completely
         var authModal = document.getElementById('baderAuthModal');
         if (authModal) {
             authModal.style.display = 'none';
@@ -425,7 +475,9 @@
 
             // If user is already signed in via Clerk, show avatar
             if (clerk.user) {
-                showUserAvatar(clerk);
+                if (isCurrentOdooUserClerkLinked(clerk.user)) {
+                    showUserAvatar(clerk);
+                }
 
                 // If user is signed in via Clerk but not in Odoo,
                 // sync the session

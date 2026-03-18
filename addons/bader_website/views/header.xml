@@ -19,6 +19,8 @@
             <attribute name="class" add="bader-header" separator=" "/>
             <attribute name="t-att-data-bader-auth-provider">'clerk' if bader_clerk_enabled else 'odoo'</attribute>
             <attribute name="t-att-data-bader-odoo-authenticated">'1' if not request.website.is_public_user() else '0'</attribute>
+            <attribute name="t-att-data-bader-odoo-clerk-user">'1' if not request.website.is_public_user() and request.env.user.clerk_user_id else '0'</attribute>
+            <attribute name="t-att-data-bader-odoo-clerk-id">request.env.user.clerk_user_id or ''</attribute>
         </xpath>
 
         <!-- Inject search pill AFTER the navbar collapse menu (right side) -->
@@ -165,11 +167,47 @@
                 </section>
 
                 <section class="bader-mobile-account" t-else="">
-                    <a href="/mi-perfil">Mi Perfil</a>
-                    <a href="/mis-pedidos">Mis Pedidos</a>
-                    <a href="/mis-facturas">Mis Facturas</a>
-                    <a href="/mis-favoritos">Mis Favoritos</a>
-                    <a href="/configuracion">Configuracion</a>
+                    <t t-set="mobile_user_email" t-value="request.env.user.email or request.env.user.login or ''"/>
+                    <t t-set="mobile_user_initial" t-value="((request.env.user.name or mobile_user_email or 'U')[:1]).upper()"/>
+
+                    <div class="bader-mobile-account__card">
+                        <div class="bader-mobile-account__summary">
+                            <span class="bader-mobile-account__avatar" data-bader-user-avatar="1">
+                                <img t-if="request.env.user.avatar_128"
+                                     t-att-src="image_data_uri(request.env.user.avatar_128)"
+                                     t-att-alt="request.env.user.name or 'Usuario'"
+                                     data-bader-user-avatar-img="1"/>
+                                <span t-attf-class="bader-mobile-account__avatar-fallback #{'d-none' if request.env.user.avatar_128 else ''}"
+                                      data-bader-user-avatar-fallback="1"
+                                      t-esc="mobile_user_initial"/>
+                            </span>
+                            <div class="bader-mobile-account__meta">
+                                <p class="bader-mobile-account__name"
+                                   data-bader-user-name="1"
+                                   t-esc="request.env.user.name or 'Usuario'"/>
+                                <p class="bader-mobile-account__email"
+                                   data-bader-user-email="1"
+                                   t-esc="mobile_user_email"/>
+                            </div>
+                        </div>
+
+                        <nav class="bader-mobile-account__menu">
+                            <a href="/mi-perfil"><i class="fa fa-user-o"/> Mi Perfil</a>
+                            <a href="/mis-pedidos"><i class="fa fa-cube"/> Mis Pedidos</a>
+                            <a href="/mis-facturas"><i class="fa fa-file-text-o"/> Mis Facturas</a>
+                            <a href="/mis-favoritos"><i class="fa fa-heart-o"/> Mis Favoritos</a>
+                            <a href="/configuracion"><i class="fa fa-cog"/> Configuracion</a>
+                            <a href="/ayuda"><i class="fa fa-question-circle-o"/> Ayuda y Soporte</a>
+                            <a groups="base.group_user"
+                               href="/web"
+                               class="bader-mobile-account__admin"><i class="fa fa-shield"/> Panel Admin</a>
+                            <a href="/web/session/logout?redirect=/"
+                               class="bader-mobile-account__logout"
+                               data-bader-user-logout="1"
+                               data-bader-user-logout-native="/web/session/logout?redirect=/"
+                               data-bader-user-logout-clerk="/clerk/logout"><i class="fa fa-sign-out"/> Cerrar Sesion</a>
+                        </nav>
+                    </div>
                 </section>
             </div>
         </xpath>

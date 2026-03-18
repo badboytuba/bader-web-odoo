@@ -208,6 +208,163 @@
             margin-left: auto;
         }
 
+        .bader-user-menu {
+            margin-left: 4px;
+
+            .bader-user-menu__trigger {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 4px 6px !important;
+                color: $white !important;
+                text-transform: none;
+                letter-spacing: normal;
+
+                &::after {
+                    display: none !important;
+                }
+
+                &:hover,
+                &:focus {
+                    color: $white !important;
+                    background: rgba(255, 255, 255, 0.06);
+                    border-radius: 999px;
+                }
+            }
+
+            &.show .bader-user-menu__trigger {
+                background: rgba(255, 255, 255, 0.08);
+                border-radius: 999px;
+            }
+
+            .bader-user-menu__avatar {
+                width: 36px;
+                height: 36px;
+                border-radius: 999px;
+                overflow: hidden;
+                background: rgba(255, 255, 255, 0.14);
+                border: 1px solid rgba(255, 255, 255, 0.16);
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                flex: 0 0 auto;
+            }
+
+            .bader-user-menu__avatar-img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+            }
+
+            .bader-user-menu__avatar-fallback {
+                color: $white;
+                font-size: 0.9rem;
+                font-weight: 700;
+                line-height: 1;
+            }
+
+            .bader-user-menu__chevron {
+                color: rgba(255, 255, 255, 0.68);
+                font-size: 0.76rem;
+                line-height: 1;
+            }
+
+            .bader-user-menu__dropdown {
+                width: 272px;
+                min-width: 272px;
+                margin-top: 10px;
+                padding: 8px 0;
+                border: 1px solid rgba(5, 35, 42, 0.10) !important;
+                border-radius: 14px;
+                background: #fff !important;
+                box-shadow: 0 22px 48px rgba(2, 29, 36, 0.18), 0 6px 18px rgba(2, 29, 36, 0.10);
+            }
+
+            .bader-user-menu__summary {
+                padding: 8px 16px 10px;
+            }
+
+            .bader-user-menu__name,
+            .bader-user-menu__email {
+                margin: 0;
+            }
+
+            .bader-user-menu__name {
+                color: #083741;
+                font-size: 0.98rem;
+                font-weight: 600;
+                line-height: 1.3;
+            }
+
+            .bader-user-menu__email {
+                color: #4b7b84;
+                font-size: 0.83rem;
+                line-height: 1.35;
+                margin-top: 2px;
+                word-break: break-word;
+            }
+
+            .dropdown-divider {
+                margin: 6px 0;
+                border-top-color: rgba(8, 55, 65, 0.08);
+            }
+
+            .bader-user-menu__item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 11px 16px;
+                color: #083741 !important;
+                font-size: 0.98rem;
+                font-weight: 500;
+                background: transparent !important;
+            }
+
+            .bader-user-menu__item i {
+                width: 18px;
+                color: #0a5863;
+                font-size: 1rem;
+                text-align: center;
+                flex: 0 0 18px;
+            }
+
+            .bader-user-menu__item:hover,
+            .bader-user-menu__item:focus {
+                background: #f4f8f8 !important;
+                color: #083741 !important;
+            }
+
+            .bader-user-menu__item--admin {
+                color: #58bf46 !important;
+                font-weight: 600;
+            }
+
+            .bader-user-menu__item--admin i {
+                color: #58bf46;
+            }
+
+            .bader-user-menu__item--admin:hover,
+            .bader-user-menu__item--admin:focus {
+                background: rgba(88, 191, 70, 0.08) !important;
+                color: #58bf46 !important;
+            }
+
+            .bader-user-menu__item--logout {
+                color: #e14239 !important;
+            }
+
+            .bader-user-menu__item--logout i {
+                color: #e14239;
+            }
+
+            .bader-user-menu__item--logout:hover,
+            .bader-user-menu__item--logout:focus {
+                background: rgba(225, 66, 57, 0.08) !important;
+                color: #e14239 !important;
+            }
+        }
+
         // ----- AI Search Pill - White border like reference -----
         .bader-search-pill {
             display: inline-flex;
@@ -800,7 +957,7 @@ html.o_connected_user #wrapwrap>header#top {
     }
 
     .bader-mobile-links a,
-    .bader-mobile-account a {
+    .bader-mobile-account__menu a {
         display: block;
         color: rgba(255, 255, 255, 0.92);
         text-decoration: none;
@@ -810,14 +967,125 @@ html.o_connected_user #wrapwrap>header#top {
     }
 
     .bader-mobile-links a:hover,
-    .bader-mobile-account a:hover {
+    .bader-mobile-account__menu a:hover {
         background: rgba(255, 255, 255, 0.08);
         color: $white;
     }
 
     .bader-mobile-account {
         border-top: 1px solid rgba(255, 255, 255, 0.12);
-        padding-top: 10px;
+        padding-top: 12px;
+    }
+
+    .bader-mobile-account__card {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 16px;
+        padding: 12px;
+    }
+
+    .bader-mobile-account__summary {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .bader-mobile-account__avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+    }
+
+    .bader-mobile-account__avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .bader-mobile-account__avatar-fallback {
+        color: $white;
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .bader-mobile-account__meta {
+        min-width: 0;
+    }
+
+    .bader-mobile-account__name,
+    .bader-mobile-account__email {
+        margin: 0;
+    }
+
+    .bader-mobile-account__name {
+        color: $white;
+        font-size: 0.95rem;
+        font-weight: 600;
+        line-height: 1.3;
+    }
+
+    .bader-mobile-account__email {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.78rem;
+        line-height: 1.35;
+        word-break: break-word;
+    }
+
+    .bader-mobile-account__menu {
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
+    }
+
+    .bader-mobile-account__menu a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .bader-mobile-account__menu a i {
+        width: 18px;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.78);
+        flex: 0 0 18px;
+    }
+
+    .bader-mobile-account__admin {
+        color: #8fef73 !important;
+    }
+
+    .bader-mobile-account__admin i {
+        color: #8fef73 !important;
+    }
+
+    .bader-mobile-account__admin:hover {
+        color: #8fef73 !important;
+        background: rgba(143, 239, 115, 0.10) !important;
+    }
+
+    .bader-mobile-account__logout {
+        color: #ff8d8a !important;
+        margin-top: 4px;
+        border-top: 1px solid rgba(255, 255, 255, 0.10);
+        padding-top: 12px !important;
+    }
+
+    .bader-mobile-account__logout i {
+        color: #ff8d8a !important;
+    }
+
+    .bader-mobile-account__logout:hover {
+        color: #ff8d8a !important;
+        background: rgba(255, 141, 138, 0.10) !important;
     }
 
     .bader-mobile-account__login {
