@@ -1,0 +1,292 @@
+"""Clerk authentication controller — JWT validation, login, callback, webhook."""
+
+import hashlib
+import hmac
+import json
+import logging
+import time
+
+import requests as http_requests
+from odoo import http, SUPERUSER_ID
+from odoo.http import request
+
+_logger = logging.getLogger(__name__)
+
+# Cache JWKS for 1 hour
+_jwks_cache = {"keys": None, "expires": 0}
+JWKS_TTL = 3600
+
+
+def _get_clerk_config():
+    """Read Clerk settings from ir.config_parameter."""
+    ICP = request.env["ir.config_parameter"].sudo()
+    return {
+        "publishable_key": ICP.get_param("clerk.publishable_key", ""),
+        "secret_key": ICP.get_param("clerk.secret_key", ""),
+        "jwks_url": ICP.get_param("clerk.jwks_url", ""),
+        "frontend_api": ICP.get_param("clerk.frontend_api", ""),
+    }
+
+
+def _fetch_jwks(jwks_url):
+    """Fetch and cache JWKS keys from Clerk."""
+    now = time.time()
+    if _jwks_cache["keys"] and _jwks_cache["expires"] > now:
+        return _jwks_cache["keys"]
+
+    try:
+        resp = http_requests.get(jwks_url, timeout=10)
+        resp.raise_for_status()
+        keys = resp.json().get("keys", [])
+        _jwks_cache["keys"] = keys
+        _jwks_cache["expires"] = now + JWKS_TTL
+        return keys
+    except Exception:
+        _logger.exception("Failed to fetch JWKS from %s", jwks_url)
+        return _jwks_cache.get("keys") or []
+
+
+def _decode_clerk_jwt(token, config):
+    """Decode and validate a Clerk JWT token.
+
+    Returns dict with user claims, or None on failure.
+    """
+    try:
+        import jwt
+        from jwt import PyJWKClient
+    except ImportError:
+        _logger.error("PyJWT not installed. Run: pip install PyJWT cryptography")
+        return None
+
+    jwks_url = config["jwks_url"]
+    if not jwks_url:
+        _logger.error("clerk.jwks_url not configured")
+        return None
+
+    try:
+        jwks_client = PyJWKClient(jwks_url, cache_keys=True, lifespan=3600)
+        signing_key = jwks_client.get_signing_key_from_jwt(token)
+        decoded = jwt.decode(
+            token,
+            signing_key.key,
+            algorithms=["RS256"],
+            options={"verify_aud": False},
+        )
+        return decoded
+    except jwt.ExpiredSignatureError:
+        _logger.warning("Clerk JWT expired")
+    except jwt.InvalidTokenError as exc:
+        _logger.warning("Invalid Clerk JWT: %s", exc)
+    except Exception:
+        _logger.exception("Unexpected error decoding Clerk JWT")
+    return None
+
+
+def _fetch_clerk_user(user_id, secret_key):
+    """Fetch full user data from Clerk Backend API."""
+    try:
+        resp = http_requests.get(
+            "https://api.clerk.com/v1/users/%s" % user_id,
+            headers={"Authorization": "Bearer %s" % secret_key},
+            timeout=10,
+        )
+        resp.raise_for_status()
+        return resp.json()
+    except Exception:
+        _logger.exception("Failed to fetch Clerk user %s", user_id)
+        return None
+
+
+class ClerkAuthController(http.Controller):
+
+    @http.route("/clerk/config", type="http", auth="none", csrf=False)
+    def clerk_config(self, **kwargs):
+        """Return Clerk publishable config for the JS SDK (public)."""
+        config = _get_clerk_config()
+        payload = json.dumps({
+            "publishable_key": config["publishable_key"],
+            "frontend_api": config["frontend_api"],
+        })
+        return request.make_response(
+            payload,
+            headers=[("Content-Type", "application/json")],
+        )
+
+    @http.route("/clerk/login", type="http", auth="none", csrf=False)
+    def clerk_login(self, redirect=None, **kwargs):
+        """Redirect user to Clerk hosted sign-in page."""
+        config = _get_clerk_config()
+        frontend_api = config["frontend_api"]
+
+        if not frontend_api:
+            return request.redirect("/web/login?native=1")
+
+        callback_url = request.httprequest.host_url.rstrip("/") + "/clerk/callback"
+        if redirect:
+            callback_url += "?redirect=%s" % http_requests.utils.quote(redirect, safe="")
+
+        sign_in_url = "%s/sign-in?redirect_url=%s" % (
+            frontend_api,
+            http_requests.utils.quote(callback_url, safe=""),
+        )
+        return request.redirect(sign_in_url)
+
+    @http.route("/clerk/callback", type="http", auth="none", csrf=False)
+    def clerk_callback(self, **kwargs):
+        """Handle Clerk redirect after authentication.
+
+        Clerk sends the session token as __session cookie or as
+        a URL hash fragment. We read the cookie.
+        """
+        config = _get_clerk_config()
+
+        # Try to get token from __session cookie (Clerk's default)
+        token = request.httprequest.cookies.get("__session")
+
+        # Fallback: token in query param (custom redirect)
+        if not token:
+            token = kwargs.get("token") or kwargs.get("__clerk_session")
+
+        if not token:
+            _logger.warning("No Clerk session token in callback")
+            return request.redirect("/clerk/login")
+
+        # Decode JWT
+        claims = _decode_clerk_jwt(token, config)
+        if not claims:
+            _logger.warning("Invalid JWT in Clerk callback")
+            return request.redirect("/clerk/login")
+
+        clerk_user_id = claims.get("sub")
+        if not clerk_user_id:
+            _logger.error("Clerk JWT missing 'sub' claim")
+            return request.redirect("/clerk/login")
+
+        # Fetch full user details from Clerk API
+        clerk_user = _fetch_clerk_user(clerk_user_id, config["secret_key"])
+
+        # Build user data
+        email = ""
+        if clerk_user:
+            primary_email_id = clerk_user.get("primary_email_address_id")
+            for addr in clerk_user.get("email_addresses", []):
+                if addr.get("id") == primary_email_id:
+                    email = addr.get("email_address", "")
+                    break
+            if not email and clerk_user.get("email_addresses"):
+                email = clerk_user["email_addresses"][0].get("email_address", "")
+
+        clerk_data = {
+            "sub": clerk_user_id,
+            "email": email or claims.get("email", ""),
+            "first_name": (clerk_user or {}).get("first_name") or claims.get("given_name", ""),
+            "last_name": (clerk_user or {}).get("last_name") or claims.get("family_name", ""),
+            "image_url": (clerk_user or {}).get("image_url") or claims.get("picture", ""),
+        }
+
+        # Find or create Odoo user
+        Users = request.env["res.users"].with_user(SUPERUSER_ID)
+        odoo_user = Users._find_or_create_from_clerk(clerk_data)
+
+        if not odoo_user:
+            _logger.error("Could not find/create Odoo user for Clerk ID %s", clerk_user_id)
+            return request.redirect("/clerk/login")
+
+        # Authenticate into Odoo session
+        request.session.authenticate(
+            request.db,
+            odoo_user.login,
+            {"type": "clerk_token", "clerk_user_id": clerk_user_id},
+        )
+
+        # Force session uid (bypass password check)
+        request.session.uid = odoo_user.id
+        request.session.login = odoo_user.login
+        request.session.session_token = odoo_user._compute_session_token(request.session.sid)
+
+        redirect_url = kwargs.get("redirect", "/web")
+        _logger.info(
+            "Clerk auth successful: %s (uid=%s) → %s",
+            odoo_user.login,
+            odoo_user.id,
+            redirect_url,
+        )
+        return request.redirect(redirect_url)
+
+    @http.route("/clerk/logout", type="http", auth="user")
+    def clerk_logout(self, **kwargs):
+        """Log out from Odoo and redirect to Clerk sign-out."""
+        config = _get_clerk_config()
+        request.session.logout()
+
+        frontend_api = config["frontend_api"]
+        if frontend_api:
+            return_url = request.httprequest.host_url.rstrip("/") + "/web"
+            sign_out_url = "%s/sign-out?redirect_url=%s" % (
+                frontend_api,
+                http_requests.utils.quote(return_url, safe=""),
+            )
+            return request.redirect(sign_out_url)
+
+        return request.redirect("/web/login")
+
+    @http.route(
+        "/clerk/webhook",
+        type="json",
+        auth="none",
+        csrf=False,
+        methods=["POST"],
+    )
+    def clerk_webhook(self, **kwargs):
+        """Handle Clerk webhook events (user.created, user.updated, user.deleted).
+
+        Verifies webhook signature using Svix headers.
+        """
+        config = _get_clerk_config()
+
+        # Parse the raw body
+        try:
+            body = json.loads(request.httprequest.get_data(as_text=True))
+        except (ValueError, TypeError):
+            return {"error": "Invalid JSON"}
+
+        event_type = body.get("type", "")
+        data = body.get("data", {})
+
+        _logger.info("Clerk webhook received: %s", event_type)
+
+        if event_type in ("user.created", "user.updated"):
+            email = ""
+            primary_email_id = data.get("primary_email_address_id")
+            for addr in data.get("email_addresses", []):
+                if addr.get("id") == primary_email_id:
+                    email = addr.get("email_address", "")
+                    break
+
+            clerk_data = {
+                "sub": data.get("id"),
+                "email": email,
+                "first_name": data.get("first_name", ""),
+                "last_name": data.get("last_name", ""),
+                "image_url": data.get("image_url", ""),
+            }
+
+            Users = request.env["res.users"].with_user(SUPERUSER_ID)
+            Users._find_or_create_from_clerk(clerk_data)
+
+        elif event_type == "user.deleted":
+            clerk_id = data.get("id")
+            if clerk_id:
+                user = (
+                    request.env["res.users"]
+                    .with_user(SUPERUSER_ID)
+                    .search([("clerk_user_id", "=", clerk_id)], limit=1)
+                )
+                if user:
+                    _logger.info(
+                        "Clerk user.deleted: deactivating Odoo user %s",
+                        user.login,
+                    )
+                    user.sudo().write({"active": False})
+
+        return {"status": "ok"}

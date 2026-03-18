@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="clerk_publishable_key" model="ir.config_parameter">
+            <field name="key">clerk.publishable_key</field>
+            <field name="value">pk_test_YXNzdXJlZC10b2FkLTc0LmNsZXJrLmFjY291bnRzLmRldiQ</field>
+        </record>
+        <record id="clerk_secret_key" model="ir.config_parameter">
+            <field name="key">clerk.secret_key</field>
+            <field name="value">sk_test_7n8orIe6uYNwptv7aRd3vHMwQAxPvnEY95c4UAcvLy</field>
+        </record>
+        <record id="clerk_jwks_url" model="ir.config_parameter">
+            <field name="key">clerk.jwks_url</field>
+            <field name="value">https://assured-toad-74.clerk.accounts.dev/.well-known/jwks.json</field>
+        </record>
+        <record id="clerk_frontend_api" model="ir.config_parameter">
+            <field name="key">clerk.frontend_api</field>
+            <field name="value">https://assured-toad-74.clerk.accounts.dev</field>
+        </record>
+        <record id="clerk_default_group" model="ir.config_parameter">
+            <field name="key">clerk.default_user_group</field>
+            <field name="value">base.group_user</field>
+        </record>
+    </data>
+</odoo>
