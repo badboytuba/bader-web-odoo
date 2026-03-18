@@ -773,7 +773,7 @@
                 </section>
             </div>
 
-            <t t-if="request.website.is_public_user() and not bader_clerk_enabled">
+            <t t-if="request.website.is_public_user()">
                 <div id="baderAuthModal" class="bader-auth-modal" aria-hidden="true">
                     <button type="button"
                             class="bader-auth-modal__backdrop"
@@ -802,6 +802,42 @@
                         <p class="bader-auth-modal__hint" data-bader-auth-hint="1">
                             Accede para ver pedidos, facturas y recomendaciones personalizadas.
                         </p>
+
+                        <t t-if="bader_clerk_enabled">
+                            <section class="bader-auth-modal__social" aria-label="Accesos sociales">
+                                <button type="button"
+                                        class="bader-auth-modal__social-main"
+                                        data-bader-clerk-open="1">
+                                    <span class="bader-auth-modal__social-icon bader-auth-modal__social-icon--google">
+                                        <i class="fa fa-google"/>
+                                    </span>
+                                    <span>Continuar con Google</span>
+                                </button>
+
+                                <div class="bader-auth-modal__social-grid">
+                                    <button type="button"
+                                            class="bader-auth-modal__social-alt"
+                                            data-bader-clerk-open="1"
+                                            aria-label="Continuar con Apple">
+                                        <i class="fa fa-apple"/>
+                                    </button>
+                                    <button type="button"
+                                            class="bader-auth-modal__social-alt"
+                                            data-bader-clerk-open="1"
+                                            aria-label="Continuar con Microsoft">
+                                        <i class="fa fa-windows"/>
+                                    </button>
+                                </div>
+
+                                <p class="bader-auth-modal__social-copy">
+                                    Tambien puedes entrar con tu email y contrasena desde este mismo modal.
+                                </p>
+                            </section>
+
+                            <div class="bader-auth-modal__divider" aria-hidden="true">
+                                <span>o</span>
+                            </div>
+                        </t>
 
                         <form class="bader-auth-modal__form"
                               data-bader-auth-form="login"

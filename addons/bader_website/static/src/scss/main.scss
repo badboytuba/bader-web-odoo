@@ -5097,6 +5097,100 @@ body.bader-auth-modal-open {
         line-height: 1.4;
     }
 
+    &__social {
+        display: grid;
+        gap: 0.65rem;
+        margin-bottom: 0.8rem;
+    }
+
+    &__social-main,
+    &__social-alt {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.7rem;
+        min-height: 44px;
+        border-radius: $radius-md;
+        border: 1px solid $gray-200;
+        background: $white;
+        color: $bader-dark;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform $transition-fast, box-shadow $transition-fast, border-color $transition-fast;
+
+        &:hover {
+            transform: translateY(-1px);
+            border-color: rgba($bader-green, 0.42);
+            box-shadow: 0 12px 26px rgba(8, 36, 44, 0.08);
+        }
+    }
+
+    &__social-main {
+        justify-content: center;
+        padding: 0.75rem 1rem;
+    }
+
+    &__social-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.65rem;
+    }
+
+    &__social-alt {
+        font-size: 1.15rem;
+    }
+
+    &__social-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+
+        &--google {
+            background: rgba(66, 133, 244, 0.10);
+            color: #ea4335;
+        }
+    }
+
+    &__social-copy {
+        margin: 0;
+        color: $bader-muted-fg;
+        font-size: 0.78rem;
+        line-height: 1.45;
+        text-align: center;
+    }
+
+    &__divider {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 0 0.75rem;
+
+        &::before {
+            content: '';
+            position: absolute;
+            inset: 50% 0 auto;
+            border-top: 1px solid rgba($gray-300, 0.92);
+            transform: translateY(-50%);
+        }
+
+        span {
+            position: relative;
+            z-index: 1;
+            padding: 0 0.7rem;
+            background: $white;
+            color: $gray-500;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: lowercase;
+        }
+    }
+
     &__form {
         display: grid;
         gap: 0.62rem;

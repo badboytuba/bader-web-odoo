@@ -1,9 +1,10 @@
 /**
  * Clerk Authentication Frontend Integration
  *
- * Replaces the native Odoo auth modal with Clerk's sign-in popup when
- * the website is configured to use Clerk. After authentication, creates
- * an Odoo session via /clerk/callback and shows user avatar + dropdown menu.
+ * Powers the website's Clerk integration. The shared website auth modal
+ * handles email/password locally, while Clerk is used for social sign-in.
+ * After Clerk authentication, creates an Odoo session via /clerk/callback
+ * and hydrates the shared avatar + dropdown menu.
  *
  * IMPORTANT: This file is registered in web.assets_frontend and loaded
  * on every website page. It must:
@@ -102,6 +103,15 @@
         }
 
         return currentRedirectFromWindow();
+    }
+
+    function openNativeAuthModal(tab, redirectPath) {
+        var payload = {
+            tab: tab || 'login',
+            redirect: normalizeRedirect(redirectPath || currentRedirectFromWindow()),
+        };
+        window.__baderAuthAutoOpen = payload;
+        window.dispatchEvent(new CustomEvent('bader:auth-open', { detail: payload }));
     }
 
     function consumeAutoOpenRedirect() {
@@ -327,7 +337,7 @@
     }
 
     // ------------------------------------------------------------------
-    // 5. Open Clerk sign-in popup (replaces native modal)
+    // 5. Open Clerk sign-in popup for social login
     // ------------------------------------------------------------------
     function openClerkSignIn(e, redirectPath) {
         if (e) {
@@ -471,24 +481,22 @@
     }
 
     // ------------------------------------------------------------------
-    // 8. Intercept [data-bader-auth-open] clicks BEFORE main.js
-    //    Using capture phase = true so we fire before bubbling handlers
+    // 8. Intercept Clerk-specific triggers BEFORE main.js
     // ------------------------------------------------------------------
     function bindAuthTriggers() {
         document.addEventListener('click', function (e) {
             var trigger = e.target.closest
-                ? e.target.closest('.bader-auth-trigger, [data-bader-auth-open]')
+                ? e.target.closest('[data-bader-clerk-open]')
                 : null;
 
             if (trigger) {
-                // Prevent native auth modal from opening
                 e.preventDefault();
                 e.stopPropagation();
                 e.stopImmediatePropagation();
 
                 openClerkSignIn(e, resolveTriggerRedirect(trigger));
             }
-        }, true); // capture phase = runs BEFORE main.js bubbling handler
+        }, true);
     }
 
     // ------------------------------------------------------------------
@@ -537,7 +545,7 @@
             }
 
             if (autoOpenRedirect) {
-                openClerkSignIn(null, autoOpenRedirect);
+                openNativeAuthModal('login', autoOpenRedirect);
             }
         });
     }

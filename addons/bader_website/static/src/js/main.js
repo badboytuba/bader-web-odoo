@@ -2501,6 +2501,18 @@ odoo.define('bader_website.main', function (require) {
                 }
             });
 
+            window.addEventListener('bader:auth-open', function (ev) {
+                if (isSubmitting) return;
+                var detail = (ev && ev.detail) || {};
+                openModal(detail.tab || 'login', detail.redirect || currentRedirectFromWindow());
+            });
+
+            if (window.__baderAuthAutoOpen) {
+                var queuedOpen = window.__baderAuthAutoOpen;
+                window.__baderAuthAutoOpen = null;
+                openModal(queuedOpen.tab || 'login', queuedOpen.redirect || currentRedirectFromWindow());
+            }
+
             updatePersonaPanels();
         })();
 
