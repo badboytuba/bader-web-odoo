@@ -529,110 +529,122 @@ html.o_connected_user #wrapwrap>header#top {
 
 
 // -----------------------------------------------
-// 2b. Mobile Header Actions (Avatar + Cart)
+// 2b. Floating Bottom Navigation Bar (mobile only)
 // -----------------------------------------------
-.bader-mobile-header-actions {
-    gap: 6px;
-    margin-left: auto;
-    margin-right: 8px;
-    order: 90;
+.bader-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9990;
+    display: flex !important;
+    align-items: stretch;
+    height: calc(56px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    border-top: 1px solid rgba(0, 56, 65, 0.08);
+    box-shadow: 0 -4px 24px rgba(0, 56, 65, 0.08);
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
 
-    &__account {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.12);
-        color: $white !important;
-        font-size: 0.9rem;
-        text-decoration: none !important;
-        transition: background 0.2s ease;
-
-        &:hover { background: rgba(255, 255, 255, 0.2); }
+    &.is-hidden {
+        transform: translateY(100%);
     }
 
-    &__avatar {
-        display: inline-flex;
+    &__item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        border: 2px solid rgba(112, 212, 75, 0.5);
-        background: linear-gradient(145deg, rgba(0, 56, 65, 0.6), rgba(112, 212, 75, 0.2));
-        color: $white;
-        font-size: 0.8rem;
-        font-weight: 700;
-        cursor: pointer;
-        padding: 0;
-        overflow: hidden;
-        transition: border-color 0.2s ease, transform 0.2s ease;
-
-        &:hover, &:focus {
-            border-color: rgba(112, 212, 75, 0.8);
-            transform: scale(1.05);
-        }
-
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-    }
-
-    &__cart {
+        gap: 3px;
         position: relative;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.12);
-        color: $white !important;
-        font-size: 0.9rem;
+        color: #7a8d99;
         text-decoration: none !important;
-        transition: background 0.2s ease;
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        padding: 6px 0;
+        transition: color 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
 
-        &:hover { background: rgba(255, 255, 255, 0.2); }
+        i {
+            font-size: 1.15rem;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        &:hover,
+        &:focus {
+            color: $bader-dark;
+            text-decoration: none !important;
+        }
+
+        &:active i {
+            transform: scale(0.88);
+        }
+
+        // Active state (current page)
+        &.is-active {
+            color: $bader-dark;
+
+            i {
+                color: $bader-green-dark;
+            }
+
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 28px;
+                height: 3px;
+                border-radius: 0 0 3px 3px;
+                background: $bader-green;
+            }
+        }
     }
 
+    // Cart badge
     &__badge {
         position: absolute;
-        top: -2px;
-        right: -4px;
-        min-width: 18px;
-        height: 18px;
+        top: 4px;
+        right: 50%;
+        transform: translateX(calc(50% + 10px));
+        min-width: 16px;
+        height: 16px;
         border-radius: 999px;
         background: $bader-green;
         color: $bader-dark;
-        font-size: 0.6rem;
+        font-size: 0.55rem;
         font-weight: 800;
+        font-style: normal;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         padding: 0 4px;
         line-height: 1;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     }
 }
 
-// Mobile account panel (dropdown from avatar)
+// Account panel — now opens from bottom nav instead of header
 .bader-mobile-account-panel {
     position: fixed;
-    top: 60px;
+    bottom: calc(64px + env(safe-area-inset-bottom, 0px));
     right: 10px;
     width: 280px;
-    max-height: calc(100vh - 80px);
+    max-height: calc(100vh - 120px);
     overflow-y: auto;
     z-index: 10000;
     border-radius: 18px;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 -8px 48px rgba(0, 0, 0, 0.18);
     opacity: 0;
-    transform: translateY(-10px) scale(0.95);
+    transform: translateY(10px) scale(0.95);
     pointer-events: none;
     transition: opacity 0.2s ease, transform 0.2s ease;
 
@@ -640,6 +652,13 @@ html.o_connected_user #wrapwrap>header#top {
         opacity: 1;
         transform: translateY(0) scale(1);
         pointer-events: auto;
+    }
+}
+
+// Add bottom padding to body on mobile to avoid content hidden behind bottom nav
+@media (max-width: 991px) {
+    #wrapwrap {
+        padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
     }
 }
 

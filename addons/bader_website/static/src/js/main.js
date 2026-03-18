@@ -3451,7 +3451,46 @@ odoo.define('bader_website.main', function (require) {
         })();
 
         // ===================================================
-        // Mobile Header — Avatar Account Toggle
+        // Bottom Navigation — Active State + Scroll Hide
+        // ===================================================
+        (function initBottomNav() {
+            var bottomNav = document.getElementById('baderBottomNav');
+            if (!bottomNav) return;
+
+            // --- Active state based on current path ---
+            var path = window.location.pathname;
+            var items = bottomNav.querySelectorAll('[data-bader-nav]');
+            items.forEach(function (item) {
+                var nav = item.getAttribute('data-bader-nav');
+                var isActive = false;
+                if (nav === 'inicio' && (path === '/' || path === '')) isActive = true;
+                if (nav === 'productos' && (path.indexOf('/productos') === 0 || path.indexOf('/shop') === 0)) isActive = true;
+                if (nav === 'cuenta' && path.indexOf('/my') === 0) isActive = true;
+                if (nav === 'carrito' && path.indexOf('/shop/cart') === 0) isActive = true;
+                item.classList.toggle('is-active', isActive);
+            });
+
+            // --- Scroll hide: hide on scroll down, show on scroll up ---
+            var lastScroll = 0;
+            var scrollThreshold = 60;
+            window.addEventListener('scroll', function () {
+                var currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+                if (currentScroll < scrollThreshold) {
+                    bottomNav.classList.remove('is-hidden');
+                    lastScroll = currentScroll;
+                    return;
+                }
+                if (currentScroll > lastScroll + 10) {
+                    bottomNav.classList.add('is-hidden');
+                } else if (currentScroll < lastScroll - 10) {
+                    bottomNav.classList.remove('is-hidden');
+                }
+                lastScroll = currentScroll;
+            }, { passive: true });
+        })();
+
+        // ===================================================
+        // Bottom Nav — Account Panel Toggle
         // ===================================================
         (function initMobileAccountToggle() {
             var avatarBtn = document.querySelector('[data-bader-mobile-account-toggle]');
@@ -3482,12 +3521,13 @@ odoo.define('bader_website.main', function (require) {
 
             avatarBtn.addEventListener('click', function (e) {
                 e.stopPropagation();
+                e.preventDefault();
                 togglePanel();
             });
 
             document.addEventListener('click', function (e) {
                 if (panel && panel.classList.contains('is-open')) {
-                    if (!panel.contains(e.target) && e.target !== avatarBtn) {
+                    if (!panel.contains(e.target) && !avatarBtn.contains(e.target)) {
                         closePanel();
                     }
                 }
@@ -3531,11 +3571,8 @@ odoo.define('bader_website.main', function (require) {
                 if (!drawerEl) drawerEl = createDrawer();
                 clearTimeout(drawerTimeout);
                 drawerEl.classList.add('is-visible');
-                // Auto-dismiss after 5s
                 drawerTimeout = setTimeout(hideDrawer, 5000);
-
-                // Update mobile cart badge
-                updateMobileCartBadge();
+                updateBottomNavCartBadge();
             }
 
             function hideDrawer() {
@@ -3543,24 +3580,31 @@ odoo.define('bader_website.main', function (require) {
                 clearTimeout(drawerTimeout);
             }
 
-            function updateMobileCartBadge() {
+            function updateBottomNavCartBadge() {
                 try {
-                    var badgeEl = document.querySelector('.bader-mobile-header-actions__badge');
-                    var cartLink = document.querySelector('.bader-mobile-header-actions__cart');
-                    if (!cartLink) return;
+                    var badgeEl = document.querySelector('.bader-bottom-nav__badge');
+                    var cartItem = document.querySelector('[data-bader-nav="carrito"]');
+                    if (!cartItem) return;
                     var currentQty = badgeEl ? parseInt(badgeEl.textContent, 10) || 0 : 0;
                     var newQty = currentQty + 1;
                     if (badgeEl) {
                         badgeEl.textContent = newQty;
                     } else {
-                        var badge = document.createElement('span');
-                        badge.className = 'bader-mobile-header-actions__badge';
+                        var badge = document.createElement('em');
+                        badge.className = 'bader-bottom-nav__badge';
                         badge.textContent = newQty;
-                        cartLink.appendChild(badge);
+                        cartItem.appendChild(badge);
                     }
                     // Bounce animation on cart icon
-                    cartLink.style.transform = 'scale(1.25)';
-                    setTimeout(function () { cartLink.style.transform = ''; }, 300);
+                    var icon = cartItem.querySelector('i');
+                    if (icon) {
+                        icon.style.transform = 'scale(1.3)';
+                        icon.style.color = '#70D44B';
+                        setTimeout(function () {
+                            icon.style.transform = '';
+                            icon.style.color = '';
+                        }, 400);
+                    }
                 } catch (_) {}
             }
 
@@ -3568,10 +3612,10 @@ odoo.define('bader_website.main', function (require) {
             document.addEventListener('click', function (ev) {
                 var addBtn = ev.target.closest('.a-submit, [name="add"], .js_add_cart_json');
                 if (!addBtn) return;
-                // Show drawer after a short delay for Odoo to process
                 setTimeout(showDrawer, 600);
             });
         })();
+
 
     } // end initBader
 

@@ -33,41 +33,52 @@
                     <span><t t-esc="'Buscar productos' if bader_is_csp_strict_page else 'Buscar con IA'"/></span>
                 </a>
             </div>
+        </xpath>
 
-            <!-- Mobile header actions: Avatar + Cart (visible only on mobile) -->
-            <div class="bader-mobile-header-actions d-flex d-lg-none align-items-center">
-                <!-- Avatar / Tu Cuenta -->
+        <!-- ============================================
+             Mobile Bottom Navigation Bar (app-style)
+             ============================================ -->
+        <xpath expr="//header[@id='top']" position="after">
+            <nav class="bader-bottom-nav d-lg-none" id="baderBottomNav">
+                <a href="/" class="bader-bottom-nav__item" data-bader-nav="inicio">
+                    <i class="fa fa-home"/>
+                    <span>Inicio</span>
+                </a>
+                <a href="/productos" class="bader-bottom-nav__item" data-bader-nav="productos">
+                    <i class="fa fa-th-large"/>
+                    <span>Productos</span>
+                </a>
+
+                <!-- Cuenta: conditional public vs logged in -->
                 <t t-if="request.env.user._is_public()">
                     <a href="/web/login?redirect=/"
-                       class="bader-mobile-header-actions__account bader-auth-trigger"
+                       class="bader-bottom-nav__item bader-auth-trigger"
                        data-bader-auth-open="login"
                        data-bader-auth-redirect="/"
-                       title="Tu Cuenta">
+                       data-bader-nav="cuenta">
                         <i class="fa fa-user-o"/>
+                        <span>Cuenta</span>
                     </a>
                 </t>
                 <t t-else="">
-                    <t t-set="mha_user_initial" t-value="((request.env.user.name or request.env.user.login or 'U')[:1]).upper()"/>
                     <button type="button"
-                            class="bader-mobile-header-actions__avatar"
-                            data-bader-mobile-account-toggle="1"
-                            title="Mi Cuenta">
-                        <img t-if="request.env.user.avatar_128"
-                             t-att-src="image_data_uri(request.env.user.avatar_128)"
-                             t-att-alt="request.env.user.name or 'Usuario'"/>
-                        <span t-if="not request.env.user.avatar_128"
-                              t-esc="mha_user_initial"/>
+                            class="bader-bottom-nav__item"
+                            data-bader-nav="cuenta"
+                            data-bader-mobile-account-toggle="1">
+                        <i class="fa fa-user"/>
+                        <span>Cuenta</span>
                     </button>
                 </t>
 
-                <!-- Cart icon with badge -->
-                <a href="/shop/cart" class="bader-mobile-header-actions__cart" title="Carrito">
+                <!-- Carrito with badge -->
+                <a href="/shop/cart" class="bader-bottom-nav__item" data-bader-nav="carrito">
                     <i class="fa fa-shopping-cart"/>
+                    <span>Carrito</span>
                     <t t-set="cart_qty" t-value="website_sale_order and website_sale_order.cart_quantity or 0"/>
-                    <span t-if="cart_qty" class="bader-mobile-header-actions__badge"
-                          t-esc="cart_qty"/>
+                    <em t-if="cart_qty" class="bader-bottom-nav__badge"
+                        t-esc="cart_qty"/>
                 </a>
-            </div>
+            </nav>
         </xpath>
 
         <!-- Mobile drawer: app-style menu blocks -->
