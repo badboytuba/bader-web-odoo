@@ -99,24 +99,18 @@ class ClerkAuthController(http.Controller):
     @http.route("/clerk/login", type="http", auth="public", csrf=False,
                 website=True)
     def clerk_login(self, redirect=None, **kwargs):
-        """Redirect user to Clerk hosted sign-in page."""
+        """Redirect to a website page that auto-opens the Clerk sign-in modal."""
         config = _get_clerk_config()
         frontend_api = config["frontend_api"]
 
         if not frontend_api:
             return request.redirect("/web/login?native=1")
 
-        callback_url = request.httprequest.host_url.rstrip("/") + "/clerk/callback"
-        if redirect:
-            callback_url += "?redirect=%s" % http_requests.utils.quote(
-                redirect, safe=""
-            )
-
-        sign_in_url = "%s/sign-in?redirect_url=%s" % (
-            frontend_api,
-            http_requests.utils.quote(callback_url, safe=""),
+        redirect_path = redirect or "/"
+        bootstrap_url = "/?clerk_login=1&redirect=%s" % (
+            http_requests.utils.quote(redirect_path, safe="")
         )
-        return request.redirect(sign_in_url)
+        return request.redirect(bootstrap_url)
 
     @http.route("/clerk/callback", type="http", auth="public", csrf=False,
                 website=True)
@@ -213,7 +207,7 @@ class ClerkAuthController(http.Controller):
                 frontend_api,
                 http_requests.utils.quote(return_url, safe=""),
             )
-            return request.redirect(sign_out_url)
+            return request.redirect(sign_out_url, local=False)
 
         return request.redirect("/")
 

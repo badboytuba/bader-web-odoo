@@ -1,24 +1,112 @@
 /**
  * Clerk Authentication Frontend Integration
  *
- * Replaces the native Odoo auth modal (baderAuthModal) with
- * Clerk's sign-in popup. After authentication, creates an Odoo session
- * via /clerk/callback and shows user avatar + dropdown menu.
+ * Replaces the native Odoo auth modal with Clerk's sign-in popup when
+ * the website is configured to use Clerk. After authentication, creates
+ * an Odoo session via /clerk/callback and shows user avatar + dropdown menu.
  *
  * IMPORTANT: This file is registered in web.assets_frontend and loaded
- * on every page. It must:
+ * on every website page. It must:
  *   1. Fetch /clerk/config to get the publishable key
  *   2. Dynamically inject the Clerk.js CDN script with data-clerk-publishable-key
- *   3. Intercept clicks on [data-bader-auth-open] BEFORE main.js (capture phase)
- *   4. Prevent the native baderAuthModal from opening
+ *   3. Intercept clicks on [data-bader-auth-open] before the native modal
+ *   4. Prevent duplicate initialization when assets are loaded twice
  */
 (function () {
     'use strict';
 
+    if (window.__baderClerkAuthBootstrapped) {
+        return;
+    }
+
+    window.__baderClerkAuthBootstrapped = true;
+
     var CLERK_PK = '';
     var CLERK_FRONTEND_API = '';
+    var CLERK_SCRIPT_ID = 'bader-clerk-sdk';
     var _clerkReady = false;
     var _clerkLoading = null;
+    var _pendingRedirect = '/';
+
+    function isClerkAuthEnabled() {
+        var header = document.querySelector('header#top');
+        return !!header && header.getAttribute('data-bader-auth-provider') === 'clerk';
+    }
+
+    function normalizeRedirect(path) {
+        var value = (path || '').trim();
+        if (!value || value.charAt(0) !== '/' || value.indexOf('//') === 0) {
+            return '/';
+        }
+        if (value.indexOf('/clerk/') === 0) {
+            return '/';
+        }
+        return value;
+    }
+
+    function currentRedirectFromWindow() {
+        try {
+            var currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.delete('clerk_login');
+            currentUrl.searchParams.delete('redirect');
+            return normalizeRedirect(
+                currentUrl.pathname
+                + (currentUrl.search || '')
+                + (currentUrl.hash || '')
+            );
+        } catch (err) {
+            return normalizeRedirect(
+                window.location.pathname + (window.location.search || '') + (window.location.hash || '')
+            );
+        }
+    }
+
+    function resolveTriggerRedirect(trigger) {
+        if (!trigger) {
+            return currentRedirectFromWindow();
+        }
+
+        var explicitRedirect = trigger.getAttribute('data-bader-auth-redirect');
+        if (explicitRedirect) {
+            return normalizeRedirect(explicitRedirect);
+        }
+
+        var href = trigger.getAttribute('href') || '';
+        if (href) {
+            try {
+                var targetUrl = new URL(href, window.location.origin);
+                var redirectParam = targetUrl.searchParams.get('redirect');
+                if (redirectParam) {
+                    return normalizeRedirect(redirectParam);
+                }
+            } catch (err) {
+                return normalizeRedirect(href);
+            }
+        }
+
+        return currentRedirectFromWindow();
+    }
+
+    function consumeAutoOpenRedirect() {
+        try {
+            var currentUrl = new URL(window.location.href);
+            if (currentUrl.searchParams.get('clerk_login') !== '1') {
+                return '';
+            }
+            var redirectPath = normalizeRedirect(currentUrl.searchParams.get('redirect') || '/');
+            currentUrl.searchParams.delete('clerk_login');
+            currentUrl.searchParams.delete('redirect');
+            var cleanUrl = currentUrl.pathname;
+            if (currentUrl.searchParams.toString()) {
+                cleanUrl += '?' + currentUrl.searchParams.toString();
+            }
+            cleanUrl += currentUrl.hash || '';
+            window.history.replaceState({}, document.title, cleanUrl || '/');
+            return redirectPath;
+        } catch (err) {
+            return '';
+        }
+    }
 
     // ------------------------------------------------------------------
     // 1. Fetch Clerk config from Odoo (publishable key + frontend API)
@@ -50,7 +138,14 @@
                 return;
             }
 
+            var existingScript = document.getElementById(CLERK_SCRIPT_ID);
+            if (existingScript) {
+                waitForClerkReady(resolve, reject, 0);
+                return;
+            }
+
             var script = document.createElement('script');
+            script.id = CLERK_SCRIPT_ID;
             script.src = 'https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js';
             script.crossOrigin = 'anonymous';
             script.async = true;
@@ -165,7 +260,7 @@
                 return;
             }
             var callbackUrl = '/clerk/callback?token=' + encodeURIComponent(jwt);
-            callbackUrl += '&redirect=' + encodeURIComponent(window.location.pathname);
+            callbackUrl += '&redirect=' + encodeURIComponent(_pendingRedirect || currentRedirectFromWindow());
             console.log('[Clerk] Syncing session to Odoo...');
             window.location.href = callbackUrl;
         }).catch(function (err) {
@@ -176,17 +271,24 @@
     // ------------------------------------------------------------------
     // 5. Open Clerk sign-in popup (replaces native modal)
     // ------------------------------------------------------------------
-    function openClerkSignIn(e) {
+    function openClerkSignIn(e, redirectPath) {
         if (e) {
             e.preventDefault();
             e.stopPropagation();
             e.stopImmediatePropagation();
         }
 
+        _pendingRedirect = normalizeRedirect(redirectPath || currentRedirectFromWindow());
+
         ensureClerk().then(function (clerk) {
             if (!clerk) {
                 // Fallback to native Odoo login
                 window.location.href = '/web/login?native=1';
+                return;
+            }
+
+            if (clerk.session) {
+                syncClerkSessionToOdoo(clerk.session);
                 return;
             }
 
@@ -288,7 +390,7 @@
                 e.stopPropagation();
                 e.stopImmediatePropagation();
 
-                openClerkSignIn(e);
+                openClerkSignIn(e, resolveTriggerRedirect(trigger));
             }
         }, true); // capture phase = runs BEFORE main.js bubbling handler
     }
@@ -297,10 +399,20 @@
     // 9. Initialize
     // ------------------------------------------------------------------
     function init() {
+        if (!isClerkAuthEnabled()) {
+            return;
+        }
+
+        _pendingRedirect = currentRedirectFromWindow();
         console.log('[Clerk] Initializing auth integration...');
 
         // Bind click handler FIRST (capture phase, before main.js)
         bindAuthTriggers();
+
+        var autoOpenRedirect = consumeAutoOpenRedirect();
+        if (autoOpenRedirect) {
+            _pendingRedirect = autoOpenRedirect;
+        }
 
         // Then initialize Clerk SDK
         ensureClerk().then(function (clerk) {
@@ -318,6 +430,11 @@
                         syncClerkSessionToOdoo(clerk.session);
                     }
                 }
+                return;
+            }
+
+            if (autoOpenRedirect) {
+                openClerkSignIn(null, autoOpenRedirect);
             }
         });
     }

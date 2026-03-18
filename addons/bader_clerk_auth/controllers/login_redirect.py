@@ -7,14 +7,14 @@ import logging
 
 from odoo import http
 from odoo.http import request
-from odoo.addons.web.controllers.main import Home
+from odoo.addons.website.controllers.main import Website
 
 _logger = logging.getLogger(__name__)
 
 
-class ClerkLoginRedirect(Home):
+class ClerkLoginRedirect(Website):
 
-    @http.route("/web/login", type="http", auth="none")
+    @http.route(type="http", website=True, auth="public", sitemap=False)
     def web_login(self, redirect=None, **kwargs):
         """Override native login to redirect to Clerk sign-in.
 

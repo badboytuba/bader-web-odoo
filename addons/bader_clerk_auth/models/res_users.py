@@ -85,7 +85,7 @@ class ResUsers(models.Model):
         """Create a new Odoo user from Clerk data."""
         ICP = self.env["ir.config_parameter"].sudo()
         default_group_ref = ICP.get_param(
-            "clerk.default_user_group", "base.group_user"
+            "clerk.default_user_group", "base.group_portal"
         )
 
         group = self.env.ref(default_group_ref, raise_if_not_found=False)

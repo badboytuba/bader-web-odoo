@@ -90,6 +90,8 @@ class IrHttp(models.AbstractModel):
             "img-src 'self' data: blob: https:; "
             "font-src 'self' data: https:; "
             "connect-src 'self' https: wss:; "
+            "worker-src 'self' blob: https:; "
+            "child-src 'self' blob: https:; "
             "object-src 'none'; "
             "frame-src 'self' https:; "
             "frame-ancestors 'self'; "

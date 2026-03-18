@@ -24,8 +24,6 @@
     "assets": {
         "web.assets_frontend": [
             "bader_clerk_auth/static/src/css/clerk_auth.css",
-        ],
-        "web.assets_frontend_minimal": [
             "bader_clerk_auth/static/src/js/clerk_auth.js",
         ],
     },

@@ -8,6 +8,8 @@
               name="Bader Header Styling" customize_show="True" priority="50">
 
         <xpath expr="//header[@id='top']" position="before">
+            <t t-set="bader_clerk_enabled"
+               t-value="bool(request and request.env['ir.config_parameter'].sudo().get_param('clerk.frontend_api'))"/>
             <t t-set="bader_is_csp_strict_page"
                t-value="request and request.httprequest and request.httprequest.path in ['/terminos', '/privacidad', '/cookies']"/>
         </xpath>
@@ -15,6 +17,7 @@
         <!-- Add Bader class to header -->
         <xpath expr="//header[@id='top']" position="attributes">
             <attribute name="class" add="bader-header" separator=" "/>
+            <attribute name="t-att-data-bader-auth-provider">'clerk' if bader_clerk_enabled else 'odoo'</attribute>
         </xpath>
 
         <!-- Inject search pill AFTER the navbar collapse menu (right side) -->
@@ -731,7 +734,7 @@
                 </section>
             </div>
 
-            <t t-if="request.website.is_public_user()">
+            <t t-if="request.website.is_public_user() and not bader_clerk_enabled">
                 <div id="baderAuthModal" class="bader-auth-modal" aria-hidden="true">
                     <button type="button"
                             class="bader-auth-modal__backdrop"
