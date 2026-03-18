@@ -66,6 +66,14 @@ def _build_native_login_url(redirect_path="/web", login=None):
     return "/web/login?%s" % "&".join(query)
 
 
+def _build_clerk_logout_bootstrap_url(redirect_path="/"):
+    """Build a safe website URL that asks the browser SDK to sign out Clerk."""
+    safe_redirect = _safe_redirect_path(redirect_path, default="/")
+    return "/?clerk_logout=1&redirect=%s" % (
+        http_requests.utils.quote(safe_redirect, safe="")
+    )
+
+
 def _sync_website_session_flags(user):
     """Keep website session state aligned with external user onboarding."""
     commercial_partner = user.partner_id.commercial_partner_id.sudo()
@@ -264,22 +272,17 @@ class ClerkAuthController(http.Controller):
         )
         return request.redirect(redirect_url)
 
-    @http.route("/clerk/logout", type="http", auth="user", website=True)
-    def clerk_logout(self, **kwargs):
-        """Log out from Odoo and redirect to Clerk sign-out."""
-        config = _get_clerk_config()
+    @http.route("/clerk/logout", type="http", auth="public", website=True, csrf=False)
+    def clerk_logout(self, redirect=None, **kwargs):
+        """Clear Odoo first, then let the browser SDK sign out the Clerk session."""
+        redirect_path = _safe_redirect_path(redirect, default="/")
         request.session.logout()
 
-        frontend_api = config["frontend_api"]
-        if frontend_api:
-            return_url = request.httprequest.host_url.rstrip("/") + "/"
-            sign_out_url = "%s/sign-out?redirect_url=%s" % (
-                frontend_api,
-                http_requests.utils.quote(return_url, safe=""),
-            )
-            return request.redirect(sign_out_url, local=False)
+        config = _get_clerk_config()
+        if not config["frontend_api"]:
+            return request.redirect(redirect_path)
 
-        return request.redirect("/")
+        return request.redirect(_build_clerk_logout_bootstrap_url(redirect_path))
 
     @http.route(
         "/clerk/webhook",

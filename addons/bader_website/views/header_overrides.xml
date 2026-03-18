@@ -99,7 +99,7 @@
 
                     <div class="dropdown-divider"/>
 
-                    <a href="/web/session/logout?redirect=/"
+                    <a t-att-href="'/clerk/logout' if user_id.clerk_user_id else '/web/session/logout?redirect=/'"
                        role="menuitem"
                        id="o_logout"
                        class="dropdown-item bader-user-menu__item bader-user-menu__item--logout"

@@ -201,7 +201,7 @@
                             <a groups="base.group_user"
                                href="/web"
                                class="bader-mobile-account__admin"><i class="fa fa-shield"/> Panel Admin</a>
-                            <a href="/web/session/logout?redirect=/"
+                            <a t-att-href="'/clerk/logout' if request.env.user.clerk_user_id else '/web/session/logout?redirect=/'"
                                class="bader-mobile-account__logout"
                                data-bader-user-logout="1"
                                data-bader-user-logout-native="/web/session/logout?redirect=/"

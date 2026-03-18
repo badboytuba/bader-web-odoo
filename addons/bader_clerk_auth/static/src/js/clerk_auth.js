@@ -125,6 +125,27 @@
         }
     }
 
+    function consumeAutoLogoutRedirect() {
+        try {
+            var currentUrl = new URL(window.location.href);
+            if (currentUrl.searchParams.get('clerk_logout') !== '1') {
+                return '';
+            }
+            var redirectPath = normalizeRedirect(currentUrl.searchParams.get('redirect') || '/');
+            currentUrl.searchParams.delete('clerk_logout');
+            currentUrl.searchParams.delete('redirect');
+            var cleanUrl = currentUrl.pathname;
+            if (currentUrl.searchParams.toString()) {
+                cleanUrl += '?' + currentUrl.searchParams.toString();
+            }
+            cleanUrl += currentUrl.hash || '';
+            window.history.replaceState({}, document.title, cleanUrl || '/');
+            return redirectPath;
+        } catch (err) {
+            return '';
+        }
+    }
+
     // ------------------------------------------------------------------
     // 1. Fetch Clerk config from Odoo (publishable key + frontend API)
     // ------------------------------------------------------------------
@@ -282,6 +303,26 @@
             window.location.href = callbackUrl;
         }).catch(function (err) {
             console.error('[Clerk] Failed to get token:', err);
+        });
+    }
+
+    function performClerkLogout(clerk, redirectPath) {
+        var targetPath = normalizeRedirect(redirectPath || '/');
+        var targetUrl = new URL(targetPath, window.location.origin).toString();
+
+        if (!clerk || typeof clerk.signOut !== 'function') {
+            window.location.href = targetPath;
+            return;
+        }
+
+        if (!clerk.user && !clerk.session) {
+            window.location.href = targetPath;
+            return;
+        }
+
+        clerk.signOut({ redirectUrl: targetUrl }).catch(function (err) {
+            console.error('[Clerk] Failed to sign out:', err);
+            window.location.href = targetPath;
         });
     }
 
@@ -465,12 +506,18 @@
         bindAuthTriggers();
 
         var autoOpenRedirect = consumeAutoOpenRedirect();
+        var autoLogoutRedirect = consumeAutoLogoutRedirect();
         if (autoOpenRedirect) {
             _pendingRedirect = autoOpenRedirect;
         }
 
         // Then initialize Clerk SDK
         ensureClerk().then(function (clerk) {
+            if (autoLogoutRedirect) {
+                performClerkLogout(clerk, autoLogoutRedirect);
+                return;
+            }
+
             if (!clerk) return;
 
             // If user is already signed in via Clerk, show avatar
