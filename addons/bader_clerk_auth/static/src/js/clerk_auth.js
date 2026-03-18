@@ -496,16 +496,30 @@
     // ------------------------------------------------------------------
     function bindAuthTriggers() {
         document.addEventListener('click', function (e) {
-            var trigger = e.target.closest
+            // Intercept social buttons inside the modal (legacy)
+            var clerkOpenTrigger = e.target.closest
                 ? e.target.closest('[data-bader-clerk-open]')
                 : null;
 
-            if (trigger) {
+            if (clerkOpenTrigger) {
                 e.preventDefault();
                 e.stopPropagation();
                 e.stopImmediatePropagation();
+                openClerkSignIn(e, resolveTriggerRedirect(clerkOpenTrigger));
+                return;
+            }
 
-                openClerkSignIn(e, resolveTriggerRedirect(trigger));
+            // Intercept "Tu Cuenta" / auth-open triggers: skip custom modal,
+            // open Clerk's native sign-in UI directly (single click flow)
+            var authOpenTrigger = e.target.closest
+                ? e.target.closest('[data-bader-auth-open]')
+                : null;
+
+            if (authOpenTrigger) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                openClerkSignIn(e, resolveTriggerRedirect(authOpenTrigger));
             }
         }, true);
     }
