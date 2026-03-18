@@ -999,9 +999,7 @@ html.o_connected_user #wrapwrap>header#top {
         content: '';
         position: fixed;
         inset: 0;
-        background: rgba(0, 56, 65, 0.15);
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
+        background: rgba(0, 56, 65, 0.12);
         z-index: $z-header + 8;
         pointer-events: auto;
         cursor: pointer;
