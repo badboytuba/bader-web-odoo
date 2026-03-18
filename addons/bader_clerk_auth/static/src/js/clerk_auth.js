@@ -193,18 +193,22 @@
             // Close native modal if somehow open
             hideNativeAuthModal();
 
-            // Open Clerk sign-in popup
-            clerk.openSignIn({
-                afterSignInUrl: window.location.href,
-                afterSignUpUrl: window.location.href,
-            });
-
-            // Listen for successful sign-in
+            // Register listener BEFORE opening sign-in to catch the event
+            // (adding after openSignIn causes a race condition)
+            var _syncing = false;
             clerk.addListener(function (payload) {
-                if (payload && payload.session) {
+                if (_syncing) return;
+                if (payload && payload.session && payload.user) {
+                    _syncing = true;
+                    console.log('[Clerk] Sign-in detected:', payload.user.firstName);
                     syncClerkSessionToOdoo(payload.session);
                 }
             });
+
+            // Open Clerk sign-in popup
+            // DO NOT set afterSignInUrl — it causes page reload before
+            // our listener can fire and sync the session to Odoo
+            clerk.openSignIn();
         });
     }
 
