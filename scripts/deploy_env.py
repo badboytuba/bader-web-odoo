@@ -45,6 +45,7 @@ class DeploySettings:
     odoo_python: str
     odoo_bin: str
     odoo_config: str
+    odoo_upgrade_log_path: str
     db_name: str
     service_name: str
     log_path: str
@@ -95,9 +96,12 @@ def load_settings() -> DeploySettings:
             "DEPLOY_ODOO_CONFIG",
             default="/opt/odoo/conf/odoo-server.conf",
         ),
+        odoo_upgrade_log_path=_env_first(
+            "DEPLOY_ODOO_UPGRADE_LOG_PATH",
+            default="/tmp/odoo-module-upgrade.log",
+        ),
         db_name=_env_first("DEPLOY_DB_NAME", default="bader"),
         service_name=_env_first("DEPLOY_SERVICE_NAME", default="odoo"),
         log_path=_env_first("DEPLOY_LOG_PATH", default="/var/log/odoo/odoo.log"),
         use_sudo=_env_bool("DEPLOY_USE_SUDO", default=True),
     )
-

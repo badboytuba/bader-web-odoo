@@ -167,6 +167,7 @@ def upgrade_module(client: paramiko.SSHClient, module_name: str) -> int:
     cmd = (
         f"sudo -u odoo {shell_quote(SETTINGS.odoo_python)} {shell_quote(SETTINGS.odoo_bin)} "
         f"-c {shell_quote(SETTINGS.odoo_config)} "
+        f"--logfile={shell_quote(SETTINGS.odoo_upgrade_log_path)} "
         f"-d {shell_quote(SETTINGS.db_name)} -u {shell_quote(module_name)} --stop-after-init "
         "--http-port=8079 --gevent-port=8080 --workers=0 --max-cron-threads=0"
     )
