@@ -10,6 +10,10 @@
         <xpath expr="//header[@id='top']" position="before">
             <t t-set="bader_clerk_enabled"
                t-value="bool(request and request.env['ir.config_parameter'].sudo().get_param('clerk.frontend_api'))"/>
+            <t t-set="bader_has_clerk_field"
+               t-value="bool(request and 'clerk_user_id' in request.env.user._fields)"/>
+            <t t-set="bader_odoo_clerk_id"
+               t-value="request.env.user.clerk_user_id if bader_has_clerk_field else ''"/>
             <t t-set="bader_is_csp_strict_page"
                t-value="request and request.httprequest and request.httprequest.path in ['/terminos', '/privacidad', '/cookies']"/>
         </xpath>
@@ -19,8 +23,9 @@
             <attribute name="class" add="bader-header" separator=" "/>
             <attribute name="t-att-data-bader-auth-provider">'clerk' if bader_clerk_enabled else 'odoo'</attribute>
             <attribute name="t-att-data-bader-odoo-authenticated">'1' if not request.website.is_public_user() else '0'</attribute>
-            <attribute name="t-att-data-bader-odoo-clerk-user">'1' if not request.website.is_public_user() and request.env.user.clerk_user_id else '0'</attribute>
-            <attribute name="t-att-data-bader-odoo-clerk-id">request.env.user.clerk_user_id or ''</attribute>
+            <attribute name="t-att-data-bader-odoo-clerk-user">'1' if not request.website.is_public_user() and bader_odoo_clerk_id else '0'</attribute>
+            <attribute name="t-att-data-bader-odoo-clerk-id">bader_odoo_clerk_id or ''</attribute>
+            <attribute name="t-att-data-bader-internal-hosts">request.website._bader_internal_hosts_csv()</attribute>
         </xpath>
 
         <!-- Inject search pill AFTER the navbar collapse menu (right side) -->
@@ -247,7 +252,7 @@
                             <a groups="base.group_user"
                                href="/web"
                                class="bader-mobile-account__admin"><i class="fa fa-shield"/> Panel Admin</a>
-                            <a t-att-href="'/clerk/logout' if request.env.user.clerk_user_id else '/web/session/logout?redirect=/'"
+                            <a t-att-href="'/clerk/logout' if bader_odoo_clerk_id else '/web/session/logout?redirect=/'"
                                class="bader-mobile-account__logout"
                                data-bader-user-logout="1"
                                data-bader-user-logout-native="/web/session/logout?redirect=/"

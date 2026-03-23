@@ -39,6 +39,7 @@
         'views/account_pages.xml',
         'views/shop.xml',
         'views/product_detail.xml',
+        'views/product_intelligence_bridge.xml',
         # New pages
         'views/sobre_nosotros.xml',
         'views/ser_distribuidor.xml',

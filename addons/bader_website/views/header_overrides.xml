@@ -23,6 +23,8 @@
         <xpath expr="//li[@t-if='is_connected']" position="replace">
             <li t-if="is_connected"
                 t-attf-class="#{_item_class} o_no_autohide_item bader-user-menu">
+                <t t-set="bader_user_clerk_id"
+                   t-value="user_id.clerk_user_id if 'clerk_user_id' in user_id._fields else ''"/>
                 <t t-set="user_display_email" t-value="user_id.email or user_id.login or ''"/>
                 <t t-set="user_initial" t-value="((user_id.name or user_display_email or 'U')[:1]).upper()"/>
 
@@ -99,7 +101,7 @@
 
                     <div class="dropdown-divider"/>
 
-                    <a t-att-href="'/clerk/logout' if user_id.clerk_user_id else '/web/session/logout?redirect=/'"
+                    <a t-att-href="'/clerk/logout' if bader_user_clerk_id else '/web/session/logout?redirect=/'"
                        role="menuitem"
                        id="o_logout"
                        class="dropdown-item bader-user-menu__item bader-user-menu__item--logout"

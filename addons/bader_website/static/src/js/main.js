@@ -70,24 +70,23 @@ odoo.define('bader_website.main', function (require) {
 
         // ---- 0. DOMAIN GUARD — keep internal links on current host ----
         (function initDomainGuard() {
-            var LEGACY_HOSTS = {
-                'shop.bader.com.ar': true,
-                'www.shop.bader.com.ar': true,
-                'bader.com.ar': true,
-                'www.bader.com.ar': true,
-                'bader4business.com': true,
-                'www.bader4business.com': true,
-                'qas.bader4business.com': true,
-                'www.qas.bader4business.com': true,
-                'bader.es': true,
-                'www.bader.es': true,
-            };
+            var headerEl = document.querySelector('header#top');
+            var rawHosts = headerEl ? (headerEl.getAttribute('data-bader-internal-hosts') || '') : '';
+            var INTERNAL_HOSTS = rawHosts
+                .split(/[\s,;]+/)
+                .map(function (value) { return String(value || '').trim().toLowerCase(); })
+                .filter(function (value) { return value; });
+
+            if (window.location.hostname) {
+                INTERNAL_HOSTS.push(String(window.location.hostname).toLowerCase());
+            }
 
             function shouldNormalizeHost(hostname) {
                 var host = String(hostname || '').toLowerCase();
                 if (!host) return false;
-                if (LEGACY_HOSTS[host]) return true;
-                return /(?:^|\.)bader4business\.com$/.test(host) || /(?:^|\.)bader\.com\.ar$/.test(host) || /(?:^|\.)bader\.es$/.test(host);
+                return INTERNAL_HOSTS.some(function (alias) {
+                    return host === alias || host.slice(-1 * (alias.length + 1)) === '.' + alias;
+                });
             }
 
             function normalizeToRelative(rawUrl) {
