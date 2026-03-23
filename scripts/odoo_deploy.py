@@ -150,7 +150,7 @@ def cleanup_remote_stage(client: paramiko.SSHClient, stage_dir: str) -> None:
 def fix_line_endings(client: paramiko.SSHClient, remote_dir: str) -> None:
     print("Fixing line endings (CRLF -> LF)")
     cmd = (
-        f"find {shell_quote(remote_dir)} -type f \\( -name '*.xml' -o -name '*.py' -o -name '*.scss' "
+        f"sudo find {shell_quote(remote_dir)} -type f \\( -name '*.xml' -o -name '*.py' -o -name '*.scss' "
         f"-o -name '*.js' -o -name '*.csv' -o -name '*.txt' \\) "
         f"-exec sed -i 's/\\r$//' {{}} +"
     )

@@ -17,11 +17,11 @@
         </record>
         <record id="clerk_jwks_url" model="ir.config_parameter">
             <field name="key">clerk.jwks_url</field>
-            <field name="value">https://assured-toad-74.clerk.accounts.dev/.well-known/jwks.json</field>
+            <field name="value"></field>
         </record>
         <record id="clerk_frontend_api" model="ir.config_parameter">
             <field name="key">clerk.frontend_api</field>
-            <field name="value">https://assured-toad-74.clerk.accounts.dev</field>
+            <field name="value"></field>
         </record>
         <record id="clerk_default_group" model="ir.config_parameter">
             <field name="key">clerk.default_user_group</field>

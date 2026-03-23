@@ -12,11 +12,11 @@
     """,
     "author": "Bader",
     "website": "https://bader4business.com",
-    "depends": ["base", "web", "website"],
+    "depends": ["base", "web", "website", "bader_website"],
     "data": [
         "security/ir.model.access.csv",
         "data/ir_config_parameter.xml",
-        "views/assets.xml",
+        "views/res_config_settings_views.xml",
     ],
     "external_dependencies": {
         "python": ["PyJWT", "cryptography"],
