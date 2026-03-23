@@ -1,88 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="bpi_product_detail_extensions"
-              inherit_id="bader_website.bader_product_detail_page"
-              name="Producto Intelligence Website Extensions"
-              priority="60">
-
-        <xpath expr="//section[@id='bader_pdp_faq']" position="before">
-            <section class="bpi-website-shell" t-if="product.bpi_ai_generated_description">
-                <div class="bpi-website-shell__head">
-                    <span class="bpi-website-shell__eyebrow">Producto Intelligence</span>
-                    <h2>Descripción optimizada con Nancy AI</h2>
-                </div>
-                <div class="bpi-website-shell__body">
-                    <div t-field="product.bpi_ai_generated_description"/>
-                </div>
-            </section>
-
-            <section class="bpi-website-shell" t-if="product.bpi_video_url">
-                <div class="bpi-website-shell__head">
-                    <span class="bpi-website-shell__eyebrow">Video del producto</span>
-                    <h2>Mirá el producto en contexto</h2>
-                </div>
-                <div class="bpi-website-shell__body bpi-website-shell__body--video">
-                    <iframe t-if="product.bpi_video_embed_url"
-                            t-att-src="product.bpi_video_embed_url"
-                            title="Video del producto"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen="allowfullscreen"/>
-                    <a t-else=""
-                       class="bader-app-faq-cta__button"
-                       t-att-href="product.bpi_video_url"
-                       target="_blank"
-                       rel="noopener">
-                        Abrir video
-                    </a>
-                </div>
-            </section>
-        </xpath>
-
-        <xpath expr="//section[@id='bader_pdp_faq']//div[hasclass('bader-app-faq-list')]" position="replace">
-            <div class="bader-app-faq-list">
-                <t t-set="bpi_public_faqs" t-value="product.sudo().bpi_faq_ids.sorted('sequence')"/>
-                <t t-if="bpi_public_faqs">
-                    <article class="bader-app-faq-item"
-                             t-foreach="bpi_public_faqs"
-                             t-as="faq">
-                        <span class="bader-app-faq-item__index" t-esc="faq_index + 1"/>
-                        <div class="bader-app-faq-item__body">
-                            <h3 t-esc="faq.question"/>
-                            <p t-esc="faq.answer"/>
-                        </div>
-                    </article>
-                </t>
-                <t t-else="">
-                    <article class="bader-app-faq-item">
-                        <span class="bader-app-faq-item__index">1</span>
-                        <div class="bader-app-faq-item__body">
-                            <h3>Este producto tiene garantia oficial?</h3>
-                            <p>Si. Todos los equipos Bader cuentan con garantia oficial y soporte tecnico especializado.</p>
-                        </div>
-                    </article>
-                    <article class="bader-app-faq-item">
-                        <span class="bader-app-faq-item__index">2</span>
-                        <div class="bader-app-faq-item__body">
-                            <h3>El envio esta incluido?</h3>
-                            <p>Si. Ofrecemos envio sin cargo y coordinacion comercial para que la entrega no genere friccion.</p>
-                        </div>
-                    </article>
-                    <article class="bader-app-faq-item">
-                        <span class="bader-app-faq-item__index">3</span>
-                        <div class="bader-app-faq-item__body">
-                            <h3>Se puede financiar en cuotas?</h3>
-                            <p>Si. Puedes acceder a financiacion de hasta 12 cuotas segun el medio de pago habilitado.</p>
-                        </div>
-                    </article>
-                    <article class="bader-app-faq-item">
-                        <span class="bader-app-faq-item__index">4</span>
-                        <div class="bader-app-faq-item__body">
-                            <h3>Puedo recibir asesoria antes de comprar?</h3>
-                            <p>Si. Nuestro equipo comercial y tecnico te ayuda a validar si este producto encaja con tu caso.</p>
-                        </div>
-                    </article>
-                </t>
-            </div>
-        </xpath>
-    </template>
+    <record id="bpi_product_detail_extensions" model="ir.ui.view">
+        <field name="name">bader.product.intelligence.website.bridge.deprecated</field>
+        <field name="type">qweb</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="arch" type="xml">
+            <t t-name="bader_product_intelligence.bpi_product_detail_extensions_deprecated"/>
+        </field>
+    </record>
 </odoo>

@@ -1,9 +1,3 @@
-@font-face {
-    font-family: "BaderSans";
-    src: url("/bader_website/static/src/font/BaderSans.otf") format("opentype");
-    font-display: swap;
-}
-
 $bpi-dark: #003841;
 $bpi-green: #70d44b;
 $bpi-green-soft: #eafbe3;
@@ -84,7 +78,7 @@ $bpi-orange: #ff8122;
     }
 
     h1 {
-        font-family: "BaderSans", "Helvetica Neue", Arial, sans-serif;
+        font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
         font-size: 28px;
         line-height: 1.1;
         color: $bpi-dark;

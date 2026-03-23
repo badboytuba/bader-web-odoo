@@ -22,7 +22,6 @@ Replica dentro de Odoo las capacidades principales del módulo Product Intellige
         "product",
         "web",
         "website_sale",
-        "bader_website",
     ],
     "data": [
         "security/ir.model.access.csv",
@@ -44,6 +43,9 @@ Replica dentro de Odoo las capacidades principales del módulo Product Intellige
         "web.assets_frontend": [
             "bader_product_intelligence/static/src/scss/product_intelligence.scss",
         ],
+    },
+    "external_dependencies": {
+        "python": ["requests"],
     },
     "installable": True,
     "application": True,
