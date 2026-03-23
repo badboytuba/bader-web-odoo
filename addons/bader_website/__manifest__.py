@@ -29,7 +29,6 @@
     ],
     'data': [
         'security/ir.model.access.csv',
-        'views/assets.xml',
         'views/header.xml',
         'views/header_overrides.xml',
         'views/footer.xml',
