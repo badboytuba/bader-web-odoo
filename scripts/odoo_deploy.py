@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deploy Odoo modules to the production server.
+"""Deploy Odoo modules to the QAS server.
 
 Usage:
   python scripts/odoo_deploy.py <module_name>
@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import shlex
 import socket
 import subprocess
 import sys
@@ -21,21 +22,16 @@ from urllib.parse import urljoin
 from urllib.request import Request, urlopen
 
 import paramiko
-from dotenv import load_dotenv
+from deploy_env import load_settings
 
 
-ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
-load_dotenv(ENV_PATH)
+SETTINGS = load_settings()
 
-HOST = os.getenv("DEPLOY_HOST")
-PORT = int(os.getenv("DEPLOY_PORT", 22))
-USER = os.getenv("DEPLOY_USER")
-PASSWORD = os.getenv("DEPLOY_PASSWORD")
-
-REMOTE_BADER_PATH = "/opt/odoo/src/bader"
+REMOTE_BADER_PATH = SETTINGS.remote_addons_path
+REMOTE_STAGE_ROOT = SETTINGS.remote_stage_path
 LOCAL_ADDONS_PATH = Path(__file__).resolve().parent.parent / "addons"
 SCRIPTS_PATH = Path(__file__).resolve().parent
-DEFAULT_AUDIT_URL = os.getenv("WEB_AUDIT_BASE_URL", "https://qas.bader4business.com").rstrip("/")
+DEFAULT_AUDIT_URL = SETTINGS.base_url
 DEFAULT_READY_PATHS = (
     "/web/login",
     "/",
@@ -47,13 +43,7 @@ SKIP_DIRS = {"__pycache__", ".git", "node_modules"}
 
 
 def ensure_env() -> None:
-    missing = [
-        name for name, value in [
-            ("DEPLOY_HOST", HOST),
-            ("DEPLOY_USER", USER),
-            ("DEPLOY_PASSWORD", PASSWORD),
-        ] if not value
-    ]
+    missing = SETTINGS.missing_ssh_vars()
     if missing:
         print("ERROR: missing env vars: %s" % ", ".join(missing))
         sys.exit(1)
@@ -62,7 +52,13 @@ def ensure_env() -> None:
 def get_ssh_client() -> paramiko.SSHClient:
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(HOST, port=PORT, username=USER, password=PASSWORD, timeout=15)
+    client.connect(
+        SETTINGS.host,
+        port=SETTINGS.port,
+        username=SETTINGS.user,
+        password=SETTINGS.password,
+        timeout=15,
+    )
     return client
 
 
@@ -79,17 +75,38 @@ def ssh_exec(client: paramiko.SSHClient, cmd: str, timeout: int = 60) -> int:
     return exit_code
 
 
-def upload_module(sftp: paramiko.SFTPClient, module_name: str) -> str:
+def shell_quote(value: str) -> str:
+    return shlex.quote(value)
+
+
+def prepare_remote_stage(client: paramiko.SSHClient, stage_dir: str) -> None:
+    cmd = "rm -rf %s && mkdir -p %s" % (
+        shell_quote(stage_dir),
+        shell_quote(stage_dir),
+    )
+    code = ssh_exec(client, cmd, timeout=20)
+    if code != 0:
+        print(f"ERROR: failed to prepare remote stage dir {stage_dir}")
+        sys.exit(code)
+
+
+def upload_module(
+    client: paramiko.SSHClient,
+    sftp: paramiko.SFTPClient,
+    module_name: str,
+) -> tuple[str, str]:
     local_dir = LOCAL_ADDONS_PATH / module_name
     remote_dir = f"{REMOTE_BADER_PATH}/{module_name}"
+    stage_dir = f"{REMOTE_STAGE_ROOT}/{module_name}"
     if not local_dir.is_dir():
         print(f"ERROR: module '{module_name}' not found at {local_dir}")
         sys.exit(1)
 
-    print(f"Uploading {module_name} -> {remote_dir}")
-    _upload_dir(sftp, str(local_dir), remote_dir)
+    prepare_remote_stage(client, stage_dir)
+    print(f"Uploading {module_name} -> {stage_dir}")
+    _upload_dir(sftp, str(local_dir), stage_dir)
     print(f"Upload complete: {module_name}")
-    return remote_dir
+    return stage_dir, remote_dir
 
 
 def _upload_dir(sftp: paramiko.SFTPClient, local_path: str, remote_path: str) -> None:
@@ -110,10 +127,28 @@ def _upload_dir(sftp: paramiko.SFTPClient, local_path: str, remote_path: str) ->
             print(f"  file: {item}")
 
 
+def promote_module(client: paramiko.SSHClient, stage_dir: str, remote_dir: str) -> int:
+    print(f"Promoting staged module into {remote_dir}")
+    cmd = (
+        "sudo mkdir -p {remote_dir} && "
+        "sudo rsync -rlptD --delete {stage_dir_src} {remote_dir_src} && "
+        "sudo chown -R odoo:odoo {remote_dir}"
+    ).format(
+        remote_dir=shell_quote(remote_dir),
+        stage_dir_src=shell_quote(stage_dir.rstrip("/") + "/"),
+        remote_dir_src=shell_quote(remote_dir.rstrip("/") + "/"),
+    )
+    return ssh_exec(client, cmd, timeout=180)
+
+
+def cleanup_remote_stage(client: paramiko.SSHClient, stage_dir: str) -> None:
+    ssh_exec(client, "rm -rf %s" % shell_quote(stage_dir), timeout=20)
+
+
 def fix_line_endings(client: paramiko.SSHClient, remote_dir: str) -> None:
     print("Fixing line endings (CRLF -> LF)")
     cmd = (
-        f"find {remote_dir} -type f \\( -name '*.xml' -o -name '*.py' -o -name '*.scss' "
+        f"find {shell_quote(remote_dir)} -type f \\( -name '*.xml' -o -name '*.py' -o -name '*.scss' "
         f"-o -name '*.js' -o -name '*.csv' -o -name '*.txt' \\) "
         f"-exec sed -i 's/\\r$//' {{}} +"
     )
@@ -122,15 +157,15 @@ def fix_line_endings(client: paramiko.SSHClient, remote_dir: str) -> None:
 
 def restart_odoo(client: paramiko.SSHClient) -> int:
     print("Restarting Odoo service...")
-    return ssh_exec(client, "systemctl restart odoo", timeout=90)
+    return ssh_exec(client, f"sudo systemctl restart {shell_quote(SETTINGS.service_name)}", timeout=90)
 
 
 def upgrade_module(client: paramiko.SSHClient, module_name: str) -> int:
     print(f"Upgrading module: {module_name}")
     cmd = (
-        "sudo -u odoo /opt/odoo/.venv/bin/python /opt/odoo/src/odoo/odoo-bin "
-        "-c /opt/odoo/conf/odoo-server.conf "
-        f"-d bader -u {module_name} --stop-after-init "
+        f"sudo -u odoo {shell_quote(SETTINGS.odoo_python)} {shell_quote(SETTINGS.odoo_bin)} "
+        f"-c {shell_quote(SETTINGS.odoo_config)} "
+        f"-d {shell_quote(SETTINGS.db_name)} -u {shell_quote(module_name)} --stop-after-init "
         "--http-port=8079 --gevent-port=8080 --workers=0 --max-cron-threads=0"
     )
     return ssh_exec(client, cmd, timeout=240)
@@ -290,8 +325,18 @@ def main() -> None:
             return
 
         sftp = client.open_sftp()
-        remote_dir = upload_module(sftp, args.module)
-        sftp.close()
+        stage_dir = ""
+        try:
+            stage_dir, remote_dir = upload_module(client, sftp, args.module)
+        finally:
+            sftp.close()
+
+        promote_code = promote_module(client, stage_dir, remote_dir)
+        if promote_code != 0:
+            print(f"ERROR: module promotion failed with exit code {promote_code}")
+            sys.exit(promote_code)
+
+        cleanup_remote_stage(client, stage_dir)
 
         fix_line_endings(client, remote_dir)
 

@@ -10,36 +10,20 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import os
 import re
 import sys
 from collections import Counter
-from pathlib import Path
 
 import paramiko
-from dotenv import load_dotenv
+from deploy_env import load_settings
 
 
-ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
-load_dotenv(ENV_PATH)
-
-HOST = os.getenv("DEPLOY_HOST")
-PORT = int(os.getenv("DEPLOY_PORT", 22))
-USER = os.getenv("DEPLOY_USER")
-PASSWORD = os.getenv("DEPLOY_PASSWORD")
-LOG_PATH = "/var/log/odoo/odoo.log"
+SETTINGS = load_settings()
+LOG_PATH = SETTINGS.log_path
 
 
 def ensure_env() -> None:
-    missing = [
-        name
-        for name, value in [
-            ("DEPLOY_HOST", HOST),
-            ("DEPLOY_USER", USER),
-            ("DEPLOY_PASSWORD", PASSWORD),
-        ]
-        if not value
-    ]
+    missing = SETTINGS.missing_ssh_vars()
     if missing:
         print("ERROR: missing env vars: %s" % ", ".join(missing))
         sys.exit(1)
@@ -49,7 +33,13 @@ def ssh_exec(command: str, timeout: int = 40) -> tuple[str, str, int]:
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     try:
-        client.connect(HOST, port=PORT, username=USER, password=PASSWORD, timeout=15)
+        client.connect(
+            SETTINGS.host,
+            port=SETTINGS.port,
+            username=SETTINGS.user,
+            password=SETTINGS.password,
+            timeout=15,
+        )
         _stdin, stdout, stderr = client.exec_command(command, timeout=timeout)
         code = stdout.channel.recv_exit_status()
         out = stdout.read().decode("utf-8", errors="replace")
@@ -134,4 +124,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

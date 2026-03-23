@@ -1,24 +1,25 @@
 """Clear asset cache and restart Odoo."""
-import paramiko, os, sys
-from pathlib import Path
-from dotenv import load_dotenv
+import paramiko
+import sys
+
+from deploy_env import load_settings
 
 sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+SETTINGS = load_settings()
 
 c = paramiko.SSHClient()
 c.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 c.connect(
-    os.getenv("DEPLOY_HOST"),
-    port=int(os.getenv("DEPLOY_PORT", 22)),
-    username=os.getenv("DEPLOY_USER"),
-    password=os.getenv("DEPLOY_PASSWORD"),
+    SETTINGS.host,
+    port=SETTINGS.port,
+    username=SETTINGS.user,
+    password=SETTINGS.password,
     timeout=15,
 )
 
 cmds = [
-    "sudo -u odoo psql -d bader -c \"DELETE FROM ir_attachment WHERE res_model='ir.ui.view' AND name LIKE '%assets_%';\" 2>&1",
-    "systemctl restart odoo 2>&1 && echo Odoo_restarted",
+    f"sudo -u odoo psql -d {SETTINGS.db_name} -c \"DELETE FROM ir_attachment WHERE res_model='ir.ui.view' AND name LIKE '%assets_%';\" 2>&1",
+    f"sudo systemctl restart {SETTINGS.service_name} 2>&1 && echo Odoo_restarted",
 ]
 
 for cmd in cmds:

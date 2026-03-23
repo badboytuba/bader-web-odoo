@@ -8,7 +8,7 @@ Checks:
 
 Usage:
   python scripts/web_qa_audit.py
-  python scripts/web_qa_audit.py --base-url https://qas.bader4business.com
+  python scripts/web_qa_audit.py --base-url https://qas.bader.com.ar
   python scripts/web_qa_audit.py --timeout 20 --perf-warn-ms 1400 --perf-fail-ms 2600
 """
 
@@ -40,7 +40,7 @@ MENU_XML_PATH = ROOT / "addons" / "bader_website" / "data" / "website_menu.xml"
 load_dotenv(ENV_PATH)
 
 
-DEFAULT_BASE_URL = os.getenv("WEB_AUDIT_BASE_URL", "https://qas.bader4business.com").rstrip("/")
+DEFAULT_BASE_URL = os.getenv("WEB_AUDIT_BASE_URL", "https://qas.bader.com.ar").rstrip("/")
 DEFAULT_TIMEOUT = 15
 
 # Functional markers are intentionally lightweight: they detect severe template/render regressions.

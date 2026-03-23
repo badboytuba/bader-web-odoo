@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 from urllib.parse import urlsplit
 
 from odoo import api, models
@@ -6,6 +7,60 @@ from odoo import api, models
 
 class Website(models.Model):
     _inherit = "website"
+
+    @api.model
+    def _bader_parse_host_aliases(self, raw_value):
+        aliases = set()
+        for chunk in re.split(r"[\s,;]+", raw_value or ""):
+            candidate = (chunk or "").strip().lower()
+            if not candidate:
+                continue
+            if "://" not in candidate:
+                candidate = "https://%s" % candidate.lstrip("/")
+            try:
+                host = (urlsplit(candidate).hostname or "").strip().lower()
+            except Exception:
+                host = ""
+            if not host:
+                continue
+            aliases.add(host)
+            if host.startswith("www."):
+                aliases.add(host[4:])
+        return aliases
+
+    @api.model
+    def _bader_internal_hosts(self, website=False):
+        default_hosts = {
+            "shop.bader.com.ar",
+            "www.shop.bader.com.ar",
+            "bader.com.ar",
+            "www.bader.com.ar",
+            "bader4business.com",
+            "www.bader4business.com",
+            "qas.bader.com.ar",
+            "www.qas.bader.com.ar",
+            "bader.es",
+            "www.bader.es",
+        }
+        configured_hosts = self._bader_parse_host_aliases(
+            self.env["ir.config_parameter"].sudo().get_param(
+                "bader_website.internal_host_aliases",
+                "",
+            )
+        )
+        website_hosts = self._bader_parse_host_aliases(
+            website.domain if website else ""
+        )
+        return default_hosts | configured_hosts | website_hosts
+
+    @api.model
+    def _bader_internal_hosts_csv(self):
+        website = self[:1] if self else self.env["website"]
+        if website:
+            hosts = website._bader_internal_hosts(website)
+        else:
+            hosts = self._bader_internal_hosts()
+        return ",".join(sorted(hosts))
 
     @api.model
     def bader_sync_frontend_menus(self):
@@ -16,18 +71,6 @@ class Website(models.Model):
         lang_model = self.env["res.lang"].sudo()
         all_lang_codes = set(lang_model.search([]).mapped("code"))
         es_lang = lang_model.search([("code", "=", "es_ES")], limit=1)
-        internal_hosts = {
-            "shop.bader.com.ar",
-            "www.shop.bader.com.ar",
-            "bader.com.ar",
-            "www.bader.com.ar",
-            "bader4business.com",
-            "www.bader4business.com",
-            "qas.bader4business.com",
-            "www.qas.bader4business.com",
-            "bader.es",
-            "www.bader.es",
-        }
 
         canonical_items = [
             {"name": "Home", "url": "/", "sequence": 10, "aliases": ["/home"]},
@@ -128,6 +171,7 @@ class Website(models.Model):
         ]
 
         canonical_urls = set()
+        internal_hosts = self._bader_internal_hosts()
 
         def collect_urls(items):
             for item in items:
@@ -146,11 +190,9 @@ class Website(models.Model):
                 try:
                     parsed = urlsplit(cleaned)
                     host = (parsed.hostname or "").lower()
-                    if (
-                        host in internal_hosts
-                        or host.endswith(".bader4business.com")
-                        or host.endswith(".bader.com.ar")
-                        or host.endswith(".bader.es")
+                    if host and any(
+                        host == alias or host.endswith(".%s" % alias)
+                        for alias in internal_hosts
                     ):
                         cleaned = parsed.path or "/"
                         if parsed.query:
@@ -225,6 +267,7 @@ class Website(models.Model):
 
         for website in websites:
             website_updates = {}
+            internal_hosts = website._bader_internal_hosts(website)
             root_menu = menu_model.search([
                 ("website_id", "=", website.id),
                 ("parent_id", "=", False),

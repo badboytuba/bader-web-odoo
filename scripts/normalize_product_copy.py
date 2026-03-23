@@ -6,22 +6,15 @@ from __future__ import annotations
 import argparse
 import csv
 import json
-import os
 import sys
 from pathlib import Path
 
 import paramiko
-from dotenv import load_dotenv
+from deploy_env import load_settings
 
 
 ROOT = Path(__file__).resolve().parent.parent
-ENV_PATH = ROOT / ".env"
-load_dotenv(ENV_PATH)
-
-HOST = os.getenv("DEPLOY_HOST", "").strip()
-PORT = int(os.getenv("DEPLOY_PORT", "22").strip())
-USER = os.getenv("DEPLOY_USER", "").strip()
-PASSWORD = os.getenv("DEPLOY_PASSWORD", "").strip()
+SETTINGS = load_settings()
 
 GENERIC_SUMMARY = (
     "Producto profesional Bader con respaldo oficial, envio coordinado y "
@@ -49,20 +42,14 @@ def parse_args() -> argparse.Namespace:
 
 
 def ensure_env() -> None:
-    missing = [
-        name for name, value in (
-            ("DEPLOY_HOST", HOST),
-            ("DEPLOY_USER", USER),
-            ("DEPLOY_PASSWORD", PASSWORD),
-        ) if not value
-    ]
+    missing = SETTINGS.missing_ssh_vars()
     if missing:
         raise RuntimeError("Missing deploy environment variables: %s" % ", ".join(missing))
 
 
 def remote_code(options: dict[str, object]) -> str:
     options_json = json.dumps(options)
-    template = """sudo -u odoo /opt/odoo/.venv/bin/python /opt/odoo/src/odoo/odoo-bin shell -c /opt/odoo/conf/odoo-server.conf -d bader --no-http <<'PY'
+    template = """sudo -u odoo __ODOO_PYTHON__ __ODOO_BIN__ shell -c __ODOO_CONFIG__ -d __DB_NAME__ --no-http <<'PY'
 import html
 import json
 import re
@@ -579,6 +566,10 @@ PY"""
         template
         .replace("__GENERIC_SUMMARY__", repr(GENERIC_SUMMARY))
         .replace("__OPTIONS_JSON__", repr(options_json))
+        .replace("__ODOO_PYTHON__", SETTINGS.odoo_python)
+        .replace("__ODOO_BIN__", SETTINGS.odoo_bin)
+        .replace("__ODOO_CONFIG__", SETTINGS.odoo_config)
+        .replace("__DB_NAME__", SETTINGS.db_name)
     )
 
 
@@ -587,7 +578,13 @@ def run_remote(options: dict[str, object]) -> tuple[str, str, int]:
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     try:
-        client.connect(HOST, port=PORT, username=USER, password=PASSWORD, timeout=20)
+        client.connect(
+            SETTINGS.host,
+            port=SETTINGS.port,
+            username=SETTINGS.user,
+            password=SETTINGS.password,
+            timeout=20,
+        )
         stdin, stdout, stderr = client.exec_command(remote_code(options), timeout=1800)
         exit_code = stdout.channel.recv_exit_status()
         out = stdout.read().decode("utf-8", errors="replace")

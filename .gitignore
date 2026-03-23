@@ -1,6 +1,7 @@
 # Environment & credentials
 .env
 .env.*
+!.env.example
 
 # Agent/IDE config (not needed in repo)
 .agent/

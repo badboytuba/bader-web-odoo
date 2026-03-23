@@ -4,16 +4,23 @@
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import sys
 from html.parser import HTMLParser
+from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin
 from urllib.request import Request, urlopen
 
+from dotenv import load_dotenv
 
-DEFAULT_BASE_URL = "https://qas.bader4business.com"
-DEFAULT_PATH = "/shop/09070084-compresor-25l-16182"
+
+ROOT = Path(__file__).resolve().parent.parent
+load_dotenv(ROOT / ".env")
+
+DEFAULT_BASE_URL = os.getenv("WEB_AUDIT_BASE_URL", "https://qas.bader.com.ar").rstrip("/")
+DEFAULT_PATH = ""
 DEFAULT_PERSONA = "mayorista"
 
 REQUIRED_HTML_MARKERS = (
@@ -29,6 +36,10 @@ DISALLOWED_HTML_MARKERS = (
     "bader-app-fit-grid",
 )
 SKU_PREFIX_RE = re.compile(r"^\[[^\]]+\]\s*")
+PRODUCT_LINK_RE = re.compile(
+    r'href=["\'](/shop/(?!cart|checkout|wishlist|category/|persona/|change_pricelist/)[^"\']*-\d+)["\']',
+    re.IGNORECASE,
+)
 
 SCRIPT_SRC_UNSAFE_INLINE_RE = re.compile(r"(?:^|;)\s*script-src[^;]*'unsafe-inline'", re.IGNORECASE)
 SCRIPT_SRC_NONCE_RE = re.compile(r"(?:^|;)\s*script-src[^;]*'nonce-[^']+'", re.IGNORECASE)
@@ -120,7 +131,7 @@ def fetch(url: str, timeout: int) -> tuple[int, dict[str, str], str]:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Smoke-check a Bader product detail page.")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="Base URL to request.")
-    parser.add_argument("--path", default=DEFAULT_PATH, help="Relative PDP path to validate.")
+    parser.add_argument("--path", default=DEFAULT_PATH, help="Relative PDP path to validate. If omitted, auto-discover from /shop.")
     parser.add_argument("--persona", default=DEFAULT_PERSONA, help="Persona key to validate on the persona-specific PDP route.")
     parser.add_argument("--timeout", type=int, default=20, help="HTTP timeout in seconds.")
     return parser.parse_args()
@@ -136,10 +147,22 @@ def build_persona_path(path: str, persona: str) -> str:
     return "/shop/persona/%s/%s" % (persona, path[len("/shop/"):].lstrip("/"))
 
 
+def discover_pdp_path(base_url: str, timeout: int) -> str:
+    shop_url = urljoin(base_url.rstrip("/") + "/", "shop")
+    status, _headers, body = fetch(shop_url, timeout)
+    if status != 200:
+        raise RuntimeError(f"failed to fetch shop for PDP discovery: status={status}")
+    match = PRODUCT_LINK_RE.search(body)
+    if not match:
+        raise RuntimeError("could not auto-discover a PDP path from /shop")
+    return match.group(1)
+
+
 def main() -> int:
     args = parse_args()
-    url = urljoin(args.base_url.rstrip("/") + "/", args.path.lstrip("/"))
-    persona_path = build_persona_path(args.path, args.persona)
+    target_path = (args.path or "").strip() or discover_pdp_path(args.base_url, args.timeout)
+    url = urljoin(args.base_url.rstrip("/") + "/", target_path.lstrip("/"))
+    persona_path = build_persona_path(target_path, args.persona)
     persona_url = urljoin(args.base_url.rstrip("/") + "/", persona_path.lstrip("/"))
     status, headers, body = fetch(url, args.timeout)
 
@@ -185,6 +208,7 @@ def main() -> int:
         if SKU_PREFIX_RE.match(parser.product_h1):
             failures.append("product H1 still contains SKU prefix")
     notes.append(f"inline_scripts={parser.inline_scripts}")
+    notes.append(f"path={target_path}")
 
     persona_status, _persona_headers, persona_body = fetch(persona_url, args.timeout)
     if persona_status != 200:

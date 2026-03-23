@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """Get recent Odoo error logs via SSH with password auth."""
-import paramiko, os, sys
-from pathlib import Path
-from dotenv import load_dotenv
+import paramiko
 
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+from deploy_env import load_settings
+
+SETTINGS = load_settings()
 
 c = paramiko.SSHClient()
 c.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 c.connect(
-    os.getenv("DEPLOY_HOST"),
-    port=int(os.getenv("DEPLOY_PORT", 22)),
-    username=os.getenv("DEPLOY_USER"),
-    password=os.getenv("DEPLOY_PASSWORD"),
+    SETTINGS.host,
+    port=SETTINGS.port,
+    username=SETTINGS.user,
+    password=SETTINGS.password,
     timeout=15,
 )
 
