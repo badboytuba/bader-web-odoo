@@ -131,7 +131,9 @@ def promote_module(client: paramiko.SSHClient, stage_dir: str, remote_dir: str) 
     print(f"Promoting staged module into {remote_dir}")
     cmd = (
         "sudo mkdir -p {remote_dir} && "
-        "sudo rsync -rlptD --delete {stage_dir_src} {remote_dir_src} && "
+        "sudo rsync -rlptD --delete "
+        "--exclude='.git' --exclude='__pycache__' "
+        "{stage_dir_src} {remote_dir_src} && "
         "sudo chown -R odoo:odoo {remote_dir}"
     ).format(
         remote_dir=shell_quote(remote_dir),
