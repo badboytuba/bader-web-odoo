@@ -8,6 +8,7 @@ import logging
 import math
 import threading
 import time
+from urllib.parse import urlsplit
 
 import requests as http_requests
 from odoo import SUPERUSER_ID, http
@@ -15,6 +16,7 @@ from odoo.exceptions import AccessDenied
 from odoo.http import request
 
 _logger = logging.getLogger(__name__)
+_CLERK_PLACEHOLDER_VALUES = frozenset({"CHANGE_ME_VIA_SETTINGS"})
 
 # ─── M3: Lazy singleton JWKClient ──────────────────────────────
 _jwks_client = None
@@ -33,12 +35,54 @@ _CALLBACK_RATE_MAX_KEYS = 2000
 def _get_clerk_config():
     """Read Clerk settings from ir.config_parameter."""
     ICP = request.env["ir.config_parameter"].sudo()
+    frontend_api = _normalize_clerk_url(ICP.get_param("clerk.frontend_api", ""))
+    jwks_url = _normalize_clerk_url(ICP.get_param("clerk.jwks_url", ""))
+    if not jwks_url and frontend_api:
+        jwks_url = "%s/.well-known/jwks.json" % frontend_api.rstrip("/")
     return {
-        "publishable_key": ICP.get_param("clerk.publishable_key", ""),
-        "secret_key": ICP.get_param("clerk.secret_key", ""),
-        "jwks_url": ICP.get_param("clerk.jwks_url", ""),
-        "frontend_api": ICP.get_param("clerk.frontend_api", ""),
+        "publishable_key": _clean_clerk_value(ICP.get_param("clerk.publishable_key", "")),
+        "secret_key": _clean_clerk_value(ICP.get_param("clerk.secret_key", "")),
+        "jwks_url": jwks_url,
+        "frontend_api": frontend_api,
     }
+
+
+def _clean_clerk_value(raw_value):
+    cleaned = (raw_value or "").strip()
+    if cleaned.upper() in _CLERK_PLACEHOLDER_VALUES:
+        return ""
+    return cleaned
+
+
+def _normalize_clerk_url(raw_value):
+    cleaned = _clean_clerk_value(raw_value)
+    if not cleaned:
+        return ""
+    if "://" not in cleaned:
+        cleaned = "https://%s" % cleaned.lstrip("/")
+    parsed = urlsplit(cleaned)
+    if not parsed.scheme or not parsed.netloc:
+        return ""
+    normalized = "%s://%s" % (parsed.scheme, parsed.netloc)
+    if parsed.path and parsed.path != "/":
+        normalized = "%s%s" % (normalized, parsed.path.rstrip("/"))
+    return normalized.rstrip("/")
+
+
+def _get_missing_clerk_config(config=None):
+    config = config or _get_clerk_config()
+    missing = []
+    if not config["publishable_key"]:
+        missing.append("clerk.publishable_key")
+    if not config["secret_key"]:
+        missing.append("clerk.secret_key")
+    if not config["jwks_url"]:
+        missing.append("clerk.jwks_url or clerk.frontend_api")
+    return missing
+
+
+def _is_clerk_website_auth_ready(config=None):
+    return not _get_missing_clerk_config(config)
 
 
 def _safe_redirect_path(raw_redirect, default="/"):
@@ -317,7 +361,7 @@ class ClerkAuthController(http.Controller):
             return request.redirect(_build_native_login_url(redirect_path))
 
         config = _get_clerk_config()
-        if not config["frontend_api"]:
+        if not _is_clerk_website_auth_ready(config):
             return request.redirect(_build_native_login_url(redirect_path))
 
         bootstrap_url = "/?clerk_login=1&redirect=%s" % (
@@ -344,6 +388,13 @@ class ClerkAuthController(http.Controller):
 
         config = _get_clerk_config()
         redirect_url = _safe_redirect_path(kwargs.get("redirect"), default="/")
+        missing_config = _get_missing_clerk_config(config)
+        if missing_config:
+            _logger.info(
+                "Clerk callback skipped; missing configuration: %s",
+                ", ".join(missing_config),
+            )
+            return request.redirect(_build_native_login_url(redirect_url))
 
         token = request.httprequest.cookies.get("__session")
         if not token:
@@ -432,7 +483,7 @@ class ClerkAuthController(http.Controller):
         request.session.logout()
 
         config = _get_clerk_config()
-        if not config["frontend_api"]:
+        if not config["publishable_key"]:
             return request.redirect(redirect_path)
 
         return request.redirect(_build_clerk_logout_bootstrap_url(redirect_path))

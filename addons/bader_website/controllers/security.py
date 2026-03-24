@@ -3,6 +3,7 @@ import json
 import logging
 import threading
 import time
+from urllib.parse import urlsplit
 
 from odoo import http
 from odoo.http import request
@@ -18,6 +19,24 @@ _REPORT_LOG_WINDOW_SECONDS = 60
 _REPORT_LOG_MAX_KEYS = 1000
 _REPORT_LOG_STATE = {}
 _REPORT_LOG_LOCK = threading.Lock()
+
+
+def _normalize_report_path(url_value):
+    cleaned = (url_value or "").strip()
+    if not cleaned:
+        return ""
+    try:
+        return (urlsplit(cleaned).path or "").strip()
+    except Exception:
+        return ""
+
+
+def _is_noisy_login_report(directive, blocked_uri, document_uri):
+    return (
+        directive == "script-src-attr"
+        and blocked_uri == "inline"
+        and _normalize_report_path(document_uri) == "/web/login"
+    )
 
 
 def _cleanup_report_log_state(now_ts):
@@ -77,6 +96,11 @@ class BaderSecurityController(http.Controller):
         column_number = str(report.get('column-number') or report.get('columnNumber') or '')[:20]
         script_sample = str(report.get('script-sample') or report.get('sample') or '')[:200]
         fingerprint = '|'.join([_client_ip(), directive, blocked_uri, document_uri])
+
+        # Native Odoo login still emits inline script-attribute reports in report-only mode.
+        # They are expected on this route and only add log noise.
+        if _is_noisy_login_report(directive, blocked_uri, document_uri):
+            return request.make_response('', [('Content-Type', 'text/plain; charset=utf-8')], status=204)
 
         if _should_log_report(fingerprint):
             _logger.warning(

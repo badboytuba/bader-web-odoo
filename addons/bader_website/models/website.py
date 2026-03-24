@@ -9,6 +9,35 @@ class Website(models.Model):
     _inherit = "website"
 
     @api.model
+    def _bader_clean_system_param(self, key, default=""):
+        value = (self.env["ir.config_parameter"].sudo().get_param(key, default) or "").strip()
+        if value.upper() == "CHANGE_ME_VIA_SETTINGS":
+            return ""
+        return value
+
+    @api.model
+    def _bader_clerk_frontend_ready(self):
+        publishable_key = self._bader_clean_system_param("clerk.publishable_key")
+        secret_key = self._bader_clean_system_param("clerk.secret_key")
+        frontend_api = self._bader_clean_system_param("clerk.frontend_api")
+        jwks_url = self._bader_clean_system_param("clerk.jwks_url")
+
+        if not jwks_url and frontend_api:
+            if "://" not in frontend_api:
+                frontend_api = "https://%s" % frontend_api.lstrip("/")
+            try:
+                host = (urlsplit(frontend_api).netloc or "").strip()
+            except Exception:
+                host = ""
+            if host:
+                jwks_url = "%s://%s/.well-known/jwks.json" % (
+                    urlsplit(frontend_api).scheme or "https",
+                    host,
+                )
+
+        return bool(publishable_key and secret_key and jwks_url)
+
+    @api.model
     def _bader_parse_host_aliases(self, raw_value):
         aliases = set()
         for chunk in re.split(r"[\s,;]+", raw_value or ""):

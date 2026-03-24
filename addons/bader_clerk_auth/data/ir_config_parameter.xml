@@ -5,15 +5,15 @@
              DO NOT commit production secrets here. -->
         <record id="clerk_publishable_key" model="ir.config_parameter">
             <field name="key">clerk.publishable_key</field>
-            <field name="value">CHANGE_ME_VIA_SETTINGS</field>
+            <field name="value"></field>
         </record>
         <record id="clerk_secret_key" model="ir.config_parameter">
             <field name="key">clerk.secret_key</field>
-            <field name="value">CHANGE_ME_VIA_SETTINGS</field>
+            <field name="value"></field>
         </record>
         <record id="clerk_webhook_signing_secret" model="ir.config_parameter">
             <field name="key">clerk.webhook_signing_secret</field>
-            <field name="value">CHANGE_ME_VIA_SETTINGS</field>
+            <field name="value"></field>
         </record>
         <record id="clerk_jwks_url" model="ir.config_parameter">
             <field name="key">clerk.jwks_url</field>

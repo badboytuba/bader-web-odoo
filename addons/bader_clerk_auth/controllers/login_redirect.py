@@ -8,7 +8,13 @@ from odoo.addons.website.controllers.main import Website
 from odoo.http import request
 
 # M4: Reuse the complete versions from auth.py (includes blocked_prefixes)
-from .auth import _safe_redirect_path, _is_backend_redirect
+from .auth import (
+    _get_clerk_config,
+    _get_missing_clerk_config,
+    _is_backend_redirect,
+    _is_clerk_website_auth_ready,
+    _safe_redirect_path,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -28,10 +34,13 @@ class ClerkLoginRedirect(Website):
         if request.session.uid:
             return request.redirect(safe_redirect or "/web")
 
-        ICP = request.env["ir.config_parameter"].sudo()
-        frontend_api = ICP.get_param("clerk.frontend_api", "")
-        if not frontend_api:
-            _logger.warning("Clerk not configured, falling back to native login")
+        config = _get_clerk_config()
+        if not _is_clerk_website_auth_ready(config):
+            missing = _get_missing_clerk_config(config)
+            _logger.info(
+                "Clerk not configured (%s), falling back to native login",
+                ", ".join(missing),
+            )
             return super().web_login(redirect=safe_redirect or redirect, **kwargs)
 
         clerk_login_url = "/clerk/login?redirect=%s" % requests.utils.quote(

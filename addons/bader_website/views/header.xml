@@ -9,7 +9,7 @@
 
         <xpath expr="//header[@id='top']" position="before">
             <t t-set="bader_clerk_enabled"
-               t-value="bool(request and request.env['ir.config_parameter'].sudo().get_param('clerk.frontend_api'))"/>
+               t-value="bool(request and request.website._bader_clerk_frontend_ready())"/>
             <t t-set="bader_has_clerk_field"
                t-value="bool(request and 'clerk_user_id' in request.env.user._fields)"/>
             <t t-set="bader_odoo_clerk_id"

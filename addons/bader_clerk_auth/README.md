@@ -52,17 +52,18 @@ Required values:
 
 - `Clerk Publishable Key`
 - `Clerk Secret Key`
-- `Clerk Frontend API`
 - `Clerk JWKS URL`
 
 Optional values:
 
+- `Clerk Frontend API`
+  - If present, the module can derive the JWKS URL automatically as `<frontend_api>/.well-known/jwks.json`.
 - `Clerk Webhook Signing Secret`
 - `Clerk Default User Group XML ID`
 
 ## Compatibility Notes
 
-- Default parameter records are placeholders only. No environment-specific Clerk endpoint is shipped anymore.
+- Default parameter records ship empty. No environment-specific Clerk endpoint or secret is committed anymore.
 - This module is intended to run on top of `bader_website`.
 - Backend routes keep using native Odoo login.
 - Website routes use Clerk only when Clerk is configured.
